@@ -1,0 +1,12 @@
+# Entorno virtual de Python (se recrea con requirements.txt)
+.venv/
+
+# Caché de Python
+__pycache__/
+*.pyc
+
+# Log que MuJoCo escribe al fallar
+MUJOCO_LOG.TXT
+
+# macOS
+.DS_Store

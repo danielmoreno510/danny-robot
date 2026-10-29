@@ -1,0 +1,160 @@
+<mujoco model="H1 Leg 2DOF">
+
+  <!--
+    Pierna 2 GDL colgando de una pelvis fija.
+
+    Cambios respecto a la primera versión de la pierna (eliminada):
+      - Todo en radianes (SI), sin ambigüedad entre range y ctrlrange.
+      - Límite de torque en los actuadores (forcerange): un motor real satura.
+      - Ganancias kv ajustadas a la inercia de cada articulación.
+      - Sensores: posición, velocidad y torque de cada articulación.
+
+    Convención de ejes (igual que ROS, REP-103): x adelante, y izquierda, z arriba.
+    Rotación positiva alrededor de +y: el pie se desplaza hacia -x (atrás).
+      - Cadera positiva  = extensión (pierna hacia atrás).
+      - Rodilla positiva = flexión.
+
+    Dimensiones y masas: DIDÁCTICAS, no son las de H1.
+  -->
+  <compiler angle="radian"/>
+
+  <option
+    timestep="0.002"
+    gravity="0 0 -9.81"
+  />
+
+  <visual>
+    <global
+      azimuth="120"
+      elevation="-20"
+      offwidth="1920"
+      offheight="1080"
+    />
+  </visual>
+
+  <default>
+    <joint
+      type="hinge"
+      damping="0.5"
+      limited="true"
+    />
+    <geom
+      type="capsule"
+      size="0.035"
+      rgba="0.1 0.4 0.9 1"
+    />
+  </default>
+
+  <worldbody>
+
+    <light
+      pos="0 0 3"
+      dir="0 0 -1"
+    />
+
+    <geom
+      name="floor"
+      type="plane"
+      size="2 2 0.1"
+      rgba="0.7 0.7 0.7 1"
+    />
+
+    <!-- Pelvis fija (sin freejoint) -->
+    <body name="pelvis" pos="0 0 1">
+
+      <geom
+        name="pelvis_geom"
+        type="box"
+        size="0.12 0.08 0.05"
+        mass="2"
+        rgba="0.3 0.3 0.3 1"
+      />
+
+      <body name="thigh" pos="0 0 -0.05">
+
+        <!-- -90° .. 90° -->
+        <joint
+          name="hip_joint"
+          axis="0 1 0"
+          range="-1.5708 1.5708"
+        />
+
+        <geom
+          name="thigh_geom"
+          fromto="0 0 0 0 0 -0.25"
+          mass="1"
+        />
+
+        <body name="shin" pos="0 0 -0.25">
+
+          <!-- 0° .. 130° -->
+          <joint
+            name="knee_joint"
+            axis="0 1 0"
+            range="0 2.2689"
+          />
+
+          <geom
+            name="shin_geom"
+            fromto="0 0 0 0 0 -0.25"
+            mass="0.8"
+            rgba="0.1 0.7 0.5 1"
+          />
+
+        </body>
+
+      </body>
+
+    </body>
+
+  </worldbody>
+
+  <!--
+    Ganancias: kv elegido para un amortiguamiento crítico aproximado
+    (zeta ~ 0.8) con la inercia de cada articulación:
+      cadera:  I ~ 0.14 kg·m² (pierna extendida) -> kv ~ 6
+      rodilla: I ~ 0.018 kg·m²                   -> kv ~ 2
+    forcerange = 20 N·m: valor provisional para detectar saturación,
+    NO es todavía un requisito de motor.
+  -->
+  <actuator>
+
+    <position
+      name="hip_motor"
+      joint="hip_joint"
+      kp="100"
+      kv="6"
+      ctrlrange="-1.5708 1.5708"
+      ctrllimited="true"
+      forcerange="-20 20"
+      forcelimited="true"
+    />
+
+    <position
+      name="knee_motor"
+      joint="knee_joint"
+      kp="100"
+      kv="2"
+      ctrlrange="0 2.2689"
+      ctrllimited="true"
+      forcerange="-20 20"
+      forcelimited="true"
+    />
+
+  </actuator>
+
+  <!-- Lo que "vería" el controlador en el robot real: encoder y torque -->
+  <sensor>
+
+    <jointpos name="hip_pos" joint="hip_joint"/>
+    <jointpos name="knee_pos" joint="knee_joint"/>
+
+    <jointvel name="hip_vel" joint="hip_joint"/>
+    <jointvel name="knee_vel" joint="knee_joint"/>
+
+    <actuatorfrc name="hip_torque" actuator="hip_motor"/>
+    <actuatorfrc name="knee_torque" actuator="knee_motor"/>
+
+  </sensor>
+
+</mujoco>

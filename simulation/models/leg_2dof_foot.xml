@@ -1,0 +1,212 @@
+<mujoco model="H1 Leg 2DOF Foot">
+
+  <!--
+    Pierna 2 GDL con pie y contacto (etapa 8).
+
+    Cambios respecto a leg_2dof.xml:
+      - La pelvis ya no está fija: se desliza en vertical (slide en z).
+        No puede avanzar ni girar, así que no hace falta equilibrio todavía.
+      - Pie puntual: una esfera al final de la tibia, unida por un tobillo
+        pasivo (sin motor). El pie no tiene que quedarse plano. El tobillo
+        con motor llega con la pierna de 6 GDL.
+      - Solo chocan el pie y el suelo (contype/conaffinity).
+      - Sensores nuevos: altura de la pelvis y fuerza normal en el pie.
+
+    Ejes y signos como en leg_2dof.xml (REP-103):
+      - Cadera positiva  = extensión (pierna hacia atrás).
+      - Rodilla positiva = flexión.
+    Para que el pie quede bajo la cadera (muslo y tibia iguales):
+      cadera = -rodilla / 2.
+
+    Dimensiones y masas: DIDÁCTICAS, no son las de H1.
+  -->
+  <compiler angle="radian"/>
+
+  <option
+    timestep="0.002"
+    gravity="0 0 -9.81"
+  />
+
+  <visual>
+    <global
+      azimuth="120"
+      elevation="-20"
+      offwidth="1920"
+      offheight="1080"
+    />
+  </visual>
+
+  <default>
+    <joint
+      type="hinge"
+      damping="0.5"
+      limited="true"
+    />
+    <!-- Por defecto nada choca: solo pie y suelo activan el contacto -->
+    <geom
+      type="capsule"
+      size="0.035"
+      rgba="0.1 0.4 0.9 1"
+      contype="0"
+      conaffinity="0"
+    />
+  </default>
+
+  <worldbody>
+
+    <light
+      pos="0 0 3"
+      dir="0 0 -1"
+    />
+
+    <geom
+      name="floor"
+      type="plane"
+      size="2 2 0.1"
+      rgba="0.7 0.7 0.7 1"
+      contype="1"
+      conaffinity="1"
+      friction="1 0.005 0.0001"
+    />
+
+    <!-- La altura real de la pelvis la fija el script (ver squat_leg_2dof.py) -->
+    <body name="pelvis" pos="0 0 0.6">
+
+      <!-- Solo sube y baja. qpos = desplazamiento respecto a z = 0.6 -->
+      <joint
+        name="pelvis_slide"
+        type="slide"
+        axis="0 0 1"
+        range="-0.5 0.2"
+        damping="0"
+      />
+
+      <geom
+        name="pelvis_geom"
+        type="box"
+        size="0.12 0.08 0.05"
+        mass="2"
+        rgba="0.3 0.3 0.3 1"
+      />
+
+      <body name="thigh" pos="0 0 -0.05">
+
+        <!-- -90° .. 90° -->
+        <joint
+          name="hip_joint"
+          axis="0 1 0"
+          range="-1.5708 1.5708"
+        />
+
+        <geom
+          name="thigh_geom"
+          fromto="0 0 0 0 0 -0.25"
+          mass="1"
+        />
+
+        <body name="shin" pos="0 0 -0.25">
+
+          <!-- 0° .. 130° -->
+          <joint
+            name="knee_joint"
+            axis="0 1 0"
+            range="0 2.2689"
+          />
+
+          <geom
+            name="shin_geom"
+            fromto="0 0 0 0 0 -0.25"
+            mass="0.8"
+            rgba="0.1 0.7 0.5 1"
+          />
+
+          <body name="foot" pos="0 0 -0.25">
+
+            <!--
+              Tobillo PASIVO (sin motor). Sin él, la esfera va soldada a la
+              tibia: al inclinarse la tibia la esfera tiene que girar, y
+              como la pelvis no deja que su centro se mueva, o patina
+              contra el suelo o rueda y arrastra las articulaciones.
+              Con el tobillo libre, el contacto actúa como un pasador.
+            -->
+            <joint
+              name="ankle_joint"
+              axis="0 1 0"
+              range="-3.1416 3.1416"
+              damping="0.01"
+            />
+
+            <geom
+              name="foot_geom"
+              type="sphere"
+              size="0.04"
+              mass="0.2"
+              rgba="0.9 0.5 0.1 1"
+              contype="1"
+              conaffinity="1"
+            />
+
+            <!-- Zona del sensor de contacto: algo mayor que el pie -->
+            <site
+              name="foot_site"
+              type="sphere"
+              size="0.045"
+              rgba="0 0 0 0"
+            />
+
+          </body>
+
+        </body>
+
+      </body>
+
+    </body>
+
+  </worldbody>
+
+  <!-- Mismos motores que leg_2dof.xml -->
+  <actuator>
+
+    <position
+      name="hip_motor"
+      joint="hip_joint"
+      kp="100"
+      kv="6"
+      ctrlrange="-1.5708 1.5708"
+      ctrllimited="true"
+      forcerange="-20 20"
+      forcelimited="true"
+    />
+
+    <position
+      name="knee_motor"
+      joint="knee_joint"
+      kp="100"
+      kv="2"
+      ctrlrange="0 2.2689"
+      ctrllimited="true"
+      forcerange="-20 20"
+      forcelimited="true"
+    />
+
+  </actuator>
+
+  <sensor>
+
+    <jointpos name="pelvis_height" joint="pelvis_slide"/>
+
+    <jointpos name="hip_pos" joint="hip_joint"/>
+    <jointpos name="knee_pos" joint="knee_joint"/>
+
+    <jointvel name="hip_vel" joint="hip_joint"/>
+    <jointvel name="knee_vel" joint="knee_joint"/>
+
+    <actuatorfrc name="hip_torque" actuator="hip_motor"/>
+    <actuatorfrc name="knee_torque" actuator="knee_motor"/>
+
+    <!-- Fuerza normal del suelo sobre el pie [N] -->
+    <touch name="foot_force" site="foot_site"/>
+
+  </sensor>
+
+</mujoco>
