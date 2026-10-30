@@ -121,6 +121,8 @@ ARM_JOINTS = (
 # giro de cintura (con 10°, chocaba a partir de unos 30°)
 ARM_HOLD_ANGLES = {"shoulder_roll": 0.2618, "elbow": 0.3491}  # rad
 
+STAND_KNEE_DEG = 30  # postura inicial del humanoide, más estirada que la marcha clásica
+
 # Humanoide: alturas respecto a la pelvis [m]
 WAIST_ABOVE_PELVIS = 0.04
 WAIST_LINK_HALF = (0.03, 0.05, 0.02)
@@ -167,9 +169,14 @@ class Robot:
     waist_kv: dict[str, float] | None = None
     arm_kv: dict[str, float] | None = None
     neck_kv: dict[str, float] | None = None
+    joint_limits: dict[str, tuple[float, float]] = field(default_factory=dict)  # rad, topes propios
 
     def motor(self, part: str) -> Motor:
         return self.motors.get(part, GENERIC_MOTOR)
+
+    def limits(self, joint: Joint) -> tuple[float, float]:
+        """Tope mecánico de una articulación en este robot."""
+        return self.joint_limits.get(joint.part, joint.limits)
 
     @property
     def has_waist(self) -> bool:
@@ -218,6 +225,7 @@ HUMANOID = Robot(
     arm_kv={"shoulder_pitch": 1.77, "shoulder_roll": 1.79, "shoulder_yaw": 1.11, "elbow": 0.76,
             "wrist_yaw": 0.25, "wrist_pitch": 0.26, "wrist_roll": 0.26},
     neck_kv={"neck_yaw": 0.26, "neck_pitch": 0.28},
+    joint_limits={"hip_pitch": (-1.5708, 0.5236)},  # 90° de flexión y 30° de extensión
 )
 ROBOTS = {"biped": BIPED, "humanoid": HUMANOID}
 

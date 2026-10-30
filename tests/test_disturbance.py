@@ -60,8 +60,8 @@ def test_response_is_passive_not_feedback(monkeypatch):
     assert change == 0.0
 
 
-def one_foot(side, force, direction):
-    model = load_model()
+def one_foot(side, force, direction, load=load_model):
+    model = load()
     data = mujoco.MjData(model)
     biped = RecordingBiped(model, data)
     swing = "right" if side == "left" else "left"

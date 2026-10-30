@@ -24,6 +24,7 @@ def humanoid():
 def fixed_base():
     model = mujoco.MjSpec.from_file(str(PATH))
     model.delete(model.joint("pelvis_free"))
+    model.delete(model.key("stand"))
     return model.compile()
 
 
@@ -116,6 +117,49 @@ def test_joint_limits_hold_against_twice_the_motor_torque():
                 worst = max(worst, sign * (data.qpos[qpos] - model.jnt_range[joint, index]))
     record("preparacion.sobrepaso_tope", math.degrees(worst), f"< {MAX_LIMIT_OVERSHOOT_DEG}", "°")
     assert math.degrees(worst) < MAX_LIMIT_OVERSHOOT_DEG
+
+
+def test_policy_sensors_exist():
+    model = humanoid()
+    for name in ("pelvis_gyro", "pelvis_accel", "pelvis_quat"):
+        assert mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SENSOR, name) >= 0
+    for i in range(1, model.njnt):
+        assert mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SENSOR, model.joint(i).name[:-6] + "_vel") >= 0
+
+
+def test_accelerometer_reads_gravity_when_still():
+    model = humanoid()
+    data = mujoco.MjData(model)
+    mujoco.mj_resetDataKeyframe(model, data, model.key("stand").id)
+    for _ in range(1000):
+        data.ctrl[:] = model.key("stand").ctrl
+        mujoco.mj_step(model, data)
+    reading = data.sensor("pelvis_accel").data
+    record("preparacion.acelerometro_en_reposo", np.linalg.norm(reading), "9,81 ± 0,2", "m/s²")
+    assert abs(np.linalg.norm(reading) - spec.GRAVITY) < 0.2
+    assert np.linalg.norm(data.sensor("pelvis_gyro").data) < 0.05
+
+
+def test_stand_keyframe_is_a_stable_start():
+    """Sin controlador: solo los motores sujetando la postura guardada."""
+    model = humanoid()
+    data = mujoco.MjData(model)
+    key = model.key("stand")
+    mujoco.mj_resetDataKeyframe(model, data, key.id)
+    mujoco.mj_forward(model, data)
+    floor = model.geom("floor").id
+    assert all(floor in (c.geom1, c.geom2) for c in data.contact[: data.ncon])
+    worst_tilt = 0.0
+    for _ in range(round(2.0 / model.opt.timestep)):
+        data.ctrl[:] = key.ctrl
+        mujoco.mj_step(model, data)
+        worst_tilt = max(worst_tilt, math.degrees(2 * math.asin(min(1.0, np.linalg.norm(data.qpos[4:6])))))
+        assert all(floor in (c.geom1, c.geom2) for c in data.contact[: data.ncon])
+    drop = key.qpos[2] - data.qpos[2]
+    record("preparacion.reposo.incl_max", worst_tilt, "< 5", "°")
+    record("preparacion.reposo.bajada_pelvis", 1000 * drop, "< 20", "mm")
+    assert worst_tilt < 5.0
+    assert drop < 0.02
 
 
 def test_motors_never_exceed_their_torque_limit():

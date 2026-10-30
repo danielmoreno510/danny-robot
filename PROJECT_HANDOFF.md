@@ -4,7 +4,7 @@ Punto de entrada para continuar **Robot Danny** en un chat nuevo o en otra compu
 Se actualiza al terminar cada fase y cada vez que cambia el estado.
 
 **Fecha:** 30 de octubre de 2026. **Fase actual:** 3.5, humanoide completo.
-**Siguiente etapa:** 3.5.7, integración.
+**Siguiente etapa:** 3.5.8, validación.
 
 ## Cómo empezar
 
@@ -26,8 +26,8 @@ python3.12 -m venv .venv
 .venv/bin/python simulation/scripts/run_checks.py
 ```
 
-Debe terminar con `21 de 21 comprobaciones pasan`, en unos 2 minutos. La suite completa
-tarda unos 8:
+Debe terminar con `27 de 27 comprobaciones pasan`, en unos 3 minutos. La suite completa
+tarda unos 17:
 
 ```bash
 .venv/bin/python -m pytest tests
@@ -60,24 +60,18 @@ son bloques rígidos y la cabeza es una esfera simple, sin cara, a petición del
 | 3.5.5 | Manos rígidas | E20 |
 | 3.5.6 | Cuello y cabeza | E21 |
 | Revisión | Motor por articulación y roll de cintura | E22 |
+| 3.5.7 | Integración: cuerpo en movimiento, IMU, postura `stand` y sensibilidad | E23 |
 | Auditoría | Preparación para la fase 4: **todavía no estamos listos** | Documento propio |
 
 El humanoide, con motores de catálogo y brazos fijos, pasa E10 a E13 con los límites del
 bípedo, salvo un cambio de plan: E12 espera 0,35 s entre pasos. Aguanta empujones de 48 N
-adelante, 49 N atrás y 59 N de lado. Detalle en el
-[handbook](docs/HANDBOOK.md), de E18 a E22.
+adelante, 49 N atrás y 59 N de lado. E13 cumple con todo el cuerpo moviéndose a la vez. Su
+sensibilidad es casi igual que la del bípedo. Detalle en el [handbook](docs/HANDBOOK.md), de E18
+a E23.
 
 ## Qué sigue
 
-**Etapa 3.5.7, integración:**
-
-- Repetir en el humanoide las medidas de sensibilidad de `tests/test_realism.py`: suelo
-  inclinado, errores de masa, ruido y retardos. Nunca se han hecho con este modelo.
-- Añadir giróscopo, acelerómetro, sensores de velocidad articular y una postura inicial
-  guardada. Hoy el modelo no tiene ninguno.
-- Traer al usuario una propuesta para los rangos de cadera y tobillo: 90° de extensión y 65°
-  de flexión dorsal superan lo humano. Estrechar o penalizar.
-- Proponerle puntos de seguimiento e IMU de cabeza: no están aprobados.
+**Pendiente de decisión del usuario:** puntos de seguimiento e IMU de cabeza.
 
 **Etapa 3.5.8, validación:** informe de la fase, comparación con el bípedo y auditoría
 independiente del código, que se repite al cerrar cada fase. Después, avisar al usuario y
@@ -103,6 +97,9 @@ de velocidad. Ver la [revisión](documentation/whole-body-motion-review.md).
 - Brazos separados 15° en la postura fija. Con ±20° de roll de cintura hay contactos reales, y
   se aceptan.
 - No gastar tiempo en animaciones a mano que se vayan a sustituir.
+- La auditoría automática del humanoide usa masa -5 %: con -10 % incumple por 0,1 mm.
+- Extensión de cadera del humanoide: 30°. La flexión dorsal se queda y se penalizará al
+  entrenar, porque la marcha clásica llega a 50°.
 
 ## Lo que no se debe afirmar
 
@@ -116,8 +113,9 @@ de velocidad. Ver la [revisión](documentation/whole-body-motion-review.md).
 
 Del 30 de octubre de 2026, en macOS con Apple Silicon, Python 3.12 y MuJoCo 3.17:
 
-- `pytest tests`: **189 pruebas pasan**, en 8 min 33 s.
-- `run_checks.py`: **21 de 21**.
+- `pytest tests`: **236 pruebas pasan** en la última ejecución completa (16 min 52 s), más la
+  prueba de cuerpo completo, añadida y pasada por separado: 237.
+- `run_checks.py`: **27 de 27**.
 - Las 277 métricas del bípedo no cambian desde el commit `69fbdd1`.
 - pyflakes sin avisos.
 - Camino del visor probado con una ventana falsa: la real no se ha abierto.

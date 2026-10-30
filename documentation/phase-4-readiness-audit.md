@@ -1,9 +1,8 @@
 # Auditoría de preparación para la fase 4
 
 **Veredicto: todavía NO estamos preparados para entrenar.** El cuerpo físico está bien
-construido y validado, pero faltan las etapas 3.5.7 y 3.5.8, y aún no existe nada de lo que
-hace falta para entrenar: entorno, sensores de IMU, datos de movimiento ni métricas
-programadas. La lista completa está en la sección 8.
+construido y validado, pero falta la etapa 3.5.8, y aún no existe nada de lo que hace falta
+para entrenar: entorno, datos de movimiento ni métricas programadas. La lista completa está en la sección 8.
 
 Las cifras salen de `results/` y de `tests/test_readiness.py`. **Nota sobre los números:** el
 encargo hablaba de 30 GDL y 168 pruebas. Tras aprobar el roll de cintura son **31 GDL**, y
@@ -14,7 +13,7 @@ el recuento vigente de pruebas está en [PROJECT_HANDOFF.md](../PROJECT_HANDOFF.
 **Bien definidos.** Se comprobó con el modelo compilado: las 31 articulaciones tienen eje,
 tope, motor, sensor de posición y sensor de par, y el lado derecho refleja al izquierdo.
 
-**Límites articulares: la mayoría son plausibles, dos no.** Comparación con rangos humanos
+**Límites articulares: la mayoría son plausibles, uno no.** Comparación con rangos humanos
 típicos, que varían según la fuente
 ([tabla 1](https://wikem.org/wiki/Joint_ROM_(Table)),
 [tabla 2](https://pmc.ncbi.nlm.nih.gov/articles/PMC9218764/table/T1)). No todos los valores
@@ -23,7 +22,7 @@ humanos están confirmados: los marcados con «?» son de memoria.
 | Articulación | Danny | Humano típico | Valoración |
 |---|---|---|---|
 | Cadera, flexión | 90° | 120-130° | Corto: limita sentarse y agacharse |
-| **Cadera, extensión** | **90°** | **unos 15°** | **Excesivo: pose imposible para una persona** |
+| Cadera, extensión | 30° | unos 15° | Holgado a propósito: se estrechó de 90° (el bípedo sigue en 90°) |
 | Cadera, separación (roll) | ±30° | ? unos 45° y 30° | Aceptable |
 | Cadera, giro (yaw) | ±40° | 35-45° | Bien |
 | Rodilla | 0 a 130° | 135-140° | Bien |
@@ -39,10 +38,10 @@ humanos están confirmados: los marcados con «?» son de memoria.
 | Muñeca: yaw, pitch y roll | ±90°, ±45°, ±45° | 80°, 60°, 20-50° | Aceptable |
 | Cuello yaw / pitch | ±80° / -30 a 45° | ? unos 80° / 55-70° y 70-90° | Corto en pitch, suficiente |
 
-**Importante:** los topes son mecánicos y no tienen por qué coincidir con los humanos. Pero
-con la extensión de cadera y la flexión dorsal actuales, una política puede aprender posturas
-que no parecen humanas. Hay dos caminos: estrechar esos rangos en el modelo o penalizarlos al
-entrenar. Lo propongo en la sección 8.
+**Importante:** los topes son mecánicos y no tienen por qué coincidir con los humanos. La
+extensión de cadera se estrechó en el modelo a 30°, porque la marcha clásica no la usa. La
+flexión dorsal no se puede estrechar, porque la marcha clásica llega a 50°: se penalizará al
+entrenar.
 
 ## 2. Física del modelo
 
@@ -62,13 +61,14 @@ entrenar. Lo propongo en la sección 8.
 - Todas las masas salen de un presupuesto, no de una báscula. Las geometrías de colisión
   son primitivas simples, sin diseño mecánico detrás.
 - `armature` y amortiguamiento son estimaciones, y no hay fricción seca (`frictionloss` es 0).
+- Con masa real un 10 % menor, la marcha clásica incumple por 0,1 mm (E23).
 - El contacto pie-suelo usa parámetros por defecto.
 - Los sensores y motores son ideales: sin ruido, retardo ni holgura.
 
 ## 3. Pruebas y comprobaciones
 
-Ejecutadas de verdad el 30 de octubre de 2026: **189 pruebas y 21 comprobaciones pasan**, y las
-277 métricas del bípedo no cambian. Dos matices:
+Ejecutadas de verdad: el recuento vigente está en el [relevo](../PROJECT_HANDOFF.md). Las 277
+métricas del bípedo no cambian. Dos matices:
 
 - **Una prueba que pasa no siempre exige algo.** Las 37 de realismo y varias del humanoide
   solo miden.
@@ -145,7 +145,7 @@ La energía sirve para comparar políticas de Danny, no con personas.
 | Motores de posición de MuJoCo | **Listo** | Una política puede mandar objetivos a las 31 articulaciones |
 | Empujones (`push_biped.py`) | **Dinámico, pasivo** | Mide dinámica, sin corregir nada |
 | Retardo, ruido y fricción de `test_realism.py` | **Dinámico, solo en pruebas** | Hay que llevarlos al entorno |
-| Realimentación con IMU | **No existe** | Sin giróscopo ni acelerómetro |
+| Realimentación con IMU | **No existe** | Los sensores ya existen; ningún controlador los usa |
 | Control dinámico de cuerpo completo o política | **No existe** | Es la fase 4 |
 
 **Conclusión:** el modelo está preparado para control dinámico; el controlador actual no. El
@@ -158,12 +158,12 @@ para entrenar, salvo la curva de par-velocidad y el código de sensores.
 
 | # | Requisito | Cómo se cierra |
 |---|---|---|
-| 1 | Etapa 3.5.7: equilibrio, marcha y sensibilidad en el humanoide | Repetir las medidas de realismo |
+| 1 | Etapa 3.5.7: equilibrio, marcha y sensibilidad en el humanoide | ✅ E23 |
 | 2 | Etapa 3.5.8: informe de la fase y auditoría independiente | Informe, y tu revisión |
-| 3 | IMU: el modelo solo tiene orientación y posición ideales | Añadir giróscopo y acelerómetro |
-| 4 | Velocidades articulares como sensor | Añadirlas |
-| 5 | Postura inicial guardada (hoy no hay ninguna) | Añadir keyframe de pie |
-| 6 | Rangos de cadera y tobillo | Decidir: estrechar o penalizar |
+| 3 | IMU: giróscopo y acelerómetro | ✅ E23 |
+| 4 | Velocidades articulares como sensor | ✅ E23 |
+| 5 | Postura inicial guardada | ✅ E23: `stand` |
+| 6 | Rangos de cadera y tobillo | ✅ Cadera a 30° en el modelo; el tobillo se penaliza en la recompensa (etapa 22) |
 | 7 | Decidir GPU local o nube | **Decisión tuya** |
 | 8 | Comprobar el modelo en MJX | Prueba de compilación y de velocidad |
 | 9 | Entorno: observaciones, acciones, recompensas y terminaciones | Etapas 21 y 22 |
@@ -171,8 +171,8 @@ para entrenar, salvo la curva de par-velocidad y el código de sensores.
 | 11 | Datos con licencia válida y adaptados a Danny | Hitos C y D |
 | 12 | Métricas de la sección 6 programadas | Módulo de evaluación |
 
-Los números 9 a 12 son el arranque de la propia fase 4. **Los números 1 a 8 son los que deben
-estar antes de empezar la fase.**
+Los números 9 a 12 son el arranque de la propia fase 4. **Los números 2, 7 y 8 son los que
+quedan antes de empezar la fase.**
 
 **Importantes, sin bloquear:**
 

@@ -12,8 +12,10 @@ Uso:
 from pathlib import Path
 
 import mujoco
+import numpy as np
 
 import robot_spec as spec
+from biped_control import Biped, Pose, center_com_over, pelvis_height
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -35,7 +37,7 @@ def add_joint(body, prefix: str, joint: spec.Joint, robot: spec.Robot, axis=None
         name=f"{prefix}{joint.part}_joint",
         type=mujoco.mjtJoint.mjJNT_HINGE,
         axis=axis or joint.axis,
-        range=joint.limits,
+        range=robot.limits(joint),
         limited=mujoco.mjtLimited.mjLIMITED_TRUE,
         damping=motor.damping,
         armature=motor.armature,
@@ -136,7 +138,7 @@ def add_motor(model, name: str, joint: spec.Joint, robot: spec.Robot, kv: float)
         name=f"{name}_motor",
         target=f"{name}_joint",
         trntype=mujoco.mjtTrn.mjTRN_JOINT,
-        ctrlrange=joint.command_limits or joint.limits,
+        ctrlrange=joint.command_limits or robot.limits(joint),
         ctrllimited=mujoco.mjtLimited.mjLIMITED_TRUE,
         forcerange=(-catalog.peak_torque, catalog.peak_torque),
         forcelimited=mujoco.mjtLimited.mjLIMITED_TRUE,
@@ -204,6 +206,26 @@ def add_sensors(model, robot: spec.Robot) -> None:
     for side in spec.SIDES:
         model.add_sensor(name=f"{side}_foot_force", type=mujoco.mjtSensor.mjSENS_TOUCH,
                          objtype=mujoco.mjtObj.mjOBJ_SITE, objname=f"{side}_touch_site")
+    if robot.has_arms:  # lo que necesita una política: IMU y velocidades
+        model.add_sensor(name="pelvis_gyro", type=mujoco.mjtSensor.mjSENS_GYRO,
+                         objtype=mujoco.mjtObj.mjOBJ_SITE, objname="imu_site")
+        model.add_sensor(name="pelvis_accel", type=mujoco.mjtSensor.mjSENS_ACCELEROMETER,
+                         objtype=mujoco.mjtObj.mjOBJ_SITE, objname="imu_site")
+        for part in (*(f"{side}_{leg}" for side in spec.SIDES for leg in spec.JOINT_PARTS), *held):
+            model.add_sensor(name=f"{part}_vel", type=mujoco.mjtSensor.mjSENS_JOINTVEL,
+                             objtype=mujoco.mjtObj.mjOBJ_JOINT, objname=f"{part}_joint")
+
+
+def add_stand_keyframe(model) -> None:
+    """Postura de pie para arrancar: CdM centrado entre los pies y motores en esa postura."""
+    compiled = model.compile()
+    data = mujoco.MjData(compiled)
+    biped = Biped(compiled, data)
+    height = pelvis_height(spec.STAND_KNEE_DEG)
+    stand = Pose(np.array([0.0, 0.0, height]), np.array([0.0, spec.HIP_Y, 0.0]), np.array([0.0, -spec.HIP_Y, 0.0]))
+    biped.set_pose(data, center_com_over(biped, stand, "left", inset=spec.HIP_Y))
+    ctrl = np.clip(data.qpos[compiled.actuator_trnid[:, 0] + 6], *compiled.actuator_ctrlrange.T)
+    model.add_key(name="stand", qpos=data.qpos.copy(), ctrl=ctrl)
 
 
 def build_robot(robot: spec.Robot) -> mujoco.MjSpec:
@@ -268,6 +290,8 @@ def build_robot(robot: spec.Robot) -> mujoco.MjSpec:
 
     add_motors(model, robot)
     add_sensors(model, robot)
+    if robot.has_arms:
+        add_stand_keyframe(model)
     return model
 
 

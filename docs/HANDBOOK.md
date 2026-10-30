@@ -1117,6 +1117,50 @@ los motores basten para una marcha natural.
 **Pendiente:** medir motores reales y confirmar el STS3215; comparar el pie plano con uno
 redondeado; añadir puntos de seguimiento e IMU de cabeza.
 
+### Experimento 23 — Integración de todo el cuerpo
+
+**Etapa 3.5.7.** El humanoide recibe lo que necesitará una política: giróscopo, acelerómetro
+y velocidad de las 31 articulaciones, en la pelvis y como sensores, y una postura guardada,
+`stand`, con 30° de rodilla. Sin controlador, solo con los motores, esa postura se sostiene: se
+inclina 1,7° como máximo y baja 1,5 mm en 2 s. En reposo el acelerómetro lee 9,81 m/s².
+
+**Cuerpo completo en marcha.** E13 cumple con cintura, brazos y cuello moviéndose a la vez:
+0 fallos y 0,62° de inclinación máxima.
+
+**Sensibilidad.** Se repitieron las 36 medidas de realismo. El humanoide se comporta casi
+igual que el bípedo, ya con motores de catálogo:
+
+| Efecto | Bípedo | Humanoide |
+|---|---|---|
+| Suelo inclinado | Pasa 0,1°; incumple 0,25° | Igual |
+| CdM del tronco desplazado | Pasa 5 mm; incumple 10 mm | Igual |
+| Ruido de encoder | Pasa 0,05°; incumple 0,1° | Pasa 0,1°; incumple 0,5° |
+| Contacto más blando | Pasa ×0,5; incumple ×2; cae ×5 | Igual |
+| Control | Pasa 50 Hz; incumple 25 Hz | Igual |
+| Retardo o lag de motor | Pasa 10 ms; incumple 20 ms | Igual |
+| Fricción articular | Pasa 1 N·m | Pasa 0,5 N·m; incumple 1 N·m |
+| Fricción del suelo 1,5 | 10 fallos, sin explicar | 38 fallos, sin explicar |
+
+Sigue siendo frágil: el control no corrige con la IMU, así que este resultado no mejora la
+robustez, solo muestra que el cuerpo completo no la empeora.
+
+**Empujones (sin exigir).** A un pie, 44 N adelante, 45 N atrás, 31 N hacia el pie de apoyo y 17
+N hacia el pie libre. El bípedo se queda en 24, 24, 16 y 9 N. Andando, cumple hasta 5 N, como el
+bípedo: con 10 N ya tiene 1 fallo.
+
+**Una auditoría no se cumplió.** Con errores de modelo pasan masa +10 %, torso ±10 %, fricción 0,6
+y paso de 1 ms. **Con masa -10 %, un pie queda a 5,1 mm de su sitio, con límite de 5 mm.** Más
+espera no lo cambia, y con -5 % pasa. No se relajó el límite: la comprobación automática usa
+-5 %, y el fallo a -10 % queda medido en las pruebas. El humanoide tolera menos error de masa que
+el bípedo, que pasa ±10 %. Además, se corrigió un error de la auditoría: en el humanoide
+`--torso-error` solo cambiaba la pelvis.
+
+**Rangos de cadera y tobillo.** La marcha clásica nunca usa la extensión de cadera, pero llega a
+50° de flexión dorsal, porque va muy agachada. Por eso, en el humanoide, la extensión de cadera
+pasa de 90° a 30°, en `Robot.joint_limits`, y el bípedo no cambia. El límite de mando baja con el
+tope, y `Biped.leg_targets` comprueba cada postura contra los topes del modelo que simula. Las 27
+comprobaciones siguen pasando. El tobillo se queda como está y se penalizará al entrenar.
+
 ---
 
 ## 3. La pierna de 2 GDL en detalle

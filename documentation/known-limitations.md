@@ -66,11 +66,12 @@ retardos, incumple.
 
 ## Humanoide en construcción
 
-`danny_humanoid.xml` (11 kg, 31 GDL), tras E22:
+`danny_humanoid.xml` (11 kg, 31 GDL), tras E23:
 
 - Cabeza simple y manos rígidas, sin dedos.
-  Los experimentos de sensibilidad no se
-  han repetido con este modelo.
+- Sensibilidad casi igual que la del bípedo: suelo 0,25°, 1 cm de CdM o 20 ms de retardo
+  incumplen. Detalle en E23.
+- Con masa real un 10 % menor, un pie queda a 5,1 mm de su sitio (límite: 5 mm). Con -5 % cumple.
 - La marcha clásica es lentísima (Froude 0,00002): no dice nada de una marcha natural.
 - Los brazos se han balanceado a ±20°, sin sincronizar con los pasos.
 - Cada articulación tiene su motor, pero **`armature` y amortiguamiento son estimaciones

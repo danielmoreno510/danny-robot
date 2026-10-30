@@ -12,10 +12,12 @@ import pytest
 import push_biped
 import robot_spec as spec
 import walk_biped
-from biped_control import Biped, Pose, center_com_over, pelvis_height
+from biped_control import HIP_Y, Biped, Pose, center_com_over, pelvis_height
 from build_model import build_robot
-from conftest import ROOT, RecordingBiped, foot_corners, polygon_margin, record
-from helpers import E11, E13, run_walk
+from conftest import ROOT, RecordingBiped, foot_corners, load_model, polygon_margin, record
+from helpers import E11, E13, STRAIGHT, run_walk
+from leg_control import JointLimitError
+from test_disturbance import PushedWalk, one_foot
 
 KNEE = 56
 WIDTH = 0.05
@@ -57,6 +59,22 @@ def test_inertias_valid_and_joint_conventions():
         item = model.joint(f"{joint.part}_joint")
         assert np.allclose(item.axis, joint.axis)
         assert np.allclose(item.range, joint.limits)
+
+
+def test_hip_extension_is_narrower_than_the_biped_and_is_enforced():
+    model, biped_model = humanoid(), load_model()
+    for side in spec.SIDES:
+        name = f"{side}_hip_pitch"
+        assert np.allclose(model.joint(f"{name}_joint").range, (-1.5708, 0.5236))
+        assert np.allclose(model.actuator(f"{name}_motor").ctrlrange, (-1.5708, 0.5236))
+        assert np.allclose(biped_model.joint(f"{name}_joint").range, (-1.5708, 1.5708))
+
+    # Pie atrás, con la cadera a unos 35°: vale en el bípedo, no en el humanoide
+    pelvis = np.array([0.0, 0.0, pelvis_height(30)])
+    pose = Pose(pelvis, np.array([-0.2, HIP_Y, 0.06]), np.array([0.0, -HIP_Y, 0.0]))
+    assert Biped(biped_model, mujoco.MjData(biped_model)).leg_targets(pose)[2] > math.radians(30)
+    with pytest.raises(JointLimitError, match="left_hip_pitch_joint"):
+        Biped(model, mujoco.MjData(model)).leg_targets(pose)
 
 
 def test_no_false_self_contact_in_working_postures():
@@ -565,6 +583,68 @@ def test_walking_with_waist_roll(monkeypatch):
         monkeypatch, E13, 1.27, 0.25, biped_class=Rolling, model=humanoid())
     value = error if error else len(walk_biped.check_acceptance(results, saturation, walk_biped.total_weight(model), collided))
     record("humanoide.marcha_cintura_roll10.fallos", value, "informativa")
+
+
+@pytest.mark.parametrize("side", ["left", "right"])
+def test_measure_push_on_one_foot(side):
+    """Sin exigir: con el bípedo son 9 a 24 N."""
+    for name, direction in push_biped.DIRECTIONS.items():
+        value = 0
+        for force in range(1, 61):
+            if not one_foot(side, float(force), direction, humanoid):
+                break
+            value = force
+        record(f"humanoide.empujon.un_pie_{side}.{name}", value, "informativa", "N")
+
+
+@pytest.mark.parametrize("force", [2.0, 5.0, 10.0, 15.0, 20.0])
+def test_measure_push_while_walking(force, monkeypatch):
+    """Sin exigir: mismo instante y fuerzas que el bípedo, más 20 N."""
+
+    class Pushed(PushedWalk):
+        push_force = force
+        push_start = 6.0
+
+    _, results, saturation, collided, model, error = run_walk(
+        monkeypatch, STRAIGHT, 1.27, 0.25, biped_class=Pushed, model=humanoid())
+    if error:
+        record(f"humanoide.empujon.andando_{force:g}n", None, "cae")
+        return
+    failures = walk_biped.check_acceptance(results, saturation, walk_biped.total_weight(model), collided)
+    record(f"humanoide.empujon.andando_{force:g}n", len(failures), "fallos de criterio; informativa")
+
+
+def test_walking_with_the_whole_body_moving(monkeypatch):
+    """Integración: E13 con cintura, brazos y cuello moviéndose a la vez."""
+
+    class WholeBody(RecordingBiped):
+        def step(self, pose, swing):
+            t = self.data.time
+            self.held_target[YAW_PITCH] = waist_motion(t, 10, 10)
+            self.held_target[1] = math.radians(5) * math.sin(2 * math.pi * WAIST_FREQUENCY * t)
+            self.held_target[-2:] = waist_motion(t, 30, 15)
+            swing_arms(self, t, 1.0)
+            super().step(pose, swing)
+
+    biped, results, saturation, collided, model, error = run_walk(
+        monkeypatch, E13, 1.27, 0.25, biped_class=WholeBody, model=humanoid())
+    assert not error, error
+    failures = walk_biped.check_acceptance(results, saturation, walk_biped.total_weight(model), collided)
+    record("humanoide.cuerpo_completo.fallos", len(failures), "= 0")
+    record("humanoide.cuerpo_completo.incl_max", biped.arrays()["tilt"].max(), "< 5", "°")
+    assert not failures, failures[:3]
+
+
+def test_measure_mass_error_limit(monkeypatch):
+    """Sin exigir: con -10 % un pie queda a 5,1 mm de su sitio, por encima de los 5 mm."""
+    model = humanoid()
+    model.body_mass[:] *= 0.9
+    model.body_inertia[:] *= 0.9
+    mujoco.mj_setConst(model, mujoco.MjData(model))
+    _, results, saturation, collided, _, error = run_walk(monkeypatch, E13, 1.27, 0.25, model=model, nominal=humanoid())
+    assert not error, error
+    failures = walk_biped.check_acceptance(results, saturation, walk_biped.total_weight(model), collided)
+    record("humanoide.masa_menos_10.fallos", len(failures), "informativa")
 
 
 def test_generated_humanoid_matches_specification():

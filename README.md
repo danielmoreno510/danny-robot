@@ -69,16 +69,16 @@ python3.12 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 ```
 
-Comprueba que todo funciona (tarda unos 2 minutos y no abre ventanas):
+Comprueba que todo funciona (tarda unos 3 minutos y no abre ventanas):
 
 ```bash
 .venv/bin/python simulation/scripts/run_checks.py
 ```
 
-Debe terminar con `21 de 21 comprobaciones pasan`. La salida completa de cada
+Debe terminar con `27 de 27 comprobaciones pasan`. La salida completa de cada
 prueba queda en [results/](results/).
 
-La suite de validación, más completa, tarda unos 8 minutos:
+La suite de validación, más completa, tarda unos 17 minutos:
 
 ```bash
 .venv/bin/python -m pytest tests
@@ -152,7 +152,7 @@ danny-robot/
     │   ├── leg_2dof_foot.xml       E8: pierna con pie
     │   ├── leg_6dof.xml            E9: pierna didáctica de 6 GDL con pie plano
     │   ├── danny_biped.xml         E10 en adelante: generado, no editar a mano
-    │   └── danny_humanoid.xml      E18 a E22: humanoide de 31 GDL; generado, no editar a mano
+    │   └── danny_humanoid.xml      E18 a E23: humanoide de 31 GDL; generado, no editar a mano
     └── scripts/
         ├── robot_spec.py           datos del robot: medidas, masas, articulaciones
         ├── build_model.py          genera los modelos desde robot_spec.py

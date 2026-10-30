@@ -393,9 +393,12 @@ def main() -> int:
     nominal = mujoco.MjModel.from_xml_path(str(model_path))
     model.body_mass[:] *= 1.0 + args.mass_error
     model.body_inertia[:] *= 1.0 + args.mass_error
-    pelvis_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "pelvis")
-    model.body_mass[pelvis_id] *= 1.0 + args.torso_error
-    model.body_inertia[pelvis_id] *= 1.0 + args.torso_error
+    # El tronco: la pelvis en el bípedo, que lleva el torso; pelvis y torso en el humanoide
+    for name in ("pelvis", "torso"):
+        body = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, name)
+        if body >= 0:
+            model.body_mass[body] *= 1.0 + args.torso_error
+            model.body_inertia[body] *= 1.0 + args.torso_error
     mujoco.mj_setConst(model, mujoco.MjData(model))
     if args.friction is not None:
         model.geom_friction[:, 0] = args.friction
@@ -416,6 +419,7 @@ def main() -> int:
         print(f"\n=== Criterios de aceptación ===\n  FAIL: {error}")
         return 1
 
+    pelvis_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "pelvis")
     x_axis = data.xmat[pelvis_id].reshape(3, 3)[:, 0]
     print_report(results, saturation, data.xpos[pelvis_id], math.degrees(math.atan2(x_axis[1], x_axis[0])))
     print(f"  Duración total: {data.time:.1f} s")

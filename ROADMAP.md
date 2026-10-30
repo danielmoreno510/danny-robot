@@ -149,8 +149,8 @@ reproducidos sobre el cuerpo completo.
 | 3.5.5 | Manos | ✅ E20: bloque rígido de 0,16 kg, sin dedos |
 | 3.5.6 | Cabeza y cuello | ✅ E21: 30 GDL; cabeza simple, sin cara |
 | Revisión | Cuerpo completo para movimiento natural | ✅ [Revisión](documentation/whole-body-motion-review.md); E22: motor por articulación y roll de cintura, 31 GDL |
-| 3.5.7 | Integración: equilibrio y marcha con todo el cuerpo | ⏳ Siguiente |
-| 3.5.8 | Validación y documentación | ⏳ |
+| 3.5.7 | Integración: equilibrio y marcha con todo el cuerpo | ✅ E23: cuerpo moviéndose a la vez, IMU, postura guardada y sensibilidad |
+| 3.5.8 | Validación y documentación | ⏳ Siguiente |
 
 **Reglas:** descripción modular del robot, sin duplicar articulaciones, geometría ni
 control. Se conservan los experimentos anteriores para comparar. Prioridad a la física,

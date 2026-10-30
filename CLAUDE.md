@@ -22,7 +22,7 @@ python3.12 -m venv .venv
 .venv/bin/python simulation/scripts/run_checks.py
 ```
 
-Las 21 comprobaciones deben pasar antes de empezar a trabajar. Si no pasan, dilo.
+Las 27 comprobaciones deben pasar antes de empezar a trabajar. Si no pasan, dilo.
 
 ## Reglas del usuario
 
@@ -80,16 +80,16 @@ La propuesta aprobada está en `documentation/phase-3.5-proposal.md`, y la revis
 `documentation/whole-body-motion-review.md` la amplió a 31 GDL. Mide 70 cm. El
 objetivo de masa es 11 kg, con el reparto de `documentation/phase-3.5-mass-budget.md`.
 
-Hechas la etapa 3.5.6 y la revisión para movimiento natural (E22): 31 GDL, cada articulación
-con su motor en `robot_spec.py`, y curva de par-velocidad siempre activa en el humanoide.
-Armature y amortiguamiento son estimaciones. **Siguiente: 3.5.7, integración.**
+Hecha la etapa 3.5.7 (E23): 31 GDL, cada articulación con su motor en `robot_spec.py`, IMU,
+velocidades y postura `stand`. Armature y amortiguamiento son estimaciones.
+**Siguiente: 3.5.8, validación.**
 
 **Se avanza por etapas, con revisión: no implementes todo a la vez.** Después de la fase 3.5 viene la fase 4, cuyo entorno debe cumplir la
 lista del roadmap. No marques como implementados la compensación dinámica ni el
 equilibrio activo.
 
-Comprobaciones: `run_checks.py` (21, unos 2 minutos) y `python -m pytest tests` (189, unos
-8 minutos).
+Comprobaciones: `run_checks.py` (27, unos 3 minutos) y `python -m pytest tests` (238, unos
+17 minutos).
 Las pruebas de realismo miden sin exigir: que pasen no significa que el robot aguante
 ese efecto. Mira `results/phase3_metrics.json`.
 

@@ -44,6 +44,12 @@ CHECKS = [
     ("audit_torso_minus10", "walk_biped.py", [*E13_WALK, "--torso-error", "-0.1"]),
     ("audit_friction_06", "walk_biped.py", [*E13_WALK, "--friction", "0.6"]),
     ("audit_timestep_half", "walk_biped.py", [*E13_WALK, "--timestep", "0.001"]),
+    ("humanoid_audit_mass_plus10", "walk_biped.py", ["--robot", "humanoid", *E13_WALK, "--mass-error", "0.1"]),
+    ("humanoid_audit_mass_minus5", "walk_biped.py", ["--robot", "humanoid", *E13_WALK, "--mass-error", "-0.05"]),
+    ("humanoid_audit_torso_plus10", "walk_biped.py", ["--robot", "humanoid", *E13_WALK, "--torso-error", "0.1"]),
+    ("humanoid_audit_torso_minus10", "walk_biped.py", ["--robot", "humanoid", *E13_WALK, "--torso-error", "-0.1"]),
+    ("humanoid_audit_friction_06", "walk_biped.py", ["--robot", "humanoid", *E13_WALK, "--friction", "0.6"]),
+    ("humanoid_audit_timestep_half", "walk_biped.py", ["--robot", "humanoid", *E13_WALK, "--timestep", "0.001"]),
 ]
 
 

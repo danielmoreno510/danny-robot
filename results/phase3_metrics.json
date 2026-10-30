@@ -929,6 +929,16 @@
   "limit": "< 1,9",
   "unit": "N·m"
  },
+ "humanoide.cuerpo_completo.fallos": {
+  "value": 0.0,
+  "limit": "= 0",
+  "unit": ""
+ },
+ "humanoide.cuerpo_completo.incl_max": {
+  "value": 0.6187086070895268,
+  "limit": "< 5",
+  "unit": "°"
+ },
  "humanoide.e11.duracion": {
   "value": 53.57200000001951,
   "limit": "informativa",
@@ -1018,6 +1028,71 @@
   "value": 1.0616149369178483,
   "limit": "< 5",
   "unit": "mm"
+ },
+ "humanoide.empujon.andando_10n": {
+  "value": 1.0,
+  "limit": "fallos de criterio; informativa",
+  "unit": ""
+ },
+ "humanoide.empujon.andando_15n": {
+  "value": 2.0,
+  "limit": "fallos de criterio; informativa",
+  "unit": ""
+ },
+ "humanoide.empujon.andando_20n": {
+  "value": 3.0,
+  "limit": "fallos de criterio; informativa",
+  "unit": ""
+ },
+ "humanoide.empujon.andando_2n": {
+  "value": 0.0,
+  "limit": "fallos de criterio; informativa",
+  "unit": ""
+ },
+ "humanoide.empujon.andando_5n": {
+  "value": 0.0,
+  "limit": "fallos de criterio; informativa",
+  "unit": ""
+ },
+ "humanoide.empujon.un_pie_left.adelante": {
+  "value": 44.0,
+  "limit": "informativa",
+  "unit": "N"
+ },
+ "humanoide.empujon.un_pie_left.atrás": {
+  "value": 45.0,
+  "limit": "informativa",
+  "unit": "N"
+ },
+ "humanoide.empujon.un_pie_left.derecha": {
+  "value": 17.0,
+  "limit": "informativa",
+  "unit": "N"
+ },
+ "humanoide.empujon.un_pie_left.izquierda": {
+  "value": 31.0,
+  "limit": "informativa",
+  "unit": "N"
+ },
+ "humanoide.empujon.un_pie_right.adelante": {
+  "value": 44.0,
+  "limit": "informativa",
+  "unit": "N"
+ },
+ "humanoide.empujon.un_pie_right.atrás": {
+  "value": 45.0,
+  "limit": "informativa",
+  "unit": "N"
+ },
+ "humanoide.empujon.un_pie_right.derecha": {
+  "value": 31.0,
+  "limit": "informativa",
+  "unit": "N"
+ },
+ "humanoide.empujon.un_pie_right.izquierda": {
+  "value": 17.0,
+  "limit": "informativa",
+  "unit": "N"
  },
  "humanoide.empujon_adelante": {
   "value": 46.0,
@@ -1129,6 +1204,11 @@
   "limit": "11,0 ± 0,01",
   "unit": "kg"
  },
+ "humanoide.masa_menos_10.fallos": {
+  "value": 1.0,
+  "limit": "informativa",
+  "unit": ""
+ },
  "humanoide.pie_left.incl_max": {
   "value": 0.20607560918186316,
   "limit": "< 2",
@@ -1148,6 +1228,186 @@
   "value": 26.754201219706466,
   "limit": "> 15",
   "unit": "mm"
+ },
+ "humanoide.realismo.cdm_torso_10mm": {
+  "value": 8.258548850703951,
+  "limit": "11 fallos",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.cdm_torso_20mm": {
+  "value": 15.459272068495881,
+  "limit": "40 fallos",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.cdm_torso_5mm": {
+  "value": 4.909483802278461,
+  "limit": "pasa",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.contacto_blando_x0.5": {
+  "value": 1.6941180184402753,
+  "limit": "pasa",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.contacto_blando_x2.0": {
+  "value": 2.601964603509227,
+  "limit": "57 fallos",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.contacto_blando_x5.0": {
+  "value": null,
+  "limit": "cae",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.control_100hz": {
+  "value": 1.3137646898465802,
+  "limit": "pasa",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.control_125hz": {
+  "value": 1.2282822117054994,
+  "limit": "pasa",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.control_250hz": {
+  "value": 1.1121773541650237,
+  "limit": "pasa",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.control_25hz": {
+  "value": 2.5406062482487113,
+  "limit": "3 fallos",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.control_500hz": {
+  "value": 1.0616149369178483,
+  "limit": "pasa",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.control_50hz": {
+  "value": 1.7634902470771485,
+  "limit": "pasa",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.friccion_articular_0.05nm": {
+  "value": 0.7102271480662351,
+  "limit": "pasa",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.friccion_articular_0.2nm": {
+  "value": 0.7995700588087834,
+  "limit": "pasa",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.friccion_articular_0.5nm": {
+  "value": 1.6857284031649493,
+  "limit": "pasa",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.friccion_articular_1.0nm": {
+  "value": 4.902189943281669,
+  "limit": "1 fallos",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.friccion_suelo_0.3": {
+  "value": 1.2597598901161413,
+  "limit": "pasa",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.friccion_suelo_0.6": {
+  "value": 1.6138353343690794,
+  "limit": "pasa",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.friccion_suelo_1.5": {
+  "value": 1.787883639948471,
+  "limit": "38 fallos",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.lag_motor_10ms": {
+  "value": 0.9737285299324593,
+  "limit": "pasa",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.lag_motor_20ms": {
+  "value": 0.8997673719755431,
+  "limit": "3 fallos",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.lag_motor_2ms": {
+  "value": 1.039299116242621,
+  "limit": "pasa",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.lag_motor_5ms": {
+  "value": 1.0183016367010165,
+  "limit": "pasa",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.retardo_10ms": {
+  "value": 0.9955682983548975,
+  "limit": "pasa",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.retardo_20ms": {
+  "value": 0.9220735242149238,
+  "limit": "3 fallos",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.retardo_2ms": {
+  "value": 1.0417825722891199,
+  "limit": "pasa",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.retardo_4ms": {
+  "value": 1.0306664092534512,
+  "limit": "pasa",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.retardo_6ms": {
+  "value": 1.0175645027486393,
+  "limit": "pasa",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.ruido_encoder_0.05deg": {
+  "value": 1.3254932494332563,
+  "limit": "pasa",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.ruido_encoder_0.1deg": {
+  "value": 1.7013250286985402,
+  "limit": "pasa",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.ruido_encoder_0.5deg": {
+  "value": 7.724579880592165,
+  "limit": "24 fallos",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.ruido_encoder_1.0deg": {
+  "value": 19.182706670518357,
+  "limit": "67 fallos",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.suelo_0.1deg": {
+  "value": 3.648736143419933,
+  "limit": "pasa",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.suelo_0.25deg": {
+  "value": 7.883243296022222,
+  "limit": "14 fallos",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.suelo_0.5deg": {
+  "value": 14.811550237534039,
+  "limit": "39 fallos",
+  "unit": "mm (pie fuera de sitio)"
+ },
+ "humanoide.realismo.suelo_1.0deg": {
+  "value": 28.319306728839255,
+  "limit": "69 fallos",
+  "unit": "mm (pie fuera de sitio)"
  },
  "marcha.barrido_x0.7.duracion": {
   "value": 44.41200000000831,
@@ -1569,6 +1829,11 @@
   "limit": "0,002 (500 Hz)",
   "unit": "s"
  },
+ "preparacion.acelerometro_en_reposo": {
+  "value": 9.810029030410455,
+  "limit": "9,81 ± 0,2",
+  "unit": "m/s²"
+ },
  "preparacion.error_peso_pies": {
   "value": 2.1744270828349954e-07,
   "limit": "< 1",
@@ -1578,6 +1843,16 @@
   "value": 31.0,
   "limit": "= 31",
   "unit": ""
+ },
+ "preparacion.reposo.bajada_pelvis": {
+  "value": 1.4820837059290604,
+  "limit": "< 20",
+  "unit": "mm"
+ },
+ "preparacion.reposo.incl_max": {
+  "value": 1.6930395225414936,
+  "limit": "< 5",
+  "unit": "°"
  },
  "preparacion.sobrepaso_tope": {
   "value": 2.7169269761627137,
@@ -1786,7 +2061,7 @@
  },
  "software.run_checks": {
   "value": 0.0,
-  "limit": "0: 21 de 21 comprobaciones pasan. Detalle en results/.",
+  "limit": "0: 27 de 27 comprobaciones pasan. Detalle en results/.",
   "unit": ""
  }
 }

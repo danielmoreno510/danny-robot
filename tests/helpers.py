@@ -8,8 +8,9 @@ import numpy as np
 import push_biped
 import walk_biped
 from biped_control import joint_targets
-from build_model import build_biped
+from build_model import build_robot
 from conftest import RecordingBiped, load_model
+from robot_spec import BIPED
 
 E13 = walk_biped.Gait(56, 0.08, 0.05, 0.012, 45)
 STRAIGHT = walk_biped.Gait(56, 0.08, 0.05, 0.012, 0)
@@ -35,11 +36,11 @@ class RealisticBiped(RecordingBiped):
     def set_pose(self, data, pose):
         super().set_pose(data, pose)
         if data is self.data and self.model.na:
-            data.act[:] = joint_targets(pose)  # el filtro del motor arranca en la postura
+            data.act[:] = np.concatenate([joint_targets(pose), self.held_target])  # el filtro arranca en la postura
 
     def step_targets(self, pose, swing):
         if self.held is None or self.counter % self.control_period == 0:
-            target = joint_targets(pose)
+            target = np.concatenate([joint_targets(pose), self.held_target])
             velocity = np.zeros_like(target)
             if self.last_target is not None:
                 velocity = (target - self.last_target) / (self.control_period * self.model.opt.timestep)
@@ -91,8 +92,8 @@ def run_push(monkeypatch, direction, force, biped_class=RecordingBiped):
     return instances[-1], trial, model
 
 
-def model_with_motor_lag(time_constant: float) -> mujoco.MjModel:
-    spec = build_biped()
+def model_with_motor_lag(time_constant: float, robot=BIPED) -> mujoco.MjModel:
+    spec = build_robot(robot)
     for motor in spec.actuators:
         motor.dyntype = mujoco.mjtDyn.mjDYN_FILTEREXACT
         motor.dynprm[0] = time_constant
