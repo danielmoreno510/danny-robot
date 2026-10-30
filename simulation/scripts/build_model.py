@@ -87,7 +87,7 @@ def add_leg(pelvis, robot: spec.Robot, side: str) -> None:
 
 
 def add_arm(torso, robot: spec.Robot, side: str) -> None:
-    """Hombro, brazo, antebrazo y muñeca: 7 GDL. La mano es aún un lastre."""
+    """Hombro, brazo, antebrazo y muñeca: 7 GDL. La mano es un bloque rígido."""
     sign = 1 if side == "left" else -1
     pitch, roll, yaw, elbow, *wrist = spec.ARM_JOINTS
 
@@ -111,9 +111,10 @@ def add_arm(torso, robot: spec.Robot, side: str) -> None:
     hand = forearm.add_body(name=f"{side}_hand", pos=(0, 0, -spec.FOREARM_LENGTH))
     for joint in wrist:
         add(hand, joint)
-    hand.add_geom(name=f"{side}_hand_ballast", type=mujoco.mjtGeom.mjGEOM_SPHERE, pos=(0, 0, -spec.HAND_BALLAST_RADIUS),
-                  size=(spec.HAND_BALLAST_RADIUS, 0, 0), mass=robot.hand_ballast, rgba=GHOST, contype=0, conaffinity=0)
+    hand.add_geom(name=f"{side}_hand_geom", type=mujoco.mjtGeom.mjGEOM_BOX, pos=(0, 0, -spec.HAND_HALF[2]),
+                  size=spec.HAND_HALF, mass=robot.hand_mass, rgba=ORANGE)
     hand.add_site(name=f"{side}_wrist_site", size=SITE_SIZE, rgba=INVISIBLE)
+    hand.add_site(name=f"{side}_fingertip_site", pos=(0, 0, -2 * spec.HAND_HALF[2]), size=SITE_SIZE, rgba=INVISIBLE)
 
 
 def add_motor(model, name: str, joint: spec.Joint, kv: float) -> None:

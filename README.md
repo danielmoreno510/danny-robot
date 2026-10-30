@@ -19,8 +19,8 @@ paso es el humanoide completo.
 - Camina en marcha estática: pasos de 8 cm y giros, con cada pie a menos de 1 mm
   de donde se planificó.
 - Aguanta empujones de 24 a 32 N durante 0,1 s sin dar un paso, de forma pasiva.
-- El humanoide en construcción (11 kg, con cintura y brazos de 7 GDL; manos y cabeza son
-  aún lastres) repite el equilibrio y la marcha, con los brazos en postura fija y también
+- El humanoide en construcción (11 kg, con cintura, brazos de 7 GDL y manos rígidas; la
+  cabeza es aún un lastre) repite el equilibrio y la marcha, con los brazos en postura fija y también
   con la cintura moviéndose.
 - Sigue caminando aunque sus masas difieran un ±10 % de las que cree tener.
 
@@ -144,7 +144,7 @@ danny-robot/
     │   ├── leg_2dof_foot.xml       E8: pierna con pie
     │   ├── leg_6dof.xml            E9: pierna didáctica de 6 GDL con pie plano
     │   ├── danny_biped.xml         E10 en adelante: generado, no editar a mano
-    │   └── danny_humanoid.xml      E18 y E19: torso, cintura y brazos; generado, no editar a mano
+    │   └── danny_humanoid.xml      E18 a E20: torso, cintura, brazos y manos; generado, no editar a mano
     └── scripts/
         ├── robot_spec.py           datos del robot: medidas, masas, articulaciones
         ├── build_model.py          genera los modelos desde robot_spec.py

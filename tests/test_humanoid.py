@@ -1,5 +1,5 @@
 """
-Etapas 3.5.3 y 3.5.4: humanoide con torso, cintura y brazos, con lastres en lugar de manos y cabeza.
+Etapas 3.5.3 a 3.5.5: humanoide con torso, cintura, brazos y manos, con un lastre en lugar de la cabeza.
 Mismos límites que el bípedo. Mide estados reales; la cintura también se mueve.
 """
 
@@ -20,6 +20,7 @@ from helpers import E11, E13, run_walk
 KNEE = 56
 WIDTH = 0.05
 WAIST_FREQUENCY = 0.25  # Hz
+HAND_LOAD = 0.3  # kg, en el presupuesto de masa
 
 
 def humanoid():
@@ -217,6 +218,37 @@ def arm_pose(model, data, side="left", **angles):
     mujoco.mj_forward(model, data)
 
 
+def test_hand_is_a_rigid_block_with_the_expected_inertia():
+    model = humanoid()
+    a, b, c = (2 * half for half in spec.HAND_HALF)
+    mass = spec.HUMANOID.hand_mass
+    expected = sorted(mass / 12 * np.array([b**2 + c**2, a**2 + c**2, a**2 + b**2]))
+    for side in spec.SIDES:
+        body = model.body(f"{side}_hand")
+        assert abs(body.mass[0] - mass) < 1e-9
+        assert np.allclose(sorted(body.inertia), expected, rtol=0.01)
+        assert model.geom(f"{side}_hand_geom").contype[0] == 1
+
+
+@pytest.mark.parametrize("side", ["left", "right"])
+def test_fingertip_reach(side):
+    model = humanoid()
+    data = mujoco.MjData(model)
+    arm_pose(model, data, side, shoulder_pitch=-1.5708)
+    tip = data.site_xpos[model.site(f"{side}_fingertip_site").id] - data.xpos[model.body(f"{side}_shoulder").id]
+    record(f"humanoide.mano_{side}.alcance", np.linalg.norm(tip), "0,30 ± 0,001", "m")
+    assert abs(np.linalg.norm(tip) - 0.30) < 0.001
+
+
+def test_hand_reaches_the_torso_and_collides():
+    """Doblar el brazo lleva la mano al torso, y ese contacto se detecta."""
+    model = humanoid()
+    data = mujoco.MjData(model)
+    arm_pose(model, data, shoulder_pitch=0.4, shoulder_roll=0.7, shoulder_yaw=-0.54, elbow=2.3)
+    pairs = [{model.geom(int(c.geom1)).name, model.geom(int(c.geom2)).name} for c in data.contact[: data.ncon]]
+    assert {"left_hand_geom", "torso_geom"} in pairs, pairs
+
+
 def test_arm_joints_follow_the_approved_ranges():
     model = humanoid()
     assert model.nu == 28
@@ -253,17 +285,23 @@ def test_seven_axes_keep_the_hand_still_while_the_elbow_moves():
     assert np.linalg.matrix_rank(jacobian) == 6
 
 
-def test_holding_the_arm_out_is_within_catalog_torque():
+@pytest.mark.parametrize("load", [0.0, HAND_LOAD])
+def test_holding_the_arm_out_is_within_catalog_torque(load):
+    """Brazo horizontal, sin carga y con carga en la punta de la mano."""
     model = humanoid()
     data = mujoco.MjData(model)
     arm_pose(model, data, shoulder_pitch=-1.5708)
     data.qacc[:] = 0.0
     mujoco.mj_inverse(model, data)
+    tip = data.site_xpos[model.site("left_fingertip_site").id]
+    jacobian = np.zeros((3, model.nv))
+    mujoco.mj_jac(model, data, jacobian, None, tip, model.body("left_hand").id)
+    torque = data.qfrc_inverse + jacobian[2] * load * spec.GRAVITY
     # Pico de catálogo: XM540, XM430 y STS3215 (documentation/phase-3.5-mass-budget.md)
     for part, catalog in (("shoulder_pitch", 7.3), ("elbow", 4.1), ("wrist_pitch", 1.9)):
-        torque = abs(data.qfrc_inverse[model.joint(f"left_{part}_joint").dofadr[0]])
-        record(f"humanoide.brazo.par_{part}", torque, f"< {catalog}", "N·m")
-        assert torque < catalog
+        value = abs(torque[model.joint(f"left_{part}_joint").dofadr[0]])
+        record(f"humanoide.brazo.par_{part}_carga_{load:g}", value, f"< {catalog}", "N·m")
+        assert value < catalog
 
 
 def test_arm_sweep_finds_only_real_collisions():
@@ -280,7 +318,7 @@ def test_arm_sweep_finds_only_real_collisions():
         mujoco.mj_forward(model, data)
         pairs = [{model.geom(int(c.geom1)).name, model.geom(int(c.geom2)).name} for c in data.contact[: data.ncon]]
         for pair in pairs:
-            assert len(pair & body) == 1 and any(name.startswith("left_") for name in pair - body), pair
+            assert any(name.startswith("left_") for name in pair - body), pair
         hits += bool(pairs)
     record("humanoide.brazo.posturas_con_choque", 100 * hits / trials, "informativa", "%")
     assert 0 < hits < trials

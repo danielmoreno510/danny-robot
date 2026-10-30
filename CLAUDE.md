@@ -69,14 +69,15 @@ Fase 3 en **CONDITIONAL PASS**, revisada y aceptada por el usuario. Limitaciones
 La propuesta aprobada está en `documentation/phase-3.5-proposal.md`: 30 GDL y 70 cm. El
 objetivo de masa es 11 kg, con el reparto de `documentation/phase-3.5-mass-budget.md`.
 
-Hecha la etapa 3.5.4 (`danny_humanoid.xml`: torso, cintura y brazos de 7 GDL en postura
-fija, con lastres en lugar de manos y cabeza). **Siguiente: 3.5.5, manos.**
+Hecha la etapa 3.5.5 (`danny_humanoid.xml`: torso, cintura, brazos de 7 GDL en postura
+fija y manos rígidas, con un lastre en lugar de la cabeza). **Siguiente: 3.5.6, cabeza y
+cuello.**
 
 **Se avanza por etapas, con revisión: no implementes todo a la vez.** Después de la fase 3.5 viene la fase 4, cuyo entorno debe cumplir la
 lista del roadmap. No marques como implementados la compensación dinámica ni el
 equilibrio activo.
 
-Comprobaciones: `run_checks.py` (21, unos 2 minutos) y `python -m pytest tests` (156, unos
+Comprobaciones: `run_checks.py` (21, unos 2 minutos) y `python -m pytest tests` (161, unos
 8 minutos).
 Las pruebas de realismo miden sin exigir: que pasen no significa que el robot aguante
 ese efecto. Mira `results/phase3_metrics.json`.

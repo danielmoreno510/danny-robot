@@ -992,6 +992,39 @@ cargas. E12 no se ha repetido con la espera original de 0,25 s.
 
 **Resultado:** 156 pruebas y 21 comprobaciones pasan. Las métricas del bípedo no cambian.
 
+### Experimento 20 — Manos rígidas
+
+**Etapa 3.5.5.** El lastre de la mano pasa a ser una pieza: un bloque rígido de 3 × 5 × 5
+cm y 0,16 kg, sin dedos, con colisión y un punto en la punta (`fingertip_site`). La masa
+total no cambia.
+
+**Criterio, fijado antes de construir:**
+
+| Comprobación | Límite | Medido |
+|---|---|---|
+| Masa total | 11,0 ± 0,01 kg | 11,004 kg |
+| Inercia del bloque frente a la fórmula | 1 % | dentro |
+| Punta de la mano a hombro, brazo estirado | 30 cm | 30 cm |
+| Contacto en la postura fija y en todo el rango de la cintura | ninguno | ninguno |
+| Contacto real mano-torso con el brazo doblado | se detecta | se detecta |
+
+**Carga.** Con 0,3 kg en la punta de la mano y el brazo horizontal:
+
+| Articulación | Presupuesto (etapa 3.5.1) | Medido | Pico de catálogo |
+|---|---|---|---|
+| Hombro | 1,8 N·m | 1,75 N·m | 7,3 N·m |
+| Codo | 0,8 N·m | 0,80 N·m | 4,1 N·m |
+| Muñeca | 0,2 N·m | 0,19 N·m | 1,9 N·m |
+
+El cálculo a mano del presupuesto queda confirmado. Es un par estático: mover la carga
+pedirá más.
+
+**Marcha y empujones.** Sin cambios respecto a E19: E11 a E13 sin fallos, y 48, 49 y 59 N
+de máximo. Es lo esperable, porque la masa es la misma y solo cambia su forma. Con el
+bloque, el 9,4 % de las posturas al azar del brazo choca, frente al 8,5 % anterior.
+
+**Sin probar:** agarrar objetos. La carga es una fuerza calculada, no un objeto simulado.
+
 ---
 
 ## 3. La pierna de 2 GDL en detalle

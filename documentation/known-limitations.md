@@ -66,9 +66,10 @@ retardos, incumple.
 
 ## Humanoide en construcción
 
-`danny_humanoid.xml` (11 kg, 28 GDL), tras la etapa 3.5.4:
+`danny_humanoid.xml` (11 kg, 28 GDL), tras la etapa 3.5.5:
 
-- Manos y cabeza son lastres fijos, sin colisión. Los experimentos de sensibilidad no se
+- La cabeza es un lastre fijo, sin colisión, y las manos son bloques rígidos sin dedos.
+  Los experimentos de sensibilidad no se
   han repetido con este modelo.
 - Los brazos solo se han probado en postura fija: moverlos al andar no está medido.
 - Los motores de brazos y cintura tienen `kp` de 100 N·m/rad y ±20 N·m como los de las

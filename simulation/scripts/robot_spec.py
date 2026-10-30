@@ -107,7 +107,7 @@ SHOULDER_RADIUS = 0.035
 UPPER_ARM_LENGTH = 0.13
 FOREARM_LENGTH = 0.12
 ARM_RADIUS = 0.02
-HAND_BALLAST_RADIUS = 0.025
+HAND_HALF = (0.015, 0.025, 0.025)  # espesor, ancho y largo: rígida, sin dedos
 HEAD_BALLAST_RADIUS = 0.045
 HEAD_BALLAST_OFFSET = 0.205
 
@@ -117,7 +117,7 @@ class Robot:
     """
     Una configuración del robot. Las masas del humanoide son las del presupuesto de
     documentation/phase-3.5-mass-budget.md, con el margen de 0,31 kg en el torso.
-    Los lastres ocupan el lugar de manos y cabeza hasta que existan esas piezas.
+    El lastre ocupa el lugar de la cabeza hasta que exista esa pieza.
     """
 
     file: str
@@ -131,7 +131,7 @@ class Robot:
     shoulder_mass: float = 0.0
     upper_arm_mass: float = 0.0
     forearm_mass: float = 0.0
-    hand_ballast: float = 0.0
+    hand_mass: float = 0.0
     head_ballast: float = 0.0
     waist_kv: dict[str, float] | None = None
     arm_kv: dict[str, float] | None = None
@@ -167,7 +167,7 @@ HUMANOID = Robot(
     shoulder_mass=0.215,
     upper_arm_mass=0.347,
     forearm_mass=0.115,
-    hand_ballast=0.16,
+    hand_mass=0.16,
     head_ballast=0.39,
     waist_kv={"waist_yaw": 3.74, "waist_pitch": 4.19},
     arm_kv={"shoulder_pitch": 2.67, "shoulder_roll": 2.67, "shoulder_yaw": 1.65, "elbow": 1.9,
