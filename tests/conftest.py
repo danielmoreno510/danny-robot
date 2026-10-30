@@ -17,9 +17,10 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "simulation" / "scripts"))
 
-from biped_control import FOOT_HALF, JOINTS, POSITION_SENSORS, SIDES, Biped, rotation_z  # noqa: E402
+from biped_control import FOOT_HALF, JOINTS, SIDES, Biped, rotation_z  # noqa: E402
+from robot_spec import POSITION_SENSORS  # noqa: E402
 
-MODEL_PATH = ROOT / "simulation" / "models" / "danny.xml"
+MODEL_PATH = ROOT / "simulation" / "models" / "danny_biped.xml"
 METRICS_PATH = ROOT / "results" / "phase3_metrics.json"
 _metrics: dict[str, dict] = {}
 

@@ -1,4 +1,4 @@
-MuJoCo 3.17.0 | modelo: danny.xml | empujón de 0.1 s
+MuJoCo 3.17.0 | modelo: danny_biped.xml | empujón de 0.1 s
 
 Dirección  | máximo medido | límite definido | incl. pico | pies movidos
   adelante |  26.0 N       |  24.0 N         |   9.3°     |   0.8 mm

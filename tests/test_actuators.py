@@ -9,9 +9,11 @@ import mujoco
 import numpy as np
 import pytest
 
-from biped_control import ACTUATORS, JOINT_PARTS, JOINTS, SIDES
-from conftest import MODEL_PATH, load_model, record
+from biped_control import ACTUATORS, JOINTS, SIDES
+from build_model import build_biped
+from conftest import load_model, record
 from leg_control import GravityCompensator
+from robot_spec import JOINT_PARTS
 
 STEP_DEG = 10.0
 MIDPOINT = {"hip_yaw": 0, "hip_roll": 0, "hip_pitch": 0, "knee": 40, "ankle_pitch": 0, "ankle_roll": 0}
@@ -19,9 +21,10 @@ MIDPOINT = {"hip_yaw": 0, "hip_roll": 0, "hip_pitch": 0, "knee": 40, "ankle_pitc
 
 class Rig:
     def __init__(self):
-        text = MODEL_PATH.read_text().replace('<freejoint name="pelvis_free"/>', "")
-        text = text.replace('<body name="pelvis" pos="0 0 0.4">', '<body name="pelvis" pos="0 0 0.8">')
-        self.model = mujoco.MjModel.from_xml_string(text)
+        spec = build_biped()
+        spec.delete(spec.joint("pelvis_free"))
+        spec.body("pelvis").pos = (0, 0, 0.8)
+        self.model = spec.compile()
         self.data = mujoco.MjData(self.model)
         m = self.model
         self.act = [m.actuator(n).id for n in ACTUATORS]

@@ -46,6 +46,8 @@ Las 16 comprobaciones deben pasar antes de empezar a trabajar. Si no pasan, dilo
   instante. Si un arreglo no explica el fallo, no se deja.
 - **Decir lo que no se ha comprobado**, y documentar también lo que falla.
 - Unidades SI; ejes REP-103; detalle en el handbook, sección 1.
+- **`danny_biped.xml` no se edita a mano.** Cambia `robot_spec.py` y ejecuta
+  `build_model.py`. Una prueba comprueba que coinciden.
 
 Las cifras de la documentación salen siempre de `results/`, nunca de memoria.
 
@@ -64,14 +66,16 @@ ventana no se ha abierto.
 
 Fase 3 en **CONDITIONAL PASS**, revisada y aceptada por el usuario. Limitaciones en
 `documentation/known-limitations.md`. **Actual: fase 3.5, humanoide completo.**
-La propuesta aprobada está en `documentation/phase-3.5-proposal.md`: 30 GDL, 70 cm, 10
-kg provisionales. Siguen las etapas 3.5.1 (masa con motores de catálogo) y 3.5.2.
+La propuesta aprobada está en `documentation/phase-3.5-proposal.md`: 30 GDL y 70 cm. El
+objetivo de masa es 11 kg, con el reparto de `documentation/phase-3.5-mass-budget.md`.
+
+Hecha la etapa 3.5.2. **Siguiente: 3.5.3, torso y cintura.**
 
 **Se avanza por etapas, con revisión: no implementes todo a la vez.** Después de la fase 3.5 viene la fase 4, cuyo entorno debe cumplir la
 lista del roadmap. No marques como implementados la compensación dinámica ni el
 equilibrio activo.
 
-Comprobaciones: `run_checks.py` (16) y `python -m pytest tests` (124, unos 5 minutos).
+Comprobaciones: `run_checks.py` (16) y `python -m pytest tests` (126, unos 5 minutos).
 Las pruebas de realismo miden sin exigir: que pasen no significa que el robot aguante
 ese efecto. Mira `results/phase3_metrics.json`.
 
@@ -82,8 +86,8 @@ ese efecto. Mira `results/phase3_metrics.json`.
 
 **Decisiones ya tomadas:**
 
-- Danny mide 70 cm y pesa 8 kg, con torso provisional (`danny.xml`), hasta la
-  etapa 31.
+- El bípedo actual (`danny_biped.xml`) mide 70 cm y pesa 8 kg, con torso provisional. El
+  humanoide completo tendrá 11 kg, provisionales hasta la etapa 31.
 - El paso de recuperación no funcionó con control clásico: el robot salta en vez
   de dar un paso. Se pasó a la etapa 26. El código está en el commit `6c083cc`.
 - La marcha usa compensación estática. La dinámica se probó (E15) y se eliminó: no

@@ -8,7 +8,8 @@ import numpy as np
 import push_biped
 import walk_biped
 from biped_control import joint_targets
-from conftest import MODEL_PATH, RecordingBiped, load_model
+from build_model import build_biped
+from conftest import RecordingBiped, load_model
 
 E13 = walk_biped.Gait(56, 0.08, 0.05, 0.012, 45)
 STRAIGHT = walk_biped.Gait(56, 0.08, 0.05, 0.012, 0)
@@ -91,5 +92,8 @@ def run_push(monkeypatch, direction, force, biped_class=RecordingBiped):
 
 
 def model_with_motor_lag(time_constant: float) -> mujoco.MjModel:
-    text = MODEL_PATH.read_text().replace('forcerange="-20 20"', f'forcerange="-20 20"\n      timeconst="{time_constant}"')
-    return mujoco.MjModel.from_xml_string(text)
+    spec = build_biped()
+    for motor in spec.actuators:
+        motor.dyntype = mujoco.mjtDyn.mjDYN_FILTEREXACT
+        motor.dynprm[0] = time_constant
+    return spec.compile()

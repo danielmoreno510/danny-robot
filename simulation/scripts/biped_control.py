@@ -1,5 +1,5 @@
 """
-Danny - Utilidades del bípedo (danny.xml), compartidas por los experimentos 10 y 11.
+Danny - Utilidades del bípedo (danny_biped.xml), compartidas por los experimentos 10 y 11.
 
   - Pose: dónde están la pelvis y las plantas de los pies (espacio de tareas).
   - joint_targets: IK de las dos piernas para una Pose.
@@ -17,33 +17,24 @@ from dataclasses import dataclass, replace
 import mujoco
 import numpy as np
 
+import robot_spec as spec
 from leg_control import StanceCompensator, check_joint_limits, get_id, leg_ik, read_sensors
+from robot_spec import (
+    ACTUATORS,
+    HIP_BELOW_PELVIS,
+    HIP_Y,
+    JOINT_LIMITS,
+    JOINTS,
+    LEG_LENGTH,
+    SHIN_LENGTH,
+    SIDES,
+    SOLE_BELOW_ANKLE,
+    THIGH_LENGTH,
+    TORQUE_SENSORS,
+)
 
 
-SIDES = ("left", "right")
-JOINT_PARTS = ("hip_yaw", "hip_roll", "hip_pitch", "knee", "ankle_pitch", "ankle_roll")
-JOINTS = tuple(f"{side}_{p}_joint" for side in SIDES for p in JOINT_PARTS)
-ACTUATORS = tuple(f"{side}_{p}_motor" for side in SIDES for p in JOINT_PARTS)
-POSITION_SENSORS = tuple(f"{side}_{p}_pos" for side in SIDES for p in JOINT_PARTS)
-TORQUE_SENSORS = tuple(f"{side}_{p}_torque" for side in SIDES for p in JOINT_PARTS)
-
-THIGH_LENGTH = 0.16  # m
-SHIN_LENGTH = 0.16  # m
-LEG_LENGTH = THIGH_LENGTH + SHIN_LENGTH
-HIP_Y = 0.07  # m, caderas en y = ±0.07
-HIP_BELOW_PELVIS = 0.05  # m
-SOLE_BELOW_ANKLE = 0.04  # m
-LEG_JOINT_LIMITS = np.array([  # rad, como en danny.xml; una prueba lo vigila
-    [-0.6981, 0.6981],  # hip_yaw
-    [-0.5236, 0.5236],  # hip_roll
-    [-1.5708, 1.5708],  # hip_pitch
-    [0.0, 2.2689],  # knee
-    [-1.1345, 0.7854],  # ankle_pitch
-    [-0.5236, 0.5236],  # ankle_roll
-])
-JOINT_LIMITS = np.vstack([LEG_JOINT_LIMITS, LEG_JOINT_LIMITS])
-FOOT_HALF = np.array([0.07, 0.04])  # m, medio largo y medio ancho de la planta
-
+FOOT_HALF = np.array(spec.FOOT_HALF[:2])  # m, medio largo y medio ancho de la planta
 LOADED_FOOT_FORCE = 10.0  # N, a partir de aquí el pie se considera cargado
 FALL_TILT_DEG = 30.0  # a partir de aquí se considera caído
 

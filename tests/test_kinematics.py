@@ -9,9 +9,10 @@ import mujoco
 import numpy as np
 import pytest
 
-from biped_control import HIP_Y, JOINT_LIMITS, JOINT_PARTS, JOINTS, Biped, Pose, joint_targets, rotation_z
+from biped_control import HIP_Y, JOINT_LIMITS, JOINTS, Biped, Pose, joint_targets, rotation_z
 from conftest import load_model, record
 from leg_control import JointLimitError, UnreachableTargetError, leg_ik
+from robot_spec import JOINT_PARTS
 
 THIGH, SHIN, HIP_DROP, SOLE = 0.16, 0.16, 0.05, 0.04
 SEED = 2026

@@ -22,7 +22,7 @@ from leg_control import leg_ik
 
 ROOT = Path(__file__).resolve().parents[1]
 LEG_MODEL = ROOT / "models" / "leg_6dof.xml"
-BIPED_MODEL = ROOT / "models" / "danny.xml"
+BIPED_MODEL = ROOT / "models" / "danny_biped.xml"
 
 LEG_JOINTS = ("hip_yaw", "hip_roll", "hip_pitch", "knee", "ankle_pitch", "ankle_roll")
 

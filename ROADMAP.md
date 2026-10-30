@@ -80,7 +80,7 @@ reproducibles. Al terminar se hace una auditoría técnica.
 | Etapa | Actividad | Estado | Experimentos |
 |---|---|---|---|
 | 12 | Construir el modelo completo de dos piernas | ✅ | E10, E16 |
-| 13 | Configurar masas, inercias, articulaciones y contactos | ✅ | E16: `danny.xml`, provisional hasta la etapa 31 |
+| 13 | Configurar masas, inercias, articulaciones y contactos | ✅ | E16: `danny_biped.xml`, provisional hasta la etapa 31 |
 | 14 | Mantener el equilibrio sobre ambos pies | ✅ | E10 |
 | 15 | Transferir el peso entre las piernas | ✅ | E10, E11 |
 | 16 | Mantener el equilibrio sobre un solo pie | ✅ | E10, E11 |
@@ -133,14 +133,14 @@ reproducidos sobre el cuerpo completo.
 |---|---|
 | `leg_ik` informa de objetivos inalcanzables y fuera de rango | ✅ |
 | Autocolisión entre piernas y con el torso | ✅ |
-| Regresión de equilibrio y marcha | ✅ 124 pruebas |
+| Regresión de equilibrio y marcha | ✅ |
 | Documentar los límites actuales | ✅ [known-limitations.md](documentation/known-limitations.md) |
 
 | Etapa | Actividad | Estado |
 |---|---|---|
-| 3.5.1 | Especificaciones del humanoide y presupuesto de masa | 🟡 Especificación aprobada; falta contrastar la masa con motores de catálogo |
-| 3.5.2 | Generar el modelo desde una especificación única | ⏳ Siguiente |
-| 3.5.3 | Torso y cintura | ⏳ |
+| 3.5.1 | Especificaciones del humanoide y presupuesto de masa | ✅ [Presupuesto](documentation/phase-3.5-mass-budget.md): objetivo 11 kg |
+| 3.5.2 | Generar el modelo desde una especificación única | ✅ `robot_spec.py`, `build_model.py`; modelo idéntico al anterior |
+| 3.5.3 | Torso y cintura | ⏳ Siguiente |
 | 3.5.4 | Brazos | ⏳ |
 | 3.5.5 | Manos | ⏳ |
 | 3.5.6 | Cabeza y cuello | ⏳ |

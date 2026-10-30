@@ -24,7 +24,7 @@ from biped_control import Biped, Pose, center_com_over, pelvis_height
 
 
 ROOT = Path(__file__).resolve().parents[1]
-MODEL_PATH = ROOT / "models" / "danny.xml"
+MODEL_PATH = ROOT / "models" / "danny_biped.xml"
 
 STAND_KNEE_DEG = 56.0
 FOOT_Y = 0.05  # m, distancia de cada pie al centro

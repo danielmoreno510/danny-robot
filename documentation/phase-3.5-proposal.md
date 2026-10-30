@@ -4,6 +4,10 @@
 documento. Todas las cifras son preliminares: son estimaciones de diseño, no
 resultados de simulación.
 
+**Actualización:** el [presupuesto con motores de catálogo](phase-3.5-mass-budget.md) dio
+10,7 kg y otro reparto de masa, y el objetivo pasó a **11 kg**. Ese documento sustituye a
+la sección 4 de esta propuesta.
+
 ## 1. Objetivo y por qué
 
 Construir el Danny completo en simulación antes de entrenar la locomoción principal.
@@ -157,9 +161,10 @@ Son estimaciones sin validar. Los pares de brazos se fijarán midiendo en simula
 **Generar el modelo desde una sola especificación.** Con 30 articulaciones y dos lados,
 copiar XML a mano duplica definiciones. Propongo:
 
-- `simulation/robot_spec.py`: dimensiones, masas, rangos y actuadores, en un solo sitio.
-- `simulation/build_model.py`: construye el modelo con `MjSpec`, la API de MuJoCo, y
-  refleja izquierda y derecha desde una única descripción.
+- `simulation/scripts/robot_spec.py`: dimensiones, masas, rangos y actuadores, en un
+  solo sitio.
+- `simulation/scripts/build_model.py`: construye el modelo con `MjSpec`, la API de
+  MuJoCo, y refleja izquierda y derecha desde una única descripción.
 - `simulation/models/danny_humanoid.xml`: el resultado, versionado y revisable.
 - Una prueba comprueba que el XML versionado coincide con lo que genera la
   especificación.
@@ -221,7 +226,7 @@ de terminación bien definidas.
 
 ## 10. Decisiones aprobadas
 
-1. **Masa:** 10 kg como objetivo provisional.
+1. **Masa:** 10 kg como objetivo provisional; después 11 kg, tras el presupuesto.
 2. **Brazos:** 7 GDL, 30 en total.
 3. **Cintura:** 2 ejes, yaw y pitch.
 4. **Orden:** se añade la etapa 3.5.2.

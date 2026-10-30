@@ -1,6 +1,6 @@
 # Limitaciones conocidas
 
-Estado actual del robot Danny (modelo `danny.xml`, 70 cm, 8 kg, 12 GDL). Las cifras
+Estado actual del robot Danny (modelo `danny_biped.xml`, 70 cm, 8 kg, 12 GDL). Las cifras
 salen de `results/phase3_metrics.json`, y el detalle está en la
 [validación de la fase 3](phase-3-validation.md). Este documento se mantiene al día.
 

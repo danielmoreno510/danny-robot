@@ -7,11 +7,12 @@ import sys
 import numpy as np
 
 import biped_control
+import build_model
 from conftest import ROOT, load_model, record
 from leg_control import leg_ik
 
 SCRIPTS = ROOT / "simulation" / "scripts"
-MODULES = {"leg_control", "biped_control"}
+MODULES = {"leg_control", "biped_control", "robot_spec"}
 
 
 def test_scripts_only_import_modules():
@@ -28,8 +29,6 @@ def test_scripts_only_import_modules():
 
 def test_geometry_constants_match_model():
     model = load_model()
-    data = __import__("mujoco").MjData(model)
-    __import__("mujoco").mj_kinematics(model, data)
     assert abs(model.body("left_shin").pos[2] + biped_control.THIGH_LENGTH) < 1e-9
     assert abs(model.body("left_foot").pos[2] + biped_control.SHIN_LENGTH) < 1e-9
     assert abs(model.body("left_thigh").pos[1] - biped_control.HIP_Y) < 1e-9
@@ -37,6 +36,19 @@ def test_geometry_constants_match_model():
     assert abs(model.site("left_sole_site").pos[2] + biped_control.SOLE_BELOW_ANKLE) < 1e-9
     foot = model.geom("left_foot_geom").id
     assert np.allclose(model.geom_size[foot][:2], biped_control.FOOT_HALF)
+
+
+def test_versioned_model_matches_the_specification():
+    """danny_biped.xml no se edita a mano: debe salir igual de robot_spec.py."""
+    assert build_model.MODEL_PATH.read_text() == build_model.build_biped().to_xml()
+
+
+def test_no_robot_dimensions_are_duplicated_in_scripts():
+    """Las medidas del bípedo solo se definen en robot_spec.py."""
+    pattern = ("THIGH_LENGTH = ", "SHIN_LENGTH = ", "HIP_Y = ", "SOLE_BELOW_ANKLE = ", "LEG_LENGTH = ")
+    offenders = [p.name for p in (SCRIPTS / n for n in ("biped_control.py", "walk_biped.py", "balance_biped.py", "push_biped.py"))
+                 if any(text in p.read_text() for text in pattern)]
+    assert not offenders
 
 
 def test_single_inverse_kinematics_implementation():

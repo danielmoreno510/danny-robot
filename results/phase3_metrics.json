@@ -344,11 +344,6 @@
   "limit": "< 1e-4",
   "unit": "°"
  },
- "cinematica.error_objetivo_inalcanzable": {
-  "value": 0.08000000000000002,
-  "limit": "informativa: 8 cm sin aviso",
-  "unit": "m"
- },
  "cinematica.fk_error_ang_left": {
   "value": 3.139193610468103e-14,
   "limit": "< 1e-6",

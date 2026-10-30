@@ -107,6 +107,7 @@ Los scripts con `--view` imprimen primero el análisis y después abren la venta
 | [documentation/phase-3-validation.md](documentation/phase-3-validation.md) | Auditoría de la fase 3: qué funciona, qué no y qué falta |
 | [documentation/known-limitations.md](documentation/known-limitations.md) | Limitaciones actuales del robot |
 | [documentation/phase-3.5-proposal.md](documentation/phase-3.5-proposal.md) | Propuesta aprobada del humanoide completo |
+| [documentation/phase-3.5-mass-budget.md](documentation/phase-3.5-mass-budget.md) | Presupuesto de masa con motores de catálogo |
 | [CLAUDE.md](CLAUDE.md) | Reglas de trabajo y estado actual, para continuar el proyecto con Claude Code |
 
 **Etapas y experimentos.** Las **etapas** (1 a 76) son los pasos del roadmap. Los
@@ -125,7 +126,8 @@ danny-robot/
 ├── documentation/
 │   ├── phase-3-validation.md   auditoría de la fase 3
 │   ├── known-limitations.md    limitaciones actuales
-│   └── phase-3.5-proposal.md   propuesta del humanoide completo
+│   ├── phase-3.5-proposal.md   propuesta del humanoide completo
+│   └── phase-3.5-mass-budget.md   presupuesto de masa
 ├── tests/              suite de validación automática
 ├── results/            salida de la última ejecución de run_checks.py
 └── simulation/
@@ -135,8 +137,10 @@ danny-robot/
     │   ├── leg_2dof.xml            E4-E7: pierna colgando
     │   ├── leg_2dof_foot.xml       E8: pierna con pie
     │   ├── leg_6dof.xml            E9: pierna didáctica de 6 GDL con pie plano
-    │   └── danny.xml               E10 en adelante: Danny, 70 cm y 8 kg
+    │   └── danny_biped.xml         E10 en adelante: generado, no editar a mano
     └── scripts/
+        ├── robot_spec.py           datos del robot: medidas, masas, articulaciones
+        ├── build_model.py          genera danny_biped.xml desde robot_spec.py
         ├── leg_control.py          módulo: compensadores, IK, perfil, sensores
         ├── biped_control.py        módulo: poses, reparto del peso, paso de control
         ├── run_checks.py           ejecuta todas las comprobaciones

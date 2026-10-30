@@ -775,7 +775,7 @@ eliminó**. El código está en el commit `f24ed39` (`required_contact`).
 modelo**, y explican el camino. Los valores actuales, con el cuerpo de Danny, son
 los de esta sección y los de `results/`.
 
-Modelo `danny.xml` (provisional hasta la etapa 31):
+Modelo `danny_biped.xml`, entonces llamado `danny.xml` (provisional hasta la etapa 31):
 
 | Parte | Medida | Masa |
 |---|---|---|
@@ -863,6 +863,26 @@ estado final (a 31 N un pie se descarga por completo y sube 1,9 cm), y los lími
 de E14 son lo medido menos 2 N, así que solo detectan regresiones. Los rangos
 articulares se comprueban al planificar la marcha, no en las demás pruebas. Durante
 la transferencia de peso, el CdM queda entre los pies, no sobre uno de ellos.
+
+### Experimento 17 — Un modelo generado desde una sola especificación
+
+**Etapa 3.5.2.** Con 30 articulaciones, copiar XML a mano duplicaría cada definición.
+Ahora las medidas, masas, articulaciones y motores viven en `robot_spec.py`.
+`build_model.py` construye el modelo con `MjSpec`, la API de MuJoCo, y genera izquierda y
+derecha desde una sola descripción. Los controladores importan esos mismos datos.
+
+`danny_biped.xml` (el antiguo `danny.xml`) se genera y se versiona, y **no se edita a
+mano**: una prueba comprueba que coincide con la especificación.
+
+**Criterio:** no cambiar la física. Resultado:
+
+- Las 458 matrices numéricas del modelo compilado son idénticas a las del anterior, sin
+  ninguna diferencia, y los nombres también.
+- 126 pruebas y 16 comprobaciones pasan.
+- Las 277 métricas comunes de `results/phase3_metrics.json` no cambian.
+
+Las pruebas que necesitan una variante del robot (pelvis fija, retardo de motor) ya no
+editan texto XML: la construyen con `MjSpec`.
 
 ---
 

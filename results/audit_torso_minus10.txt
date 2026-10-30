@@ -1,4 +1,4 @@
-MuJoCo 3.17.0 | modelo: danny.xml
+MuJoCo 3.17.0 | modelo: danny_biped.xml
 Peso total: 73.38 N | 4 pasos de 8 cm, giro 45°, rodillas 56°, pies a ±5 cm | transiciones x1.27, pausas 0.25 s
 
 Fase                              | err pelvis | incl. máx | err yaw | desliz. izq/der | pie izq/der [N] | altura pie libre | margen CdM | error art.

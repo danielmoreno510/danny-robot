@@ -43,7 +43,6 @@ from biped_control import (
     FOOT_HALF,
     HIP_Y,
     JOINTS,
-    POSITION_SENSORS,
     SIDES,
     Biped,
     Phase,
@@ -55,10 +54,11 @@ from biped_control import (
     rotation_z,
 )
 from leg_control import HOLD_TIME, TRANSITION_TIME, interpolate, read_sensors, total_weight
+from robot_spec import POSITION_SENSORS
 
 
 ROOT = Path(__file__).resolve().parents[1]
-MODEL_PATH = ROOT / "models" / "danny.xml"
+MODEL_PATH = ROOT / "models" / "danny_biped.xml"
 
 LIFT_HEIGHT = 0.03  # m
 N_STEPS = 4
