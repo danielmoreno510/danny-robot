@@ -1,11 +1,11 @@
 """
-H1 - Sentadilla con la pierna 2 GDL apoyada en el suelo (etapa 8).
+H1 - Sentadilla con la pierna 2 GDL apoyada en el suelo (experimento 8).
 
 La pelvis solo puede subir y bajar. La pierna sostiene su peso y el de
 la pelvis a través del pie. Se recorre una secuencia de profundidades de
 sentadilla con el perfil coseno de analyze_leg_2dof.py, en tres modos:
   - ninguna: sin compensación.
-  - gravedad (aire): el GravityCompensator de la etapa 7, que supone la
+  - gravedad (aire): el GravityCompensator del experimento 7, que supone la
     pierna colgando. Sirve para ver que en apoyo no vale.
   - apoyo: StanceCompensator, que incluye el peso que sube desde el suelo.
 

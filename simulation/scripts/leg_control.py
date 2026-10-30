@@ -2,11 +2,11 @@
 H1 - Utilidades de control compartidas por los scripts de la pierna.
 
   - get_id, read_sensors: buscar elementos del modelo por nombre y leer sensores.
-  - interpolate: perfil coseno entre dos objetivos articulares (etapa 5).
-  - GravityCompensator: feedforward de gravedad con la pierna en el aire (etapa 7).
-  - StanceCompensator: feedforward con uno o dos pies apoyados (etapas 8-10).
-  - leg_ik: cinemática inversa de una pierna de 6 GDL con el pie plano (etapa 10).
-  - SQUAT_KNEE_DEG: la sentadilla de las etapas 8 y 9.
+  - interpolate: perfil coseno entre dos objetivos articulares (experimento 5).
+  - GravityCompensator: feedforward de gravedad con la pierna en el aire (experimento 7).
+  - StanceCompensator: feedforward con uno o dos pies apoyados (experimentos 8-10).
+  - leg_ik: cinemática inversa de una pierna de 6 GDL con el pie plano (experimento 10).
+  - SQUAT_KNEE_DEG: la sentadilla de los experimentos 8 y 9.
 """
 
 import math
@@ -18,7 +18,7 @@ import numpy as np
 TRANSITION_TIME = 1.5  # s, duración de la interpolación en modo smooth
 HOLD_TIME = 1.5  # s, tiempo quieto en cada objetivo antes de medir
 
-# Flexión de rodilla en grados para la sentadilla (etapas 8 y 9).
+# Flexión de rodilla en grados para la sentadilla (experimentos 8 y 9).
 SQUAT_KNEE_DEG = [20, 60, 90, 120, 20]
 
 
@@ -105,18 +105,18 @@ class StanceCompensator:
     carga ese pie (suman 1). Se pide F_i vertical, sin componente
     horizontal, para que los pies no empujen de lado.
 
-    Con un solo pie (etapas 8 y 9), f = 1. Con dos (etapa 10), el script
+    Con un solo pie (experimentos 8 y 9), f = 1. Con dos (experimento 10), el script
     reparte el peso según dónde está el centro de masas.
 
     Dónde se aplica F_i importa. Por defecto, en el tobillo (origen del body
-    del pie): vale si el centro de masas está encima. Si no (etapa 10: en
+    del pie): vale si el centro de masas está encima. Si no (experimento 10: en
     sentadilla el CdM queda delante de los tobillos), hay que aplicarla en
     el centro de presiones, bajo el CdM; si no, falta el torque de tobillo
     que evita que el cuerpo vuelque y el tobillo cede.
 
     Como en GravityCompensator, el objetivo se adelanta tau / kp.
 
-    Versión dinámica (etapa 12): si se dan qvel y qacc (la aceleración
+    Versión dinámica (experimento 12): si se dan qvel y qacc (la aceleración
     deseada), tau_g(q) se sustituye por la dinámica inversa completa,
 
         M(q) qacc + C(q, qvel) + tau_g(q)     (mj_rne con aceleración)

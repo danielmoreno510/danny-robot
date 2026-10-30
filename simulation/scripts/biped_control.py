@@ -1,5 +1,5 @@
 """
-H1 - Utilidades del bípedo (biped_6dof.xml), compartidas por las etapas 10 y 11.
+H1 - Utilidades del bípedo (biped_6dof.xml), compartidas por los experimentos 10 y 11.
 
   - Pose: dónde están la pelvis y las plantas de los pies (espacio de tareas).
   - joint_targets: IK de las dos piernas para una Pose.
@@ -128,17 +128,21 @@ class Biped:
         data: mujoco.MjData,
         viewer=None,
         dynamic: bool = False,
+        measured_swing: bool = False,
     ):
         """
-        dynamic: compensación con dinámica inversa y ZMP exacto. En la etapa 12
+        dynamic: compensación con dinámica inversa y ZMP exacto. En el experimento 12
         no mejoró la marcha (inclina más la pelvis), así que por defecto es la
         estática; se deja para reproducir la comparación. No tiene en cuenta
         la aceleración de giro de la pelvis: no vale para marchas con giro.
+        measured_swing: la pierna en el aire se calcula desde la pelvis medida,
+        para que el pie aterrice en su sitio aunque el cuerpo esté inclinado.
         """
         self.model = model
         self.data = data
         self.viewer = viewer
         self.dynamic = dynamic
+        self.measured_swing = measured_swing
         self.actuator_ids = [get_id(model, mujoco.mjtObj.mjOBJ_ACTUATOR, n) for n in ACTUATORS]
         joint_ids = [get_id(model, mujoco.mjtObj.mjOBJ_JOINT, n) for n in JOINTS]
         self.dof_ids = [int(model.jnt_dofadr[j]) for j in joint_ids]
@@ -181,6 +185,21 @@ class Biped:
     def soles(self) -> np.ndarray:
         """Centro de cada planta (izq, der) en el mundo."""
         return self.data.site_xpos[self.sole_ids].copy()
+
+    def com_velocity(self) -> np.ndarray:
+        mujoco.mj_subtreeVel(self.model, self.data)
+        return self.data.subtree_linvel[self.pelvis_id].copy()
+
+    def omega(self) -> float:
+        """Frecuencia natural del péndulo invertido, sqrt(g / h) [1/s]."""
+        return math.sqrt(-self.model.opt.gravity[2] / self.com()[2])
+
+    def capture_point(self) -> np.ndarray:
+        """
+        Punto de captura: xi = CdM + v / omega. Es donde habría que poner el
+        ZMP para que el robot se pare. Un empujón lo mueve al instante.
+        """
+        return self.com()[:2] + self.com_velocity()[:2] / self.omega()
 
     def tilt_deg(self) -> float:
         """Inclinación de la pelvis respecto a la vertical."""
@@ -283,9 +302,28 @@ class Biped:
         point, *_ = np.linalg.lstsq(columns, self.inverse[3:6] - origin, rcond=None)
         return force, point
 
+    def swing_leg_targets(self, pose: Pose, swing: str) -> np.ndarray:
+        """
+        IK de la pierna en el aire desde la pelvis medida (posición e IMU), no
+        desde la planificada: lleva el pie a su objetivo en el mundo y lo deja
+        horizontal aunque el cuerpo esté inclinado.
+        """
+        rotation = self.data.xmat[self.pelvis_id].reshape(3, 3)
+        hip_y = HIP_Y if swing == "left" else -HIP_Y
+        hip = self.data.xpos[self.pelvis_id] + rotation @ np.array([0.0, hip_y, -HIP_BELOW_PELVIS])
+        ankle = pose.sole(swing) + np.array([0.0, 0.0, SOLE_BELOW_ANKLE])
+        angles = leg_ik(rotation.T @ (ankle - hip))
+        # El tobillo deshace también la inclinación de la pelvis
+        angles[4] -= math.asin(max(-1.0, min(1.0, -rotation[2, 0])))
+        angles[5] -= math.atan2(rotation[2, 1], rotation[2, 2])
+        return angles
+
     def step_targets(self, pose: Pose, swing: str | None) -> np.ndarray:
         """ctrl de los 12 motores para seguir 'pose' en este paso."""
         target = joint_targets(pose)
+        if self.measured_swing and swing is not None:
+            first = SIDES.index(swing) * len(JOINT_PARTS)
+            target[first : first + len(JOINT_PARTS)] = self.swing_leg_targets(pose, swing)
         velocity, acceleration, pelvis_acc = self.plan_derivatives(target, pose.pelvis)
 
         # Feedforward de velocidad: el amortiguamiento del motor (-kv q') frena

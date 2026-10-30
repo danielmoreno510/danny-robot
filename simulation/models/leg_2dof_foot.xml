@@ -1,7 +1,7 @@
 <mujoco model="H1 Leg 2DOF Foot">
 
   <!--
-    Pierna 2 GDL con pie y contacto (etapa 8).
+    Pierna 2 GDL con pie y contacto (experimento 8).
 
     Cambios respecto a leg_2dof.xml:
       - La pelvis ya no está fija: se desliza en vertical (slide en z).

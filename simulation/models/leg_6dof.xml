@@ -1,7 +1,7 @@
 <mujoco model="H1 Leg 6DOF">
 
   <!--
-    Pierna de 6 GDL con pie plano (etapa 9).
+    Pierna de 6 GDL con pie plano (experimento 9).
 
     Cambios respecto a leg_2dof_foot.xml:
       - Cadera de 3 ejes: yaw (z), roll (x), pitch (y). Los tres ejes se
@@ -33,7 +33,7 @@
     cadera girada, una combinación yaw + roll (o yaw + pitch) hace girar la
     pierna sobre su propio eje, un modo con inercia diminuta (~0.002 kg·m²),
     y el kv calculado para roll/pitch (inercia ~0.22) pasa el límite de
-    estabilidad kv·dt/I ≈ 2. Ver README, etapa 9.
+    estabilidad kv·dt/I ≈ 2. Ver README, experimento 9.
   -->
   <option
     timestep="0.002"
@@ -191,7 +191,7 @@
   <!--
     kp = 100 en todos (default). kv elegido para zeta ~ 0.8 con la inercia
     articular de cada eje, medida con mj_fullM con la pierna recta:
-      kv = 2 * zeta * sqrt(kp * I)   (ver README, etapa 9)
+      kv = 2 * zeta * sqrt(kp * I)   (ver README, experimento 9)
       hip_yaw 0.0023 · hip_roll 0.2249 · hip_pitch 0.2257 · knee 0.0424
       ankle_pitch 0.0012 · ankle_roll 0.0005   [kg·m²]
   -->

@@ -1,5 +1,5 @@
 """
-H1 - Primeros pasos del bípedo: marcha estática (etapa 11).
+H1 - Primeros pasos del bípedo: marcha estática (experimento 11).
 
 Marcha estática: el centro de masas está siempre sobre un pie, así que si
 el robot se congelara en cualquier instante no se caería. Cada paso son
@@ -15,17 +15,17 @@ Empieza el pie derecho, y cada pie aterriza gait.step por delante del
 otro. Tras N_STEPS pasos, el peso vuelve al centro entre los dos pies.
 
 --speed divide la duración de las transiciones y --hold fija la pausa tras
-cada una (etapa 12: --speed 1.27 --hold 0.25 hace la marcha en la mitad de
+cada una (experimento 12: --speed 1.27 --hold 0.25 hace la marcha en la mitad de
 tiempo). --dynamic usa la compensación dinámica (dinámica inversa + ZMP)
-en lugar de la estática, para reproducir la comparación de la etapa 12.
+en lugar de la estática, para reproducir la comparación del experimento 12.
 
---knee, --step, --width, --inset y --turn cambian la forma de andar (etapa 13):
+--knee, --step, --width, --inset y --turn cambian la forma de andar (experimento 13):
 postura, largo del paso, separación de los pies, cuánto se queda el CdM hacia
 dentro del pie de apoyo y giro final a la izquierda.
 
 Uso:
-  python simulation/scripts/walk_biped.py                               # etapa 11
-  python simulation/scripts/walk_biped.py --speed 1.27 --hold 0.25      # etapa 12
+  python simulation/scripts/walk_biped.py                               # experimento 11
+  python simulation/scripts/walk_biped.py --speed 1.27 --hold 0.25      # experimento 12
   mjpython simulation/scripts/walk_biped.py --speed 1.27 --hold 0.25 --view
 """
 
@@ -68,7 +68,7 @@ SETTLE_TIME = 1.0  # s
 MAX_REACH = 0.98  # fracción de la pierna estirada que se permite planificar
 
 # La aceleración pico del perfil coseno crece con distancia / duración².
-# Para no pasar de la de la etapa 10 (pelvis 15,8 cm en 1,5 s), las
+# Para no pasar de la del experimento 10 (pelvis 15,8 cm en 1,5 s), las
 # transiciones largas duran más: duración ∝ √distancia.
 REFERENCE_SHIFT = 0.158  # m
 
@@ -87,7 +87,7 @@ MAX_JOINT_ERROR_DEG = 0.5
 
 @dataclass
 class Gait:
-    """Forma de andar. Los valores por defecto son los de las etapas 11 y 12."""
+    """Forma de andar. Los valores por defecto son los de los experimentos 11 y 12."""
 
     knee_deg: float = 60.0  # postura; con 50° la pierna se estiraba al 99,9 %
     step: float = 0.08  # m, cuánto adelanta cada pie al otro
@@ -112,7 +112,7 @@ class PhaseResult:
 
 
 def transition_time(start: Pose, end: Pose) -> float:
-    """Duración [s] para que ni la pelvis ni los pies aceleren más que en la etapa 10."""
+    """Duración [s] para que ni la pelvis ni los pies aceleren más que en el experimento 10."""
     change = end.vector() - start.vector()
     distance = float(np.max(np.linalg.norm(change[:9].reshape(3, 3), axis=1)))
     return TRANSITION_TIME * max(1.0, math.sqrt(distance / REFERENCE_SHIFT))
@@ -348,7 +348,7 @@ def main() -> int:
     parser.add_argument("--view", action="store_true", help="verlo (requiere mjpython)")
     parser.add_argument("--speed", type=float, default=1.0, help="divide la duración de las transiciones")
     parser.add_argument("--hold", type=float, default=HOLD_TIME, help="pausa tras cada transición [s]")
-    parser.add_argument("--dynamic", action="store_true", help="compensación dinámica (comparación de la etapa 12)")
+    parser.add_argument("--dynamic", action="store_true", help="compensación dinámica (comparación del experimento 12)")
     parser.add_argument("--knee", type=float, default=Gait.knee_deg, help="rodillas de pie [°]")
     parser.add_argument("--step", type=float, default=Gait.step, help="largo del paso [m]")
     parser.add_argument("--width", type=float, default=Gait.width, help="distancia de cada pie al centro [m]")

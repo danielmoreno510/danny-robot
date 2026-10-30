@@ -1,12 +1,12 @@
 """
-H1 - Análisis de la pierna de 6 GDL con pie plano (etapa 9).
+H1 - Análisis de la pierna de 6 GDL con pie plano (experimento 9).
 
 Dos pruebas con el mismo modelo:
   - aire:  la pelvis se sujeta alta (restricción hold_pelvis) y se mueve
            cada articulación por separado, con GravityCompensator.
            Comprueba que cada eje gira en el sentido documentado.
   - apoyo: la pelvis se suelta, el pie plano se apoya y se hace la misma
-           sentadilla que en la etapa 8, con StanceCompensator.
+           sentadilla que en el experimento 8, con StanceCompensator.
            Comprueba además que el pie se queda plano.
 
 Uso:

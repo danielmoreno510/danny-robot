@@ -1,7 +1,7 @@
 <mujoco model="H1 Biped 6DOF">
 
   <!--
-    Bípedo: dos piernas de 6 GDL (etapa 10).
+    Bípedo: dos piernas de 6 GDL (experimento 10).
 
     Cambios respecto a leg_6dof.xml:
       - Dos piernas, separadas 20 cm (caderas en y = ±0.1 m).
