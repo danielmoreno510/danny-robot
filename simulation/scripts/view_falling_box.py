@@ -10,7 +10,7 @@ MODEL_PATH = ROOT / "models" / "falling_box.xml"
 
 
 def main():
-    print("🤖 Starting H1 Simulation...")
+    print("🤖 Starting Danny Simulation...")
 
     model = mujoco.MjModel.from_xml_path(str(MODEL_PATH))
     data = mujoco.MjData(model)

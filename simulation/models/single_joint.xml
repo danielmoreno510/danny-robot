@@ -1,4 +1,4 @@
-<mujoco model="H1 Single Joint">
+<mujoco model="Danny Single Joint">
 
   <compiler angle="degree"/>
 

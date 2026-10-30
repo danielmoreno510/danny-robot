@@ -1,4 +1,4 @@
-<mujoco model="H1 Leg 6DOF">
+<mujoco model="Danny Leg 6DOF">
 
   <!--
     Pierna de 6 GDL con pie plano (experimento 9).
@@ -23,7 +23,7 @@
     Sentadilla con el pie plano y bajo la cadera:
       hip_pitch = -knee / 2,  ankle_pitch = -knee / 2.
 
-    Dimensiones y masas: DIDÁCTICAS, no son las de H1.
+    Dimensiones y masas: DIDÁCTICAS, no son las definitivas de Danny.
   -->
   <compiler angle="radian"/>
 

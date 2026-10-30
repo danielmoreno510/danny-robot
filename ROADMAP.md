@@ -1,17 +1,17 @@
-# Proyecto H1 — Roadmap maestro
+# Robot Danny — Roadmap maestro
 
-**Objetivo:** construir H1, un robot humanoide autónomo de unos 70 cm, capaz de
+**Objetivo:** construir Danny, un robot humanoide autónomo de unos 70 cm, capaz de
 caminar, mantener el equilibrio, manipular objetos, interpretar instrucciones
 con inteligencia artificial y comunicarse a través de una aplicación móvil.
 
 Este documento es el plan del proyecto completo: **12 fases y 76 etapas**, desde
 la primera simulación hasta el robot físico validado. El detalle técnico de lo
-ya hecho está en el [README](README.md).
+ya hecho está en el [handbook](docs/HANDBOOK.md).
 
 **Fases, etapas y experimentos:**
 
 - Las **etapas** (1 a 76) son las de este roadmap.
-- Los **experimentos** (E1, E2…) son el trabajo concreto del [README](README.md).
+- Los **experimentos** (E1, E2…) son el trabajo concreto del [handbook](docs/HANDBOOK.md).
   Una etapa puede necesitar varios experimentos.
 
 ## Cuándo se completa una fase
@@ -29,7 +29,7 @@ Así se evita descubrir errores estructurales cuando ya hay piezas fabricadas.
 | Fase | Objetivo | Etapas | Estado |
 |---|---|---|---|
 | 1 | Preparación del entorno y fundamentos | 1–5 | ✅ Completada |
-| 2 | Cinemática y articulaciones | 6–11 | 🟡 Avanzada |
+| 2 | Cinemática y articulaciones | 6–11 | ✅ Completada |
 | 3 | Simulación física y control del bípedo | 12–20 | 🔄 Actual |
 | 4 | Aprendizaje por refuerzo y locomoción | 21–28 | ⏳ Pendiente |
 | 5 | Diseño mecánico del humanoide | 29–35 | ⏳ Pendiente |
@@ -63,9 +63,9 @@ necesarias para situar los pies en coordenadas determinadas.
 | 6 | Crear una articulación motorizada | ✅ | E2 |
 | 7 | Construir una pierna con cadera y rodilla | ✅ | E3, E4 |
 | 8 | Implementar control de posición articular | ✅ | E2 a E7 |
-| 9 | Implementar cinemática directa | 🟡 | Se usa la de MuJoCo; falta prueba en el repositorio |
-| 10 | Implementar cinemática inversa | 🟡 | E10, E13: `leg_ik`, `joint_targets`; falta prueba en el repositorio |
-| 11 | Validar límites articulares, alcance y singularidades | 🟡 | E11 comprueba el alcance; faltan límites articulares |
+| 9 | Implementar cinemática directa | ✅ | La de MuJoCo; `check_kinematics.py` |
+| 10 | Implementar cinemática inversa | ✅ | E10, E13: `leg_ik`, `joint_targets`; `check_kinematics.py` |
+| 11 | Validar límites articulares, alcance y singularidades | ✅ | `walk_biped.py` comprueba alcance y rangos al planificar |
 
 ## Fase 3 — Simulación física y control del bípedo
 
@@ -84,7 +84,7 @@ reproducibles. Al terminar se hace una auditoría técnica.
 | 16 | Mantener el equilibrio sobre un solo pie | ✅ | E10, E11 |
 | 17 | Caminar mediante trayectorias cuasiestáticas | ✅ | E11, E12, E13 |
 | 18 | Implementar compensación dinámica | 🟡 | E12; opcional, inclina más la pelvis y falta saber por qué |
-| 19 | Recuperar el equilibrio ante empujones | 🔄 | E14: 50 N adelante y 48 N atrás; de lado 32 N de 36 N; falta limitar la velocidad de los motores |
+| 19 | Recuperar el equilibrio ante empujones | ✅ | E14: límites definidos sin paso, 23 N adelante, 24 N atrás, 25 N de lado |
 | 20 | Ajustar dimensiones físicas y auditar toda la simulación | ⏳ | — |
 
 **Criterios para completar la fase.** El bípedo debe demostrar que puede:
@@ -96,16 +96,22 @@ reproducibles. Al terminar se hace una auditoría técnica.
 | Transferir su peso de forma controlada | ✅ |
 | Caminar cuatro pasos consecutivos | ✅ |
 | Controlar el contacto de los pies con el suelo | ✅ |
-| Responder a perturbaciones dentro de límites definidos | 🔄 Se cumple en ±x; de lado aún no |
-| Respetar los límites de las articulaciones | ⏳ No se comprueba: MuJoCo recorta sin avisar |
-| Registrar métricas de estabilidad y errores de control | 🟡 Se imprimen, no se guardan |
+| Responder a perturbaciones dentro de límites definidos | ✅ E14 |
+| Respetar los límites de las articulaciones | ✅ Se comprueba al planificar la marcha |
+| Registrar métricas de estabilidad y errores de control | ✅ `run_checks.py` las guarda en `results/` |
 
-**Pendiente para validar la fase:**
+**Pendiente para cerrar la fase:**
 
-- Pasar a pruebas del repositorio las comprobaciones que se hicieron con scripts
-  sueltos (cinemática inversa, comparaciones de los experimentos 11 a 13).
-- Ajustar el modelo a los 70 cm del objetivo: hoy mide unos 60 cm, no tiene torso
-  y pesa 6,2 kg.
+- Etapa 18: la compensación dinámica existe (`--dynamic`), pero inclina más la
+  pelvis que la estática y no se sabe por qué. Averiguarlo o decidir dejarla.
+- Etapa 13: masas e inercias son didácticas.
+- Etapa 20: ajustar el modelo a los 70 cm del objetivo (hoy mide unos 60 cm, no
+  tiene torso y pesa 6,2 kg) y auditar toda la simulación. Las propuestas del
+  final de este documento afectan a esta etapa.
+
+**Decisión:** el paso de recuperación ante empujones no funcionó con control
+clásico (E14). La etapa 19 se cierra con límites definidos sin dar un paso, y la
+recuperación con un paso pasa a la etapa 26, con aprendizaje por refuerzo.
 
 ## Fase 4 — Aprendizaje por refuerzo y locomoción
 
@@ -120,7 +126,7 @@ pruebas de estabilidad.
 | 23 | Entrenar una política de equilibrio |
 | 24 | Entrenar locomoción hacia delante y atrás |
 | 25 | Entrenar giros y desplazamientos laterales |
-| 26 | Entrenar resistencia a perturbaciones |
+| 26 | Entrenar resistencia a perturbaciones, incluido el paso de recuperación |
 | 27 | Aplicar domain randomization |
 | 28 | Evaluar, optimizar y exportar las políticas |
 
@@ -133,7 +139,7 @@ y velocidades articulares, contactos de los pies y velocidad objetivo.
 
 ## Fase 5 — Diseño mecánico del humanoide
 
-**Entregable:** diseño mecánico fabricable de la primera versión de H1. No se
+**Entregable:** diseño mecánico fabricable de la primera versión de Danny. No se
 compran los actuadores definitivos hasta comprobar que cumplen los requisitos.
 
 | Etapa | Actividad |
@@ -180,7 +186,7 @@ retroalimentan el movimiento.
 
 ## Fase 8 — Sim-to-Real y locomoción física
 
-**Entregable:** H1 caminando físicamente sobre una superficie plana, sin
+**Entregable:** Danny caminando físicamente sobre una superficie plana, sin
 asistencia en las pruebas finales que superen los criterios de seguridad.
 
 | Etapa | Actividad |
@@ -214,7 +220,7 @@ un objeto cambia el centro de masas y puede requerir compensar con las piernas.
 ## Fase 10 — Visión, navegación e inteligencia artificial
 
 **Entregable:** robot capaz de comprender instrucciones y desplazarse hacia
-objetivos identificados. Ejemplo: «H1, ve a la cocina y busca una botella de agua».
+objetivos identificados. Ejemplo: «Danny, ve a la cocina y busca una botella de agua».
 
 | Etapa | Actividad |
 |---|---|
@@ -229,7 +235,7 @@ objetivos identificados. Ejemplo: «H1, ve a la cocina y busca una botella de ag
 ## Fase 11 — Manipulación autónoma
 
 **Entregable:** ejecución autónoma de un conjunto definido de tareas domésticas.
-Ejemplo avanzado: «H1, ve a mi habitación y tráeme unos calcetines del cajón».
+Ejemplo avanzado: «Danny, ve a mi habitación y tráeme unos calcetines del cajón».
 Manipular ropa y otros objetos deformables puede requerir investigación adicional.
 
 | Etapa | Actividad |
@@ -243,7 +249,7 @@ Manipular ropa y otros objetos deformables puede requerir investigación adicion
 
 ## Fase 12 — Aplicación móvil e integración final
 
-**Entregable:** H1 integrado con una aplicación móvil y una batería de pruebas de
+**Entregable:** Danny integrado con una aplicación móvil y una batería de pruebas de
 aceptación. La aplicación permite ver las cámaras, consultar batería y estado,
 enviar instrucciones, supervisar tareas, recibir alertas, consultar errores,
 activar una parada segura y controlar funciones a distancia.

@@ -1,5 +1,5 @@
 """
-H1 - Utilidades de control compartidas por los scripts de la pierna.
+Danny - Utilidades de control compartidas por los scripts de la pierna.
 
   - get_id, read_sensors: buscar elementos del modelo por nombre y leer sensores.
   - interpolate: perfil coseno entre dos objetivos articulares (experimento 5).

@@ -1,0 +1,37 @@
+MuJoCo 3.17.0 | modelo: leg_2dof.xml
+
+=== Modo: step ===
+Objetivo (cad, rod) | tau pico [N·m]  | tau sostén [N·m] | tau gravedad [N·m] | error final [°]
+  (  30,   45)     |  20.00  20.00   |   2.46   0.94    |   2.46   0.94      |  1.41  0.54
+  ( -20,   90)     |  20.00  20.00   |  -0.17   0.92    |  -0.17   0.92      |  0.10  0.53
+  (  45,   60)     |  20.00  20.00   |   3.14   0.96    |   3.14   0.96      |  1.80  0.55
+  (   0,  120)     |  20.00  20.00   |   0.83   0.86    |   0.83   0.86      |  0.48  0.49
+  (   0,    0)     |  20.00  20.00   |  -0.00   0.00    |   0.00   0.00      |  0.00  0.00
+  hip_joint : pico  20.00 N·m (límite 20), saturado   2.0 % del tiempo
+  knee_joint: pico  20.00 N·m (límite 20), saturado   0.8 % del tiempo
+
+=== Modo: smooth ===
+Objetivo (cad, rod) | tau pico [N·m]  | tau sostén [N·m] | tau gravedad [N·m] | error final [°]
+  (  30,   45)     |   3.13   1.11   |   2.46   0.94    |   2.46   0.94      |  1.41  0.54
+  ( -20,   90)     |   2.46   1.37   |  -0.17   0.92    |  -0.17   0.92      |  0.10  0.53
+  (  45,   60)     |   5.16   0.96   |   3.14   0.96    |   3.14   0.96      |  1.80  0.55
+  (   0,  120)     |   3.14   1.46   |   0.83   0.86    |   0.83   0.86      |  0.48  0.49
+  (   0,    0)     |   0.83   0.86   |  -0.00   0.00    |   0.00   0.00      |  0.00  0.00
+  hip_joint : pico   5.16 N·m (límite 20), saturado   0.0 % del tiempo
+  knee_joint: pico   1.46 N·m (límite 20), saturado   0.0 % del tiempo
+
+=== Modo: smooth + gravedad ===
+Objetivo (cad, rod) | tau pico [N·m]  | tau sostén [N·m] | tau gravedad [N·m] | error final [°]
+  (  30,   45)     |   3.25   1.13   |   2.54   0.95    |   2.54   0.95      |  0.00  0.00
+  ( -20,   90)     |   2.54   1.37   |  -0.17   0.92    |  -0.17   0.92      |  0.00  0.00
+  (  45,   60)     |   5.31   0.95   |   3.20   0.95    |   3.20   0.95      |  0.00  0.00
+  (   0,  120)     |   3.20   1.45   |   0.85   0.85    |   0.85   0.85      |  0.00  0.00
+  (   0,    0)     |   0.87   0.85   |  -0.00  -0.00    |   0.00   0.00      |  0.00  0.00
+  hip_joint : pico   5.31 N·m (límite 20), saturado   0.0 % del tiempo
+  knee_joint: pico   1.45 N·m (límite 20), saturado   0.0 % del tiempo
+
+=== Criterios de aceptación (modo smooth) ===
+  PASS: sin saturación, error final < 2.0°, sostén = gravedad
+
+=== Criterios de aceptación (modo smooth + gravedad) ===
+  PASS: sin saturación, error final < 0.2°, sostén = gravedad

@@ -1,5 +1,5 @@
 """
-H1 - Análisis de la pierna de 6 GDL con pie plano (experimento 9).
+Danny - Análisis de la pierna de 6 GDL con pie plano (experimento 9).
 
 Dos pruebas con el mismo modelo:
   - aire:  la pelvis se sujeta alta (restricción hold_pelvis) y se mueve

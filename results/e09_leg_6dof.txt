@@ -1,0 +1,40 @@
+MuJoCo 3.17.0 | modelo: leg_6dof.xml
+Peso total sobre el pie: 40.22 N
+
+=== Aire: cada articulación por separado (GravityCompensator) ===
+Articulación        objetivo | tau pico [N·m] | error máx [°] | sentido
+  hip_yaw_joint         30° |   0.27         |  0.000        | OK (la punta del pie gira a +y)
+  hip_yaw_joint        -30° |   0.55         |  0.000        | 
+  hip_yaw_joint          0° |   0.27         |  0.000        | 
+  hip_roll_joint        25° |   2.42         |  0.000        | OK (el pie se va a +y)
+  hip_roll_joint       -25° |   2.42         |  0.000        | 
+  hip_roll_joint         0° |   2.41         |  0.000        | 
+  hip_pitch_joint       45° |   4.05         |  0.000        | OK (el pie se va a -x)
+  hip_pitch_joint      -45° |   4.05         |  0.000        | 
+  hip_pitch_joint        0° |   4.04         |  0.000        | 
+  knee_joint            60° |   1.70         |  0.000        | OK (el pie se va a -x)
+  knee_joint           120° |   2.34         |  0.000        | 
+  knee_joint             0° |   1.55         |  0.000        | 
+  ankle_pitch_joint     30° |   0.29         |  0.000        | OK (la punta baja)
+  ankle_pitch_joint    -45° |   0.70         |  0.000        | 
+  ankle_pitch_joint      0° |   0.38         |  0.000        | 
+  ankle_roll_joint      25° |   0.24         |  0.000        | OK (el borde +y del pie sube)
+  ankle_roll_joint     -25° |   0.46         |  0.000        | 
+  ankle_roll_joint       0° |   0.21         |  0.000        | 
+
+=== Apoyo: sentadilla con pie plano (StanceCompensator) ===
+Rodilla | altura pelvis [m] | tau pico cad.pitch rod tob.pitch [N·m] | error [°] | pie [N] | desliz. [mm] | incl. pie [°]
+    60° | 0.5226 / 0.5230 |  1.51   4.20   1.02                 |  0.105    |  40.22  |  0.80        | 0.008
+    90° | 0.4431 / 0.4436 |  2.01   5.96   0.57                 |  0.082    |  40.22  |  0.51        | 0.007
+   120° | 0.3396 / 0.3400 |  2.36   7.30   0.53                 |  0.031    |  40.22  |  0.14        | 0.003
+    20° | 0.5820 / 0.5824 |  3.48   7.89   2.00                 |  0.380    |  40.22  |  3.32        | 0.030
+
+  hip_yaw_joint     : saturado   0.0 % del tiempo
+  hip_roll_joint    : saturado   0.0 % del tiempo
+  hip_pitch_joint   : saturado   0.0 % del tiempo
+  knee_joint        : saturado   0.0 % del tiempo
+  ankle_pitch_joint : saturado   0.0 % del tiempo
+  ankle_roll_joint  : saturado   0.0 % del tiempo
+
+=== Criterios de aceptación ===
+  PASS: aire (error < 0,2°, sentidos correctos) y apoyo (pie = peso, sin deslizar, pie plano, altura ± 1 cm), sin saturación

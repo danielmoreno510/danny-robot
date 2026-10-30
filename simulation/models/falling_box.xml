@@ -1,4 +1,4 @@
-<mujoco model="H1 Falling Box">
+<mujoco model="Danny Falling Box">
 
   <option timestep="0.002" gravity="0 0 -9.81"/>
 
@@ -24,7 +24,7 @@
       rgba="0.7 0.7 0.7 1"
     />
 
-    <!-- Primer cuerpo físico de H1 -->
+    <!-- Primer cuerpo físico de Danny -->
     <body name="robot_body" pos="0 0 1">
 
       <freejoint/>

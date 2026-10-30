@@ -1,0 +1,15 @@
+MuJoCo 3.17.0 | modelo: biped_6dof.xml
+Peso total: 60.82 N
+
+Fase                         | err pelvis [mm] | incl. máx [°] | desliz. izq/der [mm] | pie izq/der [N] | altura pie der [mm] | margen CdM [mm] | error art. [°]
+  sentadilla 80°             |   0.90          |  0.08         |  0.20 /  0.20       |  30.4 /  30.4  |   -0.4              |    —           |  0.00
+  de pie 40°                 |   0.88          |  0.07         |  0.39 /  0.39       |  30.4 /  30.4  |   -0.4              |    —           |  0.00
+  peso a la izquierda (15.8 cm)|   0.93          |  0.51         |  0.55 /  1.05       |  60.3 /   0.5  |    0.1              |    —           |  0.07
+  pie derecho arriba 5 cm    |   0.69          |  0.13         |  0.55 /   —         |  60.8 /   0.0  |   49.4              |  50.0           |  0.01
+  pie derecho abajo          |   1.05          |  0.27         |  0.62 /  0.93       |  60.3 /   0.5  |    0.1              |  49.9           |  0.07
+  vuelta al centro           |   1.52          |  0.39         |  0.93 /  1.49       |  30.4 /  30.4  |   -0.4              |    —           |  0.01
+
+  Ningún motor saturado.
+
+=== Criterios de aceptación ===
+  PASS: no se cae, pies sin deslizar, apoyo en un pie con el CdM dentro, sin saturación

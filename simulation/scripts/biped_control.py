@@ -1,9 +1,10 @@
 """
-H1 - Utilidades del bípedo (biped_6dof.xml), compartidas por los experimentos 10 y 11.
+Danny - Utilidades del bípedo (biped_6dof.xml), compartidas por los experimentos 10 y 11.
 
   - Pose: dónde están la pelvis y las plantas de los pies (espacio de tareas).
   - joint_targets: IK de las dos piernas para una Pose.
   - leg_reach: cuánto se estira cada pierna en una Pose (1 = recta).
+  - joints_out_of_range: articulaciones que una Pose saca de su rango.
   - Biped: estado del robot, reparto del peso y un paso de simulación con
     StanceCompensator (estático o dinámico) y feedforward de velocidad.
   - center_com_over: mueve la pelvis hasta que el CdM queda sobre un pie.
@@ -116,6 +117,17 @@ def joint_targets(pose: Pose) -> np.ndarray:
     return np.concatenate(targets)
 
 
+def joints_out_of_range(model: mujoco.MjModel, pose: Pose) -> list[str]:
+    """Articulaciones que la pose saca de su rango mecánico."""
+    angles = joint_targets(pose)
+    outside = []
+    for name, angle in zip(JOINTS, angles):
+        low, high = model.jnt_range[get_id(model, mujoco.mjtObj.mjOBJ_JOINT, name)]
+        if not low <= angle <= high:
+            outside.append(f"{name} = {math.degrees(angle):.1f}°")
+    return outside
+
+
 def leg_reach(pose: Pose) -> float:
     """Distancia cadera-tobillo / longitud de la pierna, la mayor de las dos."""
     return max(float(np.linalg.norm(v)) for v in _ankles_in_hips(pose)) / LEG_LENGTH
@@ -128,21 +140,21 @@ class Biped:
         data: mujoco.MjData,
         viewer=None,
         dynamic: bool = False,
-        measured_swing: bool = False,
+        max_joint_speed: float | None = None,
     ):
         """
         dynamic: compensación con dinámica inversa y ZMP exacto. En el experimento 12
         no mejoró la marcha (inclina más la pelvis), así que por defecto es la
         estática; se deja para reproducir la comparación. No tiene en cuenta
         la aceleración de giro de la pelvis: no vale para marchas con giro.
-        measured_swing: la pierna en el aire se calcula desde la pelvis medida,
-        para que el pie aterrice en su sitio aunque el cuerpo esté inclinado.
+        max_joint_speed: velocidad de vacío de los motores [rad/s]; None = sin
+        curva de par-velocidad.
         """
         self.model = model
         self.data = data
         self.viewer = viewer
         self.dynamic = dynamic
-        self.measured_swing = measured_swing
+        self.max_joint_speed = max_joint_speed
         self.actuator_ids = [get_id(model, mujoco.mjtObj.mjOBJ_ACTUATOR, n) for n in ACTUATORS]
         joint_ids = [get_id(model, mujoco.mjtObj.mjOBJ_JOINT, n) for n in JOINTS]
         self.dof_ids = [int(model.jnt_dofadr[j]) for j in joint_ids]
@@ -185,21 +197,6 @@ class Biped:
     def soles(self) -> np.ndarray:
         """Centro de cada planta (izq, der) en el mundo."""
         return self.data.site_xpos[self.sole_ids].copy()
-
-    def com_velocity(self) -> np.ndarray:
-        mujoco.mj_subtreeVel(self.model, self.data)
-        return self.data.subtree_linvel[self.pelvis_id].copy()
-
-    def omega(self) -> float:
-        """Frecuencia natural del péndulo invertido, sqrt(g / h) [1/s]."""
-        return math.sqrt(-self.model.opt.gravity[2] / self.com()[2])
-
-    def capture_point(self) -> np.ndarray:
-        """
-        Punto de captura: xi = CdM + v / omega. Es donde habría que poner el
-        ZMP para que el robot se pare. Un empujón lo mueve al instante.
-        """
-        return self.com()[:2] + self.com_velocity()[:2] / self.omega()
 
     def tilt_deg(self) -> float:
         """Inclinación de la pelvis respecto a la vertical."""
@@ -302,28 +299,23 @@ class Biped:
         point, *_ = np.linalg.lstsq(columns, self.inverse[3:6] - origin, rcond=None)
         return force, point
 
-    def swing_leg_targets(self, pose: Pose, swing: str) -> np.ndarray:
+    def limit_torque_speed(self, ctrl: np.ndarray) -> np.ndarray:
         """
-        IK de la pierna en el aire desde la pelvis medida (posición e IMU), no
-        desde la planificada: lleva el pie a su objetivo en el mundo y lo deja
-        horizontal aunque el cuerpo esté inclinado.
+        Curva de par-velocidad de un motor: empujando en el sentido del giro,
+        tau_disponible = tau_max * (1 - |w| / w_max); a w_max ya no da par.
+        Frenar sigue permitido hasta tau_max. Devuelve el ctrl que da ese par.
         """
-        rotation = self.data.xmat[self.pelvis_id].reshape(3, 3)
-        hip_y = HIP_Y if swing == "left" else -HIP_Y
-        hip = self.data.xpos[self.pelvis_id] + rotation @ np.array([0.0, hip_y, -HIP_BELOW_PELVIS])
-        ankle = pose.sole(swing) + np.array([0.0, 0.0, SOLE_BELOW_ANKLE])
-        angles = leg_ik(rotation.T @ (ankle - hip))
-        # El tobillo deshace también la inclinación de la pelvis
-        angles[4] -= math.asin(max(-1.0, min(1.0, -rotation[2, 0])))
-        angles[5] -= math.atan2(rotation[2, 1], rotation[2, 2])
-        return angles
+        q = self.data.qpos[self.joint_qpos]
+        speed = self.data.qvel[self.dof_ids]
+        torque = self.kp * (ctrl - q) - self.kv * speed
+        available = self.force_limit * np.clip(1.0 - np.abs(speed) / self.max_joint_speed, 0.0, 1.0)
+        forward = np.sign(torque) == np.sign(speed)
+        torque = np.where(forward, np.clip(torque, -available, available), torque)
+        return q + (torque + self.kv * speed) / self.kp
 
     def step_targets(self, pose: Pose, swing: str | None) -> np.ndarray:
         """ctrl de los 12 motores para seguir 'pose' en este paso."""
         target = joint_targets(pose)
-        if self.measured_swing and swing is not None:
-            first = SIDES.index(swing) * len(JOINT_PARTS)
-            target[first : first + len(JOINT_PARTS)] = self.swing_leg_targets(pose, swing)
         velocity, acceleration, pelvis_acc = self.plan_derivatives(target, pose.pelvis)
 
         # Feedforward de velocidad: el amortiguamiento del motor (-kv q') frena
@@ -353,6 +345,8 @@ class Biped:
     def step(self, pose: Pose, swing: str | None) -> None:
         step_start = time.monotonic()
         ctrl = self.step_targets(pose, swing)
+        if self.max_joint_speed is not None:
+            ctrl = self.limit_torque_speed(ctrl)
 
         self.data.ctrl[self.actuator_ids] = ctrl
         mujoco.mj_step(self.model, self.data)

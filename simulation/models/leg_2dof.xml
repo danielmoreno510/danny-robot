@@ -1,4 +1,4 @@
-<mujoco model="H1 Leg 2DOF">
+<mujoco model="Danny Leg 2DOF">
 
   <!--
     Pierna 2 GDL colgando de una pelvis fija.
@@ -14,7 +14,7 @@
       - Cadera positiva  = extensión (pierna hacia atrás).
       - Rodilla positiva = flexión.
 
-    Dimensiones y masas: DIDÁCTICAS, no son las de H1.
+    Dimensiones y masas: DIDÁCTICAS, no son las definitivas de Danny.
   -->
   <compiler angle="radian"/>
 

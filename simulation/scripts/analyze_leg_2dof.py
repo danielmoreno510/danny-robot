@@ -1,5 +1,5 @@
 """
-H1 - Análisis de esfuerzos de la pierna 2 GDL.
+Danny - Análisis de esfuerzos de la pierna 2 GDL.
 
 Ejecuta la misma secuencia de posiciones en tres modos:
   - step:   el objetivo salta de golpe (como la primera versión de la pierna).

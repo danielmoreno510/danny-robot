@@ -1,5 +1,5 @@
 """
-H1 - Control de la pierna 2 GDL colgando (leg_2dof.xml).
+Danny - Control de la pierna 2 GDL colgando (leg_2dof.xml).
 
 Recorre la secuencia de posiciones de analyze_leg_2dof.py con el perfil
 coseno (modo smooth), así los motores no saturan en los cambios, y con
@@ -42,7 +42,7 @@ LOG_INTERVAL = 0.5  # s de simulación
 
 
 def main():
-    print("🤖 H1 - Leg 2DOF Control (smooth + gravedad)")
+    print("🤖 Danny - Leg 2DOF Control (smooth + gravedad)")
 
     model = mujoco.MjModel.from_xml_path(str(MODEL_PATH))
     data = mujoco.MjData(model)

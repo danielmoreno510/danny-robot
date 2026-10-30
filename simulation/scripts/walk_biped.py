@@ -1,5 +1,5 @@
 """
-H1 - Primeros pasos del bípedo: marcha estática (experimento 11).
+Danny - Primeros pasos del bípedo: marcha estática (experimento 11).
 
 Marcha estática: el centro de masas está siempre sobre un pie, así que si
 el robot se congelara en cualquier instante no se caería. Cada paso son
@@ -50,6 +50,7 @@ from biped_control import (
     Pose,
     center_com_over,
     joint_targets,
+    joints_out_of_range,
     leg_reach,
     pelvis_height,
     rotation_z,
@@ -194,6 +195,9 @@ def build_plan(biped: Biped, gait: Gait) -> tuple[Pose, list[Phase]]:
                 f"'{phase.name}' pide estirar la pierna al {100 * reach:.1f} % "
                 f"(máximo {100 * MAX_REACH:.0f} %)"
             )
+        outside = joints_out_of_range(biped.model, phase.pose)
+        if outside:
+            raise ValueError(f"'{phase.name}' se sale del rango: {', '.join(outside)}")
     return stand, phases
 
 

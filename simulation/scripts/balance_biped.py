@@ -1,5 +1,5 @@
 """
-H1 - Equilibrio del bípedo: de pie, sentadilla y apoyo en un pie (experimento 10).
+Danny - Equilibrio del bípedo: de pie, sentadilla y apoyo en un pie (experimento 10).
 
 La pelvis tiene freejoint: nada la sujeta salvo las piernas. La secuencia
 se define en el espacio de tareas (dónde están la pelvis y los pies) y en

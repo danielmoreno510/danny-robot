@@ -1,4 +1,4 @@
-<mujoco model="H1 Leg 2DOF Foot">
+<mujoco model="Danny Leg 2DOF Foot">
 
   <!--
     Pierna 2 GDL con pie y contacto (experimento 8).
@@ -18,7 +18,7 @@
     Para que el pie quede bajo la cadera (muslo y tibia iguales):
       cadera = -rodilla / 2.
 
-    Dimensiones y masas: DIDÁCTICAS, no son las de H1.
+    Dimensiones y masas: DIDÁCTICAS, no son las definitivas de Danny.
   -->
   <compiler angle="radian"/>
 

@@ -1,0 +1,29 @@
+MuJoCo 3.17.0 | modelo: biped_6dof.xml
+Peso total: 60.82 N | 4 pasos de 8 cm, giro 0°, rodillas 60°, pies a ±10 cm | transiciones x1.27, pausas 0.25 s | compensación estática
+
+Fase                              | err pelvis | incl. máx | err yaw | desliz. izq/der | pie izq/der [N] | altura pie libre | margen CdM | error art.
+                                  | [mm]       | [°]       | [°]     | [mm]            |                 | [mm]             | [mm]       | [°]
+  paso 1: peso al izquierdo       |  1.27      |  0.74     | -0.06   |   0.2 /   0.6  |  56.3 /   4.1   |    —             |    —       |  0.15
+  paso 1: pie derecho arriba      |  0.71      |  0.16     | -0.03   |   0.1 /    —   |  60.8 /   0.0   |  49.4            |  50.0      |  0.03
+  paso 1: pie derecho adelante    |  0.60      |  0.22     | -0.06   |   0.1 /    —   |  60.8 /   0.0   |  49.4            |  50.0      |  0.04
+  paso 1: pie derecho abajo       |  0.70      |  0.24     | -0.04   |   0.2 /   0.2  |  59.5 /   1.4   |    —             |  48.9      |  0.07
+  paso 2: peso al derecho         |  3.21      |  0.75     | -0.32   |   2.3 /   1.9  |   3.6 /  56.4   |    —             |    —       |  0.17
+  paso 2: pie izquierdo arriba    |  2.23      |  0.14     | -0.31   |    —  /   1.9  |   0.0 /  60.8   |  49.5            |  49.8      |  0.03
+  paso 2: pie izquierdo adelante  |  1.93      |  0.45     | -0.25   |    —  /   1.9  |   0.0 /  60.8   |  49.2            |  50.0      |  0.10
+  paso 2: pie izquierdo abajo     |  2.00      |  0.24     | -0.30   |   1.2 /   1.9  |   1.3 /  59.7   |    —             |  48.9      |  0.06
+  paso 3: peso al izquierdo       |  1.97      |  0.74     | -0.01   |   1.2 /   1.7  |  56.3 /   3.7   |    —             |    —       |  0.17
+  paso 3: pie derecho arriba      |  1.36      |  0.14     | -0.02   |   1.2 /    —   |  60.8 /   0.0   |  49.5            |  49.8      |  0.03
+  paso 3: pie derecho adelante    |  0.49      |  0.45     | -0.09   |   1.2 /    —   |  60.8 /   0.0   |  49.2            |  50.0      |  0.10
+  paso 3: pie derecho abajo       |  1.08      |  0.24     | -0.03   |   1.2 /   1.3  |  59.7 /   1.3   |    —             |  48.9      |  0.06
+  paso 4: peso al derecho         |  3.58      |  0.74     | -0.33   |   2.3 /   2.4  |   3.7 /  56.3   |    —             |    —       |  0.17
+  paso 4: pie izquierdo arriba    |  2.88      |  0.14     | -0.31   |    —  /   2.5  |   0.0 /  60.8   |  49.5            |  49.8      |  0.03
+  paso 4: pie izquierdo adelante  |  2.08      |  0.45     | -0.25   |    —  /   2.5  |   0.0 /  60.8   |  49.2            |  50.0      |  0.10
+  paso 4: pie izquierdo abajo     |  2.62      |  0.24     | -0.30   |   1.3 /   2.4  |   1.3 /  59.7   |    —             |  48.9      |  0.06
+  peso al centro                  |  2.27      |  0.79     | -0.16   |   1.9 /   2.4  |  34.0 /  26.8   |    —             |    —       |  0.10
+
+  Pelvis al final: (27.8, 0.0) cm, rumbo -0.2°, tras 4 pasos
+  Ningún motor saturado.
+  Duración total: 27.1 s
+
+=== Criterios de aceptación ===
+  PASS: sin caerse, pies en su sitio, CdM siempre sobre el pie de apoyo, sin saturación

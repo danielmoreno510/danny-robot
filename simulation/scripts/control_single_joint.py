@@ -16,7 +16,7 @@ def degrees_to_radians(degrees):
 
 
 def main():
-    print("🤖 H1 - Joint Control")
+    print("🤖 Danny - Joint Control")
 
     model = mujoco.MjModel.from_xml_path(str(MODEL_PATH))
     data = mujoco.MjData(model)

@@ -1,4 +1,4 @@
-<mujoco model="H1 Biped 6DOF">
+<mujoco model="Danny Biped 6DOF">
 
   <!--
     Bípedo: dos piernas de 6 GDL (experimento 10).
@@ -12,7 +12,7 @@
     Las dos piernas tienen los MISMOS ejes y signos que leg_6dof.xml (no
     son espejo): hip_roll + lleva cualquiera de los dos pies hacia +y.
 
-    Dimensiones y masas: DIDÁCTICAS, no son las de H1.
+    Dimensiones y masas: DIDÁCTICAS, no son las definitivas de Danny.
   -->
   <compiler angle="radian"/>
 

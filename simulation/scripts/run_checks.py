@@ -1,0 +1,53 @@
+"""
+Danny - Ejecuta todas las comprobaciones del proyecto.
+
+Lanza cada script de análisis, guarda su salida completa en results/ y resume
+el resultado. Devuelve 1 si alguna falla, así que sirve como test automático.
+
+Uso:
+  python simulation/scripts/run_checks.py
+"""
+
+import subprocess
+import sys
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[2]
+SCRIPTS = ROOT / "simulation" / "scripts"
+RESULTS = ROOT / "results"
+
+# (archivo de resultados, script, argumentos)
+CHECKS = [
+    ("kinematics", "check_kinematics.py", []),
+    ("e05_e07_leg_2dof", "analyze_leg_2dof.py", []),
+    ("e08_squat", "squat_leg_2dof.py", []),
+    ("e09_leg_6dof", "analyze_leg_6dof.py", []),
+    ("e10_balance", "balance_biped.py", []),
+    ("e11_walk", "walk_biped.py", []),
+    ("e12_walk_fast", "walk_biped.py", ["--speed", "1.27", "--hold", "0.25"]),
+    ("e13_walk_turn", "walk_biped.py", ["--knee", "56", "--step", "0.12", "--width", "0.07",
+                                        "--inset", "0.02", "--turn", "45", "--speed", "1.27", "--hold", "0.25"]),
+    ("e14_push", "push_biped.py", []),
+]
+
+
+def main() -> int:
+    RESULTS.mkdir(exist_ok=True)
+    failed = 0
+    for name, script, arguments in CHECKS:
+        run = subprocess.run(
+            [sys.executable, str(SCRIPTS / script), *arguments],
+            capture_output=True,
+            text=True,
+        )
+        (RESULTS / f"{name}.txt").write_text(run.stdout + run.stderr)
+        passed = run.returncode == 0
+        failed += not passed
+        print(f"{'PASS' if passed else 'FAIL'}  {name}")
+    print(f"\n{len(CHECKS) - failed} de {len(CHECKS)} comprobaciones pasan. Detalle en results/.")
+    return 1 if failed else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

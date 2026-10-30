@@ -1,5 +1,5 @@
 """
-H1 - Sentadilla con la pierna 2 GDL apoyada en el suelo (experimento 8).
+Danny - Sentadilla con la pierna 2 GDL apoyada en el suelo (experimento 8).
 
 La pelvis solo puede subir y bajar. La pierna sostiene su peso y el de
 la pelvis a través del pie. Se recorre una secuencia de profundidades de
