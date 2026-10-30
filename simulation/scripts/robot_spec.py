@@ -80,13 +80,34 @@ WAIST_JOINTS = (
     Joint("waist_pitch", (0, 1, 0), (-0.2618, 0.7854), 0.0),  # -15° a 45°
 )
 
+# Brazo (etapa 3.5.4), en orden desde el hombro. El brazo derecho refleja los ejes
+# (ver mirrored_axis): un ángulo positivo significa lo mismo en los dos lados.
+# Hombro pitch negativo: hacia delante. Hombro roll positivo: hacia fuera.
+ARM_JOINTS = (
+    Joint("shoulder_pitch", (0, 1, 0), (-2.618, 1.0472), 0.0),  # -150° a 60°
+    Joint("shoulder_roll", (1, 0, 0), (-0.1745, 2.0944), 0.0),  # -10° a 120°
+    Joint("shoulder_yaw", (0, 0, 1), (-1.5708, 1.5708), 0.0),  # ±90°
+    Joint("elbow", (0, -1, 0), (0.0, 2.4435), 0.0),  # 0° a 140°
+    Joint("wrist_yaw", (0, 0, 1), (-1.5708, 1.5708), 0.0),  # ±90°
+    Joint("wrist_pitch", (0, 1, 0), (-0.7854, 0.7854), 0.0),  # ±45°
+    Joint("wrist_roll", (1, 0, 0), (-0.7854, 0.7854), 0.0),  # ±45°
+)
+# Postura fija de los brazos: con 15° el codo libra la esquina de la pelvis en todo el
+# giro de cintura (con 10°, chocaba a partir de unos 30°)
+ARM_HOLD_ANGLES = {"shoulder_roll": 0.2618, "elbow": 0.3491}  # rad
+
 # Humanoide: alturas respecto a la pelvis [m]
 WAIST_ABOVE_PELVIS = 0.04
 WAIST_LINK_HALF = (0.03, 0.05, 0.02)
-UPPER_TORSO_HALF = (0.06, 0.10, 0.07)
+UPPER_TORSO_HALF = (0.06, 0.085, 0.07)
 UPPER_TORSO_OFFSET = 0.07  # centro, sobre la cintura
-ARM_BALLAST_HALF = (0.04, 0.14, 0.05)
-ARM_BALLAST_OFFSET = 0.05
+SHOULDER_Y = 0.11
+SHOULDER_ABOVE_WAIST = 0.14
+SHOULDER_RADIUS = 0.035
+UPPER_ARM_LENGTH = 0.13
+FOREARM_LENGTH = 0.12
+ARM_RADIUS = 0.02
+HAND_BALLAST_RADIUS = 0.025
 HEAD_BALLAST_RADIUS = 0.045
 HEAD_BALLAST_OFFSET = 0.205
 
@@ -96,7 +117,7 @@ class Robot:
     """
     Una configuración del robot. Las masas del humanoide son las del presupuesto de
     documentation/phase-3.5-mass-budget.md, con el margen de 0,31 kg en el torso.
-    Los lastres ocupan el lugar de brazos y cabeza hasta que existan esas piezas.
+    Los lastres ocupan el lugar de manos y cabeza hasta que existan esas piezas.
     """
 
     file: str
@@ -107,13 +128,21 @@ class Robot:
     upper_body_mass: float  # torso del bípedo o torso superior del humanoide [kg]
     leg_kv: dict[str, float]
     waist_mass: float = 0.0
-    arm_ballast: float = 0.0
+    shoulder_mass: float = 0.0
+    upper_arm_mass: float = 0.0
+    forearm_mass: float = 0.0
+    hand_ballast: float = 0.0
     head_ballast: float = 0.0
     waist_kv: dict[str, float] | None = None
+    arm_kv: dict[str, float] | None = None
 
     @property
     def has_waist(self) -> bool:
         return self.waist_kv is not None
+
+    @property
+    def has_arms(self) -> bool:
+        return self.arm_kv is not None
 
 
 BIPED = Robot(
@@ -135,17 +164,37 @@ HUMANOID = Robot(
     leg_kv={"hip_yaw": 1.68, "hip_roll": 4.83, "hip_pitch": 4.84, "knee": 2.53,
             "ankle_pitch": 9.1, "ankle_roll": 9.1},
     waist_mass=0.2,
-    arm_ballast=1.67,
+    shoulder_mass=0.215,
+    upper_arm_mass=0.347,
+    forearm_mass=0.115,
+    hand_ballast=0.16,
     head_ballast=0.39,
-    waist_kv={"waist_yaw": 3.0, "waist_pitch": 3.75},
+    waist_kv={"waist_yaw": 3.74, "waist_pitch": 4.19},
+    arm_kv={"shoulder_pitch": 2.67, "shoulder_roll": 2.67, "shoulder_yaw": 1.65, "elbow": 1.9,
+            "wrist_yaw": 1.6, "wrist_pitch": 1.61, "wrist_roll": 1.61},
 )
 ROBOTS = {"biped": BIPED, "humanoid": HUMANOID}
 
 JOINT_PARTS = tuple(joint.part for joint in LEG_JOINTS)
+ARM_PARTS = tuple(f"{side}_{joint.part}" for side in SIDES for joint in ARM_JOINTS)
+HELD_PARTS = (*(joint.part for joint in WAIST_JOINTS), *ARM_PARTS)  # lo que no es pierna
 JOINTS = tuple(f"{side}_{part}_joint" for side in SIDES for part in JOINT_PARTS)
 ACTUATORS = tuple(f"{side}_{part}_motor" for side in SIDES for part in JOINT_PARTS)
 POSITION_SENSORS = tuple(f"{side}_{part}_pos" for side in SIDES for part in JOINT_PARTS)
 TORQUE_SENSORS = tuple(f"{side}_{part}_torque" for side in SIDES for part in JOINT_PARTS)
+
+
+
+def mirrored_axis(joint: Joint, side: str) -> tuple[float, float, float]:
+    """Eje en el lado 'side'. Reflejar en el plano xz invierte los giros en x y z."""
+    x, y, z = joint.axis
+    return joint.axis if side == "left" else (-x, y, -z)
+
+
+def held_angle(part: str) -> float:
+    """Ángulo [rad] en que se sujeta una articulación que no es de pierna."""
+    return ARM_HOLD_ANGLES.get(part.split("_", 1)[1], 0.0) if part.split("_")[0] in SIDES else 0.0
+
 
 LEG_JOINT_LIMITS = np.array([joint.limits for joint in LEG_JOINTS])
 JOINT_LIMITS = np.vstack([LEG_JOINT_LIMITS, LEG_JOINT_LIMITS])

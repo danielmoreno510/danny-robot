@@ -30,11 +30,11 @@ SITE_SIZE = (0.01, 0.005, 0.005)
 SHIN_COLOR = {"left": (0.1, 0.7, 0.5, 1), "right": (0.7, 0.5, 0.1, 1)}
 
 
-def add_joint(body, prefix: str, joint: spec.Joint) -> None:
+def add_joint(body, prefix: str, joint: spec.Joint, axis=None) -> None:
     body.add_joint(
         name=f"{prefix}{joint.part}_joint",
         type=mujoco.mjtJoint.mjJNT_HINGE,
-        axis=joint.axis,
+        axis=axis or joint.axis,
         range=joint.limits,
         limited=mujoco.mjtLimited.mjLIMITED_TRUE,
         damping=spec.JOINT_DAMPING,
@@ -42,11 +42,11 @@ def add_joint(body, prefix: str, joint: spec.Joint) -> None:
     )
 
 
-def add_segment(body, name: str, length: float, mass: float, rgba) -> None:
+def add_segment(body, name: str, length: float, mass: float, rgba, radius: float = spec.LEG_RADIUS) -> None:
     geom = body.add_geom(
         name=name,
         type=mujoco.mjtGeom.mjGEOM_CAPSULE,
-        size=(spec.LEG_RADIUS, 0, 0),
+        size=(radius, 0, 0),
         mass=mass,
         rgba=rgba,
     )
@@ -86,6 +86,36 @@ def add_leg(pelvis, robot: spec.Robot, side: str) -> None:
     )
 
 
+def add_arm(torso, robot: spec.Robot, side: str) -> None:
+    """Hombro, brazo, antebrazo y muñeca: 7 GDL. La mano es aún un lastre."""
+    sign = 1 if side == "left" else -1
+    pitch, roll, yaw, elbow, *wrist = spec.ARM_JOINTS
+
+    def add(body, joint):
+        add_joint(body, f"{side}_", joint, spec.mirrored_axis(joint, side))
+
+    shoulder = torso.add_body(name=f"{side}_shoulder", pos=(0, sign * spec.SHOULDER_Y, spec.SHOULDER_ABOVE_WAIST))
+    add(shoulder, pitch)
+    add(shoulder, roll)
+    shoulder.add_geom(name=f"{side}_shoulder_geom", type=mujoco.mjtGeom.mjGEOM_SPHERE,
+                      size=(spec.SHOULDER_RADIUS, 0, 0), mass=robot.shoulder_mass, rgba=GREY)
+
+    upper_arm = shoulder.add_body(name=f"{side}_upper_arm")
+    add(upper_arm, yaw)
+    add_segment(upper_arm, f"{side}_upper_arm_geom", spec.UPPER_ARM_LENGTH, robot.upper_arm_mass, BLUE, spec.ARM_RADIUS)
+
+    forearm = upper_arm.add_body(name=f"{side}_forearm", pos=(0, 0, -spec.UPPER_ARM_LENGTH))
+    add(forearm, elbow)
+    add_segment(forearm, f"{side}_forearm_geom", spec.FOREARM_LENGTH, robot.forearm_mass, SHIN_COLOR[side], spec.ARM_RADIUS)
+
+    hand = forearm.add_body(name=f"{side}_hand", pos=(0, 0, -spec.FOREARM_LENGTH))
+    for joint in wrist:
+        add(hand, joint)
+    hand.add_geom(name=f"{side}_hand_ballast", type=mujoco.mjtGeom.mjGEOM_SPHERE, pos=(0, 0, -spec.HAND_BALLAST_RADIUS),
+                  size=(spec.HAND_BALLAST_RADIUS, 0, 0), mass=robot.hand_ballast, rgba=GHOST, contype=0, conaffinity=0)
+    hand.add_site(name=f"{side}_wrist_site", size=SITE_SIZE, rgba=INVISIBLE)
+
+
 def add_motor(model, name: str, joint: spec.Joint, kv: float) -> None:
     motor = model.add_actuator(
         name=f"{name}_motor",
@@ -106,10 +136,14 @@ def add_motors(model, robot: spec.Robot) -> None:
     if robot.has_waist:
         for joint in spec.WAIST_JOINTS:
             add_motor(model, joint.part, joint, robot.waist_kv[joint.part])
+    if robot.has_arms:
+        for side in spec.SIDES:
+            for joint in spec.ARM_JOINTS:
+                add_motor(model, f"{side}_{joint.part}", joint, robot.arm_kv[joint.part])
 
 
 def add_waist_and_torso(pelvis, robot: spec.Robot) -> None:
-    """Cintura de 2 ejes y torso superior, con lastres en lugar de brazos y cabeza."""
+    """Cintura de 2 ejes y torso superior, con un lastre en lugar de la cabeza."""
     yaw, pitch = spec.WAIST_JOINTS
     waist = pelvis.add_body(name="waist", pos=(0, 0, spec.WAIST_ABOVE_PELVIS))
     add_joint(waist, "", yaw)
@@ -119,11 +153,12 @@ def add_waist_and_torso(pelvis, robot: spec.Robot) -> None:
     add_joint(torso, "", pitch)
     torso.add_geom(name="torso_geom", type=mujoco.mjtGeom.mjGEOM_BOX, pos=(0, 0, spec.UPPER_TORSO_OFFSET),
                    size=spec.UPPER_TORSO_HALF, mass=robot.upper_body_mass, rgba=LIGHT_GREY)
-    # Lastres sin colisión: masa e inercia, hasta que existan brazos y cabeza
-    torso.add_geom(name="arm_ballast", type=mujoco.mjtGeom.mjGEOM_BOX, pos=(0, 0, spec.ARM_BALLAST_OFFSET),
-                   size=spec.ARM_BALLAST_HALF, mass=robot.arm_ballast, rgba=GHOST, contype=0, conaffinity=0)
+    # Lastre sin colisión: masa e inercia, hasta que exista la cabeza
     torso.add_geom(name="head_ballast", type=mujoco.mjtGeom.mjGEOM_SPHERE, pos=(0, 0, spec.HEAD_BALLAST_OFFSET),
                    size=(spec.HEAD_BALLAST_RADIUS, 0, 0), mass=robot.head_ballast, rgba=GHOST, contype=0, conaffinity=0)
+    if robot.has_arms:
+        for side in spec.SIDES:
+            add_arm(torso, robot, side)
 
 
 def add_sensors(model, robot: spec.Robot) -> None:
@@ -139,12 +174,14 @@ def add_sensors(model, robot: spec.Robot) -> None:
         for part in spec.JOINT_PARTS:
             model.add_sensor(name=f"{side}_{part}_torque", type=mujoco.mjtSensor.mjSENS_ACTUATORFRC,
                              objtype=mujoco.mjtObj.mjOBJ_ACTUATOR, objname=f"{side}_{part}_motor")
-    if robot.has_waist:
-        for joint in spec.WAIST_JOINTS:
-            model.add_sensor(name=f"{joint.part}_pos", type=mujoco.mjtSensor.mjSENS_JOINTPOS,
-                             objtype=mujoco.mjtObj.mjOBJ_JOINT, objname=f"{joint.part}_joint")
-            model.add_sensor(name=f"{joint.part}_torque", type=mujoco.mjtSensor.mjSENS_ACTUATORFRC,
-                             objtype=mujoco.mjtObj.mjOBJ_ACTUATOR, objname=f"{joint.part}_motor")
+    held = [joint.part for joint in spec.WAIST_JOINTS] if robot.has_waist else []
+    if robot.has_arms:
+        held += spec.ARM_PARTS
+    for part in held:
+        model.add_sensor(name=f"{part}_pos", type=mujoco.mjtSensor.mjSENS_JOINTPOS,
+                         objtype=mujoco.mjtObj.mjOBJ_JOINT, objname=f"{part}_joint")
+        model.add_sensor(name=f"{part}_torque", type=mujoco.mjtSensor.mjSENS_ACTUATORFRC,
+                         objtype=mujoco.mjtObj.mjOBJ_ACTUATOR, objname=f"{part}_motor")
     for side in spec.SIDES:
         model.add_sensor(name=f"{side}_foot_force", type=mujoco.mjtSensor.mjSENS_TOUCH,
                          objtype=mujoco.mjtObj.mjOBJ_SITE, objname=f"{side}_touch_site")

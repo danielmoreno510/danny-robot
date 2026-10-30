@@ -764,68 +764,93 @@
   "limit": "0,70 ± 0,005",
   "unit": "m"
  },
+ "humanoide.brazo.par_elbow": {
+  "value": 0.29528099999800805,
+  "limit": "< 4.1",
+  "unit": "N·m"
+ },
+ "humanoide.brazo.par_shoulder_pitch": {
+  "value": 0.8672530499941494,
+  "limit": "< 7.3",
+  "unit": "N·m"
+ },
+ "humanoide.brazo.par_wrist_pitch": {
+  "value": 0.03923999999973532,
+  "limit": "< 1.9",
+  "unit": "N·m"
+ },
+ "humanoide.brazo.posturas_con_choque": {
+  "value": 8.45,
+  "limit": "informativa",
+  "unit": "%"
+ },
+ "humanoide.brazo.rango_jacobiano": {
+  "value": 6.0,
+  "limit": "= 6",
+  "unit": ""
+ },
  "humanoide.cdm_altura": {
-  "value": 0.3822954545454545,
+  "value": 0.3799618320610687,
   "limit": "0,36 a 0,42",
   "unit": "m"
  },
  "humanoide.cintura_yaw0_pitch30.deriva_pies": {
-  "value": 0.06173987037912461,
+  "value": 0.056404048015162855,
   "limit": "< 5",
   "unit": "mm"
  },
  "humanoide.cintura_yaw0_pitch30.error_cintura": {
-  "value": 0.07377080500186757,
+  "value": 0.07537414896335058,
   "limit": "< 1",
   "unit": "°"
  },
  "humanoide.cintura_yaw0_pitch30.margen_cdm": {
-  "value": 53.045520491746444,
+  "value": 54.06311785341289,
   "limit": "> 15",
   "unit": "mm"
  },
  "humanoide.cintura_yaw0_pitch30.par_max": {
-  "value": 3.2612222052990916,
+  "value": 3.2040653527605656,
   "limit": "< 20",
   "unit": "N·m"
  },
  "humanoide.cintura_yaw30_pitch0.deriva_pies": {
-  "value": 0.07020417950236399,
+  "value": 0.07507509929384555,
   "limit": "< 5",
   "unit": "mm"
  },
  "humanoide.cintura_yaw30_pitch0.error_cintura": {
-  "value": 0.37071741075732306,
+  "value": 0.44386597826261937,
   "limit": "< 1",
   "unit": "°"
  },
  "humanoide.cintura_yaw30_pitch0.margen_cdm": {
-  "value": 69.98911963781954,
+  "value": 69.73629770457087,
   "limit": "> 15",
   "unit": "mm"
  },
  "humanoide.cintura_yaw30_pitch0.par_max": {
-  "value": 3.2165529694349573,
+  "value": 3.2405147812517145,
   "limit": "< 20",
   "unit": "N·m"
  },
  "humanoide.cintura_yaw30_pitch30.deriva_pies": {
-  "value": 0.10668380501298849,
+  "value": 0.10305118969440699,
   "limit": "< 5",
   "unit": "mm"
  },
  "humanoide.cintura_yaw30_pitch30.error_cintura": {
-  "value": 0.37071743713219046,
+  "value": 0.4438603894989789,
   "limit": "< 1",
   "unit": "°"
  },
  "humanoide.cintura_yaw30_pitch30.margen_cdm": {
-  "value": 52.888485863520025,
+  "value": 53.88960753133632,
   "limit": "> 15",
   "unit": "mm"
  },
  "humanoide.cintura_yaw30_pitch30.par_max": {
-  "value": 3.2671113502562577,
+  "value": 3.2405147812517145,
   "limit": "< 20",
   "unit": "N·m"
  },
@@ -835,7 +860,7 @@
   "unit": "s"
  },
  "humanoide.e11.error_movimiento": {
-  "value": 0.49442708678033076,
+  "value": 0.4912023043663408,
   "limit": "< 1",
   "unit": "°"
  },
@@ -845,17 +870,17 @@
   "unit": ""
  },
  "humanoide.e11.incl_max": {
-  "value": 0.7934594625534535,
+  "value": 0.7844829691624777,
   "limit": "< 5",
   "unit": "°"
  },
  "humanoide.e11.par_max": {
-  "value": 8.494359465624036,
+  "value": 8.49703411776035,
   "limit": "< 20",
   "unit": "N·m"
  },
  "humanoide.e11.pie_fuera": {
-  "value": 1.3184833348433491,
+  "value": 1.3090001766394619,
   "limit": "< 5",
   "unit": "mm"
  },
@@ -865,7 +890,7 @@
   "unit": "s"
  },
  "humanoide.e12.error_movimiento": {
-  "value": 0.7169586264919392,
+  "value": 0.7103974895779466,
   "limit": "< 1",
   "unit": "°"
  },
@@ -875,27 +900,27 @@
   "unit": ""
  },
  "humanoide.e12.incl_max": {
-  "value": 1.2537414636405513,
+  "value": 1.2397285876016446,
   "limit": "< 5",
   "unit": "°"
  },
  "humanoide.e12.par_max": {
-  "value": 8.645506214991162,
+  "value": 8.653451421191534,
   "limit": "< 20",
   "unit": "N·m"
  },
  "humanoide.e12.pie_fuera": {
-  "value": 2.970935588805188,
+  "value": 2.9617050621629626,
   "limit": "< 5",
   "unit": "mm"
  },
  "humanoide.e13.duracion": {
-  "value": 50.32600000001554,
+  "value": 50.314000000015525,
   "limit": "informativa",
   "unit": "s"
  },
  "humanoide.e13.error_movimiento": {
-  "value": 0.402165403632346,
+  "value": 0.4004390289663195,
   "limit": "< 1",
   "unit": "°"
  },
@@ -905,17 +930,17 @@
   "unit": ""
  },
  "humanoide.e13.incl_max": {
-  "value": 0.539466110416131,
+  "value": 0.5361131391081283,
   "limit": "< 5",
   "unit": "°"
  },
  "humanoide.e13.par_max": {
-  "value": 8.083328863553795,
+  "value": 8.113839227661233,
   "limit": "< 20",
   "unit": "N·m"
  },
  "humanoide.e13.pie_fuera": {
-  "value": 0.8793461328455948,
+  "value": 0.8779647130842565,
   "limit": "< 5",
   "unit": "mm"
  },
@@ -930,12 +955,12 @@
   "unit": "N"
  },
  "humanoide.empujon_derecha": {
-  "value": 56.0,
+  "value": 57.0,
   "limit": "se recupera",
   "unit": "N"
  },
  "humanoide.empujon_izquierda": {
-  "value": 56.0,
+  "value": 57.0,
   "limit": "se recupera",
   "unit": "N"
  },
@@ -945,7 +970,7 @@
   "unit": ""
  },
  "humanoide.marcha_cintura_yaw0_pitch10.margen_cdm": {
-  "value": 26.72799917356631,
+  "value": 26.729961393973134,
   "limit": "informativa",
   "unit": "mm"
  },
@@ -955,7 +980,7 @@
   "unit": ""
  },
  "humanoide.marcha_cintura_yaw0_pitch20.margen_cdm": {
-  "value": 26.723216717163297,
+  "value": 26.725569326972753,
   "limit": "informativa",
   "unit": "mm"
  },
@@ -965,7 +990,7 @@
   "unit": ""
  },
  "humanoide.marcha_cintura_yaw0_pitch30.margen_cdm": {
-  "value": 26.67140900193808,
+  "value": 26.693440895376433,
   "limit": "informativa",
   "unit": "mm"
  },
@@ -975,7 +1000,7 @@
   "unit": ""
  },
  "humanoide.marcha_cintura_yaw10_pitch0.margen_cdm": {
-  "value": 26.731885661180094,
+  "value": 26.61980533077804,
   "limit": "informativa",
   "unit": "mm"
  },
@@ -985,7 +1010,7 @@
   "unit": ""
  },
  "humanoide.marcha_cintura_yaw20_pitch0.margen_cdm": {
-  "value": 26.731784503174808,
+  "value": 26.48457324326055,
   "limit": "informativa",
   "unit": "mm"
  },
@@ -995,32 +1020,32 @@
   "unit": ""
  },
  "humanoide.marcha_cintura_yaw30_pitch0.margen_cdm": {
-  "value": 26.73171325485268,
+  "value": 26.348273342129787,
   "limit": "informativa",
   "unit": "mm"
  },
  "humanoide.masa": {
-  "value": 11.0,
+  "value": 11.004,
   "limit": "11,0 ± 0,01",
   "unit": "kg"
  },
  "humanoide.pie_left.incl_max": {
-  "value": 0.20361681161938938,
+  "value": 0.20381231821061957,
   "limit": "< 2",
   "unit": "°"
  },
  "humanoide.pie_left.margen_cdm": {
-  "value": 26.75730586596931,
+  "value": 26.762046817580305,
   "limit": "> 15",
   "unit": "mm"
  },
  "humanoide.pie_right.incl_max": {
-  "value": 0.20361681161938938,
+  "value": 0.20381231821061957,
   "limit": "< 2",
   "unit": "°"
  },
  "humanoide.pie_right.margen_cdm": {
-  "value": 26.75730586596934,
+  "value": 26.762046817580313,
   "limit": "> 15",
   "unit": "mm"
  },

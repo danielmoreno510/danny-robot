@@ -140,9 +140,9 @@ reproducidos sobre el cuerpo completo.
 |---|---|---|
 | 3.5.1 | Especificaciones del humanoide y presupuesto de masa | ✅ [Presupuesto](documentation/phase-3.5-mass-budget.md): objetivo 11 kg |
 | 3.5.2 | Generar el modelo desde una especificación única | ✅ `robot_spec.py`, `build_model.py`; modelo idéntico al anterior |
-| 3.5.3 | Torso y cintura | ✅ E18, `danny_humanoid.xml`: 11 kg, 14 GDL, brazos y cabeza como lastres |
-| 3.5.4 | Brazos | ⏳ Siguiente |
-| 3.5.5 | Manos | ⏳ |
+| 3.5.3 | Torso y cintura | ✅ E18, `danny_humanoid.xml` |
+| 3.5.4 | Brazos | ✅ E19: 7 GDL por brazo, en postura fija; 28 GDL en total |
+| 3.5.5 | Manos | ⏳ Siguiente |
 | 3.5.6 | Cabeza y cuello | ⏳ |
 | 3.5.7 | Integración: equilibrio y marcha con todo el cuerpo | ⏳ |
 | 3.5.8 | Validación y documentación | ⏳ |

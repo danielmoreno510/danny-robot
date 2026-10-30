@@ -47,7 +47,7 @@ DIRECTIONS = {
 # y 48 N: el exceso del humanoide sigue sin explicar (ver E18 en el manual).
 REQUIRED_FORCE = {
     "biped": {"adelante": 24.0, "atrás": 24.0, "izquierda": 32.0, "derecha": 32.0},
-    "humanoid": {"adelante": 46.0, "atrás": 47.0, "izquierda": 56.0, "derecha": 56.0},
+    "humanoid": {"adelante": 46.0, "atrás": 47.0, "izquierda": 57.0, "derecha": 57.0},
 }
 
 # Se considera recuperado si acaba así

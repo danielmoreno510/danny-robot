@@ -940,6 +940,58 @@ tocar el muslo: solo se detecta el contacto pasado el límite.
 **Resultado:** 149 pruebas y 21 comprobaciones pasan. Las 277 métricas del bípedo no
 cambian. Las pruebas están en `tests/test_humanoid.py`.
 
+### Experimento 19 — Brazos de 7 GDL en postura fija
+
+**Etapa 3.5.4.** Cada brazo tiene hombro (pitch, roll, yaw), codo y muñeca (yaw, pitch,
+roll), con los rangos y medidas aprobados: 13 cm de brazo y 12 de antebrazo. El brazo
+derecho refleja los ejes, así que un ángulo positivo significa lo mismo en los dos lados.
+La mano sigue siendo un lastre de 0,16 kg hasta la etapa 3.5.5. `Biped` sujeta cintura y
+brazos en `held_target`, y `set_pose` ya los incluye, para que el plan calcule el CdM con
+la postura real.
+
+**Dos ajustes de diseño.** El torso pasa de ±10 a ±8,5 cm de ancho, para que el brazo quepa
+junto a él con los hombros en los ±11 cm aprobados. Y el `kv` de la cintura se recalculó,
+porque los brazos aumentan su inercia: 3,74 y 4,19 N·m·s/rad.
+
+**Criterio, fijado antes de construir:**
+
+| Comprobación | Límite | Medido |
+|---|---|---|
+| Masa | 11,0 ± 0,01 kg | 11,004 kg |
+| CdM de pie, pierna recta | 0,36 a 0,42 m | 0,38 m |
+| Muñeca a hombro, brazo estirado | 25 cm | 25 cm |
+| Rango del Jacobiano en una postura de trabajo | 6 | 6 |
+| Par para sostener el brazo horizontal: hombro | < 7,3 N·m | 0,87 N·m |
+| Ídem: codo | < 4,1 N·m | 0,30 N·m |
+| Ídem: muñeca | < 1,9 N·m | 0,04 N·m |
+| Autocolisión en la postura fija | ninguna | ninguna |
+
+Esos pares son sin carga, solo con el peso del brazo, y usan el pico de catálogo. Al barrer
+2000 posturas al azar de un brazo, el 8,5 % choca, y todos los choques son con el cuerpo.
+
+**Un fallo real, encontrado por las pruebas.** Con el hombro separado 10°, girar la cintura
+±30° hacía chocar el codo con la esquina de la pelvis: la cintura se retrasaba 2,2° y la
+marcha incumplía. Con 15°, el error baja a 0,44° y la marcha cumple. Ahora una prueba
+recorre todo el rango de la cintura con los brazos en su postura, sin ningún contacto.
+
+**Marcha.** Los brazos fijos apenas cambian nada:
+
+| Prueba | Fallos | Inclinación máx. | Error en movimiento | Par máx. |
+|---|---|---|---|---|
+| E11, marcha lenta | 0 | 0,78° | 0,49° | 8,5 N·m |
+| E12, marcha rápida, espera 0,3 s | 0 | 1,24° | 0,71° | 8,7 N·m |
+| E13, marcha con giro | 0 | 0,54° | 0,40° | 8,1 N·m |
+
+Con la cintura moviéndose, E13 sigue cumpliendo hasta ±30° de yaw y 30° de pitch.
+
+**Empujones.** Máximos de 48 N adelante, 49 N atrás y 59 N de lado. Los límites son 46, 47
+y 57 N. El exceso sobre la estimación, de E18, sigue sin explicar.
+
+**Sin probar:** mover los brazos al andar, que llegará con la integración, y levantar
+cargas. E12 no se ha repetido con la espera original de 0,25 s.
+
+**Resultado:** 156 pruebas y 21 comprobaciones pasan. Las métricas del bípedo no cambian.
+
 ---
 
 ## 3. La pierna de 2 GDL en detalle

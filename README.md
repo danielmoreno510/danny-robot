@@ -19,8 +19,9 @@ paso es el humanoide completo.
 - Camina en marcha estática: pasos de 8 cm y giros, con cada pie a menos de 1 mm
   de donde se planificó.
 - Aguanta empujones de 24 a 32 N durante 0,1 s sin dar un paso, de forma pasiva.
-- El humanoide en construcción (11 kg, torso y cintura; brazos y cabeza son aún lastres)
-  repite el equilibrio y la marcha, también con la cintura moviéndose.
+- El humanoide en construcción (11 kg, con cintura y brazos de 7 GDL; manos y cabeza son
+  aún lastres) repite el equilibrio y la marcha, con los brazos en postura fija y también
+  con la cintura moviéndose.
 - Sigue caminando aunque sus masas difieran un ±10 % de las que cree tener.
 
 Qué no hace todavía: marcha dinámica, recuperarse dando un paso, y nada con
@@ -75,7 +76,7 @@ Comprueba que todo funciona (tarda unos 2 minutos y no abre ventanas):
 Debe terminar con `21 de 21 comprobaciones pasan`. La salida completa de cada
 prueba queda en [results/](results/).
 
-La suite de validación, más completa, tarda unos 7 minutos:
+La suite de validación, más completa, tarda unos 8 minutos:
 
 ```bash
 .venv/bin/python -m pytest tests
@@ -143,7 +144,7 @@ danny-robot/
     │   ├── leg_2dof_foot.xml       E8: pierna con pie
     │   ├── leg_6dof.xml            E9: pierna didáctica de 6 GDL con pie plano
     │   ├── danny_biped.xml         E10 en adelante: generado, no editar a mano
-    │   └── danny_humanoid.xml      E18: torso y cintura; generado, no editar a mano
+    │   └── danny_humanoid.xml      E18 y E19: torso, cintura y brazos; generado, no editar a mano
     └── scripts/
         ├── robot_spec.py           datos del robot: medidas, masas, articulaciones
         ├── build_model.py          genera los modelos desde robot_spec.py

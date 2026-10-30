@@ -66,15 +66,18 @@ retardos, incumple.
 
 ## Humanoide en construcción
 
-`danny_humanoid.xml` (11 kg, 14 GDL), tras la etapa 3.5.3:
+`danny_humanoid.xml` (11 kg, 28 GDL), tras la etapa 3.5.4:
 
-- Brazos y cabeza son lastres fijos, sin colisión. Los experimentos de sensibilidad no se
+- Manos y cabeza son lastres fijos, sin colisión. Los experimentos de sensibilidad no se
   han repetido con este modelo.
+- Los brazos solo se han probado en postura fija: moverlos al andar no está medido.
+- Los motores de brazos y cintura tienen `kp` de 100 N·m/rad y ±20 N·m como los de las
+  piernas, no los valores de sus motores de catálogo.
 - La marcha rápida necesita 0,3 s de espera entre pasos: con 0,25 s incumple por muy poco
   (0,5023° frente a 0,5°).
 - El plan de la marcha no conoce la cintura. Se mide que tolera ±30° de yaw y 30° de
   pitch, a 0,25 Hz y sin carga, pero nada la usa para equilibrar.
-- Los límites de empujón (46 a 56 N) son lo medido menos 2 N. El máximo en x, 48 N, supera
+- Los límites de empujón (46 a 57 N) son lo medido menos 2 N. El máximo en x, 48 N, supera
   los 43 N de la estimación de cuerpo rígido: esa diferencia sigue **sin explicar**.
 
 ## Modelo físico
