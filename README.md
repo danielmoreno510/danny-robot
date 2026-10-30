@@ -17,7 +17,7 @@ kg, dos piernas de 6 grados de libertad y un torso provisional, sin brazos.
 - Transfiere el peso de una pierna a otra.
 - Camina en marcha estática: pasos de 8 cm y giros, con cada pie a menos de 1 mm
   de donde se planificó.
-- Aguanta empujones de 22 a 31 N durante 0,1 s sin dar un paso.
+- Aguanta empujones de 24 a 32 N durante 0,1 s sin dar un paso, de forma pasiva.
 - Sigue caminando aunque sus masas difieran un ±10 % de las que cree tener.
 
 Qué no hace todavía: marcha dinámica, recuperarse dando un paso, y nada con
@@ -34,8 +34,8 @@ los criterios. Los detalles están en el
 |---|---|---|
 | 1 | Entorno y fundamentos | ✅ |
 | 2 | Cinemática y articulaciones | ✅ |
-| 3 | Simulación física y control del bípedo | ✅ con límites conocidos |
-| **4** | **Aprendizaje por refuerzo** | ⏳ **Siguiente** |
+| 3 | Simulación física y control del bípedo | 🟡 [CONDITIONAL PASS](documentation/phase-3-validation.md) |
+| 4 | Aprendizaje por refuerzo | ⏳ En espera de revisar la validación |
 | 5–8 | Diseño mecánico, fabricación, electrónica y paso al robot real | ⏳ |
 | 9–12 | Torso y brazos, visión e IA, manipulación, aplicación móvil | ⏳ |
 
@@ -71,6 +71,12 @@ Comprueba que todo funciona (tarda menos de un minuto y no abre ventanas):
 Debe terminar con `16 de 16 comprobaciones pasan`. La salida completa de cada
 prueba queda en [results/](results/).
 
+La suite de validación, más completa, tarda unos 5 minutos:
+
+```bash
+.venv/bin/python -m pytest tests
+```
+
 ## Verlo en el simulador
 
 En macOS, el visor solo funciona lanzado con `mjpython`, que se instala con
@@ -96,6 +102,7 @@ Los scripts con `--view` imprimen primero el análisis y después abren la venta
 |---|---|
 | [ROADMAP.md](ROADMAP.md) | El plan: 12 fases y 76 etapas, hasta el robot físico. Dónde vamos |
 | [docs/HANDBOOK.md](docs/HANDBOOK.md) | Lo hecho: cada experimento, resultados, errores y lecciones. Para aprender o reproducirlo |
+| [documentation/phase-3-validation.md](documentation/phase-3-validation.md) | Auditoría de la fase 3: qué funciona, qué no y qué falta |
 | [CLAUDE.md](CLAUDE.md) | Reglas de trabajo y estado actual, para continuar el proyecto con Claude Code |
 
 **Etapas y experimentos.** Las **etapas** (1 a 76) son los pasos del roadmap. Los
@@ -111,6 +118,9 @@ danny-robot/
 ├── requirements.txt    dependencias fijadas
 ├── docs/
 │   └── HANDBOOK.md     detalle técnico de cada experimento
+├── documentation/
+│   └── phase-3-validation.md   auditoría de la fase 3
+├── tests/              suite de validación automática
 ├── results/            salida de la última ejecución de run_checks.py
 └── simulation/
     ├── models/                     modelos MJCF (XML de MuJoCo)

@@ -28,8 +28,11 @@ import mujoco
 import mujoco.viewer
 import numpy as np
 
-from analyze_leg_2dof import ACTUATORS, JOINTS, POSITION_SENSORS, TORQUE_SENSORS
 from leg_control import (
+    LEG_2DOF_ACTUATORS as ACTUATORS,
+    LEG_2DOF_JOINTS as JOINTS,
+    LEG_2DOF_POSITION_SENSORS as POSITION_SENSORS,
+    LEG_2DOF_TORQUE_SENSORS as TORQUE_SENSORS,
     HOLD_TIME,
     SQUAT_KNEE_DEG,
     TRANSITION_TIME,

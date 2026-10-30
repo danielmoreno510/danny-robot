@@ -18,6 +18,22 @@ import numpy as np
 TRANSITION_TIME = 1.5  # s, duración de la interpolación en modo smooth
 HOLD_TIME = 1.5  # s, tiempo quieto en cada objetivo antes de medir
 
+# Nombres de la pierna de 2 GDL (experimentos 4 a 8)
+LEG_2DOF_JOINTS = ("hip_joint", "knee_joint")
+LEG_2DOF_ACTUATORS = ("hip_motor", "knee_motor")
+LEG_2DOF_POSITION_SENSORS = ("hip_pos", "knee_pos")
+LEG_2DOF_TORQUE_SENSORS = ("hip_torque", "knee_torque")
+
+# (cadera, rodilla) en grados, solo para legibilidad
+LEG_2DOF_MOVEMENTS_DEG = [
+    (0, 0),
+    (30, 45),
+    (-20, 90),
+    (45, 60),
+    (0, 120),
+    (0, 0),
+]
+
 # Flexión de rodilla en grados para la sentadilla (experimentos 8 y 9).
 SQUAT_KNEE_DEG = [20, 60, 90, 120, 20]
 

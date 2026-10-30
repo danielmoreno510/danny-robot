@@ -47,11 +47,13 @@ Las 16 comprobaciones deben pasar antes de empezar a trabajar. Si no pasan, dilo
 - **Decir lo que no se ha comprobado**, y documentar también lo que falla.
 - Unidades SI; ejes REP-103; detalle en el handbook, sección 1.
 
+Las cifras de la documentación salen siempre de `results/`, nunca de memoria.
+
 Para añadir un experimento:
 
 1. Script con criterios y código de salida 1 si falla, con `--view` si se puede ver.
 2. Añadirlo a `CHECKS` en `simulation/scripts/run_checks.py`.
-3. Ejecutar `run_checks.py`, pyflakes y una prueba del camino del visor.
+3. Ejecutar `run_checks.py`, `pytest tests`, pyflakes y una prueba del camino del visor.
 4. Documentarlo en el handbook, y actualizar README y ROADMAP.
 
 El visor de macOS necesita `mjpython`. Un agente no puede verlo: la parte de
@@ -60,12 +62,13 @@ ventana no se ha abierto.
 
 ## Estado actual
 
-Fases 1, 2 y 3 terminadas. Experimentos E1 a E16 hechos. Las 16 comprobaciones
-pasan. **Siguiente: fase 4, aprendizaje por refuerzo** (etapas 21 a 28).
+Fase 3 en **CONDITIONAL PASS**: ver `documentation/phase-3-validation.md`, que el
+usuario debe revisar. **No empieces la fase 4 hasta que lo apruebe.** Antes de entrenar
+hay correcciones pendientes: la sección D de ese documento.
 
-**Límites conocidos de la fase 3**, a tener en cuenta en la fase 4: el control sigue
-su plan sin corregir con la IMU. Un error de 1 cm en el CdM o un suelo inclinado
-0,25° incumplen los criterios. Detalle en el handbook, E16.
+Comprobaciones: `run_checks.py` (16) y `python -m pytest tests` (117, unos 5 minutos).
+Las pruebas de realismo miden sin exigir: que pasen no significa que el robot aguante
+ese efecto. Mira `results/phase3_metrics.json`.
 
 **Pendiente de decidir por el usuario:**
 

@@ -43,7 +43,7 @@ DIRECTIONS = {
 
 # Límites definidos [N]: lo medido, redondeado a la baja con 2 N de margen.
 # El máximo físico sin dar un paso es de unos 28 N en x y 36 N en y.
-REQUIRED_FORCE = {"adelante": 22.0, "atrás": 23.0, "izquierda": 31.0, "derecha": 31.0}
+REQUIRED_FORCE = {"adelante": 24.0, "atrás": 24.0, "izquierda": 32.0, "derecha": 32.0}
 
 # Se considera recuperado si acaba así
 MAX_FINAL_TILT_DEG = 2.0

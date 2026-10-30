@@ -30,7 +30,7 @@ Así se evita descubrir errores estructurales cuando ya hay piezas fabricadas.
 |---|---|---|---|
 | 1 | Preparación del entorno y fundamentos | 1–5 | ✅ Completada |
 | 2 | Cinemática y articulaciones | 6–11 | ✅ Completada |
-| 3 | Simulación física y control del bípedo | 12–20 | ✅ Completada, con límites conocidos |
+| 3 | Simulación física y control del bípedo | 12–20 | 🟡 CONDITIONAL PASS, ver [validación](documentation/phase-3-validation.md) |
 | 4 | Aprendizaje por refuerzo y locomoción | 21–28 | ⏳ Siguiente |
 | 5 | Diseño mecánico del humanoide | 29–35 | ⏳ Pendiente |
 | 6 | Fabricación de las piernas | 36–40 | ⏳ Pendiente |
@@ -83,8 +83,8 @@ reproducibles. Al terminar se hace una auditoría técnica.
 | 15 | Transferir el peso entre las piernas | ✅ | E10, E11 |
 | 16 | Mantener el equilibrio sobre un solo pie | ✅ | E10, E11 |
 | 17 | Caminar mediante trayectorias cuasiestáticas | ✅ | E11, E12, E13 |
-| 18 | Implementar compensación dinámica | ✅ | E12, E15, E16: probada y no adoptada; no aporta con el cuerpo de Danny |
-| 19 | Recuperar el equilibrio ante empujones | ✅ | E14, E16: límites definidos sin paso, 22 N adelante, 23 N atrás, 31 N de lado |
+| 18 | Implementar compensación dinámica | 🟡 | E12, E15, E16: probada y retirada; no aporta con el cuerpo de Danny |
+| 19 | Recuperar el equilibrio ante empujones | 🟡 | E14, E16: solo pasiva, sin realimentación; 24 N en x, 32 N en y |
 | 20 | Ajustar dimensiones físicas y auditar toda la simulación | ✅ | E16 |
 
 **Criterios para completar la fase.** El bípedo debe demostrar que puede:
@@ -96,8 +96,8 @@ reproducibles. Al terminar se hace una auditoría técnica.
 | Transferir su peso de forma controlada | ✅ |
 | Caminar cuatro pasos consecutivos | ✅ |
 | Controlar el contacto de los pies con el suelo | ✅ En E13; a ×2 los pies se balancean |
-| Responder a perturbaciones dentro de límites definidos | ✅ E14 |
-| Respetar los límites de las articulaciones | ✅ Se comprueba al planificar la marcha, no en E10 ni E14 |
+| Responder a perturbaciones dentro de límites definidos | 🟡 Pasiva, con límites derivados de la medida |
+| Respetar los límites de las articulaciones | 🟡 Medido en marcha; no se comprueba al planificar en E10 ni E14 |
 | Registrar métricas de estabilidad y errores de control | ✅ `results/`, en reposo y en movimiento |
 
 **Límites conocidos al cerrar la fase** (detalle en el handbook, E16):

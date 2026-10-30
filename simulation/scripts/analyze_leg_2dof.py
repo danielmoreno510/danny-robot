@@ -26,6 +26,11 @@ import numpy as np
 
 from leg_control import (
     HOLD_TIME,
+    LEG_2DOF_ACTUATORS as ACTUATORS,
+    LEG_2DOF_JOINTS as JOINTS,
+    LEG_2DOF_MOVEMENTS_DEG as MOVEMENTS_DEG,
+    LEG_2DOF_POSITION_SENSORS as POSITION_SENSORS,
+    LEG_2DOF_TORQUE_SENSORS as TORQUE_SENSORS,
     TRANSITION_TIME,
     GravityCompensator,
     get_id,
@@ -36,21 +41,6 @@ from leg_control import (
 
 ROOT = Path(__file__).resolve().parents[1]
 MODEL_PATH = ROOT / "models" / "leg_2dof.xml"
-
-JOINTS = ("hip_joint", "knee_joint")
-ACTUATORS = ("hip_motor", "knee_motor")
-POSITION_SENSORS = ("hip_pos", "knee_pos")
-TORQUE_SENSORS = ("hip_torque", "knee_torque")
-
-# (cadera, rodilla) en grados, solo para legibilidad
-MOVEMENTS_DEG = [
-    (0, 0),
-    (30, 45),
-    (-20, 90),
-    (45, 60),
-    (0, 120),
-    (0, 0),
-]
 
 # Criterios de aceptación (modos smooth)
 MAX_FINAL_ERROR_DEG = 2.0

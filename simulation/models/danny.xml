@@ -161,6 +161,10 @@
     kp = 100 (default). kv = 2 * 0.8 * sqrt(kp * (I + armature)), con I medida
     con mj_fullM y la pierna recta [kg·m²]: hip_yaw 0.00080, hip_roll 0.06185,
     hip_pitch 0.06207, knee 0.01240, ankle_pitch 0.00051, ankle_roll 0.00029.
+    Excepto los tobillos: de pie sostienen todo el cuerpo (I ~ 1,3 kg·m² sobre los
+    dos tobillos, kp efectivo 200 - m g h), así que su kv se calcula para esa carga,
+    con zeta ~ 0,6. Con el valor de la pierna colgando (1,6), zeta era 0,15 y el
+    cuerpo rebotaba sobre los tobillos tras un empujón.
     Límite de ±20 N·m provisional.
   -->
   <actuator>
@@ -169,15 +173,15 @@
     <position name="left_hip_roll_motor" joint="left_hip_roll_joint" kv="4.3" ctrlrange="-0.5236 0.5236"/>
     <position name="left_hip_pitch_motor" joint="left_hip_pitch_joint" kv="4.3" ctrlrange="-1.5708 1.5708"/>
     <position name="left_knee_motor" joint="left_knee_joint" kv="2.4" ctrlrange="-0.0873 2.2689"/>
-    <position name="left_ankle_pitch_motor" joint="left_ankle_pitch_joint" kv="1.64" ctrlrange="-1.1345 0.7854"/>
-    <position name="left_ankle_roll_motor" joint="left_ankle_roll_joint" kv="1.62" ctrlrange="-0.5236 0.5236"/>
+    <position name="left_ankle_pitch_motor" joint="left_ankle_pitch_joint" kv="8.5" ctrlrange="-1.1345 0.7854"/>
+    <position name="left_ankle_roll_motor" joint="left_ankle_roll_joint" kv="8.5" ctrlrange="-0.5236 0.5236"/>
 
     <position name="right_hip_yaw_motor" joint="right_hip_yaw_joint" kv="1.66" ctrlrange="-0.6981 0.6981"/>
     <position name="right_hip_roll_motor" joint="right_hip_roll_joint" kv="4.3" ctrlrange="-0.5236 0.5236"/>
     <position name="right_hip_pitch_motor" joint="right_hip_pitch_joint" kv="4.3" ctrlrange="-1.5708 1.5708"/>
     <position name="right_knee_motor" joint="right_knee_joint" kv="2.4" ctrlrange="-0.0873 2.2689"/>
-    <position name="right_ankle_pitch_motor" joint="right_ankle_pitch_joint" kv="1.64" ctrlrange="-1.1345 0.7854"/>
-    <position name="right_ankle_roll_motor" joint="right_ankle_roll_joint" kv="1.62" ctrlrange="-0.5236 0.5236"/>
+    <position name="right_ankle_pitch_motor" joint="right_ankle_pitch_joint" kv="8.5" ctrlrange="-1.1345 0.7854"/>
+    <position name="right_ankle_roll_motor" joint="right_ankle_roll_joint" kv="8.5" ctrlrange="-0.5236 0.5236"/>
 
   </actuator>
 

@@ -811,8 +811,13 @@ desde la auditoría se limita a 1°: 0,54° en E11, 0,70° en E12, 0,38° en E13
 a ×2, la prueba más justa. A ×2, además, un pie cargado se apoya en 2 puntos o
 menos hasta el 11,8 % del tiempo de la peor fase: los pies se balancean.
 
-**Empujones sin paso:** 24 N adelante, 25 N atrás y 33 N de lado. Límites definidos,
-con 2 N de margen: 22, 23 y 31 N. El máximo físico estimado es de 28 N y 36 N.
+**Empujones sin paso:** 26 N adelante, 26 N atrás y 34 N de lado, tras ajustar el
+amortiguamiento de los tobillos para carga en apoyo. Límites definidos, con 2 N de
+margen: 24 y 32 N. El máximo físico estimado es de 28 N y 36 N.
+
+Las cifras actuales y completas están en la
+[validación de la fase 3](../documentation/phase-3-validation.md), que manda sobre
+las de esta sección si difieren.
 
 **Auditoría técnica (etapa 20).** Una revisión independiente del código encontró
 problemas que las pruebas no veían, y se corrigieron:

@@ -10,3 +10,6 @@ MUJOCO_LOG.TXT
 
 # macOS
 .DS_Store
+
+# Caché de pytest
+.pytest_cache/
