@@ -15,7 +15,7 @@ python3.12 -m venv .venv
 .venv/bin/python simulation/scripts/run_checks.py
 ```
 
-Las 9 comprobaciones deben pasar antes de empezar a trabajar. Si no pasan, dilo.
+Las 10 comprobaciones deben pasar antes de empezar a trabajar. Si no pasan, dilo.
 
 ## Reglas del usuario
 
@@ -60,17 +60,13 @@ ventana no se ha abierto.
 
 ## Estado actual
 
-Fase 3, simulación física y control del bípedo. Experimentos E1 a E14 hechos. Las
-9 comprobaciones pasan.
+Fase 3, simulación física y control del bípedo. Experimentos E1 a E15 hechos. Las
+10 comprobaciones pasan.
 
 **Falta para cerrar la fase 3:**
 
-1. **Etapa 18, compensación dinámica.** Existe (`walk_biped.py --dynamic`,
-   `Biped.required_contact`), pero inclina más la pelvis que la estática. No es por
-   el momento angular, ni por el perfil de trayectoria, ni por la inercia de los
-   eslabones. Hay que averiguarlo o decidir dejarla.
-2. **Etapa 13.** Masas, inercias y contactos son didácticos.
-3. **Etapa 20.** Ajustar el modelo a los 70 cm (hoy mide unos 60 cm, sin torso, 6,2
+1. **Etapa 13.** Masas, inercias y contactos son didácticos.
+2. **Etapa 20.** Ajustar el modelo a los 70 cm (hoy mide unos 60 cm, sin torso, 6,2
    kg) y hacer la auditoría técnica de toda la simulación.
 
 **Pendiente de decidir por el usuario:**
@@ -83,5 +79,6 @@ Fase 3, simulación física y control del bípedo. Experimentos E1 a E14 hechos.
 
 - El paso de recuperación no funcionó con control clásico: el robot salta en vez
   de dar un paso. Se pasó a la etapa 26. El código está en el commit `6c083cc`.
-- La marcha usa compensación estática. Lo que permitió ir más rápido fue recortar
-  pausas, no un control más complejo.
+- La marcha usa compensación estática por defecto. Lo que permitió ir más rápido
+  fue recortar pausas. La dinámica (`--dynamic`) queda como opción: empata a ritmo
+  normal y mejora a doble velocidad (E15).

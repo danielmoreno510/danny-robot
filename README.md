@@ -34,7 +34,7 @@ sensores.
 | 5–8 | Diseño mecánico, fabricación, electrónica y paso al robot real | ⏳ |
 | 9–12 | Torso y brazos, visión e IA, manipulación, aplicación móvil | ⏳ |
 
-Faltan por cerrar en la fase 3 las etapas 13, 18 y 20. El detalle está en el
+Faltan por cerrar en la fase 3 las etapas 13 y 20. El detalle está en el
 [roadmap](ROADMAP.md).
 
 ## Instalación
@@ -64,7 +64,7 @@ Comprueba que todo funciona (tarda menos de un minuto y no abre ventanas):
 .venv/bin/python simulation/scripts/run_checks.py
 ```
 
-Debe terminar con `9 de 9 comprobaciones pasan`. La salida completa de cada
+Debe terminar con `10 de 10 comprobaciones pasan`. La salida completa de cada
 prueba queda en [results/](results/).
 
 ## Verlo en el simulador
@@ -128,7 +128,7 @@ danny-robot/
         ├── squat_leg_2dof.py       E8: sentadilla
         ├── analyze_leg_6dof.py     E9: pierna de 6 GDL
         ├── balance_biped.py        E10: equilibrio sobre un pie
-        ├── walk_biped.py           E11-E13: marcha y giro
+        ├── walk_biped.py           E11-E13, E15: marcha, giro y compensación dinámica
         └── push_biped.py           E14: empujones
 ```
 

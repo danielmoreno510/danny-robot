@@ -591,11 +591,9 @@ de este experimento.
 Se eligió 0,25 s de pausa: con 0,10 s los números son algo mejores, pero el
 robot apenas tiene tiempo de asentarse antes de medir.
 
-**La compensación dinámica se queda como opción (`--dynamic`), no por
-defecto.** Ayuda a los pies cuando los movimientos son muy rápidos, pero
-siempre inclina más la pelvis, y no se encontró por qué. Por defecto, `Biped`
-usa la estática: los experimentos 10 y 11 dan exactamente los mismos números que
-antes.
+**Corrección posterior:** las filas "dinámica" de esta tabla son de una versión
+con un error en el reparto entre pies. El experimento 15 lo explica y lo corrige.
+Por defecto, `Biped` usa la compensación estática.
 
 ### Experimento 13 — Marcha más natural: pasos largos y giro
 
@@ -657,8 +655,6 @@ experimento 11, más:
 pies quedan casi igual (1,6 mm frente a 1,4 mm), con pasos más largos. También
 aguanta el ritmo del experimento 12, que es la configuración elegida.
 
-**Limitación:** la compensación dinámica (`--dynamic`) no tiene en cuenta la
-aceleración de giro de la pelvis, así que no vale con `--turn`.
 
 ### Experimento 14 — Respuesta a empujones
 
@@ -710,6 +706,73 @@ cambiaba. Los 33 rad/s medidos eran un pico de 2 ms por el impacto.
 
 **Limitaciones:** solo de pie, no durante la marcha; el control usa datos exactos
 del simulador, sin ruido; el ±20 N·m y los 20 rad/s son provisionales.
+
+### Experimento 15 — Por qué la compensación dinámica inclinaba más
+
+```bash
+python simulation/scripts/walk_biped.py --knee 56 --step 0.12 --width 0.07 --inset 0.02 --speed 2 --hold 0.25 --dynamic
+```
+
+En el experimento 12, la compensación dinámica inclinaba más la pelvis que la
+estática y no se sabía por qué. **Etapa 18 cerrada: causa encontrada y corregida.**
+
+**Criterio**, antes de medir: se queda solo si, en la marcha del experimento 13,
+iguala o mejora a la estática en inclinación y en pies. Si no, se elimina.
+
+**La prueba directa.** Una compensación correcta debe predecir el par que los
+motores aplican de verdad. Se comparó el par real con cada predicción, en cada
+instante de la marcha:
+
+| Error RMS del par previsto [N·m] | Estática | Dinámica |
+|---|---|---|
+| Un pie, en movimiento | 0,114 | **0,104** |
+| Dos pies, en movimiento | **0,174** | 0,328 |
+
+Con un pie, la fórmula es correcta. Con dos, falla el reparto entre pies.
+
+| Reparto en doble apoyo | Error RMS [N·m] |
+|---|---|
+| Por ZMP, puntos en el ZMP, fuerza completa (el original) | 0,328 |
+| Por CdM, puntos en el ZMP, fuerza completa | 0,233 |
+| Por CdM, puntos en el CdM, fuerza completa | 0,250 |
+| Por ZMP, puntos en el ZMP, fuerza vertical | 0,252 |
+| **Por CdM, puntos en el CdM, fuerza vertical** | **0,174** |
+
+El peso real de cada pie sigue al CdM (error 0,014 en la fracción), no al ZMP
+(0,045): con dos pies apoyados, lo decide la geometría. Y la fuerza horizontal no
+se reparte en proporción al peso. La corrección: dinámica inversa completa con
+un pie; con dos, reparto por CdM y fuerza vertical. Se añadió además la
+aceleración de giro de la pelvis, y ahora vale con `--turn`.
+
+**Resultado**, recta (`--knee 56 --step 0.12 --width 0.07 --inset 0.02`):
+
+| Transiciones, pausa | Compensación | Pie máx. | Inclin. máx. | Fallos |
+|---|---|---|---|---|
+| ×1,27, 0,25 s | estática | 1,63 mm | 0,66° | 0 |
+| ×1,27, 0,25 s | dinámica | 1,83 mm | **0,59°** | 0 |
+| ×2, 0,25 s | estática | 4,47 mm | 1,53° | 0 |
+| ×2, 0,25 s | dinámica | **2,87 mm** | 1,58° | 0 |
+
+Con giro de 45°:
+
+| Transiciones, pausa | Compensación | Pie máx. | Inclin. máx. | Fallos |
+|---|---|---|---|---|
+| ×1,27, 0,25 s | estática | 1,71 mm | 0,56° | 0 |
+| ×1,27, 0,25 s | dinámica | 1,97 mm | **0,47°** | 0 |
+| ×2, 0,25 s | estática | 6,33 mm | 1,31° | 16 |
+| ×2, 0,25 s | dinámica | **3,10 mm** | 1,37° | 1 |
+| ×2,5, 0,25 s | estática | 6,29 mm | 2,26° | 15 |
+| ×2,5, 0,25 s | dinámica | 7,85 mm | 2,19° | 18 |
+
+**Decisión.** Al pie de la letra, el criterio no se cumple: a ritmo normal los pies
+quedan 0,2 mm peor, aunque ambas están lejos del límite de 5 mm. Se **cambió** la
+decisión inicial de eliminarla, porque a doble velocidad sí aporta: con giro pasa
+de 16 fallos a 1. Queda como opción (`--dynamic`), y la estática sigue por defecto.
+Más allá de ×2 no ayuda, y con ×3 cae con cualquiera de las dos: para ir más
+rápido hará falta otra forma de andar (marcha dinámica).
+
+**Limitación:** con dos pies solo se compensa la parte vertical; la fuerza
+horizontal real entre pies no se modela.
 
 ---
 
@@ -1134,6 +1197,10 @@ pelvis. Queda como opción para reproducir la comparación, no como defecto.
 tocó el controlador. Reducir el balanceo lateral en el plan dio pasos un 50 %
 más largos, menos inclinación y más alcance. Medir antes de elegir parámetros
 (la tabla de rodilla mínima) evitó probar a ciegas.
+
+**Comprobar una fórmula contra lo que hace el sistema.** Comparar el par previsto
+con el real localizó en minutos el error de la compensación dinámica, tras tres
+hipótesis fallidas: la fórmula estaba bien, y el reparto entre pies, mal.
 
 **Medir con el tiempo de simulación.** Si la lógica usa el reloj del ordenador,
 el movimiento cambia según la carga de la máquina. Con `data.time` es

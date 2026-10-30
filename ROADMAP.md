@@ -83,7 +83,7 @@ reproducibles. Al terminar se hace una auditoría técnica.
 | 15 | Transferir el peso entre las piernas | ✅ | E10, E11 |
 | 16 | Mantener el equilibrio sobre un solo pie | ✅ | E10, E11 |
 | 17 | Caminar mediante trayectorias cuasiestáticas | ✅ | E11, E12, E13 |
-| 18 | Implementar compensación dinámica | 🟡 | E12; opcional, inclina más la pelvis y falta saber por qué |
+| 18 | Implementar compensación dinámica | ✅ | E12, E15: opcional, `--dynamic`; aporta a doble velocidad |
 | 19 | Recuperar el equilibrio ante empujones | ✅ | E14: límites definidos sin paso, 23 N adelante, 24 N atrás, 25 N de lado |
 | 20 | Ajustar dimensiones físicas y auditar toda la simulación | ⏳ | — |
 
@@ -102,8 +102,6 @@ reproducibles. Al terminar se hace una auditoría técnica.
 
 **Pendiente para cerrar la fase:**
 
-- Etapa 18: la compensación dinámica existe (`--dynamic`), pero inclina más la
-  pelvis que la estática y no se sabe por qué. Averiguarlo o decidir dejarla.
 - Etapa 13: masas e inercias son didácticas.
 - Etapa 20: ajustar el modelo a los 70 cm del objetivo (hoy mide unos 60 cm, no
   tiene torso y pesa 6,2 kg) y auditar toda la simulación. Las propuestas del

@@ -29,6 +29,8 @@ CHECKS = [
     ("e13_walk_turn", "walk_biped.py", ["--knee", "56", "--step", "0.12", "--width", "0.07",
                                         "--inset", "0.02", "--turn", "45", "--speed", "1.27", "--hold", "0.25"]),
     ("e14_push", "push_biped.py", []),
+    ("e15_walk_dynamic", "walk_biped.py", ["--knee", "56", "--step", "0.12", "--width", "0.07",
+                                           "--inset", "0.02", "--speed", "2", "--hold", "0.25", "--dynamic"]),
 ]
 
 

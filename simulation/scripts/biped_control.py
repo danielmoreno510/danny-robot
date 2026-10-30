@@ -143,12 +143,9 @@ class Biped:
         max_joint_speed: float | None = None,
     ):
         """
-        dynamic: compensación con dinámica inversa y ZMP exacto. En el experimento 12
-        no mejoró la marcha (inclina más la pelvis), así que por defecto es la
-        estática; se deja para reproducir la comparación. No tiene en cuenta
-        la aceleración de giro de la pelvis: no vale para marchas con giro.
-        max_joint_speed: velocidad de vacío de los motores [rad/s]; None = sin
-        curva de par-velocidad.
+        dynamic: compensación con dinámica inversa (experimento 15). Mejora los
+        pies a velocidad alta; a velocidad normal empata con la estática, que
+        es la que se usa por defecto.
         """
         self.model = model
         self.data = data
@@ -253,16 +250,17 @@ class Biped:
     def plan_derivatives(self, target: np.ndarray, pelvis: np.ndarray) -> tuple[np.ndarray, ...]:
         """
         Por diferencias finitas sobre el plan: (q' articular, q'' articular,
-        aceleración de la pelvis). Ceros mientras no hay historia suficiente.
+        aceleración de la pelvis). 'pelvis' son posición y giro, y la aceleración
+        también. Ceros mientras no hay historia suficiente.
         """
         self.history = (self.history + [(target, pelvis.copy())])[-3:]
         dt = self.model.opt.timestep
         if len(self.history) < 2:
-            return np.zeros_like(target), np.zeros_like(target), np.zeros(3)
+            return np.zeros_like(target), np.zeros_like(target), np.zeros(4)
         (q1, _), (q2, _) = self.history[-2:]
         velocity = (q2 - q1) / dt
         if len(self.history) < 3:
-            return velocity, np.zeros_like(target), np.zeros(3)
+            return velocity, np.zeros_like(target), np.zeros(4)
         (q0, p0), (q1, p1), (q2, p2) = self.history
         return velocity, (q2 - 2 * q1 + q0) / dt**2, (p2 - 2 * p1 + p0) / dt**2
 
@@ -316,7 +314,8 @@ class Biped:
     def step_targets(self, pose: Pose, swing: str | None) -> np.ndarray:
         """ctrl de los 12 motores para seguir 'pose' en este paso."""
         target = joint_targets(pose)
-        velocity, acceleration, pelvis_acc = self.plan_derivatives(target, pose.pelvis)
+        pelvis = np.array([*pose.pelvis, pose.pelvis_yaw])
+        velocity, acceleration, pelvis_acc = self.plan_derivatives(target, pelvis)
 
         # Feedforward de velocidad: el amortiguamiento del motor (-kv q') frena
         # hacia velocidad cero, así que en movimiento la articulación se
@@ -330,9 +329,21 @@ class Biped:
             )
 
         qacc = np.zeros(self.model.nv)
-        qacc[0:3] = pelvis_acc  # freejoint: lineal en ejes del mundo; angular = 0
+        qacc[0:3] = pelvis_acc[:3]  # freejoint: lineal en ejes del mundo
+        qacc[5] = pelvis_acc[3]  # angular en ejes de la pelvis; se supone horizontal
         qacc[self.dof_ids] = acceleration
         ground_force, zmp = self.required_contact(qacc)
+        if swing is None:
+            # Con dos pies, el reparto real del peso sigue al CdM, no al ZMP, y la
+            # fuerza horizontal no se reparte en proporción (experimento 15).
+            return ctrl + self.compensator.offset(
+                self.data.qpos,
+                self.support(None),
+                self.pressure_points(None),
+                qvel=self.data.qvel,
+                qacc=qacc,
+                ground_force=np.array([0.0, 0.0, ground_force[2]]),
+            )
         return ctrl + self.compensator.offset(
             self.data.qpos,
             self.support(swing, zmp),

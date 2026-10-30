@@ -16,8 +16,8 @@ otro. Tras N_STEPS pasos, el peso vuelve al centro entre los dos pies.
 
 --speed divide la duración de las transiciones y --hold fija la pausa tras
 cada una (experimento 12: --speed 1.27 --hold 0.25 hace la marcha en la mitad de
-tiempo). --dynamic usa la compensación dinámica (dinámica inversa + ZMP)
-en lugar de la estática, para reproducir la comparación del experimento 12.
+tiempo). --dynamic usa la compensación dinámica (experimento 15) en lugar de la
+estática.
 
 --knee, --step, --width, --inset y --turn cambian la forma de andar (experimento 13):
 postura, largo del paso, separación de los pies, cuánto se queda el CdM hacia
@@ -352,7 +352,7 @@ def main() -> int:
     parser.add_argument("--view", action="store_true", help="verlo (requiere mjpython)")
     parser.add_argument("--speed", type=float, default=1.0, help="divide la duración de las transiciones")
     parser.add_argument("--hold", type=float, default=HOLD_TIME, help="pausa tras cada transición [s]")
-    parser.add_argument("--dynamic", action="store_true", help="compensación dinámica (comparación del experimento 12)")
+    parser.add_argument("--dynamic", action="store_true", help="compensación dinámica (experimento 15)")
     parser.add_argument("--knee", type=float, default=Gait.knee_deg, help="rodillas de pie [°]")
     parser.add_argument("--step", type=float, default=Gait.step, help="largo del paso [m]")
     parser.add_argument("--width", type=float, default=Gait.width, help="distancia de cada pie al centro [m]")
