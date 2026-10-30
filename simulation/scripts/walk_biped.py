@@ -14,9 +14,15 @@ cuatro fases:
 Empieza el pie derecho, y cada pie aterriza STEP_LENGTH por delante del
 otro. Tras N_STEPS pasos, el peso vuelve al centro entre los dos pies.
 
+--speed divide la duración de las transiciones y --hold fija la pausa tras
+cada una (etapa 12: --speed 1.27 --hold 0.25 hace la marcha en la mitad de
+tiempo). --dynamic usa la compensación dinámica (dinámica inversa + ZMP)
+en lugar de la estática, para reproducir la comparación de la etapa 12.
+
 Uso:
-  python simulation/scripts/walk_biped.py           # análisis, sin ventana
-  mjpython simulation/scripts/walk_biped.py --view  # además, verlo
+  python simulation/scripts/walk_biped.py                               # etapa 11
+  python simulation/scripts/walk_biped.py --speed 1.27 --hold 0.25      # etapa 12
+  mjpython simulation/scripts/walk_biped.py --speed 1.27 --hold 0.25 --view
 """
 
 import argparse
@@ -144,8 +150,16 @@ def build_plan(biped: Biped) -> tuple[Pose, list[Phase]]:
     return stand, phases
 
 
-def run(model: mujoco.MjModel, data: mujoco.MjData, viewer=None) -> tuple[list[PhaseResult], np.ndarray]:
-    biped = Biped(model, data, viewer)
+def run(
+    model: mujoco.MjModel,
+    data: mujoco.MjData,
+    viewer=None,
+    speed: float = 1.0,
+    hold: float = HOLD_TIME,
+    dynamic: bool = False,
+) -> tuple[list[PhaseResult], np.ndarray]:
+    """speed divide las transiciones; hold es la pausa tras cada una [s]."""
+    biped = Biped(model, data, viewer, dynamic=dynamic)
     stand, phases = build_plan(biped)
     timestep = model.opt.timestep
 
@@ -158,8 +172,8 @@ def run(model: mujoco.MjModel, data: mujoco.MjData, viewer=None) -> tuple[list[P
     previous = stand
     for phase in phases:
         max_tilt = 0.0
-        duration = transition_time(previous, phase.pose)
-        for i in range(round((duration + HOLD_TIME) / timestep)):
+        duration = transition_time(previous, phase.pose) / speed
+        for i in range(round((duration + hold) / timestep)):
             vector = interpolate(previous.vector(), phase.pose.vector(), i * timestep, "smooth", duration)
             biped.step(Pose.from_vector(vector), phase.swing)
             max_tilt = max(max_tilt, biped.tilt_deg())
@@ -257,22 +271,29 @@ def check_acceptance(results: list[PhaseResult], saturation: np.ndarray, weight:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Marcha estática del bípedo")
     parser.add_argument("--view", action="store_true", help="verlo (requiere mjpython)")
+    parser.add_argument("--speed", type=float, default=1.0, help="divide la duración de las transiciones")
+    parser.add_argument("--hold", type=float, default=HOLD_TIME, help="pausa tras cada transición [s]")
+    parser.add_argument("--dynamic", action="store_true", help="compensación dinámica (comparación de la etapa 12)")
     args = parser.parse_args()
+    dynamic = args.dynamic
 
     print(f"MuJoCo {mujoco.__version__} | modelo: {MODEL_PATH.name}")
     model = mujoco.MjModel.from_xml_path(str(MODEL_PATH))
     data = mujoco.MjData(model)
     weight = total_weight(model)
-    print(f"Peso total: {weight:.2f} N | {N_STEPS} pasos de {100 * STEP_LENGTH:.0f} cm")
+    print(f"Peso total: {weight:.2f} N | {N_STEPS} pasos de {100 * STEP_LENGTH:.0f} cm | "
+          f"transiciones x{args.speed:g}, pausas {args.hold:g} s | "
+          f"compensación {'dinámica' if dynamic else 'estática'}")
 
     try:
-        results, saturation = run(model, data)
+        results, saturation = run(model, data, speed=args.speed, hold=args.hold, dynamic=dynamic)
     except (RuntimeError, ValueError) as error:
         print(f"\n=== Criterios de aceptación ===\n  FAIL: {error}")
         return 1
 
     pelvis_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "pelvis")
     print_report(results, saturation, float(data.xpos[pelvis_id, 0]))
+    print(f"  Duración total: {data.time:.1f} s")
     failures = check_acceptance(results, saturation, weight)
     print("\n=== Criterios de aceptación ===")
     if failures:
@@ -285,7 +306,7 @@ def main() -> int:
     if args.view:
         try:
             with mujoco.viewer.launch_passive(model, data) as viewer:
-                run(model, data, viewer=viewer)
+                run(model, data, viewer=viewer, speed=args.speed, hold=args.hold, dynamic=dynamic)
         except (KeyboardInterrupt, RuntimeError):
             pass
 
