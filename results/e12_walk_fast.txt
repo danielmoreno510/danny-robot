@@ -27,4 +27,4 @@ Fase                              | err pelvis | incl. máx | err yaw | desliz. 
   Duración total: 26.6 s
 
 === Criterios de aceptación ===
-  PASS: sin caerse, pies en su sitio, CdM siempre sobre el pie de apoyo, sin saturación
+  PASS: sin caerse, pies en su sitio, CdM sobre el pie de apoyo al final de cada fase, sin saturación

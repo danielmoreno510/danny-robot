@@ -22,8 +22,9 @@ def test_scripts_only_import_modules():
     local = {p.stem for p in SCRIPTS.glob("*.py")}
     for path in SCRIPTS.glob("*.py"):
         for node in ast.walk(ast.parse(path.read_text())):
-            if isinstance(node, ast.ImportFrom) and node.module in local - MODULES:
-                offenders.append(f"{path.stem} -> {node.module}")
+            names = [a.name for a in node.names] if isinstance(node, ast.Import) else []
+            names += [node.module] if isinstance(node, ast.ImportFrom) else []
+            offenders += [f"{path.stem} -> {n}" for n in names if n in local - MODULES]
     record("software.imports_entre_scripts", len(offenders), "= 0: " + ", ".join(offenders))
     assert not offenders
 

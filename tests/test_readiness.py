@@ -111,6 +111,7 @@ def test_joint_limits_hold_against_twice_the_motor_torque():
             mujoco.mj_resetData(model, data)
             qpos, dof = model.jnt_qposadr[joint], model.jnt_dofadr[joint]
             data.qpos[qpos] = model.jnt_range[joint, index]
+            data.ctrl[model.actuator(f"{name}_motor").id] = model.jnt_range[joint, index]  # no se opone
             for _ in range(500):
                 data.qfrc_applied[dof] = sign * force
                 mujoco.mj_step(model, data)
@@ -162,10 +163,3 @@ def test_stand_keyframe_is_a_stable_start():
     assert drop < 0.02
 
 
-def test_motors_never_exceed_their_torque_limit():
-    model = fixed_base()
-    data = mujoco.MjData(model)
-    for _ in range(300):
-        data.ctrl[:] = model.actuator_ctrlrange[:, 1]
-        mujoco.mj_step(model, data)
-        assert np.all(np.abs(data.actuator_force) <= model.actuator_forcerange[:, 1] + 1e-9)

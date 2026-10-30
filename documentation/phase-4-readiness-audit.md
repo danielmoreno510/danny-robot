@@ -1,7 +1,7 @@
 # Auditoría de preparación para la fase 4
 
 **Veredicto: todavía NO estamos preparados para entrenar.** El cuerpo físico está bien
-construido y validado, pero falta la etapa 3.5.8, y aún no existe nada de lo que hace falta
+construido y validado, y la [validación de la fase 3.5](phase-3.5-validation.md) está hecha, pero aún no existe nada de lo que hace falta
 para entrenar: entorno, datos de movimiento ni métricas programadas. La lista completa está en la sección 8.
 
 Las cifras salen de `results/` y de `tests/test_readiness.py`. **Nota sobre los números:** el
@@ -11,7 +11,8 @@ el recuento vigente de pruebas está en [PROJECT_HANDOFF.md](../PROJECT_HANDOFF.
 ## 1. Los 31 GDL
 
 **Bien definidos.** Se comprobó con el modelo compilado: las 31 articulaciones tienen eje,
-tope, motor, sensor de posición y sensor de par, y el lado derecho refleja al izquierdo.
+tope, motor, sensor de posición y sensor de par. En los brazos, el lado derecho refleja al
+izquierdo; en las piernas, un ángulo positivo de roll o yaw significa lo contrario en cada lado.
 
 **Límites articulares: la mayoría son plausibles, uno no.** Comparación con rangos humanos
 típicos, que varían según la fuente
@@ -52,7 +53,7 @@ entrenar.
 | Inercias | Válidas en los 21 cuerpos (desigualdad triangular) |
 | Colisiones | Las 21 geometrías colisionan; 5 exclusiones, todas por solape intencionado |
 | Contacto | De pie, los sensores suman 107,95 N, igual que el peso |
-| Topes articulares | Con 2 veces el par del motor contra el tope, se pasa 2,7° como máximo: son blandos |
+| Topes articulares | Con 2 veces el par del motor contra el tope, sin que el motor se oponga, se pasa 2,87° como máximo: son blandos |
 | Límite de par | Pidiendo el máximo, ningún motor supera su límite |
 | Paso e integrador | 2 ms, `implicitfast` |
 
@@ -159,7 +160,7 @@ para entrenar, salvo la curva de par-velocidad y el código de sensores.
 | # | Requisito | Cómo se cierra |
 |---|---|---|
 | 1 | Etapa 3.5.7: equilibrio, marcha y sensibilidad en el humanoide | ✅ E23 |
-| 2 | Etapa 3.5.8: informe de la fase y auditoría independiente | Informe, y tu revisión |
+| 2 | Etapa 3.5.8: informe de la fase y auditoría independiente | ✅ Hechos y aceptados: CONDITIONAL PASS |
 | 3 | IMU: giróscopo y acelerómetro | ✅ E23 |
 | 4 | Velocidades articulares como sensor | ✅ E23 |
 | 5 | Postura inicial guardada | ✅ E23: `stand` |
@@ -171,7 +172,7 @@ para entrenar, salvo la curva de par-velocidad y el código de sensores.
 | 11 | Datos con licencia válida y adaptados a Danny | Hitos C y D |
 | 12 | Métricas de la sección 6 programadas | Módulo de evaluación |
 
-Los números 9 a 12 son el arranque de la propia fase 4. **Los números 2, 7 y 8 son los que
+Los números 9 a 12 son el arranque de la propia fase 4. **Los números 7 y 8 son los que
 quedan antes de empezar la fase.**
 
 **Importantes, sin bloquear:**

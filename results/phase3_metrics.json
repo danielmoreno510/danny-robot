@@ -766,7 +766,12 @@
  },
  "humanoide.balanceo_brazos.par": {
   "value": 1.092053941948298,
-  "limit": "< 7,3",
+  "limit": "< par disponible a esa velocidad",
+  "unit": "N·m"
+ },
+ "humanoide.balanceo_brazos.par_disponible": {
+  "value": 2.799308701036572,
+  "limit": "informativa",
   "unit": "N·m"
  },
  "humanoide.balanceo_brazos.velocidad": {
@@ -820,6 +825,16 @@
   "unit": ""
  },
  "humanoide.brazo.zeta": {
+  "value": 0.6323212048314856,
+  "limit": "< 1",
+  "unit": ""
+ },
+ "humanoide.brazo.zeta_con_kv": {
+  "value": 6.228363867590133,
+  "limit": "informativa: sobreamortiguado si > 1",
+  "unit": ""
+ },
+ "humanoide.brazo.zeta_pasivo": {
   "value": 0.6323212048314856,
   "limit": "< 1",
   "unit": ""
@@ -881,7 +896,7 @@
  },
  "humanoide.cintura_yaw0_pitch30.par_max": {
   "value": 3.2013866325067255,
-  "limit": "< 20",
+  "limit": "informativa: tope, el de cada motor",
   "unit": "N·m"
  },
  "humanoide.cintura_yaw30_pitch0.deriva_pies": {
@@ -901,7 +916,7 @@
  },
  "humanoide.cintura_yaw30_pitch0.par_max": {
   "value": 3.227113534238782,
-  "limit": "< 20",
+  "limit": "informativa: tope, el de cada motor",
   "unit": "N·m"
  },
  "humanoide.cintura_yaw30_pitch30.deriva_pies": {
@@ -921,7 +936,7 @@
  },
  "humanoide.cintura_yaw30_pitch30.par_max": {
   "value": 3.2056055008559525,
-  "limit": "< 20",
+  "limit": "informativa: tope, el de cada motor",
   "unit": "N·m"
  },
  "humanoide.cuello.par_45": {
@@ -961,7 +976,7 @@
  },
  "humanoide.e11.par_max": {
   "value": 8.494636406224242,
-  "limit": "< 20",
+  "limit": "informativa: tope, el de cada motor",
   "unit": "N·m"
  },
  "humanoide.e11.pie_fuera": {
@@ -991,7 +1006,7 @@
  },
  "humanoide.e12.par_max": {
   "value": 8.651978626357959,
-  "limit": "< 20",
+  "limit": "informativa: tope, el de cada motor",
   "unit": "N·m"
  },
  "humanoide.e12.pie_fuera": {
@@ -1021,7 +1036,7 @@
  },
  "humanoide.e13.par_max": {
   "value": 8.112697804826146,
-  "limit": "< 20",
+  "limit": "informativa: tope, el de cada motor",
   "unit": "N·m"
  },
  "humanoide.e13.pie_fuera": {
@@ -1855,7 +1870,7 @@
   "unit": "°"
  },
  "preparacion.sobrepaso_tope": {
-  "value": 2.7169269761627137,
+  "value": 2.865029137345276,
   "limit": "< 3.0",
   "unit": "°"
  },

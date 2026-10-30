@@ -985,7 +985,7 @@ recorre todo el rango de la cintura con los brazos en su postura, sin ningún co
 Con la cintura moviéndose, E13 sigue cumpliendo hasta ±30° de yaw y 30° de pitch.
 
 **Empujones.** Máximos de 48 N adelante, 49 N atrás y 59 N de lado. Los límites son 46, 47
-y 57 N. El exceso sobre la estimación, de E18, sigue sin explicar.
+y 57 N. El exceso sobre la estimación, de E18, tiene una causa probable: ver la etapa 3.5.8.
 
 **Sin probar:** mover los brazos al andar, que llegará con la integración, y levantar
 cargas. E12 no se ha repetido con la espera original de 0,25 s.
@@ -1090,7 +1090,7 @@ masa del torso (2,48 kg), y el total sigue en 11,004 kg.
 |---|---|---|
 | Masa | 11,0 ± 0,01 kg | 11,004 kg |
 | Límites de cada motor en el modelo | los de la tabla | cumple |
-| ζ del brazo | < 1 | 0,63 |
+| ζ pasivo del brazo, sin `kv` | < 1 | 0,63 (6,2 con `kv`: ver la etapa 3.5.8) |
 | Roll con pelvis inclinada 5° | torso vertical | cumple |
 | Moviendo el roll ±10° de pie | error < 1°, pies < 5 mm | 0,17°, 0,06 mm |
 | Balanceo de brazos ±20° a 1,5 Hz | < 7,3 N·m y 5,55 rad/s | 1,09 N·m y 3,4 rad/s |
@@ -1160,6 +1160,13 @@ el bípedo, que pasa ±10 %. Además, se corrigió un error de la auditoría: en
 pasa de 90° a 30°, en `Robot.joint_limits`, y el bípedo no cambia. El límite de mando baja con el
 tope, y `Biped.leg_targets` comprueba cada postura contra los topes del modelo que simula. Las 27
 comprobaciones siguen pasando. El tobillo se queda como está y se penalizará al entrenar.
+
+**Etapa 3.5.8.** Sin experimento nuevo: comparación con el bípedo y auditoría independiente. No
+encontró defectos físicos, y ninguna cifra de aceptación cambia. Sí corrigió varias medidas: el ζ
+del brazo con `kv` es 6,2, la curva de velocidad cuenta como saturación, y los topes se pasan 2,87°
+con carga neta real de 2 veces el par. El «ruido de encoder» se suma al mando, así que las cifras
+de esa tabla son optimistas. Informe completo en
+[la validación](../documentation/phase-3.5-validation.md).
 
 ---
 

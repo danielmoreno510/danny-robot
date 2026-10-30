@@ -3,8 +3,8 @@
 Punto de entrada para continuar **Robot Danny** en un chat nuevo o en otra computadora.
 Se actualiza al terminar cada fase y cada vez que cambia el estado.
 
-**Fecha:** 30 de octubre de 2026. **Fase actual:** 3.5, humanoide completo.
-**Siguiente etapa:** 3.5.8, validación.
+**Fecha:** 30 de octubre de 2026. **Fase actual:** 3.5 terminada, en CONDITIONAL PASS aceptado.
+**Siguiente paso:** fase 4, empezando por los requisitos de «Qué sigue».
 
 ## Cómo empezar
 
@@ -13,7 +13,9 @@ Si eres Claude en un chat nuevo, lee en este orden:
 1. Este archivo.
 2. [CLAUDE.md](CLAUDE.md): reglas de trabajo del usuario.
 3. [ROADMAP.md](ROADMAP.md): plan y estado de cada etapa. Es la fuente de verdad.
-4. [documentation/phase-4-readiness-audit.md](documentation/phase-4-readiness-audit.md): qué
+4. [documentation/phase-3.5-validation.md](documentation/phase-3.5-validation.md): resultado de
+   la fase, comparación con el bípedo y condiciones.
+5. [documentation/phase-4-readiness-audit.md](documentation/phase-4-readiness-audit.md): qué
    falta para entrenar.
 
 Prepara el proyecto, con Python 3.12:
@@ -27,7 +29,7 @@ python3.12 -m venv .venv
 ```
 
 Debe terminar con `27 de 27 comprobaciones pasan`, en unos 3 minutos. La suite completa
-tarda unos 17:
+tarda unos 19:
 
 ```bash
 .venv/bin/python -m pytest tests
@@ -61,6 +63,7 @@ son bloques rígidos y la cabeza es una esfera simple, sin cara, a petición del
 | 3.5.6 | Cuello y cabeza | E21 |
 | Revisión | Motor por articulación y roll de cintura | E22 |
 | 3.5.7 | Integración: cuerpo en movimiento, IMU, postura `stand` y sensibilidad | E23 |
+| 3.5.8 | Validación y auditoría independiente del código | Documento propio |
 | Auditoría | Preparación para la fase 4: **todavía no estamos listos** | Documento propio |
 
 El humanoide, con motores de catálogo y brazos fijos, pasa E10 a E13 con los límites del
@@ -71,12 +74,11 @@ a E23.
 
 ## Qué sigue
 
-**Pendiente de decisión del usuario:** puntos de seguimiento e IMU de cabeza.
+**El usuario abre un chat nuevo para la fase 4.** Las condiciones de la fase 3.5 están en la
+[validación](documentation/phase-3.5-validation.md).
 
-**Etapa 3.5.8, validación:** informe de la fase, comparación con el bípedo y auditoría
-independiente del código, que se repite al cerrar cada fase. Después, avisar al usuario y
-actualizar este archivo. **El usuario abrirá un chat nuevo para la fase 4.** No empieces la fase
-4 sin su revisión.
+**Pendiente de decisión del usuario:** puntos de seguimiento e IMU de cabeza, y el `kv` de los
+brazos: con ζ 6,2 no oscilan libremente, y hay que decidirlo antes de buscar un balanceo natural.
 
 **Antes de la fase 4 faltan también decisiones del usuario:** GPU local o en la nube, y la
 licencia del repositorio. Hay que comprobar que el modelo funciona en MJX y las licencias de
@@ -105,18 +107,19 @@ de velocidad. Ver la [revisión](documentation/whole-body-motion-review.md).
 
 - Que exista equilibrio activo o compensación dinámica: no existen.
 - Que la marcha clásica sea natural: va a 0,009 m/s, y solo sirve como comprobación.
-- Que el exceso de los empujones sobre la estimación esté explicado: no lo está.
+- Que el exceso de los empujones sobre la estimación esté explicado: hay una causa probable, sin
+  prueba en el repositorio.
+- Que las cifras de ruido de encoder sean realistas: el ruido se suma al mando, no a la medida.
 - Que la ventana del visor se haya abierto: nadie la ha comprobado, solo con una falsa.
-- Que las 37 pruebas de realismo demuestren que el robot aguanta: solo miden.
+- Que las 73 pruebas de realismo demuestren que el robot aguanta: solo miden.
 
 ## Última verificación
 
 Del 30 de octubre de 2026, en macOS con Apple Silicon, Python 3.12 y MuJoCo 3.17:
 
-- `pytest tests`: **236 pruebas pasan** en la última ejecución completa (16 min 52 s), más la
-  prueba de cuerpo completo, añadida y pasada por separado: 237.
+- `pytest tests`: **236 de 236** en una ejecución completa (19 min 3 s).
 - `run_checks.py`: **27 de 27**.
-- Las 277 métricas del bípedo no cambian desde el commit `69fbdd1`.
+- Las cifras no cambian tras la auditoría, salvo el sobrepaso de tope, que ahora mide bien.
 - pyflakes sin avisos.
 - Camino del visor probado con una ventana falsa: la real no se ha abierto.
 

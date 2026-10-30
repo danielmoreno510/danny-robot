@@ -6,7 +6,7 @@ import pytest
 import walk_biped
 from biped_control import SIDES
 from helpers import E11, E13, STRAIGHT, run_walk
-from conftest import foot_corners, load_model, polygon_margin, record
+from conftest import foot_corners, polygon_margin, record
 
 MAX_SLIDE = 0.005  # m por apoyo
 MIN_CLEARANCE = 0.02  # m con el pie libre arriba
@@ -169,7 +169,3 @@ def test_deterministic(monkeypatch):
     difference = float(np.abs(first["q"] - second["q"]).max())
     record("software.determinismo", difference, "= 0", "rad")
     assert difference == 0.0
-
-
-def test_model_is_loaded_fresh():
-    assert load_model().nu == 12

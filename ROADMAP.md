@@ -36,7 +36,7 @@ Así se evita descubrir errores estructurales cuando ya hay piezas fabricadas.
 | 1 | Preparación del entorno y fundamentos | 1–5 | ✅ Completada |
 | 2 | Cinemática y articulaciones | 6–11 | ✅ Completada |
 | 3 | Simulación física y control del bípedo | 12–20 | 🟡 CONDITIONAL PASS, ver [validación](documentation/phase-3-validation.md) |
-| 3.5 | Humanoide completo en simulación | 3.5.1–3.5.8 | 🔄 Actual |
+| 3.5 | Humanoide completo en simulación | 3.5.1–3.5.8 | 🟡 CONDITIONAL PASS, ver [validación](documentation/phase-3.5-validation.md) |
 | 4 | Aprendizaje por refuerzo y locomoción | 21–28 | ⏳ Pendiente |
 | 5 | Diseño mecánico del humanoide | 29–35 | ⏳ Pendiente |
 | 6 | Fabricación de las piernas | 36–40 | ⏳ Pendiente |
@@ -150,7 +150,7 @@ reproducidos sobre el cuerpo completo.
 | 3.5.6 | Cabeza y cuello | ✅ E21: 30 GDL; cabeza simple, sin cara |
 | Revisión | Cuerpo completo para movimiento natural | ✅ [Revisión](documentation/whole-body-motion-review.md); E22: motor por articulación y roll de cintura, 31 GDL |
 | 3.5.7 | Integración: equilibrio y marcha con todo el cuerpo | ✅ E23: cuerpo moviéndose a la vez, IMU, postura guardada y sensibilidad |
-| 3.5.8 | Validación y documentación | ⏳ Siguiente |
+| 3.5.8 | Validación y documentación | ✅ [Informe](documentation/phase-3.5-validation.md) y auditoría independiente |
 
 **Reglas:** descripción modular del robot, sin duplicar articulaciones, geometría ni
 control. Se conservan los experimentos anteriores para comparar. Prioridad a la física,

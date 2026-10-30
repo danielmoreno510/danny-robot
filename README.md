@@ -41,7 +41,7 @@ los criterios. Los detalles están en el
 | 1 | Entorno y fundamentos | ✅ |
 | 2 | Cinemática y articulaciones | ✅ |
 | 3 | Simulación física y control del bípedo | 🟡 [CONDITIONAL PASS](documentation/phase-3-validation.md) |
-| **3.5** | **Humanoide completo en simulación** | 🔄 **Actual** |
+| **3.5** | **Humanoide completo en simulación** | 🟡 **CONDITIONAL PASS** |
 | 4 | Aprendizaje por refuerzo | ⏳ |
 | 5–8 | Diseño mecánico, fabricación, electrónica y paso al robot real | ⏳ |
 | 9–12 | Torso y brazos, visión e IA, manipulación, aplicación móvil | ⏳ |
@@ -116,6 +116,7 @@ Los scripts con `--view` imprimen primero el análisis y después abren la venta
 | [documentation/known-limitations.md](documentation/known-limitations.md) | Limitaciones actuales del robot |
 | [documentation/phase-3.5-proposal.md](documentation/phase-3.5-proposal.md) | Propuesta aprobada del humanoide completo |
 | [documentation/phase-3.5-mass-budget.md](documentation/phase-3.5-mass-budget.md) | Presupuesto de masa con motores de catálogo |
+| [documentation/phase-3.5-validation.md](documentation/phase-3.5-validation.md) | Validación de la fase 3.5, comparación con el bípedo y auditoría |
 | [documentation/whole-body-motion-review.md](documentation/whole-body-motion-review.md) | Revisión del cuerpo para movimiento natural y plan de la fase 4 |
 | [documentation/phase-4-readiness-audit.md](documentation/phase-4-readiness-audit.md) | Auditoría de preparación: qué falta para entrenar |
 | [PROJECT_HANDOFF.md](PROJECT_HANDOFF.md) | Relevo: cómo seguir en otro chat o en otra computadora |
@@ -140,6 +141,7 @@ danny-robot/
 │   ├── known-limitations.md    limitaciones actuales
 │   ├── phase-3.5-proposal.md   propuesta del humanoide completo
 │   ├── phase-3.5-mass-budget.md   presupuesto de masa
+│   ├── phase-3.5-validation.md   validación de la fase 3.5
 │   ├── whole-body-motion-review.md   revisión para movimiento natural
 │   └── phase-4-readiness-audit.md   auditoría de preparación
 ├── tests/              suite de validación automática

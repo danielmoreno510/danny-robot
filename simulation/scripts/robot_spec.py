@@ -37,7 +37,8 @@ LEG_LENGTH = THIGH_LENGTH + SHIN_LENGTH
 class Motor:
     """
     Un tipo de motor. Par y velocidad vienen del catálogo
-    (documentation/phase-3.5-mass-budget.md); los del STS3215 están sin confirmar.
+    (documentation/phase-3.5-mass-budget.md); los del STS3215 y la velocidad del
+    RobStride 00 están sin confirmar.
     kp sigue una regla: unas 6 veces el par de pico, sin redondeo fino.
     Armature (inercia reflejada por la reductora) y damping son ESTIMACIONES sin
     medir: la fase 4 debe variarlas. Sin armature, los tobillos resuenan a 12 Hz
@@ -71,7 +72,7 @@ class Joint:
     part: str
     axis: tuple[float, float, float]
     limits: tuple[float, float]  # rad, tope mecánico
-    kv: float  # N·m·s/rad
+    kv: float = 0.0  # N·m·s/rad, solo piernas; el resto lo fija Robot
     command_limits: tuple[float, float] | None = None  # rad; None = los del tope
 
 
@@ -94,28 +95,28 @@ ANKLE_JOINTS = LEG_JOINTS[4:]
 # Cintura: solo en el humanoide. Yaw sobre la pelvis, y encima roll y pitch. El roll
 # deja el torso vertical mientras la pelvis se inclina al andar.
 WAIST_JOINTS = (
-    Joint("waist_yaw", (0, 0, 1), (-0.7854, 0.7854), 0.0),  # ±45°
-    Joint("waist_roll", (1, 0, 0), (-0.3491, 0.3491), 0.0),  # ±20°
-    Joint("waist_pitch", (0, 1, 0), (-0.2618, 0.7854), 0.0),  # -15° a 45°
+    Joint("waist_yaw", (0, 0, 1), (-0.7854, 0.7854)),  # ±45°
+    Joint("waist_roll", (1, 0, 0), (-0.3491, 0.3491)),  # ±20°
+    Joint("waist_pitch", (0, 1, 0), (-0.2618, 0.7854)),  # -15° a 45°
 )
 
 # Cuello (etapa 3.5.6): yaw y, encima, pitch. Pitch positivo: hacia abajo.
 NECK_JOINTS = (
-    Joint("neck_yaw", (0, 0, 1), (-1.3963, 1.3963), 0.0),  # ±80°
-    Joint("neck_pitch", (0, 1, 0), (-0.5236, 0.7854), 0.0),  # -30° a 45°
+    Joint("neck_yaw", (0, 0, 1), (-1.3963, 1.3963)),  # ±80°
+    Joint("neck_pitch", (0, 1, 0), (-0.5236, 0.7854)),  # -30° a 45°
 )
 
 # Brazo (etapa 3.5.4), en orden desde el hombro. El brazo derecho refleja los ejes
 # (ver mirrored_axis): un ángulo positivo significa lo mismo en los dos lados.
 # Hombro pitch negativo: hacia delante. Hombro roll positivo: hacia fuera.
 ARM_JOINTS = (
-    Joint("shoulder_pitch", (0, 1, 0), (-2.618, 1.0472), 0.0),  # -150° a 60°
-    Joint("shoulder_roll", (1, 0, 0), (-0.1745, 2.0944), 0.0),  # -10° a 120°
-    Joint("shoulder_yaw", (0, 0, 1), (-1.5708, 1.5708), 0.0),  # ±90°
-    Joint("elbow", (0, -1, 0), (0.0, 2.4435), 0.0),  # 0° a 140°
-    Joint("wrist_yaw", (0, 0, 1), (-1.5708, 1.5708), 0.0),  # ±90°
-    Joint("wrist_pitch", (0, 1, 0), (-0.7854, 0.7854), 0.0),  # ±45°
-    Joint("wrist_roll", (1, 0, 0), (-0.7854, 0.7854), 0.0),  # ±45°
+    Joint("shoulder_pitch", (0, 1, 0), (-2.618, 1.0472)),  # -150° a 60°
+    Joint("shoulder_roll", (1, 0, 0), (-0.1745, 2.0944)),  # -10° a 120°
+    Joint("shoulder_yaw", (0, 0, 1), (-1.5708, 1.5708)),  # ±90°
+    Joint("elbow", (0, -1, 0), (0.0, 2.4435)),  # 0° a 140°
+    Joint("wrist_yaw", (0, 0, 1), (-1.5708, 1.5708)),  # ±90°
+    Joint("wrist_pitch", (0, 1, 0), (-0.7854, 0.7854)),  # ±45°
+    Joint("wrist_roll", (1, 0, 0), (-0.7854, 0.7854)),  # ±45°
 )
 # Postura fija de los brazos: con 15° el codo libra la esquina de la pelvis en todo el
 # giro de cintura (con 10°, chocaba a partir de unos 30°)

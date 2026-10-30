@@ -108,7 +108,7 @@ class PushedWalk(RecordingBiped):
 
 
 @pytest.mark.parametrize("force", [2.0, 5.0, 10.0, 15.0])
-def test_push_while_walking(force, monkeypatch):
+def test_measure_push_while_walking(force, monkeypatch):
     class Biped(PushedWalk):
         push_force = force
         push_start = 6.0

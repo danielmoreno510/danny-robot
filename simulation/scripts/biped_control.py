@@ -322,14 +322,17 @@ class Biped:
     def step(self, pose: Pose, swing: str | None) -> None:
         step_start = time.monotonic()
         ctrl = self.step_targets(pose, swing)
+        limited = np.zeros_like(ctrl, dtype=bool)
         if self.speed_limit is not None:
-            ctrl = self.limit_torque_speed(ctrl)
+            wanted = ctrl
+            ctrl = self.limit_torque_speed(wanted)
+            limited = np.abs(ctrl - wanted) > 1e-9
 
         self.data.ctrl[self.actuator_ids] = ctrl
         mujoco.mj_step(self.model, self.data)
 
         torque = np.abs(read_sensors(self.data, self.torque_sensors))
-        self.saturated_steps += torque >= self.force_limit - 1e-6
+        self.saturated_steps += (torque >= self.force_limit - 1e-6) | limited
         self.total_steps += 1
         for contact in self.data.contact[: self.data.ncon]:
             if self.floor_geom not in (int(contact.geom1), int(contact.geom2)):
@@ -365,4 +368,6 @@ def center_com_over(biped: Biped, pose: Pose, side: str, inset: float = 0.0) -> 
         if np.linalg.norm(error) < 1e-6:
             break
         pelvis[:2] += error
+    else:
+        raise RuntimeError(f"center_com_over no converge: quedan {1000 * np.linalg.norm(error):.2f} mm")
     return replace(pose, pelvis=pelvis)

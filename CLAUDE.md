@@ -74,22 +74,22 @@ ventana no se ha abierto.
 
 ## Estado actual
 
-Fase 3 en **CONDITIONAL PASS**, revisada y aceptada por el usuario. Limitaciones en
-`documentation/known-limitations.md`. **Actual: fase 3.5, humanoide completo.**
+Fases 3 y 3.5 en **CONDITIONAL PASS**, revisadas y aceptadas por el usuario. Limitaciones en
+`documentation/known-limitations.md`. **Siguiente: fase 4**, tras los requisitos de abajo.
 La propuesta aprobada está en `documentation/phase-3.5-proposal.md`, y la revisión
 `documentation/whole-body-motion-review.md` la amplió a 31 GDL. Mide 70 cm. El
 objetivo de masa es 11 kg, con el reparto de `documentation/phase-3.5-mass-budget.md`.
 
-Hecha la etapa 3.5.7 (E23): 31 GDL, cada articulación con su motor en `robot_spec.py`, IMU,
-velocidades y postura `stand`. Armature y amortiguamiento son estimaciones.
-**Siguiente: 3.5.8, validación.**
+Hecha la etapa 3.5.8: 31 GDL, cada articulación con su motor en `robot_spec.py`, IMU, velocidades
+y postura `stand`. Armature y amortiguamiento son estimaciones.
+Validación en `documentation/phase-3.5-validation.md`. **Antes de entrenar:** GPU, MJX y licencias.
 
 **Se avanza por etapas, con revisión: no implementes todo a la vez.** Después de la fase 3.5 viene la fase 4, cuyo entorno debe cumplir la
 lista del roadmap. No marques como implementados la compensación dinámica ni el
 equilibrio activo.
 
-Comprobaciones: `run_checks.py` (27, unos 3 minutos) y `python -m pytest tests` (238, unos
-17 minutos).
+Comprobaciones: `run_checks.py` (27, unos 3 minutos) y `python -m pytest tests` (236, unos
+19 minutos).
 Las pruebas de realismo miden sin exigir: que pasen no significa que el robot aguante
 ese efecto. Mira `results/phase3_metrics.json`.
 
@@ -106,6 +106,7 @@ ese efecto. Mira `results/phase3_metrics.json`.
   incumple por muy poco el error en reposo. Ver E18 y E22.
 - El paso de recuperación no funcionó con control clásico: el robot salta en vez
   de dar un paso. Se pasó a la etapa 26. El código está en el commit `6c083cc`.
+- Extensión de cadera del humanoide: 30°. La flexión dorsal se penalizará al entrenar.
 - La marcha usa compensación estática. La dinámica se probó (E15) y se eliminó: no
   aporta con el cuerpo de Danny. El código está en el commit `f24ed39`.
 - La auditoría de la etapa 20 fue una revisión independiente del código, que

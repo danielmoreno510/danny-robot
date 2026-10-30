@@ -84,7 +84,15 @@ retardos, incumple.
 - El plan de la marcha no conoce la cintura. Se mide que tolera ±30° de yaw y 30° de
   pitch, a 0,25 Hz y sin carga, pero nada la usa para equilibrar.
 - Los límites de empujón (46 a 57 N) son lo medido menos 2 N. El máximo en x, 48 N, supera
-  los 43 N de la estimación de cuerpo rígido: esa diferencia sigue **sin explicar**.
+  los 43 N de la estimación instantánea. Probable causa: integrado durante el empujón, un cuerpo
+  rígido volcaría a 53,7 N (cálculo de la auditoría, sin prueba en el repositorio).
+- El brazo no oscila libremente: el amortiguamiento pasivo da ζ 0,63, pero con el `kv` del
+  actuador sube a 6,2.
+- La curva de par-velocidad no ha llegado a recortar en E10 a E14: no está probada en
+  movimiento rápido.
+- En las piernas, un ángulo positivo de roll o yaw significa lo contrario en cada lado. En los
+  brazos significa lo mismo.
+- Con `mj_resetData` sin keyframe, las plantas quedan 1 cm bajo el suelo. Usa `stand`.
 
 ## Modelo físico
 
@@ -95,8 +103,16 @@ retardos, incumple.
 
 ## Pruebas
 
-- Las 37 pruebas de `test_realism.py` miden sin exigir: que pasen no significa que el
+- Las 73 pruebas de `test_realism.py` miden sin exigir: que pasen no significa que el
   robot aguante ese efecto.
+- El «ruido de encoder» se suma al mando. El compensador y `kv` usan el estado exacto, así que
+  esas cifras son optimistas. La fase 4 debe modelarlo en la medida.
+- El margen del CdM de la marcha se mide al final de cada fase, no en continuo.
+- `check_acceptance` solo sigue las piernas. Equilibrio y empujones no miran autocolisiones.
+- `--view` no abre la ventana si el robot cae antes.
+- `test_response_is_passive_not_feedback` documenta un plan constante: no puede fallar.
+- Las pruebas de XML idéntico solo se han comprobado en macOS: el keyframe sale de una iteración
+  numérica.
 - Holgura mecánica: NOT TESTED.
 - Ventana del visor: no se ha abierto en ninguna auditoría.
 - Solo probado en macOS con Apple Silicon.

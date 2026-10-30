@@ -24,6 +24,7 @@ WIDTH = 0.05
 WAIST_FREQUENCY = 0.25  # Hz
 HAND_LOAD = 0.3  # kg, en el presupuesto de masa
 ARM_SWING_DEG = 20
+LEFT_ARM = ("left_shoulder", "left_upper_arm", "left_forearm", "left_hand")
 YAW_PITCH = [0, 2]  # posiciones de esos ejes en held_target, tras los de la cintura
 
 
@@ -124,7 +125,7 @@ def test_walking_with_waist_held(name, gait, speed, hold, monkeypatch):
     record(f"humanoide.{name}.incl_max", a["tilt"].max(), "< 5", "°")
     record(f"humanoide.{name}.pie_fuera", 1000 * max(np.nanmax(r.foot_slip) for r in results), "< 5", "mm")
     record(f"humanoide.{name}.error_movimiento", max(r.tracking_error_deg for r in results), "< 1", "°")
-    record(f"humanoide.{name}.par_max", np.abs(a["torque"]).max(), "< 20", "N·m")
+    record(f"humanoide.{name}.par_max", np.abs(a["torque"]).max(), "informativa: tope, el de cada motor", "N·m")
     assert not failures, failures[:3]
 
 
@@ -180,7 +181,7 @@ def test_moving_waist_while_standing(yaw, pitch):
     prefix = f"humanoide.cintura_yaw{yaw}_pitch{pitch}"
     record(f"{prefix}.deriva_pies", 1000 * drift, "< 5", "mm")
     record(f"{prefix}.margen_cdm", 1000 * margin, "> 15", "mm")
-    record(f"{prefix}.par_max", np.abs(a["torque"][start:]).max(), "< 20", "N·m")
+    record(f"{prefix}.par_max", np.abs(a["torque"][start:]).max(), "informativa: tope, el de cada motor", "N·m")
     record(f"{prefix}.error_cintura", math.degrees(tracking), "< 1", "°")
     assert drift < 0.005
     assert margin > 0.015
@@ -338,7 +339,7 @@ def test_arm_sweep_finds_only_real_collisions():
         mujoco.mj_forward(model, data)
         pairs = [{model.geom(int(c.geom1)).name, model.geom(int(c.geom2)).name} for c in data.contact[: data.ncon]]
         for pair in pairs:
-            assert any(name.startswith("left_") for name in pair - body), pair
+            assert any(name.startswith(LEFT_ARM) for name in pair - body), pair
         hits += bool(pairs)
     record("humanoide.brazo.posturas_con_choque", 100 * hits / trials, "informativa", "%")
     assert 0 < hits < trials
@@ -473,10 +474,11 @@ def test_arm_swing_standing_is_within_catalog_limits():
         if data.time - start > 1.0:
             torque = max(torque, abs(data.actuator_force[motor]))
             speed = max(speed, abs(data.qvel[dof]))
-    record("humanoide.balanceo_brazos.par", torque, "< 7,3", "N·m")
+    available = spec.XM540.peak_torque * (1 - speed / spec.XM540.no_load_speed)
+    record("humanoide.balanceo_brazos.par", torque, "< par disponible a esa velocidad", "N·m")
     record("humanoide.balanceo_brazos.velocidad", speed, "< 5,55", "rad/s")
-    assert torque < 7.3
-    assert speed < 5.55
+    record("humanoide.balanceo_brazos.par_disponible", available, "informativa", "N·m")
+    assert torque < available
 
 
 def test_walking_with_arm_swing(monkeypatch):
@@ -506,15 +508,37 @@ def test_each_joint_uses_its_own_motor(part):
     assert joint.armature[0] == motor.armature
 
 
-def test_torque_speed_curve_is_always_on():
+def test_torque_speed_curve_limits_the_torque_and_counts_as_saturation():
     model = humanoid()
-    biped = Biped(model, mujoco.MjData(model))
+    data = mujoco.MjData(model)
+    biped = Biped(model, data)
     assert len(biped.speed_limit) == model.nu
     assert biped.speed_limit.min() == spec.STS3215.no_load_speed
 
+    stand = Pose(np.array([0.0, 0.0, pelvis_height(KNEE)]), np.array([0.0, WIDTH, 0.0]), np.array([0.0, -WIDTH, 0.0]))
+    biped.set_pose(data, stand)
+    motor = biped.actuator_ids.index(model.actuator("left_knee_motor").id)
+    data.qvel[biped.dof_ids[motor]] = 0.5 * biped.speed_limit[motor]
+    ctrl = data.qpos[biped.control_qpos].copy()
+    ctrl[motor] += 1.0  # pide todo el par en el sentido del giro
+    limited = biped.limit_torque_speed(ctrl)
+    q, speed = data.qpos[biped.control_qpos[motor]], data.qvel[biped.dof_ids[motor]]
+    torque = biped.kp[motor] * (limited[motor] - q) - biped.kv[motor] * speed
+    assert abs(torque - 0.5 * biped.force_limit[motor]) < 1e-6
 
-def test_arm_can_swing_like_a_pendulum():
-    """Sobreamortiguado (zeta >= 1) no podría oscilar libremente."""
+    class Clipped(Biped):
+        def step_targets(self, pose, swing):
+            return ctrl
+    clipped = Clipped(model, data)
+    clipped.step(stand, None)
+    assert clipped.saturated_steps[motor] == 1
+
+
+def test_arm_passive_damping_alone_would_let_it_swing():
+    """
+    Solo la articulación, sin motor: es lo que oscilaría soltando el motor. Con el kv del
+    actuador, que siempre actúa, el brazo queda sobreamortiguado: no oscila libremente.
+    """
     model = humanoid()
     data = mujoco.MjData(model)
     arm_pose(model, data, shoulder_pitch=-1.5708)
@@ -527,8 +551,10 @@ def test_arm_can_swing_like_a_pendulum():
     inertia = row[dof]
     frequency = math.sqrt(abs(data.qfrc_inverse[dof]) / inertia)
     zeta = model.dof_damping[dof] / (2 * inertia * frequency)
+    with_motor = (model.dof_damping[dof] + spec.HUMANOID.arm_kv["shoulder_pitch"]) / (2 * inertia * frequency)
     record("humanoide.brazo.frecuencia_propia", frequency / (2 * math.pi), "informativa", "Hz")
-    record("humanoide.brazo.zeta", zeta, "< 1")
+    record("humanoide.brazo.zeta_pasivo", zeta, "< 1")
+    record("humanoide.brazo.zeta_con_kv", with_motor, "informativa: sobreamortiguado si > 1")
     assert zeta < 1
 
 
@@ -571,7 +597,7 @@ def test_moving_waist_roll_while_standing(amplitude):
     assert math.degrees(tracking) < 1.0
 
 
-def test_walking_with_waist_roll(monkeypatch):
+def test_measure_walking_with_waist_roll(monkeypatch):
     """E13 con ±10° de roll de cintura. Sin exigir: la marcha clásica no lo planifica."""
 
     class Rolling(RecordingBiped):

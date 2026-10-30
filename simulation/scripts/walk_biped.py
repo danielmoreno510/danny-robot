@@ -385,6 +385,8 @@ def main() -> int:
     parser.add_argument("--friction", type=float, default=None, help="fricción real del suelo")
     parser.add_argument("--timestep", type=float, default=None, help="paso de simulación [s]")
     args = parser.parse_args()
+    if args.turn < 0:
+        parser.error("--turn solo gira a la izquierda: usa un valor positivo")
     gait = Gait(args.knee, args.step, args.width, args.inset, args.turn)
 
     model_path = ROOT / "models" / ROBOTS[args.robot].file
@@ -429,7 +431,7 @@ def main() -> int:
         for failure in failures:
             print(f"  FAIL: {failure}")
     else:
-        print("  PASS: sin caerse, pies en su sitio, CdM siempre sobre el pie de apoyo, sin saturación")
+        print("  PASS: sin caerse, pies en su sitio, CdM sobre el pie de apoyo al final de cada fase, sin saturación")
 
     if args.view:
         try:

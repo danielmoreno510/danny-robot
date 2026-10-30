@@ -5,7 +5,8 @@ handbook); los 3 y 4 siguen pendientes. Las secciones 3 a 6 describen el modelo 
 a esos cambios, de 30 GDL. La fase 3.5 sigue abierta y la fase 4 no ha empezado.
 
 Resultado de E22: el balanceo de ±20° a 1,5 Hz pasa de 1,95 a 1,09 N·m, y el brazo baja de ζ
-1,6 a 0,63, aunque con un amortiguamiento que sigue siendo una estimación.
+1,6 a 0,63, aunque con un amortiguamiento que sigue siendo una estimación. **Corrección de la
+auditoría:** ese ζ es solo el pasivo. Con el `kv` del actuador es 6,2, y el brazo no oscila solo.
 
 ## 1. Objetivo y regla de esta revisión
 
