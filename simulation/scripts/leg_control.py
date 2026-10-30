@@ -6,6 +6,7 @@ Danny - Utilidades de control compartidas por los scripts de la pierna.
   - GravityCompensator: feedforward de gravedad con la pierna en el aire (experimento 7).
   - StanceCompensator: feedforward con uno o dos pies apoyados (experimentos 8-10).
   - leg_ik: cinemática inversa de una pierna de 6 GDL con el pie plano (experimento 10).
+  - check_joint_limits: informa de las articulaciones fuera de rango.
   - SQUAT_KNEE_DEG: la sentadilla de los experimentos 8 y 9.
 """
 
@@ -17,6 +18,9 @@ import numpy as np
 
 TRANSITION_TIME = 1.5  # s, duración de la interpolación en modo smooth
 HOLD_TIME = 1.5  # s, tiempo quieto en cada objetivo antes de medir
+
+LENGTH_TOLERANCE = 1e-9  # m
+ANGLE_TOLERANCE = 1e-9  # rad
 
 # Nombres de la pierna de 2 GDL (experimentos 4 a 8)
 LEG_2DOF_JOINTS = ("hip_joint", "knee_joint")
@@ -181,6 +185,25 @@ class StanceCompensator:
         return self.torque(qpos, support, points) / self.kp
 
 
+class UnreachableTargetError(ValueError):
+    """El tobillo pedido está más lejos de lo que alcanza la pierna."""
+
+
+class JointLimitError(ValueError):
+    """La postura pedida saca alguna articulación de su rango mecánico."""
+
+
+def check_joint_limits(angles: np.ndarray, limits: np.ndarray, names: tuple[str, ...]) -> None:
+    """Lanza JointLimitError con todas las articulaciones fuera de rango."""
+    outside = [
+        f"{name} = {math.degrees(angle):.1f}° (rango {math.degrees(low):.1f}° a {math.degrees(high):.1f}°)"
+        for name, angle, (low, high) in zip(names, angles, limits)
+        if not low - ANGLE_TOLERANCE <= angle <= high + ANGLE_TOLERANCE
+    ]
+    if outside:
+        raise JointLimitError("; ".join(outside))
+
+
 def leg_ik(
     ankle_in_hip: np.ndarray,
     thigh_length: float = 0.25,
@@ -199,13 +222,22 @@ def leg_ik(
       3. El tobillo deshace los giros para que la planta quede horizontal:
          ankle_pitch = -(hip_pitch + knee), ankle_roll = -hip_roll.
     El yaw se deja a 0 (pie mirando adelante).
+
+    Lanza UnreachableTargetError si el tobillo está fuera de alcance: nunca
+    recorta en silencio. Los rangos articulares los comprueba quien conoce
+    el robot, con check_joint_limits.
     """
     x, y, z = ankle_in_hip
     hip_roll = math.atan2(y, -z)
     down = math.hypot(y, z)  # distancia hacia "abajo" dentro del plano de la pierna
 
     a, b = thigh_length, shin_length
-    reach = min(math.hypot(x, down), a + b)  # sin pasarse de la pierna estirada
+    reach = math.hypot(x, down)
+    if reach > a + b + LENGTH_TOLERANCE:
+        raise UnreachableTargetError(
+            f"tobillo a {100 * reach:.2f} cm de la cadera; la pierna mide {100 * (a + b):.2f} cm"
+        )
+    reach = min(reach, a + b)  # solo redondeo: lo que sobra es menor que la tolerancia
     cos_inner = (a * a + b * b - reach * reach) / (2 * a * b)
     knee = math.pi - math.acos(max(-1.0, min(1.0, cos_inner)))
 

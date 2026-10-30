@@ -216,7 +216,7 @@ def main() -> int:
 
     try:
         results, saturation = run(model, data)
-    except RuntimeError as error:
+    except (RuntimeError, ValueError) as error:
         print(f"\n=== Criterios de aceptación ===\n  FAIL: {error}")
         return 1
 

@@ -41,13 +41,16 @@
       armature="0.01"
       limited="true"
     />
-    <!-- Por defecto nada choca: solo pies y suelo activan el contacto -->
+    <!--
+      Todo el cuerpo colisiona: piernas entre sí, con la pelvis y el torso, y con
+      el suelo. MuJoCo excluye los cuerpos directamente unidos.
+    -->
     <geom
       type="capsule"
       size="0.025"
       rgba="0.1 0.4 0.9 1"
-      contype="0"
-      conaffinity="0"
+      contype="1"
+      conaffinity="1"
     />
     <position
       kp="100"
@@ -156,6 +159,15 @@
     </body>
 
   </worldbody>
+
+  <!--
+    La cadera está dentro de la pelvis a propósito. MuJoCo excluye los cuerpos
+    unidos, pero no si el padre está fijo al mundo: se declara para cualquier montaje.
+  -->
+  <contact>
+    <exclude body1="pelvis" body2="left_thigh"/>
+    <exclude body1="pelvis" body2="right_thigh"/>
+  </contact>
 
   <!--
     kp = 100 (default). kv = 2 * 0.8 * sqrt(kp * (I + armature)), con I medida

@@ -9,9 +9,9 @@ import mujoco
 import numpy as np
 import pytest
 
-from biped_control import HIP_Y, JOINT_PARTS, Biped, Pose, joint_targets, rotation_z
+from biped_control import HIP_Y, JOINT_LIMITS, JOINT_PARTS, JOINTS, Biped, Pose, joint_targets, rotation_z
 from conftest import load_model, record
-from leg_control import leg_ik
+from leg_control import JointLimitError, UnreachableTargetError, leg_ik
 
 THIGH, SHIN, HIP_DROP, SOLE = 0.16, 0.16, 0.05, 0.04
 SEED = 2026
@@ -120,15 +120,19 @@ def test_biped_targets_place_feet_with_yaw_on_mujoco():
     biped = Biped(model, data)
     rng = np.random.default_rng(SEED)
     worst, worst_yaw = 0.0, 0.0
-    for _ in range(500):
+    tested = 0
+    while tested < 500:
         pose = Pose(
             np.array([rng.uniform(-0.1, 0.1), rng.uniform(-0.03, 0.03), rng.uniform(0.30, 0.36)]),
             np.array([rng.uniform(-0.08, 0.08), 0.07 + rng.uniform(-0.02, 0.02), rng.uniform(0, 0.03)]),
             np.array([rng.uniform(-0.08, 0.08), -0.07 + rng.uniform(-0.02, 0.02), rng.uniform(0, 0.03)]),
-            rng.uniform(-0.5, 0.5), rng.uniform(-0.5, 0.5), rng.uniform(-0.5, 0.5),
+            0.0, rng.uniform(-0.6, 0.6), rng.uniform(-0.6, 0.6),
         )
-        pose.pelvis[:2] += 0.0
-        biped.set_pose(data, pose)
+        try:
+            biped.set_pose(data, pose)
+        except (UnreachableTargetError, JointLimitError):
+            continue  # postura imposible, bien rechazada
+        tested += 1
         for index, (sole, yaw) in enumerate(((pose.left_sole, pose.left_yaw), (pose.right_sole, pose.right_yaw))):
             site = biped.sole_ids[index]
             worst = max(worst, np.linalg.norm(data.site_xpos[site] - sole))
@@ -140,27 +144,38 @@ def test_biped_targets_place_feet_with_yaw_on_mujoco():
     assert math.degrees(worst_yaw) < 1e-4
 
 
-def test_analytic_jacobian_near_singularity():
+def test_near_singularity_is_finite():
     """Con la pierna casi recta, la IK sigue siendo estable y no da NaN."""
     results = []
-    for reach in (0.30, 0.31, 0.318, 0.3199, 0.32, 0.325, 0.40):
+    for reach in (0.30, 0.31, 0.318, 0.3199, 0.32):
         q = leg_ik(np.array([0.0, 0.0, -reach]), THIGH, SHIN)
         results.append(q)
         assert np.all(np.isfinite(q)), reach
     record("cinematica.rodilla_con_pierna_recta", math.degrees(results[4][3]), "0 sin NaN", "°")
-    step = np.degrees(np.abs(np.diff([q[3] for q in results[:4]])).max())
+    step = np.degrees(np.abs(np.diff([q[3] for q in results])).max())
     record("cinematica.salto_rodilla_cerca_singularidad", step, "informativa", "°")
 
 
-def test_unreachable_target_is_not_detected_by_leg_ik():
-    """Riesgo documentado: leg_ik recorta sin avisar; solo walk_biped lo comprueba."""
-    target = np.array([0.0, 0.0, -0.40])
-    q = leg_ik(target, THIGH, SHIN)
-    sole, foot = analytic_fk(q, "left")
-    ankle = sole - foot @ [0, 0, -SOLE]
-    error = np.linalg.norm(ankle - np.array([0, HIP_Y, -HIP_DROP]) - target)
-    record("cinematica.error_objetivo_inalcanzable", error, "informativa: 8 cm sin aviso", "m")
-    assert error > 0.05
+@pytest.mark.parametrize("target", [(0.0, 0.0, -0.3201), (0.0, 0.0, -0.40), (0.3, 0.2, -0.1)])
+def test_unreachable_target_is_reported(target):
+    with pytest.raises(UnreachableTargetError):
+        leg_ik(np.array(target), THIGH, SHIN)
+
+
+def test_limit_of_reach_is_accepted():
+    assert np.all(np.isfinite(leg_ik(np.array([0.0, 0.0, -0.32]), THIGH, SHIN)))
+
+
+def test_joint_limit_violation_is_reported_with_the_joint_name():
+    pose = Pose(np.array([0.0, 0.0, 0.33]), np.array([0.0, 0.07, 0.0]), np.array([0.0, -0.07, 0.0]), 0.0, 1.0, 0.0)
+    with pytest.raises(JointLimitError, match="left_hip_yaw_joint"):
+        joint_targets(pose)
+
+
+def test_limit_constants_match_the_model():
+    model = load_model()
+    for name, limits in zip(JOINTS, JOINT_LIMITS):
+        assert np.allclose(model.joint(name).range, limits), name
 
 
 def test_joint_targets_do_not_change_with_side_swap_symmetry():

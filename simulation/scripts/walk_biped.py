@@ -50,7 +50,6 @@ from biped_control import (
     Pose,
     center_com_over,
     joint_targets,
-    joints_out_of_range,
     leg_reach,
     pelvis_height,
     rotation_z,
@@ -200,9 +199,7 @@ def build_plan(biped: Biped, gait: Gait) -> tuple[Pose, list[Phase]]:
                 f"'{phase.name}' pide estirar la pierna al {100 * reach:.1f} % "
                 f"(máximo {100 * MAX_REACH:.0f} %)"
             )
-        outside = joints_out_of_range(biped.model, phase.pose)
-        if outside:
-            raise ValueError(f"'{phase.name}' se sale del rango: {', '.join(outside)}")
+        joint_targets(phase.pose)  # lanza un error si alguna postura es imposible
     return stand, phases
 
 
@@ -217,7 +214,7 @@ def run(
 ) -> tuple[list[PhaseResult], np.ndarray, bool]:
     """
     speed divide las transiciones; hold es la pausa tras cada una [s].
-    Devuelve resultados por fase, fracción saturada y si los pies chocaron.
+    Devuelve resultados por fase, fracción saturada y si el robot chocó consigo mismo.
     nominal_model: el modelo que cree tener el controlador, si difiere de 'model'.
     """
     biped = Biped(model, data, viewer, nominal_model=nominal_model)
@@ -292,7 +289,7 @@ def run(
         )
         previous = phase.pose
 
-    return results, biped.saturated_steps / biped.total_steps, biped.feet_collided
+    return results, biped.saturated_steps / biped.total_steps, biped.self_collided
 
 
 def print_report(
@@ -330,13 +327,13 @@ def check_acceptance(
     results: list[PhaseResult],
     saturation: np.ndarray,
     weight: float,
-    feet_collided: bool,
+    self_collided: bool,
 ) -> list[str]:
     failures: list[str] = []
     if np.any(saturation > 0):
         failures.append("hay saturación de torque")
-    if feet_collided:
-        failures.append("los pies chocan entre sí")
+    if self_collided:
+        failures.append("el robot choca consigo mismo")
     for r in results:
         if r.max_tilt_deg > MAX_TILT_DEG:
             failures.append(f"{r.name}: la pelvis se inclina {r.max_tilt_deg:.1f}°")
@@ -411,7 +408,7 @@ def main() -> int:
           f"transiciones x{args.speed:g}, pausas {args.hold:g} s")
 
     try:
-        results, saturation, feet_collided = run(
+        results, saturation, self_collided = run(
             model, data, speed=args.speed, hold=args.hold, gait=gait, nominal_model=nominal
         )
     except (RuntimeError, ValueError) as error:
@@ -421,7 +418,7 @@ def main() -> int:
     x_axis = data.xmat[pelvis_id].reshape(3, 3)[:, 0]
     print_report(results, saturation, data.xpos[pelvis_id], math.degrees(math.atan2(x_axis[1], x_axis[0])))
     print(f"  Duración total: {data.time:.1f} s")
-    failures = check_acceptance(results, saturation, weight, feet_collided)
+    failures = check_acceptance(results, saturation, weight, self_collided)
     print("\n=== Criterios de aceptación ===")
     if failures:
         for failure in failures:

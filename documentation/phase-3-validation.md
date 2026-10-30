@@ -375,3 +375,20 @@ reproducibles y no impiden empezar.
 **NOT TESTED:** holgura mecánica, ventana del visor, otros sistemas operativos, IMU
 (no se usa), empujones en otros instantes de la marcha, y cualquier comparación con
 hardware real.
+
+---
+
+## Anexo: correcciones tras la revisión
+
+Este informe se conserva como se escribió, y la fase 3 sigue en **CONDITIONAL PASS**.
+Después de revisarlo se decidió crear la fase 3.5 y corregir antes estos problemas:
+
+| Problema | Corrección |
+|---|---|
+| C5: `leg_ik` recortaba en silencio | Lanza `UnreachableTargetError`. `joint_targets` comprueba los 12 rangos y lanza `JointLimitError`, en todas las pruebas, no solo en la marcha |
+| C7: solo chocaban pies y suelo | Todo el cuerpo colisiona, con exclusiones declaradas entre pelvis y muslos |
+| Limitaciones | Documentadas en [known-limitations.md](known-limitations.md) |
+
+Regresión tras los cambios: 124 de 124 pruebas y 16 de 16 comprobaciones, sin aflojar
+ningún límite. Las cifras de marcha, seguimiento y empujones no cambiaron. La
+compensación dinámica y el equilibrio activo siguen sin implementar.

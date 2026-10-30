@@ -62,19 +62,23 @@ ventana no se ha abierto.
 
 ## Estado actual
 
-Fase 3 en **CONDITIONAL PASS**: ver `documentation/phase-3-validation.md`, que el
-usuario debe revisar. **No empieces la fase 4 hasta que lo apruebe.** Antes de entrenar
-hay correcciones pendientes: la sección D de ese documento.
+Fase 3 en **CONDITIONAL PASS**, revisada y aceptada por el usuario. Limitaciones en
+`documentation/known-limitations.md`. **Actual: fase 3.5, humanoide completo.**
+La propuesta aprobada está en `documentation/phase-3.5-proposal.md`: 30 GDL, 70 cm, 10
+kg provisionales. Siguen las etapas 3.5.1 (masa con motores de catálogo) y 3.5.2.
 
-Comprobaciones: `run_checks.py` (16) y `python -m pytest tests` (117, unos 5 minutos).
+**Se avanza por etapas, con revisión: no implementes todo a la vez.** Después de la fase 3.5 viene la fase 4, cuyo entorno debe cumplir la
+lista del roadmap. No marques como implementados la compensación dinámica ni el
+equilibrio activo.
+
+Comprobaciones: `run_checks.py` (16) y `python -m pytest tests` (124, unos 5 minutos).
 Las pruebas de realismo miden sin exigir: que pasen no significa que el robot aguante
 ese efecto. Mira `results/phase3_metrics.json`.
 
 **Pendiente de decidir por el usuario:**
 
 - Licencia: el repositorio es público y no tiene.
-- Propuestas del final de `ROADMAP.md`: límites de motor realistas y ruido de
-  sensores.
+- Hardware de entrenamiento: GPU local o en la nube.
 
 **Decisiones ya tomadas:**
 

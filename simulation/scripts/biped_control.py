@@ -4,7 +4,6 @@ Danny - Utilidades del bípedo (danny.xml), compartidas por los experimentos 10 
   - Pose: dónde están la pelvis y las plantas de los pies (espacio de tareas).
   - joint_targets: IK de las dos piernas para una Pose.
   - leg_reach: cuánto se estira cada pierna en una Pose (1 = recta).
-  - joints_out_of_range: articulaciones que una Pose saca de su rango.
   - Biped: estado del robot, reparto del peso y un paso de simulación con
     StanceCompensator y feedforward de velocidad.
   - center_com_over: mueve la pelvis hasta que el CdM queda sobre un pie.
@@ -18,7 +17,7 @@ from dataclasses import dataclass, replace
 import mujoco
 import numpy as np
 
-from leg_control import StanceCompensator, get_id, leg_ik, read_sensors
+from leg_control import StanceCompensator, check_joint_limits, get_id, leg_ik, read_sensors
 
 
 SIDES = ("left", "right")
@@ -34,6 +33,15 @@ LEG_LENGTH = THIGH_LENGTH + SHIN_LENGTH
 HIP_Y = 0.07  # m, caderas en y = ±0.07
 HIP_BELOW_PELVIS = 0.05  # m
 SOLE_BELOW_ANKLE = 0.04  # m
+LEG_JOINT_LIMITS = np.array([  # rad, como en danny.xml; una prueba lo vigila
+    [-0.6981, 0.6981],  # hip_yaw
+    [-0.5236, 0.5236],  # hip_roll
+    [-1.5708, 1.5708],  # hip_pitch
+    [0.0, 2.2689],  # knee
+    [-1.1345, 0.7854],  # ankle_pitch
+    [-0.5236, 0.5236],  # ankle_roll
+])
+JOINT_LIMITS = np.vstack([LEG_JOINT_LIMITS, LEG_JOINT_LIMITS])
 FOOT_HALF = np.array([0.07, 0.04])  # m, medio largo y medio ancho de la planta
 
 LOADED_FOOT_FORCE = 10.0  # N, a partir de aquí el pie se considera cargado
@@ -110,25 +118,17 @@ def joint_targets(pose: Pose) -> np.ndarray:
     """
     IK de las dos piernas, con la pelvis y los pies horizontales. hip_yaw es
     lo que gira el pie respecto a la pelvis; el resto de la pierna trabaja en
-    los ejes del pie, y ahí vale leg_ik.
+    los ejes del pie, y ahí vale leg_ik. Lanza UnreachableTargetError o
+    JointLimitError en vez de pedir una postura imposible.
     """
     targets = []
     for vector, foot_yaw in zip(_ankles_in_hips(pose), (pose.left_yaw, pose.right_yaw)):
         angles = leg_ik(rotation_z(-foot_yaw) @ vector, THIGH_LENGTH, SHIN_LENGTH)
         angles[0] = foot_yaw - pose.pelvis_yaw
         targets.append(angles)
-    return np.concatenate(targets)
-
-
-def joints_out_of_range(model: mujoco.MjModel, pose: Pose) -> list[str]:
-    """Articulaciones que la pose saca de su rango mecánico."""
-    angles = joint_targets(pose)
-    outside = []
-    for name, angle in zip(JOINTS, angles):
-        low, high = model.jnt_range[get_id(model, mujoco.mjtObj.mjOBJ_JOINT, name)]
-        if not low <= angle <= high:
-            outside.append(f"{name} = {math.degrees(angle):.1f}°")
-    return outside
+    result = np.concatenate(targets)
+    check_joint_limits(result, JOINT_LIMITS, JOINTS)
+    return result
 
 
 def leg_reach(pose: Pose) -> float:
@@ -162,7 +162,8 @@ class Biped:
         self.pelvis_id = get_id(model, mujoco.mjtObj.mjOBJ_BODY, "pelvis")
         self.foot_ids = [get_id(model, mujoco.mjtObj.mjOBJ_BODY, f"{s}_foot") for s in SIDES]
         self.foot_geoms = {get_id(model, mujoco.mjtObj.mjOBJ_GEOM, f"{s}_foot_geom") for s in SIDES}
-        self.feet_collided = False
+        self.floor_geom = get_id(model, mujoco.mjtObj.mjOBJ_GEOM, "floor")
+        self.self_collided = False
         self.sole_ids = [get_id(model, mujoco.mjtObj.mjOBJ_SITE, f"{s}_sole_site") for s in SIDES]
         self.force_limit = model.actuator_forcerange[self.actuator_ids, 1]
         self.plan_model = model if nominal_model is None else nominal_model
@@ -315,8 +316,8 @@ class Biped:
         self.saturated_steps += torque >= self.force_limit - 1e-6
         self.total_steps += 1
         for contact in self.data.contact[: self.data.ncon]:
-            if {int(contact.geom1), int(contact.geom2)} == self.foot_geoms:
-                self.feet_collided = True
+            if self.floor_geom not in (int(contact.geom1), int(contact.geom2)):
+                self.self_collided = True
 
         if self.tilt_deg() > FALL_TILT_DEG:
             raise RuntimeError(f"el robot se ha caído en t = {self.data.time:.2f} s")

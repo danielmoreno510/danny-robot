@@ -3,6 +3,7 @@
 import mujoco
 import numpy as np
 
+from biped_control import Biped, Pose
 from conftest import load_model, record
 
 TOTAL_MASS = 8.0
@@ -101,12 +102,37 @@ def test_gravity_and_timestep(model):
     assert model.opt.timestep == 0.002
 
 
-def test_only_feet_and_floor_collide(model):
-    """Documenta una simplificación: las piernas pueden atravesarse."""
-    colliders = [model.geom(i).name for i in range(model.ngeom)
-                 if model.geom_contype[i] or model.geom_conaffinity[i]]
-    record("modelo.geoms_con_colision", len(colliders), "3: suelo y dos pies")
-    assert sorted(colliders) == ["floor", "left_foot_geom", "right_foot_geom"]
+def test_whole_body_collides(model):
+    colliders = [i for i in range(model.ngeom) if model.geom_contype[i] and model.geom_conaffinity[i]]
+    record("modelo.geoms_con_colision", len(colliders), "todos", "de " + str(model.ngeom))
+    assert len(colliders) == model.ngeom
+
+
+def test_no_self_collision_standing_or_in_the_walk_range(model):
+    """Ninguna postura de trabajo debe nacer con piezas solapadas."""
+    data = mujoco.MjData(model)
+    biped = Biped(model, data)
+    for knee in (0, 20, 56, 80, 120):  # pies bajo las caderas: 0° es la pierna recta
+        half = np.radians(knee) / 2
+        height = 0.09 + 0.32 * np.cos(half)
+        pose = Pose(np.array([0.0, 0.0, height]), np.array([0.0, 0.07, 0.0]), np.array([0.0, -0.07, 0.0]))
+        biped.set_pose(data, pose)
+        pairs = [(int(c.geom1), int(c.geom2)) for c in data.contact[: data.ncon]
+                 if model.geom("floor").id not in (c.geom1, c.geom2)]
+        assert not pairs, (knee, [(model.geom(a).name, model.geom(b).name) for a, b in pairs])
+
+
+def test_crossed_legs_are_detected(model):
+    """Con la pierna derecha cruzada sobre la izquierda hay contacto entre piernas."""
+    data = mujoco.MjData(model)
+    data.qpos[2] = 0.8
+    data.qpos[3] = 1.0
+    data.qpos[model.joint("right_hip_roll_joint").qposadr[0]] = np.radians(30)
+    data.qpos[model.joint("left_hip_roll_joint").qposadr[0]] = np.radians(-30)
+    mujoco.mj_forward(model, data)
+    names = {(model.geom(int(c.geom1)).name, model.geom(int(c.geom2)).name) for c in data.contact[: data.ncon]}
+    record("modelo.contactos_piernas_cruzadas", len(names), "> 0")
+    assert names
 
 
 def test_contact_parameters(model):

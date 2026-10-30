@@ -6,7 +6,8 @@ el equilibrio, manipule objetos, entienda instrucciones con inteligencia
 artificial y se comunique a través de una aplicación móvil.
 
 Hoy Danny existe solo en simulación, con [MuJoCo](https://mujoco.org): 70 cm, 8
-kg, dos piernas de 6 grados de libertad y un torso provisional, sin brazos.
+kg, dos piernas de 6 grados de libertad y un torso provisional, sin brazos. El siguiente
+paso es el humanoide completo.
 
 > **Importante:** las dimensiones, masas y motores del modelo son **provisionales**
 > hasta elegir los motores (etapa 31). No deben usarse para fabricar piezas.
@@ -35,7 +36,8 @@ los criterios. Los detalles están en el
 | 1 | Entorno y fundamentos | ✅ |
 | 2 | Cinemática y articulaciones | ✅ |
 | 3 | Simulación física y control del bípedo | 🟡 [CONDITIONAL PASS](documentation/phase-3-validation.md) |
-| 4 | Aprendizaje por refuerzo | ⏳ En espera de revisar la validación |
+| **3.5** | **Humanoide completo en simulación** | 🔄 **Actual** |
+| 4 | Aprendizaje por refuerzo | ⏳ |
 | 5–8 | Diseño mecánico, fabricación, electrónica y paso al robot real | ⏳ |
 | 9–12 | Torso y brazos, visión e IA, manipulación, aplicación móvil | ⏳ |
 
@@ -103,6 +105,8 @@ Los scripts con `--view` imprimen primero el análisis y después abren la venta
 | [ROADMAP.md](ROADMAP.md) | El plan: 12 fases y 76 etapas, hasta el robot físico. Dónde vamos |
 | [docs/HANDBOOK.md](docs/HANDBOOK.md) | Lo hecho: cada experimento, resultados, errores y lecciones. Para aprender o reproducirlo |
 | [documentation/phase-3-validation.md](documentation/phase-3-validation.md) | Auditoría de la fase 3: qué funciona, qué no y qué falta |
+| [documentation/known-limitations.md](documentation/known-limitations.md) | Limitaciones actuales del robot |
+| [documentation/phase-3.5-proposal.md](documentation/phase-3.5-proposal.md) | Propuesta aprobada del humanoide completo |
 | [CLAUDE.md](CLAUDE.md) | Reglas de trabajo y estado actual, para continuar el proyecto con Claude Code |
 
 **Etapas y experimentos.** Las **etapas** (1 a 76) son los pasos del roadmap. Los
@@ -119,7 +123,9 @@ danny-robot/
 ├── docs/
 │   └── HANDBOOK.md     detalle técnico de cada experimento
 ├── documentation/
-│   └── phase-3-validation.md   auditoría de la fase 3
+│   ├── phase-3-validation.md   auditoría de la fase 3
+│   ├── known-limitations.md    limitaciones actuales
+│   └── phase-3.5-proposal.md   propuesta del humanoide completo
 ├── tests/              suite de validación automática
 ├── results/            salida de la última ejecución de run_checks.py
 └── simulation/

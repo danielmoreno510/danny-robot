@@ -4,7 +4,8 @@
 caminar, mantener el equilibrio, manipular objetos, interpretar instrucciones
 con inteligencia artificial y comunicarse a través de una aplicación móvil.
 
-Este documento es el plan del proyecto completo: **12 fases y 76 etapas**, desde
+Este documento es el plan del proyecto completo: **12 fases y 76 etapas, más la fase
+3.5**, desde
 la primera simulación hasta el robot físico validado. El detalle técnico de lo
 ya hecho está en el [handbook](docs/HANDBOOK.md).
 
@@ -31,7 +32,8 @@ Así se evita descubrir errores estructurales cuando ya hay piezas fabricadas.
 | 1 | Preparación del entorno y fundamentos | 1–5 | ✅ Completada |
 | 2 | Cinemática y articulaciones | 6–11 | ✅ Completada |
 | 3 | Simulación física y control del bípedo | 12–20 | 🟡 CONDITIONAL PASS, ver [validación](documentation/phase-3-validation.md) |
-| 4 | Aprendizaje por refuerzo y locomoción | 21–28 | ⏳ Siguiente |
+| 3.5 | Humanoide completo en simulación | 3.5.1–3.5.8 | 🔄 Actual |
+| 4 | Aprendizaje por refuerzo y locomoción | 21–28 | ⏳ Pendiente |
 | 5 | Diseño mecánico del humanoide | 29–35 | ⏳ Pendiente |
 | 6 | Fabricación de las piernas | 36–40 | ⏳ Pendiente |
 | 7 | Electrónica y control físico | 41–46 | ⏳ Pendiente |
@@ -114,9 +116,55 @@ modelo, e incluyen la inclinación del suelo y el reparto de masas.
 clásico (E14). La etapa 19 se cierra con límites definidos sin dar un paso, y la
 recuperación con un paso pasa a la etapa 26, con aprendizaje por refuerzo.
 
+## Fase 3.5 — Humanoide completo en simulación
+
+**Objetivo:** construir el Danny completo en simulación antes de entrenar la
+locomoción principal: dos piernas, pelvis, cintura, torso, dos brazos, muñecas, manos
+simplificadas, cuello y cabeza, en torno a 30 GDL sin contar dedos.
+
+**Entregable:** modelo integrado y validado, con el equilibrio y la marcha cuasiestática
+reproducidos sobre el cuerpo completo.
+
+**Propuesta aprobada:** [documentation/phase-3.5-proposal.md](documentation/phase-3.5-proposal.md).
+
+**Antes de empezar:**
+
+| Tarea previa, de la auditoría | Estado |
+|---|---|
+| `leg_ik` informa de objetivos inalcanzables y fuera de rango | ✅ |
+| Autocolisión entre piernas y con el torso | ✅ |
+| Regresión de equilibrio y marcha | ✅ 124 pruebas |
+| Documentar los límites actuales | ✅ [known-limitations.md](documentation/known-limitations.md) |
+
+| Etapa | Actividad | Estado |
+|---|---|---|
+| 3.5.1 | Especificaciones del humanoide y presupuesto de masa | 🟡 Especificación aprobada; falta contrastar la masa con motores de catálogo |
+| 3.5.2 | Generar el modelo desde una especificación única | ⏳ Siguiente |
+| 3.5.3 | Torso y cintura | ⏳ |
+| 3.5.4 | Brazos | ⏳ |
+| 3.5.5 | Manos | ⏳ |
+| 3.5.6 | Cabeza y cuello | ⏳ |
+| 3.5.7 | Integración: equilibrio y marcha con todo el cuerpo | ⏳ |
+| 3.5.8 | Validación y documentación | ⏳ |
+
+**Reglas:** descripción modular del robot, sin duplicar articulaciones, geometría ni
+control. Se conservan los experimentos anteriores para comparar. Prioridad a la física,
+la cinemática y el control, no al aspecto. Sin dedos articulados ni control de
+manipulación en esta fase.
+
+**La compensación dinámica y el equilibrio activo siguen abiertos**, y pueden
+desarrollarse en la fase 4.
+
 ## Fase 4 — Aprendizaje por refuerzo y locomoción
 
-**Objetivo:** enseñar al robot a caminar con aprendizaje por refuerzo.
+**Objetivo:** enseñar al robot a caminar con aprendizaje por refuerzo, sobre el humanoide
+completo de la fase 3.5.
+
+**Antes de entrenar**, el entorno debe incluir: límites realistas de par y velocidad,
+dinámica y retardos de actuador, ruido de sensores, fricción articular, autocolisiones,
+variaciones de dominio, observaciones de la IMU, y observaciones, acciones, recompensas
+y condiciones de terminación bien definidas.
+
 **Entregable:** política neuronal capaz de caminar en simulación y superar
 pruebas de estabilidad.
 
@@ -277,11 +325,3 @@ dependen del hardware y de las iteraciones necesarias.
 | Fase 12: integración final | 2–5 meses |
 
 En total, entre 25 y 60 meses o más.
-
-## Propuestas pendientes de decidir
-
-1. **Límites de motor realistas antes de la fase 4.** Hoy son ±20 N·m,
-   provisionales. La selección real llega en la etapa 31: convendría estimarlos
-   antes y repetir el entrenamiento después de elegir los motores.
-2. **Ruido de sensores y retardos.** Las pruebas usan posiciones sin ruido. Se
-   propone añadirlos en la fase 4, con la etapa 27.

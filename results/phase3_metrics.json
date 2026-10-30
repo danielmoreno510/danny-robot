@@ -335,7 +335,7 @@
   "unit": "°"
  },
  "cinematica.biped_error_pos": {
-  "value": 2.4486038181217707e-16,
+  "value": 1.8104605093021166e-16,
   "limit": "< 1e-6",
   "unit": "m"
  },
@@ -1124,6 +1124,11 @@
   "limit": "|y| < 1e-9 (simetría)",
   "unit": "m"
  },
+ "modelo.contactos_piernas_cruzadas": {
+  "value": 4.0,
+  "limit": "> 0",
+  "unit": ""
+ },
  "modelo.dinamica_actuador": {
   "value": 0.0,
   "limit": "0 = instantáneo, sin modelar",
@@ -1155,9 +1160,9 @@
   "unit": ""
  },
  "modelo.geoms_con_colision": {
-  "value": 3.0,
-  "limit": "3: suelo y dos pies",
-  "unit": ""
+  "value": 9.0,
+  "limit": "todos",
+  "unit": "de 9"
  },
  "modelo.margen_triangular_inercias": {
   "value": 0.03076923076923093,
