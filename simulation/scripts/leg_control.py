@@ -70,14 +70,16 @@ def interpolate(
     end: np.ndarray,
     elapsed: float,
     mode: str,
+    duration: float = TRANSITION_TIME,
 ) -> np.ndarray:
-    """Objetivo articular en el instante 'elapsed' de la transición."""
-    if mode == "step" or elapsed >= TRANSITION_TIME:
+    """Objetivo en el instante 'elapsed' de una transición de 'duration' s."""
+    if mode == "step" or elapsed >= duration:
         return end
 
     # Perfil coseno: velocidad cero al inicio y al final,
     # evita el pico de torque kp * error del salto brusco.
-    progress = elapsed / TRANSITION_TIME
+    # Aceleración pico = (pi^2 / 2) * distancia / duration^2.
+    progress = elapsed / duration
     blend = 0.5 * (1.0 - math.cos(math.pi * progress))
     return start + (end - start) * blend
 

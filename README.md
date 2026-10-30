@@ -44,6 +44,7 @@ el trabajo o lo implemente por su cuenta.
 | 8 | Pie, contacto y sentadilla (`leg_2dof_foot.xml`, `squat_leg_2dof.py`) | ✅ PASS con compensación de apoyo |
 | 9 | Pierna de 6 GDL con pie plano (`leg_6dof.xml`, `analyze_leg_6dof.py`) | ✅ PASS en aire y en apoyo |
 | 10 | Bípedo con pelvis libre: equilibrio en un pie (`biped_6dof.xml`, `balance_biped.py`) | ✅ PASS |
+| 11 | Primeros pasos: marcha estática, 4 pasos (`walk_biped.py`) | ✅ PASS |
 
 La pierna de 2 GDL recorre su secuencia de posiciones con un torque pico de
 **5,3 N·m** (límite: 20 N·m), sin saturar, y llega **exactamente** a cada
@@ -59,6 +60,10 @@ el pie plano a menos de 0,03°.
 El bípedo, con la pelvis libre (`freejoint`), se pone de pie, hace una
 sentadilla, pasa el peso a la pierna izquierda y **se sostiene sobre un pie**
 con el otro 5 cm en el aire, con la pelvis inclinada menos de 1°.
+
+Y **camina**: 4 pasos de 8 cm en marcha estática (el centro de masas siempre
+sobre un pie), avanzando 28 cm, con cada pie a menos de 1,5 mm de donde se
+colocó.
 
 ---
 
@@ -120,6 +125,12 @@ Y para la etapa 10:
 python simulation/scripts/balance_biped.py
 ```
 
+Y para la etapa 11:
+
+```bash
+python simulation/scripts/walk_biped.py
+```
+
 ### Visor en macOS: `mjpython`
 
 En macOS el visor interactivo (`mujoco.viewer.launch_passive`) **solo funciona
@@ -146,6 +157,7 @@ Desde la carpeta del proyecto, sin necesidad de activar `.venv`:
 | 8 — sentadilla con pie | `.venv/bin/mjpython simulation/scripts/squat_leg_2dof.py --view` |
 | 9 — pierna de 6 GDL | `.venv/bin/mjpython simulation/scripts/analyze_leg_6dof.py --view` |
 | 10 — bípedo en equilibrio | `.venv/bin/mjpython simulation/scripts/balance_biped.py --view` |
+| 11 — primeros pasos | `.venv/bin/mjpython simulation/scripts/walk_biped.py --view` |
 
 Los scripts con `--view` primero imprimen el análisis y después abren la
 ventana. Cierra la ventana para terminar.
@@ -169,18 +181,22 @@ humanoid-h1/
     │   └── biped_6dof.xml         etapa 10: dos piernas de 6 GDL, pelvis libre
     └── scripts/
         ├── leg_control.py         utilidades compartidas: compensadores, IK, perfil, sensores
+        ├── biped_control.py       utilidades del bípedo: poses, reparto del peso, paso de control
         ├── view_falling_box.py    ver caer el cubo
         ├── control_single_joint.py  mover una articulación
         ├── analyze_leg_2dof.py    análisis de esfuerzos + compensación de gravedad
         ├── control_leg_2dof.py    ver la pierna colgando (suave + gravedad)
         ├── squat_leg_2dof.py      sentadilla con el pie apoyado
         ├── analyze_leg_6dof.py    pierna de 6 GDL: aire y apoyo
-        └── balance_biped.py       bípedo: de pie, sentadilla, apoyo en un pie
+        ├── balance_biped.py       bípedo: de pie, sentadilla, apoyo en un pie
+        └── walk_biped.py          bípedo: 4 pasos de marcha estática
 ```
 
 **Nombres.** Los modelos se llaman por lo que contienen (`leg_2dof_foot` =
 pierna de 2 GDL con pie). Los scripts, verbo + modelo (`analyze_leg_2dof`,
-`squat_leg_2dof`). Lo que usan varios scripts está en `leg_control.py`.
+`squat_leg_2dof`). Lo que usan varios scripts está en un módulo propio:
+`leg_control.py` (cualquier pierna) y `biped_control.py` (el bípedo). Un
+script de análisis nunca importa de otro.
 
 Todos los scripts localizan los modelos con rutas relativas al propio script,
 así que se pueden lanzar desde cualquier carpeta.
@@ -564,10 +580,12 @@ tareas** (posiciones de pelvis y pies) y se resuelve la IK en cada paso. Si se
 interpolaran ángulos, el pie de apoyo se arrastraría a mitad de transición.
 
 **Novedad 2: dónde poner el centro de masas.** Para sostenerse en el pie
-izquierdo, el centro de masas (CdM) tiene que estar encima de él. El script
-busca por bisección el desplazamiento de la pelvis que lo consigue, ya con el
-pie derecho levantado: **15,9 cm**. Es más que los 10 cm hasta el centro del
-pie, porque la pierna levantada (2,1 kg) queda al otro lado.
+izquierdo, el centro de masas (CdM) tiene que estar encima de él.
+`center_com_over` (en `biped_control.py`) mueve la pelvis, en x e y, lo que le
+falta al CdM hasta que queda sobre el centro del pie, ya con el pie derecho
+levantado. Converge porque el CdM se mueve algo menos que la pelvis. Resultado:
+**15,8 cm** de desplazamiento lateral. Es más que los 10 cm hasta el centro
+del pie, porque la pierna levantada (2,1 kg) queda al otro lado.
 
 **Novedad 3: compensación con dos pies.** `StanceCompensator` acepta ahora
 varios pies y la fracción de peso de cada uno:
@@ -607,6 +625,81 @@ varios pies y la fracción de peso de cada uno:
    articular < 0,1°.
 4. *¿Hace falta compensar?* Sin compensación el robot **se cae** a los 9,7 s,
    a mitad del cambio de peso.
+
+### Etapa 11 — Primeros pasos: marcha estática
+
+```bash
+python simulation/scripts/walk_biped.py           # informe en la terminal
+mjpython simulation/scripts/walk_biped.py --view  # además, verlo (~55 s)
+```
+
+El mismo bípedo de la etapa 10 da **4 pasos de 8 cm**. Es una **marcha
+estática**: el centro de masas está siempre sobre un pie, así que si el robot
+se congelara en cualquier instante no se caería. Es lenta, pero es la base
+sobre la que se construye la marcha dinámica.
+
+Cada paso son cuatro fases:
+
+1. **Peso al pie de apoyo:** la pelvis se mueve hasta que el CdM queda sobre
+   él (`center_com_over`).
+2. **Pie libre arriba** 5 cm.
+3. **Pie libre adelante:** aterrizará 8 cm por delante del otro pie. En el
+   aire, la pelvis se reajusta para que el CdM siga sobre el pie de apoyo,
+   porque la pierna que avanza también lo mueve.
+4. **Pie libre abajo.**
+
+Empieza el pie derecho. Tras el 4.º paso, el peso vuelve al centro entre los
+pies. Lo que comparten las etapas 10 y 11 (`Pose`, `Biped`, IK de las dos
+piernas, reparto del peso) se movió a `biped_control.py`.
+
+**Criterios de aceptación**, fijados antes de la primera ejecución: los de la
+etapa 10, más:
+
+- La pelvis no gira más de 3° (yaw).
+- Cada pie está a < 5 mm de **donde se colocó** mientras está en el suelo, no
+  solo de donde empezó.
+- Ninguna pose pide más del 98 % del largo de la pierna. Se comprueba al
+  planificar, antes de simular: la IK recorta en silencio si no llega. Basta
+  con mirar las poses de cada fase: la distancia cadera-tobillo de una mezcla
+  lineal de dos poses nunca supera la de los extremos.
+
+**Lo que pasó por el camino:**
+
+1. *Alcance.* Con las rodillas a 50°, la comprobación de alcance paró el plan
+   antes de simular: al aterrizar el pie adelantado con la pelvis desplazada
+   15,8 cm de lado, la pierna se estiraba al **99,9 %**. Con 55° llega al
+   98,4 % (aún por encima del límite) y con 60° baja al 96,7 %.
+2. *Primera simulación:* da los 4 pasos sin caerse y avanza 29 cm. Pero en el
+   cambio de peso de los pasos 2 y 4, **los dos pies** se mueven ~7 mm a la
+   vez. FAIL.
+3. *Primera causa encontrada:* con los pies escalonados, la pelvis cruza
+   31,6 cm de lado en el cambio de peso (el doble que en el paso 1) en el
+   mismo 1,5 s. Doble aceleración, más torque de vuelco, y los pies se
+   balancean sobre 1 o 2 esquinas. Arreglo: **las transiciones largas duran
+   más** (duración ∝ √distancia), para no acelerar más que la etapa 10. Se
+   añadió `duration` a `interpolate`. La inclinación baja de 1,8° a 0,9°,
+   pero el desplazamiento sigue acumulándose (3 mm por cambio de peso). FAIL.
+4. *Dos hipótesis que no eran:*
+   - **Fluencia del contacto blando** (MuJoCo deja deslizar un poco bajo
+     fuerza lateral). Se probaron `cone="elliptic"`, `impratio=10` y el solver
+     `noslip`: lo mejor bajó de 9,3 a 6,0 mm. No era la causa principal y no
+     se dejó.
+   - **El pie pivotando sobre una esquina** (fricción de torsión casi nula).
+     El yaw de los pies no pasaba de 0,3°: tampoco.
+5. *La causa real:* al mirar la dirección y la carga, el pie que se movía era
+   siempre el **poco cargado**: el recién aterrizado (< 25 N) o el que está a
+   punto de despegar (< 5 N). Lo arrastraba el **retraso de los motores**. Un
+   motor de posición de MuJoCo hace `τ = kp·(objetivo − q) − kv·q̇`: su
+   amortiguamiento frena hacia velocidad *cero*, así que en movimiento la
+   articulación va `(kv/kp)·q̇` por detrás del objetivo. En hip_roll son
+   ~1,3°, unos 10 mm en el pie. El pie cargado aguanta por fricción; el ligero,
+   no.
+6. *Solución:* **feedforward de velocidad** en `Biped.step`: se suma
+   `(kv/kp)·q̇_deseada` al objetivo. El motor da entonces
+   `kp·(objetivo − q) + kv·(q̇_deseada − q̇)` y sigue sin retraso. `q̇_deseada`
+   sale de la diferencia entre los objetivos de dos pasos seguidos. **PASS**:
+   cada pie a < 1,5 mm de su sitio. Sin el escalado de duración también pasa,
+   pero con 3,9 mm: se deja el escalado porque da el triple de margen.
 
 ---
 
@@ -823,22 +916,59 @@ compensadores solo cubren la parte estática. Ver [Hoja de ruta](#9-hoja-de-ruta
 
 ### Etapa 10: bípedo en equilibrio (`balance_biped.py`)
 
-Valores al final de cada sostén. Inclinación = máximo durante la fase.
+Valores al final de cada sostén. Inclinación = máximo durante la fase. Con el
+feedforward de velocidad de la etapa 11, que `Biped` aplica siempre.
 
 | Fase | Error pelvis [mm] | Inclin. máx [°] | Desliz. izq / der [mm] | Pie izq / der [N] | Pie der. sobre el suelo [mm] | Margen CdM [mm] | Error art. [°] |
 |---|---|---|---|---|---|---|---|
-| Sentadilla 80° | 0,91 | 0,27 | 0,20 / 0,20 | 30,4 / 30,4 | — | — | 0,00 |
-| De pie 40° | 0,94 | 0,37 | 0,39 / 0,39 | 30,4 / 30,4 | — | — | 0,01 |
-| Peso a la izquierda (15,9 cm) | 0,63 | 0,98 | 0,50 / 1,39 | 60,5 / 0,3 | — | — | 0,07 |
-| **Pie derecho arriba 5 cm** | 0,91 | 0,16 | 0,50 / — | **60,8 / 0,0** | **49,5** | **49,9** | 0,02 |
-| Pie derecho abajo | 0,79 | 0,41 | 0,45 / 1,09 | 60,5 / 0,4 | — | — | 0,07 |
-| Vuelta al centro | 1,48 | 0,38 | 0,54 / 1,79 | 30,4 / 30,4 | — | — | 0,06 |
+| Sentadilla 80° | 0,90 | 0,08 | 0,20 / 0,20 | 30,4 / 30,4 | — | — | 0,00 |
+| De pie 40° | 0,88 | 0,07 | 0,39 / 0,39 | 30,4 / 30,4 | — | — | 0,00 |
+| Peso a la izquierda (15,8 cm) | 0,93 | 0,51 | 0,55 / 1,05 | 60,3 / 0,5 | — | — | 0,07 |
+| **Pie derecho arriba 5 cm** | 0,69 | 0,13 | 0,55 / — | **60,8 / 0,0** | **49,4** | **50,0** | 0,01 |
+| Pie derecho abajo | 1,05 | 0,27 | 0,62 / 0,93 | 60,3 / 0,5 | — | — | 0,07 |
+| Vuelta al centro | 1,52 | 0,39 | 0,93 / 1,49 | 30,4 / 30,4 | — | — | 0,01 |
 
-Ningún motor saturado. Con el pie derecho en el aire, el CdM está a 49,9 mm
-del borde del pie izquierdo: prácticamente en su centro (medio ancho = 50 mm).
+Ningún motor saturado. Con el pie derecho en el aire, el CdM está a 50,0 mm
+del borde del pie izquierdo: en su centro (medio ancho = 50 mm).
 
-La mayor inclinación (0,98°) aparece *durante* el cambio de peso, no en el
+La mayor inclinación (0,51°) aparece *durante* el cambio de peso, no en el
 sostén: mover 6,2 kg de lado pide aceleración, y la compensación es estática.
+Sin el feedforward de velocidad era 0,98°.
+
+### Etapa 11: primeros pasos (`walk_biped.py`)
+
+Rodillas a 60°, pasos de 8 cm, pie libre a 5 cm. Valores al final de cada
+sostén; "fuera de sitio" = distancia al punto donde se colocó el pie.
+
+| Fase | Error pelvis [mm] | Inclin. máx [°] | Yaw [°] | Pie izq / der fuera de sitio [mm] | Pie izq / der [N] | Pie libre [mm] | Margen CdM [mm] |
+|---|---|---|---|---|---|---|---|
+| Paso 1: peso al izquierdo | 0,81 | 0,46 | −0,01 | 0,2 / 0,6 | 60,3 / 0,5 | — | — |
+| Paso 1: pie derecho arriba | 0,60 | 0,11 | −0,01 | 0,2 / — | 60,8 / 0,0 | 49,4 | 50,0 |
+| Paso 1: pie derecho adelante | 0,58 | 0,13 | −0,02 | 0,2 / — | 60,8 / 0,0 | 49,4 | 50,0 |
+| Paso 1: pie derecho abajo | 0,85 | 0,22 | −0,03 | 0,3 / 0,5 | 60,4 / 0,4 | — | 48,9 |
+| Paso 2: peso al derecho | 1,10 | 0,55 | −0,22 | 1,4 / 1,0 | 1,0 / 59,8 | — | — |
+| Paso 2: pie izquierdo arriba | 1,44 | 0,11 | −0,23 | — / 1,0 | 0,0 / 60,8 | 49,4 | 50,0 |
+| Paso 2: pie izquierdo adelante | 1,37 | 0,29 | −0,23 | — / 1,0 | 0,0 / 60,8 | 49,4 | 50,0 |
+| Paso 2: pie izquierdo abajo | 1,35 | 0,22 | −0,21 | 0,9 / 1,0 | 0,4 / 60,4 | — | 48,8 |
+| Paso 3: peso al izquierdo | 0,76 | 0,55 | −0,02 | 0,6 / 1,0 | 59,8 / 1,0 | — | — |
+| Paso 3: pie derecho arriba | 0,85 | 0,11 | −0,01 | 0,6 / — | 60,8 / 0,0 | 49,4 | 50,0 |
+| Paso 3: pie derecho adelante | 0,71 | 0,29 | −0,02 | 0,6 / — | 60,8 / 0,0 | 49,4 | 50,0 |
+| Paso 3: pie derecho abajo | 0,92 | 0,22 | −0,03 | 0,7 / 1,0 | 60,4 / 0,4 | — | 48,9 |
+| Paso 4: peso al derecho | 1,46 | 0,55 | −0,22 | 1,1 / 1,2 | 1,0 / 59,8 | — | — |
+| Paso 4: pie izquierdo arriba | 1,63 | 0,11 | −0,23 | — / 1,2 | 0,0 / 60,8 | 49,4 | 50,0 |
+| Paso 4: pie izquierdo adelante | 1,48 | 0,29 | −0,23 | — / 1,2 | 0,0 / 60,8 | 49,4 | 50,0 |
+| Paso 4: pie izquierdo abajo | 1,67 | 0,22 | −0,21 | 0,7 / 1,3 | 0,4 / 60,4 | — | 48,8 |
+| Peso al centro | 0,88 | 0,57 | −0,12 | 0,9 / 1,3 | 33,8 / 27,1 | — | — |
+
+La pelvis avanza **27,9 cm** (los pies acaban en x = 24 y 32 cm). Ningún
+motor saturado, error articular ≤ 0,07°. Los fallos se comparan así:
+
+| | Pie fuera de sitio máx. | Inclinación máx. |
+|---|---|---|
+| Transiciones de 1,5 s, sin feedforward | 13,5 mm | 1,78° |
+| Duración ∝ √distancia, sin feedforward | 9,3 mm | 0,85° |
+| Solo feedforward de velocidad | 3,9 mm | 0,98° |
+| **Las dos cosas** | **1,4 mm** | **0,57°** |
 
 ---
 
@@ -907,6 +1037,20 @@ de verdad (el centro de presiones).
 y resolver la IK en cada paso mantiene el pie de apoyo quieto. Interpolar
 ángulos no lo garantiza.
 
+**Un motor de posición se retrasa cuando se mueve.** Su amortiguamiento
+(`−kv·q̇`) frena hacia velocidad cero, no hacia la velocidad deseada. Con una
+trayectoria en movimiento hay que sumar el feedforward de velocidad
+(`(kv/kp)·q̇_deseada`); si no, cada articulación va `(kv/kp)·q̇` por detrás.
+
+**Comprobar las hipótesis antes de quedarse con un arreglo.** En la etapa 11
+hubo dos explicaciones plausibles (fluencia del contacto, pie pivotando) que
+las medidas descartaron. Mirar *qué* pie se movía y *con cuánta carga* llevó a
+la causa real. Un arreglo que mejora un poco sin explicar el fallo no se deja.
+
+**Comprobar los límites al planificar, no al simular.** La IK recorta en
+silencio si el pie no llega. La etapa 11 mide el alcance de cada pose antes de
+simular y para con un mensaje claro.
+
 **Medir con el tiempo de simulación.** Si la lógica usa el reloj del ordenador,
 el movimiento cambia según la carga de la máquina. Con `data.time` es
 reproducible.
@@ -916,23 +1060,24 @@ reproducible.
 ## 9. Hoja de ruta
 
 Hecho: compensación de gravedad (etapa 7), pie y contacto (etapa 8), pierna
-de 6 GDL (etapa 9), bípedo con pelvis libre en equilibrio sobre un pie
-(etapa 10).
+de 6 GDL (etapa 9), equilibrio sobre un pie (etapa 10), primeros pasos en
+marcha estática (etapa 11).
 
 Siguientes pasos propuestos, en orden. Cada uno debería tener su modelo o
 script y un criterio de aceptación comprobable, como en la etapa 5.
 
-1. **Primer paso.** Encadenar lo de la etapa 10 con el pie derecho avanzando
-   en x al levantarse: peso a la izquierda → pie derecho arriba y adelante →
-   abajo → peso a la derecha → pie izquierdo adelante. Criterio: dar 4 pasos
-   sin caerse y sin que el pie de apoyo deslice.
-2. **Compensación dinámica.** Incluir las aceleraciones (no solo la estática)
-   para reducir la inclinación durante los cambios de peso y poder ir más
-   rápido.
+1. **Compensación dinámica.** Incluir las aceleraciones (no solo la estática)
+   en el compensador. Criterio: la misma marcha de la etapa 11 en la mitad de
+   tiempo, con los mismos criterios.
+2. **Marcha más natural.** Pasos más largos con la pelvis más alta y menos
+   desplazamiento lateral (hoy la pierna trabaja al 96,7 % de su alcance), y
+   girar (usar `hip_yaw`).
 3. **Equilibrio activo.** Corregir la postura con la IMU (`pelvis_quat`) y las
    fuerzas de los pies si algo empuja al robot. Criterio: aguantar un empujón
    en la pelvis sin caerse.
-4. **Dimensiones reales.** Sustituir medidas y masas didácticas por las del
+4. **Marcha dinámica.** Dejar que el CdM salga del pie de apoyo entre pasos
+   (ZMP o péndulo invertido), como camina una persona.
+5. **Dimensiones reales.** Sustituir medidas y masas didácticas por las del
    robot de referencia y convertir los torques medidos en requisitos de motor.
 
 ---
@@ -967,6 +1112,12 @@ script y un criterio de aceptación comprobable, como en la etapa 5.
   partir de dónde se quiere el pie. La directa es al revés.
 - **`freejoint`**: articulación de 6 GDL sin restricciones. Un cuerpo con
   `freejoint` solo se sostiene por sus contactos.
+- **Marcha estática**: forma de andar en la que el CdM está siempre sobre un pie;
+  el robot no se cae aunque se pare en cualquier momento. La marcha dinámica
+  (la humana) deja caer el CdM hacia delante entre pasos.
+- **Feedforward de velocidad**: sumar al objetivo de un motor de posición lo
+  necesario para que su amortiguamiento siga la velocidad deseada en vez de
+  frenar hacia cero.
 - **Feedforward**: parte del control que se calcula de antemano con el modelo
   (aquí, el torque de gravedad), en lugar de reaccionar al error medido.
 - **qfrc_bias**: fuerzas de gravedad, Coriolis y centrífugas que calcula MuJoCo
