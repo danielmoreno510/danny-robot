@@ -1,5 +1,5 @@
 """
-Etapas 3.5.3 a 3.5.5: humanoide con torso, cintura, brazos y manos, con un lastre en lugar de la cabeza.
+Etapas 3.5.3 a 3.5.6: humanoide con torso, cintura, brazos, manos, cuello y cabeza.
 Mismos límites que el bípedo. Mide estados reales; la cintura también se mueve.
 """
 
@@ -21,6 +21,7 @@ KNEE = 56
 WIDTH = 0.05
 WAIST_FREQUENCY = 0.25  # Hz
 HAND_LOAD = 0.3  # kg, en el presupuesto de masa
+ARM_SWING_DEG = 20
 
 
 def humanoid():
@@ -35,7 +36,7 @@ def test_mass_height_and_com():
     mujoco.mj_forward(model, data)
     mass = model.body_subtreemass[model.body("pelvis").id]
     sole = data.geom_xpos[model.geom("left_foot_geom").id][2] - spec.FOOT_HALF[2]
-    top = data.geom_xpos[model.geom("head_ballast").id][2] + spec.HEAD_BALLAST_RADIUS
+    top = data.geom_xpos[model.geom("head_geom").id][2] + spec.HEAD_RADIUS
     com = data.subtree_com[model.body("pelvis").id]
     record("humanoide.masa", mass, "11,0 ± 0,01", "kg")
     record("humanoide.altura", top - sole, "0,70 ± 0,005", "m")
@@ -251,7 +252,7 @@ def test_hand_reaches_the_torso_and_collides():
 
 def test_arm_joints_follow_the_approved_ranges():
     model = humanoid()
-    assert model.nu == 28
+    assert model.nu == 30
     for joint in spec.ARM_JOINTS:
         for side in spec.SIDES:
             item = model.joint(f"{side}_{joint.part}_joint")
@@ -339,6 +340,132 @@ def test_arms_clear_the_body_across_the_whole_waist_range():
             pairs = [(model.geom(int(c.geom1)).name, model.geom(int(c.geom2)).name)
                      for c in data.contact[: data.ncon] if floor not in (c.geom1, c.geom2)]
             assert not pairs, (yaw, pitch, pairs)
+
+
+def test_head_position_and_inertia():
+    model = humanoid()
+    data = mujoco.MjData(model)
+    data.qpos[2] = 0.4
+    data.qpos[3] = 1.0
+    mujoco.mj_forward(model, data)
+    sole = data.geom_xpos[model.geom("left_foot_geom").id][2] - spec.FOOT_HALF[2]
+    center = data.geom_xpos[model.geom("head_geom").id]
+    record("humanoide.cabeza.altura_centro", center[2] - sole, "0,655 ± 0,005", "m")
+    assert abs(center[2] - sole - 0.655) < 0.005
+    expected = 0.4 * spec.HUMANOID.head_mass * spec.HEAD_RADIUS**2  # esfera maciza
+    assert np.allclose(model.body("head").inertia, expected, rtol=0.01)
+
+
+def test_neck_joints_and_looking_down():
+    model = humanoid()
+    data = mujoco.MjData(model)
+    for joint in spec.NECK_JOINTS:
+        item = model.joint(f"{joint.part}_joint")
+        assert np.allclose(item.axis, joint.axis)
+        assert np.allclose(item.range, joint.limits)
+    arm_pose(model, data)
+    data.qpos[model.joint("neck_pitch_joint").qposadr[0]] = spec.NECK_JOINTS[1].limits[1]
+    mujoco.mj_forward(model, data)
+    head = data.site_xpos[model.site("head_site").id] - data.xpos[model.body("head").id]
+    assert head[0] > 0.02  # la cabeza va hacia delante y abajo
+
+
+def test_holding_the_head_is_within_catalog_torque():
+    model = humanoid()
+    data = mujoco.MjData(model)
+    arm_pose(model, data)
+    data.qpos[model.joint("neck_pitch_joint").qposadr[0]] = spec.NECK_JOINTS[1].limits[1]
+    mujoco.mj_forward(model, data)
+    data.qacc[:] = 0.0
+    mujoco.mj_inverse(model, data)
+    torque = abs(data.qfrc_inverse[model.joint("neck_pitch_joint").dofadr[0]])
+    record("humanoide.cuello.par_45", torque, "< 1,9", "N·m")
+    assert torque < 1.9
+
+
+def test_neck_range_is_free_and_the_hand_can_touch_the_head():
+    model = humanoid()
+    data = mujoco.MjData(model)
+    biped = RecordingBiped(model, data)
+    stand = Pose(np.array([0.0, 0.0, pelvis_height(KNEE)]), np.array([0.0, WIDTH, 0.0]), np.array([0.0, -WIDTH, 0.0]))
+    floor = model.geom("floor").id
+    for yaw in np.linspace(*spec.NECK_JOINTS[0].limits, 11):
+        for pitch in np.linspace(*spec.NECK_JOINTS[1].limits, 7):
+            biped.held_target[-2:] = yaw, pitch
+            biped.set_pose(data, stand)
+            assert all(floor in (c.geom1, c.geom2) for c in data.contact[: data.ncon]), (yaw, pitch)
+    rng = np.random.default_rng(1)
+    touches = 0
+    for _ in range(4000):
+        arm_pose(model, data, **{j.part: rng.uniform(*j.limits) for j in spec.ARM_JOINTS})
+        pairs = [{model.geom(int(c.geom1)).name, model.geom(int(c.geom2)).name} for c in data.contact[: data.ncon]]
+        touches += any("head_geom" in pair and any("left" in name for name in pair) for pair in pairs)
+    record("humanoide.cabeza.posturas_brazo_tocando", touches, "> 0")
+    assert touches > 0
+
+
+def test_walking_while_moving_the_neck(monkeypatch):
+    """E13 mirando alrededor: ±80° de yaw y hasta 30° de pitch."""
+
+    class Looking(RecordingBiped):
+        def step(self, pose, swing):
+            motion = waist_motion(self.data.time, 80, 30)
+            self.held_target[-2:] = motion
+            super().step(pose, swing)
+
+    _, results, saturation, collided, model, error = run_walk(
+        monkeypatch, E13, 1.27, 0.25, biped_class=Looking, model=humanoid())
+    assert not error, error
+    failures = walk_biped.check_acceptance(results, saturation, walk_biped.total_weight(model), collided)
+    record("humanoide.marcha_cuello.fallos", len(failures), "= 0")
+    assert not failures, failures[:3]
+
+
+def swing_arms(biped, t, frequency):
+    """Balanceo de hombros de ±20° en contrafase: validación sencilla, no una marcha natural."""
+    angle = math.radians(ARM_SWING_DEG) * math.sin(2 * math.pi * frequency * t)
+    parts = list(spec.HELD_PARTS)
+    biped.held_target[parts.index("left_shoulder_pitch")] = angle
+    biped.held_target[parts.index("right_shoulder_pitch")] = -angle
+    return angle
+
+
+def test_arm_swing_standing_is_within_catalog_limits():
+    model = humanoid()
+    data = mujoco.MjData(model)
+    biped = RecordingBiped(model, data)
+    stand = Pose(np.array([0.0, 0.0, pelvis_height(KNEE)]), np.array([0.0, WIDTH, 0.0]), np.array([0.0, -WIDTH, 0.0]))
+    stand = center_com_over(biped, stand, "left", inset=WIDTH)
+    biped.set_pose(data, stand)
+    for _ in range(500):
+        biped.step(stand, None)
+    motor = model.actuator("left_shoulder_pitch_motor").id
+    dof = model.joint("left_shoulder_pitch_joint").dofadr[0]
+    start, torque, speed = data.time, 0.0, 0.0
+    for _ in range(round(4.0 / model.opt.timestep)):
+        swing_arms(biped, data.time - start, 1.5)
+        biped.step(stand, None)
+        if data.time - start > 1.0:
+            torque = max(torque, abs(data.actuator_force[motor]))
+            speed = max(speed, abs(data.qvel[dof]))
+    record("humanoide.balanceo_brazos.par", torque, "< 7,3", "N·m")
+    record("humanoide.balanceo_brazos.velocidad", speed, "< 5,55", "rad/s")
+    assert torque < 7.3
+    assert speed < 5.55
+
+
+def test_walking_with_arm_swing(monkeypatch):
+    class Swinging(RecordingBiped):
+        def step(self, pose, swing):
+            swing_arms(self, self.data.time, 1.0)
+            super().step(pose, swing)
+
+    _, results, saturation, collided, model, error = run_walk(
+        monkeypatch, E13, 1.27, 0.25, biped_class=Swinging, model=humanoid())
+    assert not error, error
+    failures = walk_biped.check_acceptance(results, saturation, walk_biped.total_weight(model), collided)
+    record("humanoide.marcha_balanceo_brazos.fallos", len(failures), "= 0")
+    assert not failures, failures[:3]
 
 
 def test_generated_humanoid_matches_specification():

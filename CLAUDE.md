@@ -5,6 +5,12 @@ usuario escribe en español: responde en español. Lee [README.md](README.md) pa
 la visión general y [ROADMAP.md](ROADMAP.md) para el plan y el estado de cada
 etapa. Ese estado es la fuente de verdad: mantenlo al día.
 
+**Objetivo de movimiento (prioritario a largo plazo):** Danny debe moverse de forma natural,
+con todo el cuerpo coordinado. No sacrifiques física, estabilidad ni viabilidad de motores
+para que se vea humano. No inviertas en animaciones a mano que se vayan a sustituir. La
+cabeza es simple, sin cara ni actuadores. Ver
+[la revisión](documentation/whole-body-motion-review.md).
+
 ## Puesta en marcha
 
 Si no existe `.venv` (por ejemplo, tras clonar en otra máquina):
@@ -33,8 +39,11 @@ Las 21 comprobaciones deben pasar antes de empezar a trabajar. Si no pasan, dilo
 5. **Python 3.12**, siempre con el `.venv` del proyecto, también en scripts
    auxiliares.
 6. **Commit y push solo cuando el usuario lo pida.**
-7. **Avisar al terminar cada fase.** En particular, avisa cuando termine la fase 3.
-   Una fase necesita implementación, validación reproducible y documentación.
+7. **Avisar al terminar cada fase.** Una fase necesita implementación, validación
+   reproducible y documentación.
+8. **Dejar el relevo escrito al terminar cada fase.** Actualiza la sección «Estado actual»
+   de este archivo para que un chat nuevo pueda seguir sin nada más: qué se hizo, en qué
+   punto está, qué sigue, decisiones tomadas y pendientes, y qué comprobar primero.
 
 ## Cómo se trabaja
 
@@ -69,15 +78,15 @@ Fase 3 en **CONDITIONAL PASS**, revisada y aceptada por el usuario. Limitaciones
 La propuesta aprobada está en `documentation/phase-3.5-proposal.md`: 30 GDL y 70 cm. El
 objetivo de masa es 11 kg, con el reparto de `documentation/phase-3.5-mass-budget.md`.
 
-Hecha la etapa 3.5.5 (`danny_humanoid.xml`: torso, cintura, brazos de 7 GDL en postura
-fija y manos rígidas, con un lastre en lugar de la cabeza). **Siguiente: 3.5.6, cabeza y
-cuello.**
+Hecha la etapa 3.5.6 (`danny_humanoid.xml`: 30 GDL con cabeza simple). **Antes de la 3.5.7,
+el usuario debe revisar `documentation/whole-body-motion-review.md`: no implementes cambios
+de arquitectura hasta entonces.**
 
 **Se avanza por etapas, con revisión: no implementes todo a la vez.** Después de la fase 3.5 viene la fase 4, cuyo entorno debe cumplir la
 lista del roadmap. No marques como implementados la compensación dinámica ni el
 equilibrio activo.
 
-Comprobaciones: `run_checks.py` (21, unos 2 minutos) y `python -m pytest tests` (161, unos
+Comprobaciones: `run_checks.py` (21, unos 2 minutos) y `python -m pytest tests` (168, unos
 8 minutos).
 Las pruebas de realismo miden sin exigir: que pasen no significa que el robot aguante
 ese efecto. Mira `results/phase3_metrics.json`.

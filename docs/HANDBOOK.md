@@ -1025,6 +1025,42 @@ bloque, el 9,4 % de las posturas al azar del brazo choca, frente al 8,5 % anteri
 
 **Sin probar:** agarrar objetos. La carga es una fuerza calculada, no un objeto simulado.
 
+### Experimento 21 — Cuello y cabeza simple: los 30 GDL
+
+**Etapa 3.5.6.** Un cuello de 2 ejes (yaw ±80°, pitch de -30° a 45°) y una cabeza que es una
+esfera de 9 cm y 0,31 kg, sin cara ni actuadores: solo aporta dimensiones, masa e inercia.
+Para compensarla, el torso cede 0,01 kg de su margen. El modelo llega a los **30 GDL**
+aprobados y 11,004 kg.
+
+**Cambio de criterio.** Había fijado un hueco de sensores dentro de la cabeza. La prueba
+falló por 1,7 mm, y el usuario decidió después que la cabeza solo debe ser física, así que
+se eliminó, tanto el hueco como el criterio.
+
+| Comprobación | Límite | Medido |
+|---|---|---|
+| Altura total | 0,70 ± 0,005 m | 0,70 m |
+| Centro de la cabeza | 0,655 ± 0,005 m | 0,655 m |
+| Inercia de la cabeza frente a esfera maciza | 1 % | dentro |
+| Par del cuello con la cabeza a 45° | < 1,9 N·m | 0,075 N·m |
+| Choques en todo el rango del cuello | ninguno | ninguno |
+| Contacto mano-cabeza con el brazo levantado | se detecta | se detecta |
+| E13 moviendo el cuello ±80° y 30° | 0 fallos | 0 fallos |
+
+E11 a E13 no tienen fallos, y los empujones se mantienen en 48, 49 y 59 N.
+
+**Balanceo de brazos.** Tras pedir el usuario movimiento natural, se midió un balanceo
+sencillo como validación. A ±20° y 1,5 Hz, de pie, el hombro pide 1,95 N·m y 3,3 rad/s,
+dentro del catálogo. E13 cumple con ±20° a 1 Hz, sin sincronizar con los pasos.
+
+**Un error de medida.** Un primer ensayo del brazo como péndulo libre se descartó: al apagar
+todos los motores se derrumbaba también el resto del cuerpo. El amortiguamiento se calculó
+con la frecuencia propia y la inercia medidas.
+
+**Resultado:** 168 pruebas y 21 comprobaciones pasan. Las métricas del bípedo no cambian.
+
+La revisión de todo el cuerpo está en
+[documentation/whole-body-motion-review.md](../documentation/whole-body-motion-review.md).
+
 ---
 
 ## 3. La pierna de 2 GDL en detalle

@@ -6,7 +6,9 @@ de diseño, no resultados de simulación.
 
 **Actualización:** el [presupuesto con motores de catálogo](phase-3.5-mass-budget.md) dio
 10,7 kg y otro reparto de masa, y el objetivo pasó a **11 kg**. Ese documento sustituye a
-la sección 4 de esta propuesta.
+la sección 4 de esta propuesta. La
+[revisión para movimiento natural](whole-body-motion-review.md) propone cambios a esta
+propuesta, aún sin aprobar.
 
 ## 1. Objetivo y por qué
 
@@ -191,7 +193,7 @@ y la anterior debe seguir pasando.
 | 3.5.3 | Torso y cintura, con cintura bloqueada primero | Masa, CdM, inercias; marcha |
 | 3.5.4 | Brazos, en postura fija | Alcance, rangos, autocolisión; marcha |
 | 3.5.5 | Manos | Masa e inercia; marcha |
-| 3.5.6 | Cabeza y cuello | Masa, CdM; espacio para sensores |
+| 3.5.6 | Cabeza y cuello | Masa, CdM; cabeza simple, sin espacio para sensores por decisión del usuario |
 | 3.5.7 | Modelo integrado: equilibrio y marcha con todo el cuerpo | Pruebas de la fase 3 sobre el modelo nuevo |
 | 3.5.8 | Validación y comparación con el bípedo | Informe de la fase 3.5 |
 

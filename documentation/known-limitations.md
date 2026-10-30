@@ -66,14 +66,18 @@ retardos, incumple.
 
 ## Humanoide en construcción
 
-`danny_humanoid.xml` (11 kg, 28 GDL), tras la etapa 3.5.5:
+`danny_humanoid.xml` (11 kg, 30 GDL), tras la etapa 3.5.6:
 
-- La cabeza es un lastre fijo, sin colisión, y las manos son bloques rígidos sin dedos.
+- Cabeza simple y manos rígidas, sin dedos.
   Los experimentos de sensibilidad no se
   han repetido con este modelo.
-- Los brazos solo se han probado en postura fija: moverlos al andar no está medido.
-- Los motores de brazos y cintura tienen `kp` de 100 N·m/rad y ±20 N·m como los de las
-  piernas, no los valores de sus motores de catálogo.
+- La marcha clásica es lentísima (Froude 0,00002): no dice nada de una marcha natural.
+- Los brazos se han balanceado a ±20°, sin sincronizar con los pasos.
+- **Todas las articulaciones comparten par (±20 N·m), `kp`, `armature` y amortiguamiento**,
+  también muñecas y cuello. El brazo queda sobreamortiguado y no oscila libremente. Es el
+  mayor límite para el movimiento natural: ver la
+  [revisión](whole-body-motion-review.md).
+- La cintura no tiene roll y el pie es plano y rígido.
 - La marcha rápida necesita 0,3 s de espera entre pasos: con 0,25 s incumple por muy poco
   (0,5023° frente a 0,5°).
 - El plan de la marcha no conoce la cintura. Se mide que tolera ±30° de yaw y 30° de

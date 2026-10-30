@@ -24,7 +24,6 @@ GREY = (0.3, 0.3, 0.3, 1)
 LIGHT_GREY = (0.8, 0.8, 0.85, 1)
 FLOOR_GREY = (0.7, 0.7, 0.7, 1)
 ORANGE = (0.9, 0.5, 0.1, 1)
-GHOST = (0.8, 0.3, 0.3, 0.4)
 INVISIBLE = (0, 0, 0, 0)
 SITE_SIZE = (0.01, 0.005, 0.005)
 SHIN_COLOR = {"left": (0.1, 0.7, 0.5, 1), "right": (0.7, 0.5, 0.1, 1)}
@@ -117,6 +116,19 @@ def add_arm(torso, robot: spec.Robot, side: str) -> None:
     hand.add_site(name=f"{side}_fingertip_site", pos=(0, 0, -2 * spec.HAND_HALF[2]), size=SITE_SIZE, rgba=INVISIBLE)
 
 
+def add_neck_and_head(torso, robot: spec.Robot) -> None:
+    yaw, pitch = spec.NECK_JOINTS
+    neck = torso.add_body(name="neck", pos=(0, 0, spec.NECK_BASE_ABOVE_WAIST))
+    add_joint(neck, "", yaw)
+    add_segment(neck, "neck_geom", -spec.NECK_PITCH_ABOVE_BASE, robot.neck_mass, GREY, spec.NECK_RADIUS)
+
+    head = neck.add_body(name="head", pos=(0, 0, spec.NECK_PITCH_ABOVE_BASE))
+    add_joint(head, "", pitch)
+    head.add_geom(name="head_geom", type=mujoco.mjtGeom.mjGEOM_SPHERE, pos=(0, 0, spec.HEAD_ABOVE_NECK_PITCH),
+                  size=(spec.HEAD_RADIUS, 0, 0), mass=robot.head_mass, rgba=ORANGE)
+    head.add_site(name="head_site", pos=(0, 0, spec.HEAD_ABOVE_NECK_PITCH), size=SITE_SIZE, rgba=INVISIBLE)
+
+
 def add_motor(model, name: str, joint: spec.Joint, kv: float) -> None:
     motor = model.add_actuator(
         name=f"{name}_motor",
@@ -141,10 +153,12 @@ def add_motors(model, robot: spec.Robot) -> None:
         for side in spec.SIDES:
             for joint in spec.ARM_JOINTS:
                 add_motor(model, f"{side}_{joint.part}", joint, robot.arm_kv[joint.part])
+        for joint in spec.NECK_JOINTS:
+            add_motor(model, joint.part, joint, robot.neck_kv[joint.part])
 
 
 def add_waist_and_torso(pelvis, robot: spec.Robot) -> None:
-    """Cintura de 2 ejes y torso superior, con un lastre en lugar de la cabeza."""
+    """Cintura de 2 ejes, y sobre ella el torso superior con brazos, cuello y cabeza."""
     yaw, pitch = spec.WAIST_JOINTS
     waist = pelvis.add_body(name="waist", pos=(0, 0, spec.WAIST_ABOVE_PELVIS))
     add_joint(waist, "", yaw)
@@ -154,12 +168,10 @@ def add_waist_and_torso(pelvis, robot: spec.Robot) -> None:
     add_joint(torso, "", pitch)
     torso.add_geom(name="torso_geom", type=mujoco.mjtGeom.mjGEOM_BOX, pos=(0, 0, spec.UPPER_TORSO_OFFSET),
                    size=spec.UPPER_TORSO_HALF, mass=robot.upper_body_mass, rgba=LIGHT_GREY)
-    # Lastre sin colisión: masa e inercia, hasta que exista la cabeza
-    torso.add_geom(name="head_ballast", type=mujoco.mjtGeom.mjGEOM_SPHERE, pos=(0, 0, spec.HEAD_BALLAST_OFFSET),
-                   size=(spec.HEAD_BALLAST_RADIUS, 0, 0), mass=robot.head_ballast, rgba=GHOST, contype=0, conaffinity=0)
     if robot.has_arms:
         for side in spec.SIDES:
             add_arm(torso, robot, side)
+        add_neck_and_head(torso, robot)
 
 
 def add_sensors(model, robot: spec.Robot) -> None:
@@ -177,7 +189,7 @@ def add_sensors(model, robot: spec.Robot) -> None:
                              objtype=mujoco.mjtObj.mjOBJ_ACTUATOR, objname=f"{side}_{part}_motor")
     held = [joint.part for joint in spec.WAIST_JOINTS] if robot.has_waist else []
     if robot.has_arms:
-        held += spec.ARM_PARTS
+        held += [*spec.ARM_PARTS, *spec.NECK_PARTS]
     for part in held:
         model.add_sensor(name=f"{part}_pos", type=mujoco.mjtSensor.mjSENS_JOINTPOS,
                          objtype=mujoco.mjtObj.mjOBJ_JOINT, objname=f"{part}_joint")

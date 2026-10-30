@@ -4,6 +4,10 @@
 caminar, mantener el equilibrio, manipular objetos, interpretar instrucciones
 con inteligencia artificial y comunicarse a través de una aplicación móvil.
 
+**Objetivo de movimiento:** Danny debe moverse de forma natural, con todo el cuerpo
+coordinado. La corrección física, la estabilidad y la capacidad real de los motores van
+siempre antes que el aspecto.
+
 Este documento es el plan del proyecto completo: **12 fases y 76 etapas, más la fase
 3.5**, desde
 la primera simulación hasta el robot físico validado. El detalle técnico de lo
@@ -143,8 +147,9 @@ reproducidos sobre el cuerpo completo.
 | 3.5.3 | Torso y cintura | ✅ E18, `danny_humanoid.xml` |
 | 3.5.4 | Brazos | ✅ E19: 7 GDL por brazo, en postura fija; 28 GDL en total |
 | 3.5.5 | Manos | ✅ E20: bloque rígido de 0,16 kg, sin dedos |
-| 3.5.6 | Cabeza y cuello | ⏳ Siguiente |
-| 3.5.7 | Integración: equilibrio y marcha con todo el cuerpo | ⏳ |
+| 3.5.6 | Cabeza y cuello | ✅ E21: 30 GDL; cabeza simple, sin cara |
+| Revisión | Cuerpo completo para movimiento natural | 🔄 [Propuesta](documentation/whole-body-motion-review.md) pendiente de decisión |
+| 3.5.7 | Integración: equilibrio y marcha con todo el cuerpo | ⏳ Tras la revisión |
 | 3.5.8 | Validación y documentación | ⏳ |
 
 **Reglas:** descripción modular del robot, sin duplicar articulaciones, geometría ni
@@ -157,16 +162,20 @@ desarrollarse en la fase 4.
 
 ## Fase 4 — Aprendizaje por refuerzo y locomoción
 
-**Objetivo:** enseñar al robot a caminar con aprendizaje por refuerzo, sobre el humanoide
-completo de la fase 3.5.
+**Objetivo:** enseñar al robot a moverse de forma estable y natural con aprendizaje por
+refuerzo e imitación de movimiento, sobre el humanoide completo de la fase 3.5.
+
+Una recompensa que solo premie avanzar no basta para una marcha natural, y los datos humanos
+no se aplican directamente a un robot de 70 cm. La arquitectura de entrenamiento está en la
+[revisión del cuerpo completo](documentation/whole-body-motion-review.md).
 
 **Antes de entrenar**, el entorno debe incluir: límites realistas de par y velocidad,
 dinámica y retardos de actuador, ruido de sensores, fricción articular, autocolisiones,
 variaciones de dominio, observaciones de la IMU, y observaciones, acciones, recompensas
 y condiciones de terminación bien definidas.
 
-**Entregable:** política neuronal capaz de caminar en simulación y superar
-pruebas de estabilidad.
+**Entregable:** política neuronal capaz de caminar en simulación con movimiento natural
+medible y superar pruebas de estabilidad.
 
 | Etapa | Actividad |
 |---|---|
@@ -179,12 +188,34 @@ pruebas de estabilidad.
 | 27 | Aplicar domain randomization, incluidos suelo inclinado, reparto de masas y retardos |
 | 28 | Evaluar, optimizar y exportar las políticas |
 
-**Tecnologías:** MuJoCo, Python, PyTorch, algoritmos como PPO, Isaac Lab si
-conviene, y GPU NVIDIA local o en la nube para entrenar.
+### Hitos de movimiento natural
+
+Cada hito se valida con cifras, no por cómo se ve. Los límites son **provisionales**: se
+fijan antes de empezar cada hito, tras comprobar que son físicamente posibles. `L` = 0,36 m,
+y Fr es el número de Froude. Ninguno se ha ejecutado todavía.
+
+| Hito | Etapas | Criterio de aceptación provisional |
+|---|---|---|
+| A. Equilibrio activo | 23 | Usa la IMU; de pie, 60 s sin caer con ruido y retardo; supera los límites de empujón de la marcha clásica |
+| B. Locomoción estable | 24, 25 | Fr de 0,1 o más (unos 0,6 m/s) durante 60 s; deslizamiento por debajo del 2 % de `L` por paso; pie libre por encima del 5 % de `L` |
+| C. Selección de referencias | 22 | Lista de clips con licencia comprobada: marcha, giro, arranque y parada |
+| D. Adaptación del movimiento | 22 | Clips dentro de rangos, par y velocidad de cada motor; tiempos escalados ×0,63 |
+| E. Seguimiento de cuerpo completo | 23, 24 | Sigue un clip completo sin caer; error articular medio por debajo de 0,2 rad; posición de manos y pies por debajo del 10 % de `L` |
+| F. Brazos y torso coordinados | 24 | Brazo y pierna opuestos en fase (±30°); pelvis y tórax en oposición; cabeza dentro de ±5° |
+| G. Transiciones suaves | 25 | Parado, marcha y giro sin pausas ni pico de sacudida superior a 1,5 veces el de la marcha estable |
+| H. Robustez y recuperación | 26, 27 | Recupera un impulso normalizado fijado en la etapa 26, dando pasos; cumple con variaciones de masa y contacto |
+| I. Evaluación de naturalidad | 28 | Informe de todas las métricas normalizadas; variabilidad del paso por debajo del 5 %; suavidad y coste de transporte mejor que la política sin imitación |
+
+Qué métricas sirven a 70 cm y cómo normalizarlas: sección 9 de la
+[revisión](documentation/whole-body-motion-review.md).
+
+**Tecnologías:** MuJoCo, Python, PyTorch, PPO con seguimiento de movimiento y estilo
+adversarial, Isaac Lab si conviene, y GPU NVIDIA local o en la nube para entrenar.
 
 **Observaciones previstas:** orientación del torso, velocidad angular, posiciones
 y velocidades articulares, contactos de los pies y velocidad objetivo.
-**Acciones:** objetivos articulares.
+**Acciones:** objetivos de las 30 articulaciones: el cuerpo se controla como un todo, sin
+partes fijas.
 
 ## Fase 5 — Diseño mecánico del humanoide
 

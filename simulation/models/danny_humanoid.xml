@@ -19,8 +19,7 @@
         <geom name="waist_geom" size="0.03 0.05 0.02" type="box" rgba="0.3 0.3 0.3 1" mass="0.2"/>
         <body name="torso">
           <joint name="waist_pitch_joint" range="-0.2618 0.7854" armature="0.01" damping="0.5" axis="0 1 0" limited="true"/>
-          <geom name="torso_geom" size="0.06 0.085 0.07" pos="0 0 0.07" type="box" rgba="0.8 0.8 0.85 1" mass="2.8"/>
-          <geom name="head_ballast" size="0.045" pos="0 0 0.205" contype="0" conaffinity="0" rgba="0.8 0.3 0.3 0.4" mass="0.39"/>
+          <geom name="torso_geom" size="0.06 0.085 0.07" pos="0 0 0.07" type="box" rgba="0.8 0.8 0.85 1" mass="2.79"/>
           <body name="left_shoulder" pos="0 0.11 0.14">
             <joint name="left_shoulder_pitch_joint" range="-2.618 1.0472" armature="0.01" damping="0.5" axis="0 1 0" limited="true"/>
             <joint name="left_shoulder_roll_joint" range="-0.1745 2.0944" armature="0.01" damping="0.5" axis="1 0 0" limited="true"/>
@@ -61,6 +60,15 @@
                   <site name="right_fingertip_site" size="0.01" pos="0 0 -0.05" rgba="0 0 0 0"/>
                 </body>
               </body>
+            </body>
+          </body>
+          <body name="neck" pos="0 0 0.155">
+            <joint name="neck_yaw_joint" range="-1.3963 1.3963" armature="0.01" damping="0.5" limited="true"/>
+            <geom name="neck_geom" size="0.02 0.0075" pos="0 0 0.0075" quat="0 1 0 0" type="capsule" rgba="0.3 0.3 0.3 1" mass="0.09"/>
+            <body name="head" pos="0 0 0.015">
+              <joint name="neck_pitch_joint" range="-0.5236 0.7854" armature="0.01" damping="0.5" axis="0 1 0" limited="true"/>
+              <geom name="head_geom" size="0.045" pos="0 0 0.035" rgba="0.9 0.5 0.1 1" mass="0.31"/>
+              <site name="head_site" size="0.01" pos="0 0 0.035" rgba="0 0 0 0"/>
             </body>
           </body>
         </body>
@@ -137,6 +145,8 @@
     <general name="right_wrist_yaw_motor" joint="right_wrist_yaw_joint" ctrlrange="-1.5708 1.5708" ctrllimited="true" forcelimited="true" forcerange="-20 20" input="pos" biastype="affine" gainprm="100" biasprm="0 -100 -1.6"/>
     <general name="right_wrist_pitch_motor" joint="right_wrist_pitch_joint" ctrlrange="-0.7854 0.7854" ctrllimited="true" forcelimited="true" forcerange="-20 20" input="pos" biastype="affine" gainprm="100" biasprm="0 -100 -1.61"/>
     <general name="right_wrist_roll_motor" joint="right_wrist_roll_joint" ctrlrange="-0.7854 0.7854" ctrllimited="true" forcelimited="true" forcerange="-20 20" input="pos" biastype="affine" gainprm="100" biasprm="0 -100 -1.61"/>
+    <general name="neck_yaw_motor" joint="neck_yaw_joint" ctrlrange="-1.3963 1.3963" ctrllimited="true" forcelimited="true" forcerange="-20 20" input="pos" biastype="affine" gainprm="100" biasprm="0 -100 -1.62"/>
+    <general name="neck_pitch_motor" joint="neck_pitch_joint" ctrlrange="-0.5236 0.7854" ctrllimited="true" forcelimited="true" forcerange="-20 20" input="pos" biastype="affine" gainprm="100" biasprm="0 -100 -1.65"/>
   </actuator>
 
   <sensor>
@@ -226,6 +236,12 @@
     <jointpos joint="right_wrist_roll_joint" name="right_wrist_roll_pos"/>
 
     <actuatorfrc actuator="right_wrist_roll_motor" name="right_wrist_roll_torque"/>
+    <jointpos joint="neck_yaw_joint" name="neck_yaw_pos"/>
+
+    <actuatorfrc actuator="neck_yaw_motor" name="neck_yaw_torque"/>
+    <jointpos joint="neck_pitch_joint" name="neck_pitch_pos"/>
+
+    <actuatorfrc actuator="neck_pitch_motor" name="neck_pitch_torque"/>
     <touch site="left_touch_site" name="left_foot_force"/>
     <touch site="right_touch_site" name="right_foot_force"/>
   </sensor>

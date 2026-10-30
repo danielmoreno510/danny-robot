@@ -80,6 +80,12 @@ WAIST_JOINTS = (
     Joint("waist_pitch", (0, 1, 0), (-0.2618, 0.7854), 0.0),  # -15° a 45°
 )
 
+# Cuello (etapa 3.5.6): yaw y, encima, pitch. Pitch positivo: hacia abajo.
+NECK_JOINTS = (
+    Joint("neck_yaw", (0, 0, 1), (-1.3963, 1.3963), 0.0),  # ±80°
+    Joint("neck_pitch", (0, 1, 0), (-0.5236, 0.7854), 0.0),  # -30° a 45°
+)
+
 # Brazo (etapa 3.5.4), en orden desde el hombro. El brazo derecho refleja los ejes
 # (ver mirrored_axis): un ángulo positivo significa lo mismo en los dos lados.
 # Hombro pitch negativo: hacia delante. Hombro roll positivo: hacia fuera.
@@ -108,8 +114,11 @@ UPPER_ARM_LENGTH = 0.13
 FOREARM_LENGTH = 0.12
 ARM_RADIUS = 0.02
 HAND_HALF = (0.015, 0.025, 0.025)  # espesor, ancho y largo: rígida, sin dedos
-HEAD_BALLAST_RADIUS = 0.045
-HEAD_BALLAST_OFFSET = 0.205
+NECK_BASE_ABOVE_WAIST = 0.155
+NECK_RADIUS = 0.02
+NECK_PITCH_ABOVE_BASE = 0.015
+HEAD_RADIUS = 0.045
+HEAD_ABOVE_NECK_PITCH = 0.035  # el centro de la cabeza, a 65,5 cm del suelo
 
 
 @dataclass(frozen=True)
@@ -117,7 +126,6 @@ class Robot:
     """
     Una configuración del robot. Las masas del humanoide son las del presupuesto de
     documentation/phase-3.5-mass-budget.md, con el margen de 0,31 kg en el torso.
-    El lastre ocupa el lugar de la cabeza hasta que exista esa pieza.
     """
 
     file: str
@@ -132,9 +140,11 @@ class Robot:
     upper_arm_mass: float = 0.0
     forearm_mass: float = 0.0
     hand_mass: float = 0.0
-    head_ballast: float = 0.0
+    neck_mass: float = 0.0
+    head_mass: float = 0.0
     waist_kv: dict[str, float] | None = None
     arm_kv: dict[str, float] | None = None
+    neck_kv: dict[str, float] | None = None
 
     @property
     def has_waist(self) -> bool:
@@ -160,7 +170,7 @@ HUMANOID = Robot(
     thigh_mass=1.0,
     shin_mass=0.77,
     foot_mass=0.2,
-    upper_body_mass=2.8,
+    upper_body_mass=2.79,
     leg_kv={"hip_yaw": 1.68, "hip_roll": 4.83, "hip_pitch": 4.84, "knee": 2.53,
             "ankle_pitch": 9.1, "ankle_roll": 9.1},
     waist_mass=0.2,
@@ -168,16 +178,19 @@ HUMANOID = Robot(
     upper_arm_mass=0.347,
     forearm_mass=0.115,
     hand_mass=0.16,
-    head_ballast=0.39,
+    neck_mass=0.09,
+    head_mass=0.31,
     waist_kv={"waist_yaw": 3.74, "waist_pitch": 4.19},
     arm_kv={"shoulder_pitch": 2.67, "shoulder_roll": 2.67, "shoulder_yaw": 1.65, "elbow": 1.9,
             "wrist_yaw": 1.6, "wrist_pitch": 1.61, "wrist_roll": 1.61},
+    neck_kv={"neck_yaw": 1.62, "neck_pitch": 1.65},
 )
 ROBOTS = {"biped": BIPED, "humanoid": HUMANOID}
 
 JOINT_PARTS = tuple(joint.part for joint in LEG_JOINTS)
 ARM_PARTS = tuple(f"{side}_{joint.part}" for side in SIDES for joint in ARM_JOINTS)
-HELD_PARTS = (*(joint.part for joint in WAIST_JOINTS), *ARM_PARTS)  # lo que no es pierna
+NECK_PARTS = tuple(joint.part for joint in NECK_JOINTS)
+HELD_PARTS = (*(joint.part for joint in WAIST_JOINTS), *ARM_PARTS, *NECK_PARTS)  # lo que no es pierna
 JOINTS = tuple(f"{side}_{part}_joint" for side in SIDES for part in JOINT_PARTS)
 ACTUATORS = tuple(f"{side}_{part}_motor" for side in SIDES for part in JOINT_PARTS)
 POSITION_SENSORS = tuple(f"{side}_{part}_pos" for side in SIDES for part in JOINT_PARTS)
