@@ -3,8 +3,8 @@
 Punto de entrada para continuar **Robot Danny** en un chat nuevo o en otra computadora.
 Se actualiza al terminar cada fase y cada vez que cambia el estado.
 
-**Fecha:** 30 de octubre de 2026. **Fase actual:** 3.5 terminada, en CONDITIONAL PASS aceptado.
-**Siguiente paso:** fase 4, empezando por los requisitos de «Qué sigue».
+**Fecha:** 30 de octubre de 2026. **Fase actual:** 5, diseño mecánico, antes que la fase 4.
+**Siguiente paso:** ejecutar el esqueleto en Fusion y revisar la etapa 5.1.
 
 ## Cómo empezar
 
@@ -13,9 +13,11 @@ Si eres Claude en un chat nuevo, lee en este orden:
 1. Este archivo.
 2. [CLAUDE.md](CLAUDE.md): reglas de trabajo del usuario.
 3. [ROADMAP.md](ROADMAP.md): plan y estado de cada etapa. Es la fuente de verdad.
-4. [documentation/phase-3.5-validation.md](documentation/phase-3.5-validation.md): resultado de
+4. [documentation/phase-5.1-mechanical-architecture.md](documentation/phase-5.1-mechanical-architecture.md):
+   arquitectura mecánica, motores, coste y guía de Fusion.
+5. [documentation/phase-3.5-validation.md](documentation/phase-3.5-validation.md): resultado de
    la fase, comparación con el bípedo y condiciones.
-5. [documentation/phase-4-readiness-audit.md](documentation/phase-4-readiness-audit.md): qué
+6. [documentation/phase-4-readiness-audit.md](documentation/phase-4-readiness-audit.md): qué
    falta para entrenar.
 
 Prepara el proyecto, con Python 3.12:
@@ -74,15 +76,19 @@ a E23.
 
 ## Qué sigue
 
-**El usuario abre un chat nuevo para la fase 4.** Las condiciones de la fase 3.5 están en la
-[validación](documentation/phase-3.5-validation.md).
+**Cambio de plan del usuario:** primero el robot real en Autodesk Fusion, después MuJoCo con esas
+medidas, y después Isaac Sim e Isaac Lab. **No empieces a entrenar.** No compres nada sin aprobación.
+
+**Etapa 5.1:** evaluación entregada y script en `cad/fusion/DannyMasterSkeleton`. **No se ha ejecutado
+en Fusion.** Falta que el usuario lo ejecute, comprobar el informe con
+`export_cad_parameters.py --check`, y su revisión. Después: diseño detallado de pelvis y piernas.
 
 **Pendiente de decisión del usuario:** puntos de seguimiento e IMU de cabeza, y el `kv` de los
 brazos: con ζ 6,2 no oscilan libremente, y hay que decidirlo antes de buscar un balanceo natural.
 
-**Antes de la fase 4 faltan también decisiones del usuario:** GPU local o en la nube, y la
-licencia del repositorio. Hay que comprobar que el modelo funciona en MJX y las licencias de
-AMASS y LAFAN1. La lista completa está en la sección 8 de la auditoría.
+**Antes de la fase 4 faltan también decisiones del usuario:** cómo entrenar, porque la RTX 3080 Ti
+está por debajo del mínimo de Isaac Sim, y la licencia del repositorio. Hay que comprobar las licencias de AMASS y
+LAFAN1. Isaac Lab ya está decidido, así que MJX deja de ser un requisito. La lista completa está en la sección 8 de la auditoría.
 
 ## Objetivo que guía las decisiones
 
@@ -117,7 +123,8 @@ de velocidad. Ver la [revisión](documentation/whole-body-motion-review.md).
 
 Del 30 de octubre de 2026, en macOS con Apple Silicon, Python 3.12 y MuJoCo 3.17:
 
-- `pytest tests`: **236 de 236** en una ejecución completa (19 min 3 s).
+- `pytest tests`: **236 de 236** en la última ejecución completa (19 min 3 s), más las 19 de CAD, que
+  pasaron por separado.
 - `run_checks.py`: **27 de 27**.
 - Las cifras no cambian tras la auditoría, salvo el sobrepaso de tope, que ahora mide bien.
 - pyflakes sin avisos.

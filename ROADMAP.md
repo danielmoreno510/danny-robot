@@ -13,6 +13,11 @@ Este documento es el plan del proyecto completo: **12 fases y 76 etapas, más la
 la primera simulación hasta el robot físico validado. El detalle técnico de lo
 ya hecho está en el [handbook](docs/HANDBOOK.md).
 
+**Cambio de orden:** antes de entrenar se diseña el robot real. Tras la fase 3.5 va la **fase 5**,
+diseño mecánico en Autodesk Fusion. Después se actualiza el modelo de MuJoCo, y entonces llega la
+**fase 4**, con aprendizaje por refuerzo en NVIDIA Isaac Lab. La numeración no cambia. MuJoCo sigue
+como validación independiente, no como paso obligatorio hacia Isaac.
+
 **Fases, etapas y experimentos:**
 
 - Las **etapas** (1 a 76) son las de este roadmap.
@@ -37,8 +42,8 @@ Así se evita descubrir errores estructurales cuando ya hay piezas fabricadas.
 | 2 | Cinemática y articulaciones | 6–11 | ✅ Completada |
 | 3 | Simulación física y control del bípedo | 12–20 | 🟡 CONDITIONAL PASS, ver [validación](documentation/phase-3-validation.md) |
 | 3.5 | Humanoide completo en simulación | 3.5.1–3.5.8 | 🟡 CONDITIONAL PASS, ver [validación](documentation/phase-3.5-validation.md) |
-| 4 | Aprendizaje por refuerzo y locomoción | 21–28 | ⏳ Pendiente |
-| 5 | Diseño mecánico del humanoide | 29–35 | ⏳ Pendiente |
+| 5 | Diseño mecánico del humanoide (va antes que la 4) | 5.1, 29–35 | 🔄 Actual: 5.1 en revisión |
+| 4 | Aprendizaje por refuerzo y locomoción, con Isaac Lab | 21–28 | ⏳ Pendiente, tras la fase 5 |
 | 6 | Fabricación de las piernas | 36–40 | ⏳ Pendiente |
 | 7 | Electrónica y control físico | 41–46 | ⏳ Pendiente |
 | 8 | Sim-to-Real y locomoción física | 47–52 | ⏳ Pendiente |
@@ -216,7 +221,8 @@ Qué métricas sirven a 70 cm y cómo normalizarlas: sección 9 de la
 requisitos previos: [auditoría de preparación](documentation/phase-4-readiness-audit.md).
 
 **Tecnologías:** MuJoCo, Python, PyTorch, PPO con seguimiento de movimiento y estilo
-adversarial, Isaac Lab si conviene, y GPU NVIDIA local o en la nube para entrenar.
+adversarial e Isaac Lab, ya decidido. La RTX 3080 Ti queda por debajo del mínimo de Isaac Sim:
+hay que probar Newton sin renderizar, o usar la nube.
 
 **Observaciones previstas:** orientación del torso, velocidad angular, posiciones
 y velocidades articulares, contactos de los pies y velocidad objetivo.
@@ -225,11 +231,13 @@ partes fijas.
 
 ## Fase 5 — Diseño mecánico del humanoide
 
-**Entregable:** diseño mecánico fabricable de la primera versión de Danny. No se
+**Entregable:** diseño mecánico fabricable de la primera versión de Danny, en Autodesk Fusion
+y paramétrico. Primero el hardware y después el exterior, de aspecto moderno y original. No se
 compran los actuadores definitivos hasta comprobar que cumplen los requisitos.
 
 | Etapa | Actividad |
 |---|---|
+| 5.1 | Arquitectura mecánica y esqueleto maestro. 🔄 [Entregada](documentation/phase-5.1-mechanical-architecture.md); falta ejecutarla en Fusion y tu revisión |
 | 29 | Definir dimensiones y proporciones definitivas |
 | 30 | Calcular masas, cargas y torques articulares |
 | 31 | Seleccionar motores, reductores y encoders |
@@ -237,6 +245,9 @@ compran los actuadores definitivos hasta comprobar que cumplen los requisitos.
 | 33 | Modelar la estructura completa en CAD |
 | 34 | Analizar resistencia, rigidez y disipación térmica |
 | 35 | Validar el diseño y preparar los archivos de fabricación |
+
+**Orden:** pelvis y piernas primero. Después, el modelo de MuJoCo se actualiza con dimensiones,
+masas, topes, motores y colisiones reales, se valida en Isaac Sim, y sigue la fase 4.
 
 ## Fase 6 — Fabricación de las piernas
 
@@ -355,8 +366,9 @@ dependen del hardware y de las iteraciones necesarias.
 | Bloque | Estimación |
 |---|---|
 | Fases 1–3: fundamentos y simulación | 2–4 meses |
+| Fase 5: diseño mecánico | 2–4 meses |
 | Fase 4: aprendizaje por refuerzo | 3–6 meses |
-| Fases 5–7: diseño, fabricación y electrónica | 6–12 meses |
+| Fases 6–7: fabricación y electrónica | 4–8 meses |
 | Fase 8: locomoción física | 3–9 meses |
 | Fases 9–11: cuerpo, percepción y manipulación | 9–24+ meses |
 | Fase 12: integración final | 2–5 meses |

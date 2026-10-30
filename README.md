@@ -117,6 +117,7 @@ Los scripts con `--view` imprimen primero el análisis y después abren la venta
 | [documentation/phase-3.5-proposal.md](documentation/phase-3.5-proposal.md) | Propuesta aprobada del humanoide completo |
 | [documentation/phase-3.5-mass-budget.md](documentation/phase-3.5-mass-budget.md) | Presupuesto de masa con motores de catálogo |
 | [documentation/phase-3.5-validation.md](documentation/phase-3.5-validation.md) | Validación de la fase 3.5, comparación con el bípedo y auditoría |
+| [documentation/phase-5.1-mechanical-architecture.md](documentation/phase-5.1-mechanical-architecture.md) | Arquitectura mecánica, motores, coste y guía de Fusion |
 | [documentation/whole-body-motion-review.md](documentation/whole-body-motion-review.md) | Revisión del cuerpo para movimiento natural y plan de la fase 4 |
 | [documentation/phase-4-readiness-audit.md](documentation/phase-4-readiness-audit.md) | Auditoría de preparación: qué falta para entrenar |
 | [PROJECT_HANDOFF.md](PROJECT_HANDOFF.md) | Relevo: cómo seguir en otro chat o en otra computadora |
@@ -143,7 +144,10 @@ danny-robot/
 │   ├── phase-3.5-mass-budget.md   presupuesto de masa
 │   ├── phase-3.5-validation.md   validación de la fase 3.5
 │   ├── whole-body-motion-review.md   revisión para movimiento natural
-│   └── phase-4-readiness-audit.md   auditoría de preparación
+│   ├── phase-4-readiness-audit.md   auditoría de preparación
+│   ├── phase-5.1-mechanical-architecture.md   arquitectura mecánica
+│   └── phase-5.1-component-research.md   anexo de componentes
+├── cad/fusion/         esqueleto paramétrico para Autodesk Fusion
 ├── tests/              suite de validación automática
 ├── results/            salida de la última ejecución de run_checks.py
 └── simulation/

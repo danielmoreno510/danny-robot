@@ -75,20 +75,23 @@ ventana no se ha abierto.
 ## Estado actual
 
 Fases 3 y 3.5 en **CONDITIONAL PASS**, revisadas y aceptadas por el usuario. Limitaciones en
-`documentation/known-limitations.md`. **Siguiente: fase 4**, tras los requisitos de abajo.
+`documentation/known-limitations.md`. **Actual: fase 5, diseño mecánico, antes que la fase 4.**
+Etapa 5.1 entregada, en `documentation/phase-5.1-mechanical-architecture.md`; falta ejecutarla en
+Fusion y la revisión del usuario.
 La propuesta aprobada está en `documentation/phase-3.5-proposal.md`, y la revisión
 `documentation/whole-body-motion-review.md` la amplió a 31 GDL. Mide 70 cm. El
 objetivo de masa es 11 kg, con el reparto de `documentation/phase-3.5-mass-budget.md`.
 
 Hecha la etapa 3.5.8: 31 GDL, cada articulación con su motor en `robot_spec.py`, IMU, velocidades
 y postura `stand`. Armature y amortiguamiento son estimaciones.
-Validación en `documentation/phase-3.5-validation.md`. **Antes de entrenar:** GPU, MJX y licencias.
+Validación en `documentation/phase-3.5-validation.md`. **Antes de entrenar:** GPU para Isaac Lab y licencias.
 
-**Se avanza por etapas, con revisión: no implementes todo a la vez.** Después de la fase 3.5 viene la fase 4, cuyo entorno debe cumplir la
-lista del roadmap. No marques como implementados la compensación dinámica ni el
+**Se avanza por etapas, con revisión: no implementes todo a la vez.** Tras la fase 5 se actualiza MuJoCo, y después viene la fase 4, con Isaac Lab, cuyo entorno debe
+cumplir la lista del roadmap. **No compres nada sin aprobación.** Di siempre que un script de Fusion
+no se ha ejecutado si no hay `skeleton_report.json`. No marques como implementados la compensación dinámica ni el
 equilibrio activo.
 
-Comprobaciones: `run_checks.py` (27, unos 3 minutos) y `python -m pytest tests` (236, unos
+Comprobaciones: `run_checks.py` (27, unos 3 minutos) y `python -m pytest tests` (255, unos
 19 minutos).
 Las pruebas de realismo miden sin exigir: que pasen no significa que el robot aguante
 ese efecto. Mira `results/phase3_metrics.json`.
@@ -96,7 +99,8 @@ ese efecto. Mira `results/phase3_metrics.json`.
 **Pendiente de decidir por el usuario:**
 
 - Licencia: el repositorio es público y no tiene.
-- Hardware de entrenamiento: GPU local o en la nube.
+- Hardware de entrenamiento: la RTX 3080 Ti está por debajo del mínimo de Isaac Sim.
+- Prototipo de una articulación y presupuesto (opciones A, B y C).
 
 **Decisiones ya tomadas:**
 

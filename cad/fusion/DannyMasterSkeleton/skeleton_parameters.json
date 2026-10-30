@@ -1,0 +1,783 @@
+{
+ "parameters": {
+  "sole_to_ankle": {
+   "value_mm": 40.0,
+   "comment": "suelo a tobillo"
+  },
+  "shin_length": {
+   "value_mm": 160.0,
+   "comment": "tobillo a rodilla"
+  },
+  "thigh_length": {
+   "value_mm": 160.0,
+   "comment": "rodilla a cadera"
+  },
+  "hip_below_pelvis": {
+   "value_mm": 50.0,
+   "comment": "cadera a centro de la pelvis"
+  },
+  "hip_half_spacing": {
+   "value_mm": 70.0,
+   "comment": "cada cadera, desde el plano medio"
+  },
+  "waist_above_pelvis": {
+   "value_mm": 40.0,
+   "comment": "centro de la pelvis a cintura"
+  },
+  "shoulder_above_waist": {
+   "value_mm": 140.0,
+   "comment": "cintura a hombros"
+  },
+  "shoulder_half_spacing": {
+   "value_mm": 110.0,
+   "comment": "cada hombro, desde el plano medio"
+  },
+  "upper_arm_length": {
+   "value_mm": 130.0,
+   "comment": "hombro a codo"
+  },
+  "forearm_length": {
+   "value_mm": 120.0,
+   "comment": "codo a muñeca"
+  },
+  "hand_length": {
+   "value_mm": 50.0,
+   "comment": "muñeca a punta de la mano"
+  },
+  "neck_base_above_waist": {
+   "value_mm": 155.0,
+   "comment": "cintura a cuello yaw"
+  },
+  "neck_pitch_above_base": {
+   "value_mm": 15.0,
+   "comment": "cuello yaw a cuello pitch"
+  },
+  "head_above_neck_pitch": {
+   "value_mm": 35.0,
+   "comment": "cuello pitch a centro de la cabeza"
+  },
+  "head_radius": {
+   "value_mm": 45.0,
+   "comment": "radio de la cabeza"
+  },
+  "foot_half_length": {
+   "value_mm": 70.0,
+   "comment": "tobillo a punta del pie"
+  }
+ },
+ "components": {
+  "00_Master_Skeleton": {},
+  "01_Pelvis": {},
+  "02_Left_Leg": {
+   "Left_Hip": {},
+   "Left_Thigh": {},
+   "Left_Knee": {},
+   "Left_Shin": {},
+   "Left_Ankle": {},
+   "Left_Foot": {}
+  },
+  "03_Right_Leg": {
+   "Right_Hip": {},
+   "Right_Thigh": {},
+   "Right_Knee": {},
+   "Right_Shin": {},
+   "Right_Ankle": {},
+   "Right_Foot": {}
+  },
+  "04_Waist": {},
+  "05_Torso": {},
+  "06_Left_Arm": {
+   "Left_Shoulder": {},
+   "Left_Upper_Arm": {},
+   "Left_Elbow": {},
+   "Left_Forearm": {},
+   "Left_Wrist": {}
+  },
+  "07_Right_Arm": {
+   "Right_Shoulder": {},
+   "Right_Upper_Arm": {},
+   "Right_Elbow": {},
+   "Right_Forearm": {},
+   "Right_Wrist": {}
+  },
+  "08_Hands": {},
+  "09_Neck": {},
+  "10_Head": {},
+  "11_Electronics": {},
+  "12_Battery": {},
+  "13_Exterior_Panels": {}
+ },
+ "skeleton_component": "00_Master_Skeleton",
+ "sketches": [
+  {
+   "name": "Sagittal_XZ",
+   "plane": "xZ",
+   "segments": [
+    {
+     "from": "origin",
+     "to": "left_ankle",
+     "expression": "sole_to_ankle",
+     "direction": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "from": "left_ankle",
+     "to": "left_knee",
+     "expression": "shin_length",
+     "direction": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "from": "left_knee",
+     "to": "left_hip",
+     "expression": "thigh_length",
+     "direction": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "from": "left_hip",
+     "to": "pelvis",
+     "expression": "hip_below_pelvis",
+     "direction": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "from": "pelvis",
+     "to": "waist",
+     "expression": "waist_above_pelvis",
+     "direction": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "from": "waist",
+     "to": "neck_yaw",
+     "expression": "neck_base_above_waist",
+     "direction": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "from": "neck_yaw",
+     "to": "neck_pitch",
+     "expression": "neck_pitch_above_base",
+     "direction": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "from": "neck_pitch",
+     "to": "head_center",
+     "expression": "head_above_neck_pitch",
+     "direction": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "from": "head_center",
+     "to": "head_top",
+     "expression": "head_radius",
+     "direction": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "from": "left_ankle",
+     "to": "toe",
+     "expression": "foot_half_length",
+     "direction": [
+      1,
+      0,
+      0
+     ]
+    }
+   ],
+   "points": {
+    "origin": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "left_ankle": [
+     0.0,
+     0.0,
+     40.0
+    ],
+    "left_knee": [
+     0.0,
+     0.0,
+     200.0
+    ],
+    "left_hip": [
+     0.0,
+     0.0,
+     360.0
+    ],
+    "pelvis": [
+     0.0,
+     0.0,
+     410.0
+    ],
+    "waist": [
+     0.0,
+     0.0,
+     450.0
+    ],
+    "neck_yaw": [
+     0.0,
+     0.0,
+     605.0
+    ],
+    "neck_pitch": [
+     0.0,
+     0.0,
+     620.0
+    ],
+    "head_center": [
+     0.0,
+     0.0,
+     655.0
+    ],
+    "head_top": [
+     0.0,
+     0.0,
+     700.0
+    ],
+    "toe": [
+     70.0,
+     0.0,
+     40.0
+    ]
+   }
+  },
+  {
+   "name": "Frontal_YZ",
+   "plane": "yZ",
+   "segments": [
+    {
+     "from": "origin",
+     "to": "hip_center",
+     "expression": "sole_to_ankle + shin_length + thigh_length",
+     "direction": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "from": "hip_center",
+     "to": "pelvis_center",
+     "expression": "hip_below_pelvis",
+     "direction": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "from": "pelvis_center",
+     "to": "waist_center",
+     "expression": "waist_above_pelvis",
+     "direction": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "from": "waist_center",
+     "to": "shoulder_center",
+     "expression": "shoulder_above_waist",
+     "direction": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "from": "hip_center",
+     "to": "left_hip_joint",
+     "expression": "hip_half_spacing",
+     "direction": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "from": "left_hip_joint",
+     "to": "left_knee_joint",
+     "expression": "thigh_length",
+     "direction": [
+      0,
+      0,
+      -1
+     ]
+    },
+    {
+     "from": "left_knee_joint",
+     "to": "left_ankle_joint",
+     "expression": "shin_length",
+     "direction": [
+      0,
+      0,
+      -1
+     ]
+    },
+    {
+     "from": "shoulder_center",
+     "to": "left_shoulder",
+     "expression": "shoulder_half_spacing",
+     "direction": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "from": "left_shoulder",
+     "to": "left_elbow",
+     "expression": "upper_arm_length",
+     "direction": [
+      0,
+      0,
+      -1
+     ]
+    },
+    {
+     "from": "left_elbow",
+     "to": "left_wrist",
+     "expression": "forearm_length",
+     "direction": [
+      0,
+      0,
+      -1
+     ]
+    },
+    {
+     "from": "left_wrist",
+     "to": "left_fingertip",
+     "expression": "hand_length",
+     "direction": [
+      0,
+      0,
+      -1
+     ]
+    },
+    {
+     "from": "hip_center",
+     "to": "right_hip_joint",
+     "expression": "hip_half_spacing",
+     "direction": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "from": "right_hip_joint",
+     "to": "right_knee_joint",
+     "expression": "thigh_length",
+     "direction": [
+      0,
+      0,
+      -1
+     ]
+    },
+    {
+     "from": "right_knee_joint",
+     "to": "right_ankle_joint",
+     "expression": "shin_length",
+     "direction": [
+      0,
+      0,
+      -1
+     ]
+    },
+    {
+     "from": "shoulder_center",
+     "to": "right_shoulder",
+     "expression": "shoulder_half_spacing",
+     "direction": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "from": "right_shoulder",
+     "to": "right_elbow",
+     "expression": "upper_arm_length",
+     "direction": [
+      0,
+      0,
+      -1
+     ]
+    },
+    {
+     "from": "right_elbow",
+     "to": "right_wrist",
+     "expression": "forearm_length",
+     "direction": [
+      0,
+      0,
+      -1
+     ]
+    },
+    {
+     "from": "right_wrist",
+     "to": "right_fingertip",
+     "expression": "hand_length",
+     "direction": [
+      0,
+      0,
+      -1
+     ]
+    }
+   ],
+   "points": {
+    "origin": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hip_center": [
+     0.0,
+     0.0,
+     360.0
+    ],
+    "pelvis_center": [
+     0.0,
+     0.0,
+     410.0
+    ],
+    "waist_center": [
+     0.0,
+     0.0,
+     450.0
+    ],
+    "shoulder_center": [
+     0.0,
+     0.0,
+     590.0
+    ],
+    "left_hip_joint": [
+     0.0,
+     70.0,
+     360.0
+    ],
+    "left_knee_joint": [
+     0.0,
+     70.0,
+     200.0
+    ],
+    "left_ankle_joint": [
+     0.0,
+     70.0,
+     40.0
+    ],
+    "left_shoulder": [
+     0.0,
+     110.0,
+     590.0
+    ],
+    "left_elbow": [
+     0.0,
+     110.0,
+     460.0
+    ],
+    "left_wrist": [
+     0.0,
+     110.0,
+     340.0
+    ],
+    "left_fingertip": [
+     0.0,
+     110.0,
+     290.0
+    ],
+    "right_hip_joint": [
+     0.0,
+     -70.0,
+     360.0
+    ],
+    "right_knee_joint": [
+     0.0,
+     -70.0,
+     200.0
+    ],
+    "right_ankle_joint": [
+     0.0,
+     -70.0,
+     40.0
+    ],
+    "right_shoulder": [
+     0.0,
+     -110.0,
+     590.0
+    ],
+    "right_elbow": [
+     0.0,
+     -110.0,
+     460.0
+    ],
+    "right_wrist": [
+     0.0,
+     -110.0,
+     340.0
+    ],
+    "right_fingertip": [
+     0.0,
+     -110.0,
+     290.0
+    ]
+   }
+  }
+ ],
+ "self_test": {
+  "parameter": "thigh_length",
+  "delta_mm": 10.0,
+  "point": "left_hip",
+  "sketch": "Sagittal_XZ"
+ },
+ "joints": [
+  {
+   "name": "left_hip_yaw",
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "limits_deg": [
+    -40.0,
+    40.0
+   ]
+  },
+  {
+   "name": "left_hip_roll",
+   "axis": [
+    1,
+    0,
+    0
+   ],
+   "limits_deg": [
+    -30.0,
+    30.0
+   ]
+  },
+  {
+   "name": "left_hip_pitch",
+   "axis": [
+    0,
+    1,
+    0
+   ],
+   "limits_deg": [
+    -90.0,
+    30.0
+   ]
+  },
+  {
+   "name": "left_knee",
+   "axis": [
+    0,
+    1,
+    0
+   ],
+   "limits_deg": [
+    0.0,
+    130.0
+   ]
+  },
+  {
+   "name": "left_ankle_pitch",
+   "axis": [
+    0,
+    1,
+    0
+   ],
+   "limits_deg": [
+    -65.0,
+    45.0
+   ]
+  },
+  {
+   "name": "left_ankle_roll",
+   "axis": [
+    1,
+    0,
+    0
+   ],
+   "limits_deg": [
+    -30.0,
+    30.0
+   ]
+  },
+  {
+   "name": "waist_yaw",
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "limits_deg": [
+    -45.0,
+    45.0
+   ]
+  },
+  {
+   "name": "waist_roll",
+   "axis": [
+    1,
+    0,
+    0
+   ],
+   "limits_deg": [
+    -20.0,
+    20.0
+   ]
+  },
+  {
+   "name": "waist_pitch",
+   "axis": [
+    0,
+    1,
+    0
+   ],
+   "limits_deg": [
+    -15.0,
+    45.0
+   ]
+  },
+  {
+   "name": "left_shoulder_pitch",
+   "axis": [
+    0,
+    1,
+    0
+   ],
+   "limits_deg": [
+    -150.0,
+    60.0
+   ]
+  },
+  {
+   "name": "left_shoulder_roll",
+   "axis": [
+    1,
+    0,
+    0
+   ],
+   "limits_deg": [
+    -10.0,
+    120.0
+   ]
+  },
+  {
+   "name": "left_shoulder_yaw",
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "limits_deg": [
+    -90.0,
+    90.0
+   ]
+  },
+  {
+   "name": "left_elbow",
+   "axis": [
+    0,
+    -1,
+    0
+   ],
+   "limits_deg": [
+    0.0,
+    140.0
+   ]
+  },
+  {
+   "name": "left_wrist_yaw",
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "limits_deg": [
+    -90.0,
+    90.0
+   ]
+  },
+  {
+   "name": "left_wrist_pitch",
+   "axis": [
+    0,
+    1,
+    0
+   ],
+   "limits_deg": [
+    -45.0,
+    45.0
+   ]
+  },
+  {
+   "name": "left_wrist_roll",
+   "axis": [
+    1,
+    0,
+    0
+   ],
+   "limits_deg": [
+    -45.0,
+    45.0
+   ]
+  },
+  {
+   "name": "neck_yaw",
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "limits_deg": [
+    -80.0,
+    80.0
+   ]
+  },
+  {
+   "name": "neck_pitch",
+   "axis": [
+    0,
+    1,
+    0
+   ],
+   "limits_deg": [
+    -30.0,
+    45.0
+   ]
+  }
+ ]
+}

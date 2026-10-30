@@ -1,5 +1,8 @@
 # Auditoría de preparación para la fase 4
 
+**Actualización:** el plan cambió. La fase 5 va antes que esta, y el entrenamiento será con Isaac
+Lab, así que la comprobación de MJX ya no aplica. Ver [ROADMAP.md](../ROADMAP.md).
+
 **Veredicto: todavía NO estamos preparados para entrenar.** El cuerpo físico está bien
 construido y validado, y la [validación de la fase 3.5](phase-3.5-validation.md) está hecha, pero aún no existe nada de lo que hace falta
 para entrenar: entorno, datos de movimiento ni métricas programadas. La lista completa está en la sección 8.
