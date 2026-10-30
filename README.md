@@ -46,6 +46,7 @@ el trabajo o lo implemente por su cuenta.
 | 10 | Bípedo con pelvis libre: equilibrio en un pie (`biped_6dof.xml`, `balance_biped.py`) | ✅ PASS |
 | 11 | Primeros pasos: marcha estática, 4 pasos (`walk_biped.py`) | ✅ PASS |
 | 12 | La misma marcha en la mitad de tiempo (`walk_biped.py --speed 1.27 --hold 0.25`) | ✅ PASS, 27,1 s |
+| 13 | Marcha más natural: pasos de 12 cm y giro de 45° (`walk_biped.py` con opciones de marcha) | ✅ PASS |
 
 La pierna de 2 GDL recorre su secuencia de posiciones con un torque pico de
 **5,3 N·m** (límite: 20 N·m), sin saturar, y llega **exactamente** a cada
@@ -65,6 +66,9 @@ con el otro 5 cm en el aire, con la pelvis inclinada menos de 1°.
 Y **camina**: 4 pasos de 8 cm en marcha estática (el centro de masas siempre
 sobre un pie), avanzando 28 cm, con cada pie a menos de 1,5 mm de donde se
 colocó. Y la misma marcha en **la mitad de tiempo** (27,1 s en lugar de 54,3 s).
+
+Y **gira**: 4 pasos de 12 cm y un giro de 45° en otros 4 pasos, en 50,6 s, con
+la pelvis más alta y la mitad de balanceo lateral.
 
 ---
 
@@ -138,6 +142,12 @@ Y para la etapa 12:
 python simulation/scripts/walk_biped.py --speed 1.27 --hold 0.25
 ```
 
+Y para la etapa 13:
+
+```bash
+python simulation/scripts/walk_biped.py --knee 56 --step 0.12 --width 0.07 --inset 0.02 --turn 45 --speed 1.27 --hold 0.25
+```
+
 ### Visor en macOS: `mjpython`
 
 En macOS el visor interactivo (`mujoco.viewer.launch_passive`) **solo funciona
@@ -166,6 +176,7 @@ Desde la carpeta del proyecto, sin necesidad de activar `.venv`:
 | 10 — bípedo en equilibrio | `.venv/bin/mjpython simulation/scripts/balance_biped.py --view` |
 | 11 — primeros pasos | `.venv/bin/mjpython simulation/scripts/walk_biped.py --view` |
 | 12 — marcha en la mitad de tiempo | `.venv/bin/mjpython simulation/scripts/walk_biped.py --speed 1.27 --hold 0.25 --view` |
+| 13 — pasos largos y giro | `.venv/bin/mjpython simulation/scripts/walk_biped.py --knee 56 --step 0.12 --width 0.07 --inset 0.02 --turn 45 --speed 1.27 --hold 0.25 --view` |
 
 Los scripts con `--view` primero imprimen el análisis y después abren la
 ventana. Cierra la ventana para terminar.
@@ -197,7 +208,7 @@ humanoid-h1/
         ├── squat_leg_2dof.py      sentadilla con el pie apoyado
         ├── analyze_leg_6dof.py    pierna de 6 GDL: aire y apoyo
         ├── balance_biped.py       bípedo: de pie, sentadilla, apoyo en un pie
-        └── walk_biped.py          bípedo: 4 pasos de marcha estática (--speed, --hold, --dynamic)
+        └── walk_biped.py          bípedo: marcha estática con pisadas, giro y opciones de marcha
 ```
 
 **Nombres.** Los modelos se llaman por lo que contienen (`leg_2dof_foot` =
@@ -721,7 +732,7 @@ tiempo, con los mismos criterios. La idea de partida era que haría falta una
 **compensación dinámica**. Al final no hizo falta, y el porqué es la lección
 de esta etapa.
 
-`walk_biped.py` tiene ahora tres opciones:
+`walk_biped.py` tiene tres opciones nuevas:
 
 - `--speed`: divide la duración de las transiciones.
 - `--hold`: fija la pausa tras cada transición (por defecto 1,5 s).
@@ -788,6 +799,69 @@ defecto.** Ayuda a los pies cuando los movimientos son muy rápidos, pero
 siempre inclina más la pelvis, y no se encontró por qué. Por defecto, `Biped`
 usa la estática: las etapas 10 y 11 dan exactamente los mismos números que
 antes.
+
+### Etapa 13 — Marcha más natural: pasos largos y giro
+
+```bash
+python simulation/scripts/walk_biped.py --knee 56 --step 0.12 --width 0.07 --inset 0.02 --turn 45 --speed 1.27 --hold 0.25
+mjpython simulation/scripts/walk_biped.py --knee 56 --step 0.12 --width 0.07 --inset 0.02 --turn 45 --speed 1.27 --hold 0.25 --view  # verlo (~51 s)
+```
+
+**Objetivo** (de la hoja de ruta): 4 pasos de 12 cm y un giro de 45°, con la
+pelvis más alta y menos desplazamiento lateral. El bípedo es el mismo; lo que
+cambia es el plan. `walk_biped.py` tiene opciones nuevas, y por defecto sigue
+dando los números exactos de las etapas 11 y 12:
+
+| Opción | Qué es | Etapas 11-12 | Etapa 13 |
+|---|---|---|---|
+| `--knee` | Rodillas de pie | 60° | 56° |
+| `--step` | Cuánto adelanta un pie al otro | 8 cm | 12 cm |
+| `--width` | Distancia de cada pie al centro | 10 cm | 7 cm |
+| `--inset` | CdM hacia dentro del centro del pie de apoyo | 0 | 2 cm |
+| `--turn` | Giro final a la izquierda | 0° | 45° |
+
+**Menos balanceo.** Los 16 cm de desplazamiento lateral venían de dos sitios:
+los pies separados 20 cm y el CdM exactamente en el centro del pie. Con los
+pies a ±7 cm y el CdM 2 cm hacia dentro, la pelvis se mueve **8 cm**, la
+mitad. El CdM sigue teniendo 3 cm hasta el borde del pie. Con menos balanceo
+la pierna llega más lejos, así que se puede andar más estirado:
+
+| Pies a | CdM hacia dentro | Pelvis de lado | Rodilla mínima (alcance ≤ 98 %) |
+|---|---|---|---|
+| ±10 cm | 0 | 16,2 cm | 66° |
+| ±10 cm | 3 cm | 11,3 cm | 60° |
+| ±8 cm | 2 cm | 9,7 cm | 58° |
+| **±7 cm** | **2 cm** | **8,0 cm** | **56°** |
+| ±6 cm | 3 cm | 4,8 cm | 54° |
+
+No se bajó de ±7 cm: a ±6 cm quedan solo 2 cm entre pies, y al girar un pie
+respecto al otro las esquinas se acercan.
+
+**Giro.** `Pose` guarda ahora el giro de la pelvis y de cada pie.
+`joint_targets` pone `hip_yaw = giro del pie − giro de la pelvis` y resuelve el
+resto de la pierna con `leg_ik` en los ejes del pie. Se comprobó contra MuJoCo
+con pelvis y pies girados: error 0,0000 mm, pies planos y giro exacto.
+
+**Pisadas.** `footsteps` genera la lista de pisadas (pie, posición, giro). Cada
+una se coloca en los ejes del nuevo rumbo, respecto al pie de apoyo. Tras los 4
+pasos rectos, el rumbo sube 15° por paso, con pasos de medio largo, y un último
+paso deja los dos pies paralelos: 8 pasos en total. La pelvis gira a medio
+camino entre los dos pies.
+
+**Criterios de aceptación**, fijados antes de la primera ejecución: los de la
+etapa 11, más:
+
+- La pelvis y cada pie a < 3° de su giro planificado.
+- Los pies no se tocan entre sí.
+- El margen del CdM se mide en los ejes del pie, porque su rectángulo gira.
+
+**Pasó a la primera.** Al ritmo de la etapa 11, la pelvis se inclina menos
+(0,39° frente a 0,57°), porque menos balanceo significa menos aceleración; los
+pies quedan casi igual (1,6 mm frente a 1,4 mm), con pasos más largos. También
+aguanta el ritmo de la etapa 12, que es la configuración elegida.
+
+**Limitación:** la compensación dinámica (`--dynamic`) no tiene en cuenta la
+aceleración de giro de la pelvis, así que no vale con `--turn`.
 
 ---
 
@@ -1087,6 +1161,35 @@ Ningún motor saturado, error articular ≤ 0,17°. Con pausas cortas, al final
 del cambio de peso el pie que se descarga aún lleva 3–4 N: el robot no ha
 terminado de asentarse cuando se mide, por eso la pausa no baja de 0,25 s.
 
+### Etapa 13: pasos largos y giro (`walk_biped.py --knee 56 --step 0.12 --width 0.07 --inset 0.02 --turn 45 --speed 1.27 --hold 0.25`)
+
+Por tipo de fase, lo peor de los 8 pasos:
+
+| Medida | Resultado | Límite |
+|---|---|---|
+| Pasos | 8 (4 rectos + 4 de giro) | — |
+| Duración total | 50,6 s | — |
+| Pelvis al final | (66,9, 11,4) cm, rumbo **44,9°** | rumbo 45° |
+| Pie fuera de sitio | 1,7 mm | 5 mm |
+| Inclinación de la pelvis | 0,56° | 5° |
+| Error de pelvis | 2,7 mm | 10 mm |
+| Error de giro, pelvis / pies | 0,28° / 0,29° | 3° |
+| Margen del CdM | 27,5 mm | 20 mm |
+| Pie libre | 48,8 mm | 40 mm |
+| Error articular | 0,13° | 0,5° |
+| Pies que se tocan | no | no |
+
+Ningún motor saturado. Comparación de las tres marchas, cada una a su ritmo:
+
+| | Etapa 11 | Etapa 12 | Etapa 13 |
+|---|---|---|---|
+| Pasos | 4 de 8 cm | 4 de 8 cm | 4 de 12 cm + 4 de giro |
+| Tiempo por paso | 13,6 s | 6,8 s | 6,3 s |
+| Rodillas | 60° | 60° | 56° |
+| Pelvis de lado | 15,8 cm | 15,8 cm | 8,0 cm |
+| Pie fuera de sitio máx. | 1,4 mm | 2,5 mm | 1,7 mm |
+| Inclinación máx. | 0,57° | 0,79° | 0,56° |
+
 ---
 
 ## 8. Lecciones aprendidas
@@ -1179,6 +1282,11 @@ defecto.** La compensación dinámica es correcta en teoría y se comprobó (en
 reposo da el peso y el ZMP exactos), pero en la marcha inclinaba más la
 pelvis. Queda como opción para reproducir la comparación, no como defecto.
 
+**Lo que estabiliza una marcha no siempre es el control.** En la etapa 13 no se
+tocó el controlador. Reducir el balanceo lateral en el plan dio pasos un 50 %
+más largos, menos inclinación y más alcance. Medir antes de elegir parámetros
+(la tabla de rodilla mínima) evitó probar a ciegas.
+
 **Medir con el tiempo de simulación.** Si la lógica usa el reloj del ordenador,
 el movimiento cambia según la carga de la máquina. Con `data.time` es
 reproducible.
@@ -1189,23 +1297,21 @@ reproducible.
 
 Hecho: compensación de gravedad (etapa 7), pie y contacto (etapa 8), pierna
 de 6 GDL (etapa 9), equilibrio sobre un pie (etapa 10), primeros pasos en
-marcha estática (etapa 11), la misma marcha en la mitad de tiempo (etapa 12).
+marcha estática (etapa 11), la misma marcha en la mitad de tiempo (etapa 12),
+pasos largos y giro (etapa 13).
 
 Siguientes pasos propuestos, en orden. Cada uno debería tener su modelo o
 script y un criterio de aceptación comprobable, como en la etapa 5.
 
-1. **Marcha más natural.** Pasos más largos con la pelvis más alta y menos
-   desplazamiento lateral (hoy la pierna trabaja al 96,7 % de su alcance), y
-   girar (usar `hip_yaw`). Criterio: 4 pasos de 12 cm y un giro de 45°.
-2. **Equilibrio activo.** Corregir la postura con la IMU (`pelvis_quat`) y las
-   fuerzas de los pies si algo empuja al robot. Criterio: aguantar un empujón
-   en la pelvis sin caerse.
-3. **Marcha dinámica.** Dejar que el CdM salga del pie de apoyo entre pasos
+1. **Equilibrio activo.** Hoy el robot sigue su plan a ciegas. Corregir la
+   postura con la IMU (`pelvis_quat`) y las fuerzas de los pies si algo empuja
+   al robot. Criterio: aguantar un empujón en la pelvis sin caerse.
+2. **Marcha dinámica.** Dejar que el CdM salga del pie de apoyo entre pasos
    (planificar el CdM a partir del ZMP, péndulo invertido), como camina una
    persona. Punto de partida: `Biped.required_contact` ya calcula el ZMP
    exacto. Pendiente: averiguar por qué la compensación dinámica inclina más
-   la pelvis que la estática.
-4. **Dimensiones reales.** Sustituir medidas y masas didácticas por las del
+   la pelvis que la estática, y añadirle el giro.
+3. **Dimensiones reales.** Sustituir medidas y masas didácticas por las del
    robot de referencia y convertir los torques medidos en requisitos de motor.
 
 ---

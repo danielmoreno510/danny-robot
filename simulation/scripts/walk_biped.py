@@ -11,13 +11,17 @@ cuatro fases:
      siga sobre el pie de apoyo)
   4. pie libre abajo
 
-Empieza el pie derecho, y cada pie aterriza STEP_LENGTH por delante del
+Empieza el pie derecho, y cada pie aterriza gait.step por delante del
 otro. Tras N_STEPS pasos, el peso vuelve al centro entre los dos pies.
 
 --speed divide la duración de las transiciones y --hold fija la pausa tras
 cada una (etapa 12: --speed 1.27 --hold 0.25 hace la marcha en la mitad de
 tiempo). --dynamic usa la compensación dinámica (dinámica inversa + ZMP)
 en lugar de la estática, para reproducir la comparación de la etapa 12.
+
+--knee, --step, --width, --inset y --turn cambian la forma de andar (etapa 13):
+postura, largo del paso, separación de los pies, cuánto se queda el CdM hacia
+dentro del pie de apoyo y giro final a la izquierda.
 
 Uso:
   python simulation/scripts/walk_biped.py                               # etapa 11
@@ -28,7 +32,7 @@ Uso:
 import argparse
 import math
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 import mujoco
@@ -48,6 +52,7 @@ from biped_control import (
     joint_targets,
     leg_reach,
     pelvis_height,
+    rotation_z,
 )
 from leg_control import HOLD_TIME, TRANSITION_TIME, interpolate, read_sensors, total_weight
 
@@ -55,10 +60,9 @@ from leg_control import HOLD_TIME, TRANSITION_TIME, interpolate, read_sensors, t
 ROOT = Path(__file__).resolve().parents[1]
 MODEL_PATH = ROOT / "models" / "biped_6dof.xml"
 
-STAND_KNEE_DEG = 60  # más flexión que en la etapa 10: con 50° la pierna se estiraba al 99,9 %
-STEP_LENGTH = 0.08  # m, cuánto adelanta cada pie al otro
 LIFT_HEIGHT = 0.05  # m
 N_STEPS = 4
+TURN_INCREMENT_DEG = 15.0  # giro máximo por paso
 
 SETTLE_TIME = 1.0  # s
 MAX_REACH = 0.98  # fracción de la pierna estirada que se permite planificar
@@ -82,13 +86,25 @@ MAX_JOINT_ERROR_DEG = 0.5
 
 
 @dataclass
+class Gait:
+    """Forma de andar. Los valores por defecto son los de las etapas 11 y 12."""
+
+    knee_deg: float = 60.0  # postura; con 50° la pierna se estiraba al 99,9 %
+    step: float = 0.08  # m, cuánto adelanta cada pie al otro
+    width: float = HIP_Y  # m, distancia de cada pie al centro
+    inset: float = 0.0  # m, CdM hacia dentro del centro del pie de apoyo
+    turn_deg: float = 0.0  # giro final a la izquierda
+
+
+@dataclass
 class PhaseResult:
     name: str
     swing_in_air: str | None  # pie en el aire según el plan
     pelvis_error: float  # m
     max_tilt_deg: float  # durante la fase
-    yaw_deg: float
+    yaw_error_deg: float  # pelvis respecto al plan
     foot_slip: np.ndarray  # m, (izq, der) respecto al plan; NaN si está en el aire
+    foot_yaw_error_deg: float  # el mayor de los pies apoyados
     foot_force: np.ndarray  # N, (izq, der)
     clearance: float  # m, altura de la planta del pie en el aire; NaN si no hay
     com_margin: float  # m, del CdM al borde del pie de apoyo; NaN en doble apoyo
@@ -97,47 +113,78 @@ class PhaseResult:
 
 def transition_time(start: Pose, end: Pose) -> float:
     """Duración [s] para que ni la pelvis ni los pies aceleren más que en la etapa 10."""
-    distance = float(np.max(np.linalg.norm((end.vector() - start.vector()).reshape(3, 3), axis=1)))
+    change = end.vector() - start.vector()
+    distance = float(np.max(np.linalg.norm(change[:9].reshape(3, 3), axis=1)))
     return TRANSITION_TIME * max(1.0, math.sqrt(distance / REFERENCE_SHIFT))
 
 
-def with_sole(pose: Pose, side: str, sole: np.ndarray) -> Pose:
-    if side == "left":
-        return Pose(pose.pelvis, sole, pose.right_sole)
-    return Pose(pose.pelvis, pose.left_sole, sole)
+def footsteps(gait: Gait) -> list[tuple[str, np.ndarray, float]]:
+    """
+    Lista de pisadas (pie, posición, giro). Cada pisada se coloca en los ejes
+    del nuevo rumbo: 'avance' por delante del pie de apoyo y a 2 * width de él.
+    Tras N_STEPS pasos rectos, el rumbo sube TURN_INCREMENT_DEG por paso hasta
+    gait.turn_deg, y un último paso deja los dos pies paralelos.
+    """
+    feet = {
+        "left": (np.array([0.0, gait.width, 0.0]), 0.0),
+        "right": (np.array([0.0, -gait.width, 0.0]), 0.0),
+    }
+    target_yaw = math.radians(gait.turn_deg)
+    increment = math.radians(TURN_INCREMENT_DEG)
+    result = []
+    swing = "right"
+    count = 0
+    while count < N_STEPS or feet["left"][1] < target_yaw or feet["right"][1] < target_yaw:
+        turning = count >= N_STEPS
+        stance = "left" if swing == "right" else "right"
+        stance_position, stance_yaw = feet[stance]
+        yaw = min(stance_yaw + increment, target_yaw) if turning else stance_yaw
+        sideways = 2 * gait.width if swing == "left" else -2 * gait.width
+        advance = 0.5 * gait.step if turning else gait.step
+        position = stance_position + rotation_z(yaw) @ np.array([advance, sideways, 0.0])
+        feet[swing] = (position, yaw)
+        result.append((swing, position, yaw))
+        swing = stance
+        count += 1
+    return result
 
 
-def build_plan(biped: Biped) -> tuple[Pose, list[Phase]]:
+def build_plan(biped: Biped, gait: Gait) -> tuple[Pose, list[Phase]]:
     stand = Pose(
-        np.array([0.0, 0.0, pelvis_height(STAND_KNEE_DEG)]),
-        np.array([0.0, HIP_Y, 0.0]),
-        np.array([0.0, -HIP_Y, 0.0]),
+        np.array([0.0, 0.0, pelvis_height(gait.knee_deg)]),
+        np.array([0.0, gait.width, 0.0]),
+        np.array([0.0, -gait.width, 0.0]),
     )
     phases: list[Phase] = []
     pose = stand
-    swing = "right"
-    for step in range(1, N_STEPS + 1):
+    for step, (swing, position, yaw) in enumerate(footsteps(gait), start=1):
         stance = "left" if swing == "right" else "right"
+        lift = np.array([0.0, 0.0, LIFT_HEIGHT])
         sole = pose.sole(swing)
-        up = sole + [0.0, 0.0, LIFT_HEIGHT]
-        forward = np.array([pose.sole(stance)[0] + STEP_LENGTH, sole[1], LIFT_HEIGHT])
-        landed = forward * [1, 1, 0]
 
-        lifted = center_com_over(biped, with_sole(pose, swing, up), stance)
-        moved = center_com_over(biped, with_sole(lifted, swing, forward), stance)
+        lifted = center_com_over(biped, pose.with_foot(swing, sole + lift), stance, gait.inset)
+        ahead = replace(
+            lifted.with_foot(swing, position + lift, yaw),
+            pelvis_yaw=0.5 * (pose.yaw(stance) + yaw),
+        )
+        moved = center_com_over(biped, ahead, stance, gait.inset)
+        landed = moved.with_foot(swing, position)
 
         label = f"paso {step}: pie {NAMES[swing]}"
         phases += [
-            Phase(f"paso {step}: peso al {NAMES[stance]}", with_sole(lifted, swing, sole), None),
+            Phase(f"paso {step}: peso al {NAMES[stance]}", lifted.with_foot(swing, sole), None),
             Phase(f"{label} arriba", lifted, swing),
             Phase(f"{label} adelante", moved, swing),
-            Phase(f"{label} abajo", with_sole(moved, swing, landed), swing),
+            Phase(f"{label} abajo", landed, swing),
         ]
-        pose = with_sole(moved, swing, landed)
-        swing = stance
+        pose = landed
 
     middle = 0.5 * (pose.left_sole + pose.right_sole)
-    final = Pose(np.array([middle[0], 0.0, stand.pelvis[2]]), pose.left_sole, pose.right_sole)
+    final = replace(
+        pose,
+        pelvis=np.array([middle[0], middle[1], stand.pelvis[2]]),
+        pelvis_yaw=0.5 * (pose.left_yaw + pose.right_yaw),
+    )
     phases.append(Phase("peso al centro", final, None))
 
     for phase in phases:
@@ -157,10 +204,14 @@ def run(
     speed: float = 1.0,
     hold: float = HOLD_TIME,
     dynamic: bool = False,
-) -> tuple[list[PhaseResult], np.ndarray]:
-    """speed divide las transiciones; hold es la pausa tras cada una [s]."""
+    gait: Gait | None = None,
+) -> tuple[list[PhaseResult], np.ndarray, bool]:
+    """
+    speed divide las transiciones; hold es la pausa tras cada una [s].
+    Devuelve resultados por fase, fracción saturada y si los pies chocaron.
+    """
     biped = Biped(model, data, viewer, dynamic=dynamic)
-    stand, phases = build_plan(biped)
+    stand, phases = build_plan(biped, Gait() if gait is None else gait)
     timestep = model.opt.timestep
 
     mujoco.mj_resetData(model, data)
@@ -188,11 +239,18 @@ def run(
         com_margin = math.nan
         clearance = math.nan
         if phase.swing is not None:
-            stance_sole = soles[1 - SIDES.index(phase.swing)]
-            com_margin = float(np.min(FOOT_HALF - np.abs(com[:2] - stance_sole[:2])))
+            stance = SIDES[1 - SIDES.index(phase.swing)]
+            stance_sole = soles[SIDES.index(stance)]
+            # En los ejes del pie: con el pie girado, su rectángulo también lo está
+            in_foot = rotation_z(-phase.pose.yaw(stance)) @ (com - stance_sole)
+            com_margin = float(np.min(FOOT_HALF - np.abs(in_foot[:2])))
         if swing_in_air is not None:
             clearance = float(soles[SIDES.index(swing_in_air), 2])
 
+        foot_yaw_errors = [
+            abs(biped.foot_yaw_deg(side) - math.degrees(phase.pose.yaw(side)))
+            for side, down in zip(SIDES, on_ground) if down
+        ]
         target = joint_targets(phase.pose)
         results.append(
             PhaseResult(
@@ -200,8 +258,9 @@ def run(
                 swing_in_air=swing_in_air,
                 pelvis_error=float(np.linalg.norm(data.xpos[biped.pelvis_id] - phase.pose.pelvis)),
                 max_tilt_deg=max_tilt,
-                yaw_deg=biped.yaw_deg(),
+                yaw_error_deg=biped.yaw_deg() - math.degrees(phase.pose.pelvis_yaw),
                 foot_slip=slip,
+                foot_yaw_error_deg=max(foot_yaw_errors),
                 foot_force=np.array([data.sensor(f"{s}_foot_force").data[0] for s in SIDES]),
                 clearance=clearance,
                 com_margin=com_margin,
@@ -212,23 +271,30 @@ def run(
         )
         previous = phase.pose
 
-    return results, biped.saturated_steps / biped.total_steps
+    return results, biped.saturated_steps / biped.total_steps, biped.feet_collided
 
 
-def print_report(results: list[PhaseResult], saturation: np.ndarray, final_x: float) -> None:
+def print_report(
+    results: list[PhaseResult],
+    saturation: np.ndarray,
+    final_position: np.ndarray,
+    final_yaw_deg: float,
+) -> None:
     def mm(value: float) -> str:
         return "   — " if math.isnan(value) else f"{1000 * value:5.1f}"
 
-    print("\nFase                              | err pelvis | incl. máx | yaw   | desliz. izq/der "
+    print("\nFase                              | err pelvis | incl. máx | err yaw | desliz. izq/der "
           "| pie izq/der [N] | altura pie libre | margen CdM | error art.")
-    print("                                  | [mm]       | [°]       | [°]   | [mm]            "
+    print("                                  | [mm]       | [°]       | [°]     | [mm]            "
           "|                 | [mm]             | [mm]       | [°]")
     for r in results:
         print(f"  {r.name:32s}| {1000 * r.pelvis_error:5.2f}      | {r.max_tilt_deg:5.2f}     "
-              f"| {r.yaw_deg:5.2f} | {mm(r.foot_slip[0])} / {mm(r.foot_slip[1])}  "
+              f"| {r.yaw_error_deg:5.2f}   | {mm(r.foot_slip[0])} / {mm(r.foot_slip[1])}  "
               f"| {r.foot_force[0]:5.1f} / {r.foot_force[1]:5.1f}   | {mm(r.clearance)}            "
               f"| {mm(r.com_margin)}      | {r.max_joint_error_deg:5.2f}")
-    print(f"\n  Avance de la pelvis: {100 * final_x:.1f} cm en {N_STEPS} pasos")
+    steps = (len(results) - 1) // 4
+    print(f"\n  Pelvis al final: ({100 * final_position[0]:.1f}, {100 * final_position[1]:.1f}) cm, "
+          f"rumbo {final_yaw_deg:.1f}°, tras {steps} pasos")
     for i, joint in enumerate(JOINTS):
         if saturation[i] > 0:
             print(f"  {joint}: saturado {100 * saturation[i]:.1f} % del tiempo")
@@ -236,15 +302,24 @@ def print_report(results: list[PhaseResult], saturation: np.ndarray, final_x: fl
         print("  Ningún motor saturado.")
 
 
-def check_acceptance(results: list[PhaseResult], saturation: np.ndarray, weight: float) -> list[str]:
+def check_acceptance(
+    results: list[PhaseResult],
+    saturation: np.ndarray,
+    weight: float,
+    feet_collided: bool,
+) -> list[str]:
     failures: list[str] = []
     if np.any(saturation > 0):
         failures.append("hay saturación de torque")
+    if feet_collided:
+        failures.append("los pies chocan entre sí")
     for r in results:
         if r.max_tilt_deg > MAX_TILT_DEG:
             failures.append(f"{r.name}: la pelvis se inclina {r.max_tilt_deg:.1f}°")
-        if abs(r.yaw_deg) > MAX_YAW_DEG:
-            failures.append(f"{r.name}: la pelvis gira {r.yaw_deg:.1f}°")
+        if abs(r.yaw_error_deg) > MAX_YAW_DEG:
+            failures.append(f"{r.name}: la pelvis gira {r.yaw_error_deg:.1f}° de más")
+        if r.foot_yaw_error_deg > MAX_YAW_DEG:
+            failures.append(f"{r.name}: un pie gira {r.foot_yaw_error_deg:.1f}° de más")
         if r.pelvis_error > MAX_PELVIS_ERROR:
             failures.append(f"{r.name}: pelvis a {1000 * r.pelvis_error:.1f} mm del plan")
         if np.nanmax(r.foot_slip) > MAX_FOOT_SLIP:
@@ -274,39 +349,49 @@ def main() -> int:
     parser.add_argument("--speed", type=float, default=1.0, help="divide la duración de las transiciones")
     parser.add_argument("--hold", type=float, default=HOLD_TIME, help="pausa tras cada transición [s]")
     parser.add_argument("--dynamic", action="store_true", help="compensación dinámica (comparación de la etapa 12)")
+    parser.add_argument("--knee", type=float, default=Gait.knee_deg, help="rodillas de pie [°]")
+    parser.add_argument("--step", type=float, default=Gait.step, help="largo del paso [m]")
+    parser.add_argument("--width", type=float, default=Gait.width, help="distancia de cada pie al centro [m]")
+    parser.add_argument("--inset", type=float, default=Gait.inset, help="CdM hacia dentro del pie de apoyo [m]")
+    parser.add_argument("--turn", type=float, default=Gait.turn_deg, help="giro final a la izquierda [°]")
     args = parser.parse_args()
     dynamic = args.dynamic
+    gait = Gait(args.knee, args.step, args.width, args.inset, args.turn)
 
     print(f"MuJoCo {mujoco.__version__} | modelo: {MODEL_PATH.name}")
     model = mujoco.MjModel.from_xml_path(str(MODEL_PATH))
     data = mujoco.MjData(model)
     weight = total_weight(model)
-    print(f"Peso total: {weight:.2f} N | {N_STEPS} pasos de {100 * STEP_LENGTH:.0f} cm | "
+    print(f"Peso total: {weight:.2f} N | {N_STEPS} pasos de {100 * gait.step:.0f} cm, "
+          f"giro {gait.turn_deg:g}°, rodillas {gait.knee_deg:g}°, pies a ±{100 * gait.width:g} cm | "
           f"transiciones x{args.speed:g}, pausas {args.hold:g} s | "
           f"compensación {'dinámica' if dynamic else 'estática'}")
 
     try:
-        results, saturation = run(model, data, speed=args.speed, hold=args.hold, dynamic=dynamic)
+        results, saturation, feet_collided = run(
+            model, data, speed=args.speed, hold=args.hold, dynamic=dynamic, gait=gait
+        )
     except (RuntimeError, ValueError) as error:
         print(f"\n=== Criterios de aceptación ===\n  FAIL: {error}")
         return 1
 
     pelvis_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "pelvis")
-    print_report(results, saturation, float(data.xpos[pelvis_id, 0]))
+    x_axis = data.xmat[pelvis_id].reshape(3, 3)[:, 0]
+    print_report(results, saturation, data.xpos[pelvis_id], math.degrees(math.atan2(x_axis[1], x_axis[0])))
     print(f"  Duración total: {data.time:.1f} s")
-    failures = check_acceptance(results, saturation, weight)
+    failures = check_acceptance(results, saturation, weight, feet_collided)
     print("\n=== Criterios de aceptación ===")
     if failures:
         for failure in failures:
             print(f"  FAIL: {failure}")
     else:
-        print(f"  PASS: {N_STEPS} pasos sin caerse, pies en su sitio, CdM siempre sobre el pie "
-              "de apoyo, sin saturación")
+        print("  PASS: sin caerse, pies en su sitio, CdM siempre sobre el pie de apoyo, sin saturación")
 
     if args.view:
         try:
             with mujoco.viewer.launch_passive(model, data) as viewer:
-                run(model, data, viewer=viewer, speed=args.speed, hold=args.hold, dynamic=dynamic)
+                run(model, data, viewer=viewer, speed=args.speed, hold=args.hold,
+                    dynamic=dynamic, gait=gait)
         except (KeyboardInterrupt, RuntimeError):
             pass
 

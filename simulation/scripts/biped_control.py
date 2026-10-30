@@ -7,11 +7,12 @@ H1 - Utilidades del bípedo (biped_6dof.xml), compartidas por las etapas 10 y 11
   - Biped: estado del robot, reparto del peso y un paso de simulación con
     StanceCompensator (estático o dinámico) y feedforward de velocidad.
   - center_com_over: mueve la pelvis hasta que el CdM queda sobre un pie.
+  - rotation_z: rotación alrededor de la vertical.
 """
 
 import math
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 import mujoco
 import numpy as np
@@ -37,21 +38,40 @@ FALL_TILT_DEG = 30.0  # a partir de aquí se considera caído
 
 @dataclass
 class Pose:
-    """Pose en el espacio de tareas. Posiciones en el mundo [m]."""
+    """
+    Pose en el espacio de tareas. Posiciones en el mundo [m], giros alrededor
+    de la vertical [rad]. La pelvis y los pies están siempre horizontales.
+    """
 
     pelvis: np.ndarray
     left_sole: np.ndarray
     right_sole: np.ndarray
+    pelvis_yaw: float = 0.0
+    left_yaw: float = 0.0
+    right_yaw: float = 0.0
 
     def vector(self) -> np.ndarray:
-        return np.concatenate([self.pelvis, self.left_sole, self.right_sole])
+        return np.concatenate(
+            [self.pelvis, self.left_sole, self.right_sole,
+             [self.pelvis_yaw, self.left_yaw, self.right_yaw]]
+        )
 
     @staticmethod
     def from_vector(v: np.ndarray) -> "Pose":
-        return Pose(v[0:3], v[3:6], v[6:9])
+        return Pose(v[0:3], v[3:6], v[6:9], float(v[9]), float(v[10]), float(v[11]))
 
     def sole(self, side: str) -> np.ndarray:
         return self.left_sole if side == "left" else self.right_sole
+
+    def yaw(self, side: str) -> float:
+        return self.left_yaw if side == "left" else self.right_yaw
+
+    def with_foot(self, side: str, sole: np.ndarray, yaw: float | None = None) -> "Pose":
+        """La misma pose con el pie 'side' en otro sitio (y otro giro, si se da)."""
+        yaw = self.yaw(side) if yaw is None else yaw
+        if side == "left":
+            return replace(self, left_sole=sole, left_yaw=yaw)
+        return replace(self, right_sole=sole, right_yaw=yaw)
 
 
 @dataclass
@@ -67,18 +87,33 @@ def pelvis_height(knee_deg: float) -> float:
     return SOLE_BELOW_ANKLE + LEG_LENGTH * math.cos(half_knee) + HIP_BELOW_PELVIS
 
 
+def rotation_z(yaw: float) -> np.ndarray:
+    cos, sin = math.cos(yaw), math.sin(yaw)
+    return np.array([[cos, -sin, 0.0], [sin, cos, 0.0], [0.0, 0.0, 1.0]])
+
+
 def _ankles_in_hips(pose: Pose) -> list[np.ndarray]:
+    """Vector cadera -> tobillo de cada pierna, en ejes del mundo."""
     result = []
     for sole, hip_y in ((pose.left_sole, HIP_Y), (pose.right_sole, -HIP_Y)):
-        hip = pose.pelvis + np.array([0.0, hip_y, -HIP_BELOW_PELVIS])
+        hip = pose.pelvis + rotation_z(pose.pelvis_yaw) @ np.array([0.0, hip_y, -HIP_BELOW_PELVIS])
         ankle = sole + np.array([0.0, 0.0, SOLE_BELOW_ANKLE])
         result.append(ankle - hip)
     return result
 
 
 def joint_targets(pose: Pose) -> np.ndarray:
-    """IK de las dos piernas, con la pelvis horizontal y mirando a +x."""
-    return np.concatenate([leg_ik(v) for v in _ankles_in_hips(pose)])
+    """
+    IK de las dos piernas, con la pelvis y los pies horizontales. hip_yaw es
+    lo que gira el pie respecto a la pelvis; el resto de la pierna trabaja en
+    los ejes del pie, y ahí vale leg_ik.
+    """
+    targets = []
+    for vector, foot_yaw in zip(_ankles_in_hips(pose), (pose.left_yaw, pose.right_yaw)):
+        angles = leg_ik(rotation_z(-foot_yaw) @ vector)
+        angles[0] = foot_yaw - pose.pelvis_yaw
+        targets.append(angles)
+    return np.concatenate(targets)
 
 
 def leg_reach(pose: Pose) -> float:
@@ -97,7 +132,8 @@ class Biped:
         """
         dynamic: compensación con dinámica inversa y ZMP exacto. En la etapa 12
         no mejoró la marcha (inclina más la pelvis), así que por defecto es la
-        estática; se deja para reproducir la comparación.
+        estática; se deja para reproducir la comparación. No tiene en cuenta
+        la aceleración de giro de la pelvis: no vale para marchas con giro.
         """
         self.model = model
         self.data = data
@@ -109,6 +145,8 @@ class Biped:
         self.joint_qpos = [int(model.jnt_qposadr[j]) for j in joint_ids]
         self.pelvis_id = get_id(model, mujoco.mjtObj.mjOBJ_BODY, "pelvis")
         self.foot_ids = [get_id(model, mujoco.mjtObj.mjOBJ_BODY, f"{s}_foot") for s in SIDES]
+        self.foot_geoms = {get_id(model, mujoco.mjtObj.mjOBJ_GEOM, f"{s}_foot_geom") for s in SIDES}
+        self.feet_collided = False
         self.sole_ids = [get_id(model, mujoco.mjtObj.mjOBJ_SITE, f"{s}_sole_site") for s in SIDES]
         self.force_limit = model.actuator_forcerange[self.actuator_ids, 1]
         self.compensator = StanceCompensator(model, self.actuator_ids, self.dof_ids, self.foot_ids)
@@ -131,7 +169,8 @@ class Biped:
         if data is self.data:
             self.history = []
         data.qpos[0:3] = pose.pelvis
-        data.qpos[3:7] = [1.0, 0.0, 0.0, 0.0]
+        half_yaw = 0.5 * pose.pelvis_yaw
+        data.qpos[3:7] = [math.cos(half_yaw), 0.0, 0.0, math.sin(half_yaw)]
         data.qpos[self.joint_qpos] = joint_targets(pose)
         mujoco.mj_forward(self.model, data)
 
@@ -151,6 +190,11 @@ class Biped:
     def yaw_deg(self) -> float:
         """Giro de la pelvis alrededor de la vertical."""
         x_axis = self.data.xmat[self.pelvis_id].reshape(3, 3)[:, 0]
+        return math.degrees(math.atan2(x_axis[1], x_axis[0]))
+
+    def foot_yaw_deg(self, side: str) -> float:
+        """Giro de un pie alrededor de la vertical."""
+        x_axis = self.data.xmat[self.foot_ids[SIDES.index(side)]].reshape(3, 3)[:, 0]
         return math.degrees(math.atan2(x_axis[1], x_axis[0]))
 
     # --- reparto del peso ------------------------------------------------------
@@ -278,6 +322,9 @@ class Biped:
         torque = np.abs(read_sensors(self.data, TORQUE_SENSORS))
         self.saturated_steps += torque >= self.force_limit - 1e-6
         self.total_steps += 1
+        for contact in self.data.contact[: self.data.ncon]:
+            if {int(contact.geom1), int(contact.geom2)} == self.foot_geoms:
+                self.feet_collided = True
 
         if self.tilt_deg() > FALL_TILT_DEG:
             raise RuntimeError(f"el robot se ha caído en t = {self.data.time:.2f} s")
@@ -291,22 +338,22 @@ class Biped:
                 time.sleep(remaining)
 
 
-def center_com_over(biped: Biped, pose: Pose, side: str) -> Pose:
+def center_com_over(biped: Biped, pose: Pose, side: str, inset: float = 0.0) -> Pose:
     """
     La misma Pose con la pelvis movida en x e y hasta que el CdM queda sobre
-    el centro del pie 'side'. Iteración de punto fijo sobre una copia de los
-    datos: cada vuelta mueve la pelvis lo que le falta al CdM. Converge
-    porque el CdM se mueve algo menos que la pelvis (las piernas no la
-    siguen del todo).
+    el pie 'side', a 'inset' metros de su centro hacia el otro pie. Iteración
+    de punto fijo sobre una copia de los datos: cada vuelta mueve la pelvis lo
+    que le falta al CdM. Converge porque el CdM se mueve algo menos que la
+    pelvis (las piernas no la siguen del todo).
     """
     scratch = mujoco.MjData(biped.model)
-    target = pose.sole(side)[:2]
+    inward = np.array([0.0, -inset if side == "left" else inset, 0.0])
+    target = (pose.sole(side) + rotation_z(pose.yaw(side)) @ inward)[:2]
     pelvis = pose.pelvis.copy()
     for _ in range(100):
-        candidate = Pose(pelvis, pose.left_sole, pose.right_sole)
-        biped.set_pose(scratch, candidate)
+        biped.set_pose(scratch, replace(pose, pelvis=pelvis))
         error = target - biped.com(scratch)[:2]
         if np.linalg.norm(error) < 1e-6:
             break
         pelvis[:2] += error
-    return Pose(pelvis, pose.left_sole, pose.right_sole)
+    return replace(pose, pelvis=pelvis)
