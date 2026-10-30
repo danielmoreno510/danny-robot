@@ -759,6 +759,271 @@
   "limit": "< 10 por paso",
   "unit": "N"
  },
+ "humanoide.altura": {
+  "value": 0.7000000000000001,
+  "limit": "0,70 ± 0,005",
+  "unit": "m"
+ },
+ "humanoide.cdm_altura": {
+  "value": 0.3822954545454545,
+  "limit": "0,36 a 0,42",
+  "unit": "m"
+ },
+ "humanoide.cintura_yaw0_pitch30.deriva_pies": {
+  "value": 0.06173987037912461,
+  "limit": "< 5",
+  "unit": "mm"
+ },
+ "humanoide.cintura_yaw0_pitch30.error_cintura": {
+  "value": 0.07377080500186757,
+  "limit": "< 1",
+  "unit": "°"
+ },
+ "humanoide.cintura_yaw0_pitch30.margen_cdm": {
+  "value": 53.045520491746444,
+  "limit": "> 15",
+  "unit": "mm"
+ },
+ "humanoide.cintura_yaw0_pitch30.par_max": {
+  "value": 3.2612222052990916,
+  "limit": "< 20",
+  "unit": "N·m"
+ },
+ "humanoide.cintura_yaw30_pitch0.deriva_pies": {
+  "value": 0.07020417950236399,
+  "limit": "< 5",
+  "unit": "mm"
+ },
+ "humanoide.cintura_yaw30_pitch0.error_cintura": {
+  "value": 0.37071741075732306,
+  "limit": "< 1",
+  "unit": "°"
+ },
+ "humanoide.cintura_yaw30_pitch0.margen_cdm": {
+  "value": 69.98911963781954,
+  "limit": "> 15",
+  "unit": "mm"
+ },
+ "humanoide.cintura_yaw30_pitch0.par_max": {
+  "value": 3.2165529694349573,
+  "limit": "< 20",
+  "unit": "N·m"
+ },
+ "humanoide.cintura_yaw30_pitch30.deriva_pies": {
+  "value": 0.10668380501298849,
+  "limit": "< 5",
+  "unit": "mm"
+ },
+ "humanoide.cintura_yaw30_pitch30.error_cintura": {
+  "value": 0.37071743713219046,
+  "limit": "< 1",
+  "unit": "°"
+ },
+ "humanoide.cintura_yaw30_pitch30.margen_cdm": {
+  "value": 52.888485863520025,
+  "limit": "> 15",
+  "unit": "mm"
+ },
+ "humanoide.cintura_yaw30_pitch30.par_max": {
+  "value": 3.2671113502562577,
+  "limit": "< 20",
+  "unit": "N·m"
+ },
+ "humanoide.e11.duracion": {
+  "value": 53.57200000001951,
+  "limit": "informativa",
+  "unit": "s"
+ },
+ "humanoide.e11.error_movimiento": {
+  "value": 0.49442708678033076,
+  "limit": "< 1",
+  "unit": "°"
+ },
+ "humanoide.e11.fallos": {
+  "value": 0.0,
+  "limit": "= 0",
+  "unit": ""
+ },
+ "humanoide.e11.incl_max": {
+  "value": 0.7934594625534535,
+  "limit": "< 5",
+  "unit": "°"
+ },
+ "humanoide.e11.par_max": {
+  "value": 8.494359465624036,
+  "limit": "< 20",
+  "unit": "N·m"
+ },
+ "humanoide.e11.pie_fuera": {
+  "value": 1.3184833348433491,
+  "limit": "< 5",
+  "unit": "mm"
+ },
+ "humanoide.e12.duracion": {
+  "value": 27.429999999995676,
+  "limit": "informativa",
+  "unit": "s"
+ },
+ "humanoide.e12.error_movimiento": {
+  "value": 0.7169586264919392,
+  "limit": "< 1",
+  "unit": "°"
+ },
+ "humanoide.e12.fallos": {
+  "value": 0.0,
+  "limit": "= 0",
+  "unit": ""
+ },
+ "humanoide.e12.incl_max": {
+  "value": 1.2537414636405513,
+  "limit": "< 5",
+  "unit": "°"
+ },
+ "humanoide.e12.par_max": {
+  "value": 8.645506214991162,
+  "limit": "< 20",
+  "unit": "N·m"
+ },
+ "humanoide.e12.pie_fuera": {
+  "value": 2.970935588805188,
+  "limit": "< 5",
+  "unit": "mm"
+ },
+ "humanoide.e13.duracion": {
+  "value": 50.32600000001554,
+  "limit": "informativa",
+  "unit": "s"
+ },
+ "humanoide.e13.error_movimiento": {
+  "value": 0.402165403632346,
+  "limit": "< 1",
+  "unit": "°"
+ },
+ "humanoide.e13.fallos": {
+  "value": 0.0,
+  "limit": "= 0",
+  "unit": ""
+ },
+ "humanoide.e13.incl_max": {
+  "value": 0.539466110416131,
+  "limit": "< 5",
+  "unit": "°"
+ },
+ "humanoide.e13.par_max": {
+  "value": 8.083328863553795,
+  "limit": "< 20",
+  "unit": "N·m"
+ },
+ "humanoide.e13.pie_fuera": {
+  "value": 0.8793461328455948,
+  "limit": "< 5",
+  "unit": "mm"
+ },
+ "humanoide.empujon_adelante": {
+  "value": 46.0,
+  "limit": "se recupera",
+  "unit": "N"
+ },
+ "humanoide.empujon_atrás": {
+  "value": 47.0,
+  "limit": "se recupera",
+  "unit": "N"
+ },
+ "humanoide.empujon_derecha": {
+  "value": 56.0,
+  "limit": "se recupera",
+  "unit": "N"
+ },
+ "humanoide.empujon_izquierda": {
+  "value": 56.0,
+  "limit": "se recupera",
+  "unit": "N"
+ },
+ "humanoide.marcha_cintura_yaw0_pitch10.fallos": {
+  "value": 0.0,
+  "limit": "informativa",
+  "unit": ""
+ },
+ "humanoide.marcha_cintura_yaw0_pitch10.margen_cdm": {
+  "value": 26.72799917356631,
+  "limit": "informativa",
+  "unit": "mm"
+ },
+ "humanoide.marcha_cintura_yaw0_pitch20.fallos": {
+  "value": 0.0,
+  "limit": "informativa",
+  "unit": ""
+ },
+ "humanoide.marcha_cintura_yaw0_pitch20.margen_cdm": {
+  "value": 26.723216717163297,
+  "limit": "informativa",
+  "unit": "mm"
+ },
+ "humanoide.marcha_cintura_yaw0_pitch30.fallos": {
+  "value": 0.0,
+  "limit": "informativa",
+  "unit": ""
+ },
+ "humanoide.marcha_cintura_yaw0_pitch30.margen_cdm": {
+  "value": 26.67140900193808,
+  "limit": "informativa",
+  "unit": "mm"
+ },
+ "humanoide.marcha_cintura_yaw10.fallos": {
+  "value": 0.0,
+  "limit": "= 0",
+  "unit": ""
+ },
+ "humanoide.marcha_cintura_yaw10_pitch0.margen_cdm": {
+  "value": 26.731885661180094,
+  "limit": "informativa",
+  "unit": "mm"
+ },
+ "humanoide.marcha_cintura_yaw20_pitch0.fallos": {
+  "value": 0.0,
+  "limit": "informativa",
+  "unit": ""
+ },
+ "humanoide.marcha_cintura_yaw20_pitch0.margen_cdm": {
+  "value": 26.731784503174808,
+  "limit": "informativa",
+  "unit": "mm"
+ },
+ "humanoide.marcha_cintura_yaw30_pitch0.fallos": {
+  "value": 0.0,
+  "limit": "informativa",
+  "unit": ""
+ },
+ "humanoide.marcha_cintura_yaw30_pitch0.margen_cdm": {
+  "value": 26.73171325485268,
+  "limit": "informativa",
+  "unit": "mm"
+ },
+ "humanoide.masa": {
+  "value": 11.0,
+  "limit": "11,0 ± 0,01",
+  "unit": "kg"
+ },
+ "humanoide.pie_left.incl_max": {
+  "value": 0.20361681161938938,
+  "limit": "< 2",
+  "unit": "°"
+ },
+ "humanoide.pie_left.margen_cdm": {
+  "value": 26.75730586596931,
+  "limit": "> 15",
+  "unit": "mm"
+ },
+ "humanoide.pie_right.incl_max": {
+  "value": 0.20361681161938938,
+  "limit": "< 2",
+  "unit": "°"
+ },
+ "humanoide.pie_right.margen_cdm": {
+  "value": 26.75730586596934,
+  "limit": "> 15",
+  "unit": "mm"
+ },
  "marcha.barrido_x0.7.duracion": {
   "value": 44.41200000000831,
   "limit": "informativa",
@@ -1381,7 +1646,7 @@
  },
  "software.run_checks": {
   "value": 0.0,
-  "limit": "0: 16 de 16 comprobaciones pasan. Detalle en results/.",
+  "limit": "0: 21 de 21 comprobaciones pasan. Detalle en results/.",
   "unit": ""
  }
 }

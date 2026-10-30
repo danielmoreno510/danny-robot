@@ -21,10 +21,10 @@ import mujoco.viewer
 import numpy as np
 
 from biped_control import Biped, Pose, center_com_over, pelvis_height
+from robot_spec import ROBOTS
 
 
 ROOT = Path(__file__).resolve().parents[1]
-MODEL_PATH = ROOT / "models" / "danny_biped.xml"
 
 STAND_KNEE_DEG = 56.0
 FOOT_Y = 0.05  # m, distancia de cada pie al centro
@@ -42,8 +42,13 @@ DIRECTIONS = {
 }
 
 # Límites definidos [N]: lo medido, redondeado a la baja con 2 N de margen.
-# El máximo físico sin dar un paso es de unos 28 N en x y 36 N en y.
-REQUIRED_FORCE = {"adelante": 24.0, "atrás": 24.0, "izquierda": 32.0, "derecha": 32.0}
+# Sin dar un paso, el modelo de masa puntual da unos 28 N (bípedo) y 41 N (humanoide)
+# en x, y el de cuerpo rígido que vuelca sobre el borde del pie, 33 y 43 N. Se miden 26
+# y 48 N: el exceso del humanoide sigue sin explicar (ver E18 en el manual).
+REQUIRED_FORCE = {
+    "biped": {"adelante": 24.0, "atrás": 24.0, "izquierda": 32.0, "derecha": 32.0},
+    "humanoid": {"adelante": 46.0, "atrás": 47.0, "izquierda": 56.0, "derecha": 56.0},
+}
 
 # Se considera recuperado si acaba así
 MAX_FINAL_TILT_DEG = 2.0
@@ -103,21 +108,24 @@ def strongest_push(model, data, direction: np.ndarray) -> tuple[float, Trial]:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Respuesta a empujones sin dar un paso")
     parser.add_argument("--view", action="store_true", help="verlo (requiere mjpython)")
+    parser.add_argument("--robot", choices=sorted(ROBOTS), default="biped", help="configuración del robot")
     parser.add_argument("--force", type=float, default=20.0, help="empujón a ver con --view [N]")
     args = parser.parse_args()
 
-    print(f"MuJoCo {mujoco.__version__} | modelo: {MODEL_PATH.name} | empujón de {PUSH_TIME} s")
-    model = mujoco.MjModel.from_xml_path(str(MODEL_PATH))
+    model_path = ROOT / "models" / ROBOTS[args.robot].file
+    print(f"MuJoCo {mujoco.__version__} | modelo: {model_path.name} | empujón de {PUSH_TIME} s")
+    model = mujoco.MjModel.from_xml_path(str(model_path))
     data = mujoco.MjData(model)
 
+    required = REQUIRED_FORCE[args.robot]
     print("\nDirección  | máximo medido | límite definido | incl. pico | pies movidos")
     failures = []
     for name, direction in DIRECTIONS.items():
         best, trial = strongest_push(model, data, direction)
-        print(f"  {name:9s}| {best:5.1f} N       | {REQUIRED_FORCE[name]:5.1f} N         "
+        print(f"  {name:9s}| {best:5.1f} N       | {required[name]:5.1f} N         "
               f"| {trial.peak_tilt_deg:5.1f}°     | {1000 * trial.foot_drift:5.1f} mm")
-        if best < REQUIRED_FORCE[name]:
-            failures.append(f"{name}: aguanta {best:.0f} N, límite {REQUIRED_FORCE[name]:.0f} N")
+        if best < required[name]:
+            failures.append(f"{name}: aguanta {best:.0f} N, límite {required[name]:.0f} N")
 
     print("\n=== Criterios de aceptación ===")
     if failures:

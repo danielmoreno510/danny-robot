@@ -1,8 +1,8 @@
 # Propuesta técnica: fase 3.5, humanoide completo
 
-**Estado: APROBADA por el usuario.** Todavía no se ha implementado nada de este
-documento. Todas las cifras son preliminares: son estimaciones de diseño, no
-resultados de simulación.
+**Estado: APROBADA por el usuario**, en implementación por etapas: el avance está en el
+[roadmap](../ROADMAP.md). Las cifras de este documento son preliminares: son estimaciones
+de diseño, no resultados de simulación.
 
 **Actualización:** el [presupuesto con motores de catálogo](phase-3.5-mass-budget.md) dio
 10,7 kg y otro reparto de masa, y el objetivo pasó a **11 kg**. Ese documento sustituye a

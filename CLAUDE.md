@@ -15,7 +15,7 @@ python3.12 -m venv .venv
 .venv/bin/python simulation/scripts/run_checks.py
 ```
 
-Las 16 comprobaciones deben pasar antes de empezar a trabajar. Si no pasan, dilo.
+Las 21 comprobaciones deben pasar antes de empezar a trabajar. Si no pasan, dilo.
 
 ## Reglas del usuario
 
@@ -46,8 +46,8 @@ Las 16 comprobaciones deben pasar antes de empezar a trabajar. Si no pasan, dilo
   instante. Si un arreglo no explica el fallo, no se deja.
 - **Decir lo que no se ha comprobado**, y documentar también lo que falla.
 - Unidades SI; ejes REP-103; detalle en el handbook, sección 1.
-- **`danny_biped.xml` no se edita a mano.** Cambia `robot_spec.py` y ejecuta
-  `build_model.py`. Una prueba comprueba que coinciden.
+- **`danny_biped.xml` y `danny_humanoid.xml` no se editan a mano.** Cambia `robot_spec.py` y ejecuta
+  `build_model.py`. Unas pruebas comprueban que coinciden.
 
 Las cifras de la documentación salen siempre de `results/`, nunca de memoria.
 
@@ -69,13 +69,15 @@ Fase 3 en **CONDITIONAL PASS**, revisada y aceptada por el usuario. Limitaciones
 La propuesta aprobada está en `documentation/phase-3.5-proposal.md`: 30 GDL y 70 cm. El
 objetivo de masa es 11 kg, con el reparto de `documentation/phase-3.5-mass-budget.md`.
 
-Hecha la etapa 3.5.2. **Siguiente: 3.5.3, torso y cintura.**
+Hecha la etapa 3.5.3 (`danny_humanoid.xml`: torso y cintura, con lastres en lugar de
+brazos y cabeza). **Siguiente: 3.5.4, brazos.**
 
 **Se avanza por etapas, con revisión: no implementes todo a la vez.** Después de la fase 3.5 viene la fase 4, cuyo entorno debe cumplir la
 lista del roadmap. No marques como implementados la compensación dinámica ni el
 equilibrio activo.
 
-Comprobaciones: `run_checks.py` (16) y `python -m pytest tests` (126, unos 5 minutos).
+Comprobaciones: `run_checks.py` (21, unos 2 minutos) y `python -m pytest tests` (149, unos
+7 minutos).
 Las pruebas de realismo miden sin exigir: que pasen no significa que el robot aguante
 ese efecto. Mira `results/phase3_metrics.json`.
 
@@ -86,8 +88,10 @@ ese efecto. Mira `results/phase3_metrics.json`.
 
 **Decisiones ya tomadas:**
 
-- El bípedo actual (`danny_biped.xml`) mide 70 cm y pesa 8 kg, con torso provisional. El
-  humanoide completo tendrá 11 kg, provisionales hasta la etapa 31.
+- El bípedo (`danny_biped.xml`) mide 70 cm y pesa 8 kg, con torso provisional. El
+  humanoide (`danny_humanoid.xml`) pesa 11 kg, provisionales hasta la etapa 31.
+- La marcha rápida del humanoide (E12) usa una espera de 0,3 s, no 0,25 s: con 0,25 s
+  incumple por muy poco el error en reposo. Ver E18.
 - El paso de recuperación no funcionó con control clásico: el robot salta en vez
   de dar un paso. Se pasó a la etapa 26. El código está en el commit `6c083cc`.
 - La marcha usa compensación estática. La dinámica se probó (E15) y se eliminó: no

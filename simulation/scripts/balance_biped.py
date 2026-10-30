@@ -44,11 +44,10 @@ from biped_control import (
     pelvis_height,
 )
 from leg_control import HOLD_TIME, TRANSITION_TIME, interpolate, read_sensors, total_weight
-from robot_spec import POSITION_SENSORS
+from robot_spec import POSITION_SENSORS, ROBOTS
 
 
 ROOT = Path(__file__).resolve().parents[1]
-MODEL_PATH = ROOT / "models" / "danny_biped.xml"
 
 STAND_KNEE_DEG = 40
 SQUAT_KNEE_DEG = 80
@@ -206,10 +205,12 @@ def check_acceptance(results: list[PhaseResult], saturation: np.ndarray, weight:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Equilibrio del bípedo")
     parser.add_argument("--view", action="store_true", help="verlo (requiere mjpython)")
+    parser.add_argument("--robot", choices=sorted(ROBOTS), default="biped", help="configuración del robot")
     args = parser.parse_args()
 
-    print(f"MuJoCo {mujoco.__version__} | modelo: {MODEL_PATH.name}")
-    model = mujoco.MjModel.from_xml_path(str(MODEL_PATH))
+    model_path = ROOT / "models" / ROBOTS[args.robot].file
+    print(f"MuJoCo {mujoco.__version__} | modelo: {model_path.name}")
+    model = mujoco.MjModel.from_xml_path(str(model_path))
     data = mujoco.MjData(model)
     weight = total_weight(model)
     print(f"Peso total: {weight:.2f} N")

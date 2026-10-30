@@ -31,6 +31,7 @@ from robot_spec import (
     SOLE_BELOW_ANKLE,
     THIGH_LENGTH,
     TORQUE_SENSORS,
+    WAIST_JOINTS,
 )
 
 
@@ -146,10 +147,18 @@ class Biped:
         self.data = data
         self.viewer = viewer
         self.max_joint_speed = max_joint_speed
-        self.actuator_ids = [get_id(model, mujoco.mjtObj.mjOBJ_ACTUATOR, n) for n in ACTUATORS]
+        # Lo que no es pierna (la cintura) lo sujeta su motor en 'held_target'
+        held = [joint.part for joint in WAIST_JOINTS if mujoco.mj_name2id(
+            model, mujoco.mjtObj.mjOBJ_JOINT, f"{joint.part}_joint") >= 0]
+        self.held_target = np.zeros(len(held))
+        self.actuator_ids = [get_id(model, mujoco.mjtObj.mjOBJ_ACTUATOR, n)
+                             for n in (*ACTUATORS, *(f"{p}_motor" for p in held))]
         joint_ids = [get_id(model, mujoco.mjtObj.mjOBJ_JOINT, n) for n in JOINTS]
-        self.dof_ids = [int(model.jnt_dofadr[j]) for j in joint_ids]
-        self.joint_qpos = [int(model.jnt_qposadr[j]) for j in joint_ids]
+        held_ids = [get_id(model, mujoco.mjtObj.mjOBJ_JOINT, f"{p}_joint") for p in held]
+        self.dof_ids = [int(model.jnt_dofadr[j]) for j in (*joint_ids, *held_ids)]
+        self.joint_qpos = [int(model.jnt_qposadr[j]) for j in joint_ids]  # solo piernas
+        self.control_qpos = [int(model.jnt_qposadr[j]) for j in (*joint_ids, *held_ids)]
+        self.torque_sensors = (*TORQUE_SENSORS, *(f"{p}_torque" for p in held))
         self.pelvis_id = get_id(model, mujoco.mjtObj.mjOBJ_BODY, "pelvis")
         self.foot_ids = [get_id(model, mujoco.mjtObj.mjOBJ_BODY, f"{s}_foot") for s in SIDES]
         self.foot_geoms = {get_id(model, mujoco.mjtObj.mjOBJ_GEOM, f"{s}_foot_geom") for s in SIDES}
@@ -163,7 +172,7 @@ class Biped:
         self.kp = model.actuator_gainprm[self.actuator_ids, 0].copy()
         self.kv = -model.actuator_biasprm[self.actuator_ids, 2].copy()
         self.previous_target: np.ndarray | None = None
-        self.saturated_steps = np.zeros(len(JOINTS))
+        self.saturated_steps = np.zeros(len(self.actuator_ids))
         self.total_steps = 0
 
     # --- estado ---------------------------------------------------------------
@@ -268,7 +277,7 @@ class Biped:
         tau_disponible = tau_max * (1 - |w| / w_max); a w_max ya no da par.
         Frenar sigue permitido hasta tau_max. Devuelve el ctrl que da ese par.
         """
-        q = self.data.qpos[self.joint_qpos]
+        q = self.data.qpos[self.control_qpos]
         speed = self.data.qvel[self.dof_ids]
         torque = self.kp * (ctrl - q) - self.kv * speed
         available = self.force_limit * np.clip(1.0 - np.abs(speed) / self.max_joint_speed, 0.0, 1.0)
@@ -278,7 +287,7 @@ class Biped:
 
     def step_targets(self, pose: Pose, swing: str | None) -> np.ndarray:
         """ctrl de los 12 motores para seguir 'pose' en este paso."""
-        target = joint_targets(pose)
+        target = np.concatenate([joint_targets(pose), self.held_target])
         velocity = np.zeros_like(target)
         if self.previous_target is not None:
             velocity = (target - self.previous_target) / self.model.opt.timestep
@@ -303,7 +312,7 @@ class Biped:
         self.data.ctrl[self.actuator_ids] = ctrl
         mujoco.mj_step(self.model, self.data)
 
-        torque = np.abs(read_sensors(self.data, TORQUE_SENSORS))
+        torque = np.abs(read_sensors(self.data, self.torque_sensors))
         self.saturated_steps += torque >= self.force_limit - 1e-6
         self.total_steps += 1
         for contact in self.data.contact[: self.data.ncon]:

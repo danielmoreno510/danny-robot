@@ -19,6 +19,8 @@ paso es el humanoide completo.
 - Camina en marcha estática: pasos de 8 cm y giros, con cada pie a menos de 1 mm
   de donde se planificó.
 - Aguanta empujones de 24 a 32 N durante 0,1 s sin dar un paso, de forma pasiva.
+- El humanoide en construcción (11 kg, torso y cintura; brazos y cabeza son aún lastres)
+  repite el equilibrio y la marcha, también con la cintura moviéndose.
 - Sigue caminando aunque sus masas difieran un ±10 % de las que cree tener.
 
 Qué no hace todavía: marcha dinámica, recuperarse dando un paso, y nada con
@@ -64,16 +66,16 @@ python3.12 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 ```
 
-Comprueba que todo funciona (tarda menos de un minuto y no abre ventanas):
+Comprueba que todo funciona (tarda unos 2 minutos y no abre ventanas):
 
 ```bash
 .venv/bin/python simulation/scripts/run_checks.py
 ```
 
-Debe terminar con `16 de 16 comprobaciones pasan`. La salida completa de cada
+Debe terminar con `21 de 21 comprobaciones pasan`. La salida completa de cada
 prueba queda en [results/](results/).
 
-La suite de validación, más completa, tarda unos 5 minutos:
+La suite de validación, más completa, tarda unos 7 minutos:
 
 ```bash
 .venv/bin/python -m pytest tests
@@ -95,6 +97,9 @@ MuJoCo. Desde la carpeta del proyecto:
 | Marcha | `.venv/bin/mjpython simulation/scripts/walk_biped.py --speed 1.27 --hold 0.25 --view` |
 | Marcha con giro | `.venv/bin/mjpython simulation/scripts/walk_biped.py --knee 56 --step 0.08 --width 0.05 --inset 0.012 --turn 45 --speed 1.27 --hold 0.25 --view` |
 | Empujón | `.venv/bin/mjpython simulation/scripts/push_biped.py --force 20 --view` |
+| Humanoide: equilibrio | `.venv/bin/mjpython simulation/scripts/balance_biped.py --robot humanoid --view` |
+| Humanoide: marcha con giro | `.venv/bin/mjpython simulation/scripts/walk_biped.py --robot humanoid --knee 56 --step 0.08 --width 0.05 --inset 0.012 --turn 45 --speed 1.27 --hold 0.25 --view` |
+| Humanoide: empujón | `.venv/bin/mjpython simulation/scripts/push_biped.py --robot humanoid --force 40 --view` |
 
 Los scripts con `--view` imprimen primero el análisis y después abren la ventana.
 
@@ -137,10 +142,11 @@ danny-robot/
     │   ├── leg_2dof.xml            E4-E7: pierna colgando
     │   ├── leg_2dof_foot.xml       E8: pierna con pie
     │   ├── leg_6dof.xml            E9: pierna didáctica de 6 GDL con pie plano
-    │   └── danny_biped.xml         E10 en adelante: generado, no editar a mano
+    │   ├── danny_biped.xml         E10 en adelante: generado, no editar a mano
+    │   └── danny_humanoid.xml      E18: torso y cintura; generado, no editar a mano
     └── scripts/
         ├── robot_spec.py           datos del robot: medidas, masas, articulaciones
-        ├── build_model.py          genera danny_biped.xml desde robot_spec.py
+        ├── build_model.py          genera los modelos desde robot_spec.py
         ├── leg_control.py          módulo: compensadores, IK, perfil, sensores
         ├── biped_control.py        módulo: poses, reparto del peso, paso de control
         ├── run_checks.py           ejecuta todas las comprobaciones

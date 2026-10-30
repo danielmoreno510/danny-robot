@@ -18,7 +18,7 @@ DIRECTIONS = push_biped.DIRECTIONS
 
 @pytest.mark.parametrize("name", list(DIRECTIONS))
 def test_response_at_defined_limit(name, monkeypatch):
-    force = push_biped.REQUIRED_FORCE[name]
+    force = push_biped.REQUIRED_FORCE["biped"][name]
     biped, trial, model = run_push(monkeypatch, DIRECTIONS[name], force)
     a = biped.arrays()
     start = round(push_biped.SETTLE_TIME / model.opt.timestep)
@@ -47,8 +47,8 @@ def test_measured_maximum_push():
     data = mujoco.MjData(model)
     for name, direction in DIRECTIONS.items():
         best, _ = push_biped.strongest_push(model, data, direction)
-        record(f"empujon.{name}.maximo", best, f">= {push_biped.REQUIRED_FORCE[name]:g}", "N")
-        assert best >= push_biped.REQUIRED_FORCE[name]
+        record(f"empujon.{name}.maximo", best, f">= {push_biped.REQUIRED_FORCE['biped'][name]:g}", "N")
+        assert best >= push_biped.REQUIRED_FORCE["biped"][name]
 
 
 def test_response_is_passive_not_feedback(monkeypatch):

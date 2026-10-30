@@ -54,11 +54,10 @@ from biped_control import (
     rotation_z,
 )
 from leg_control import HOLD_TIME, TRANSITION_TIME, interpolate, read_sensors, total_weight
-from robot_spec import POSITION_SENSORS
+from robot_spec import POSITION_SENSORS, ROBOTS
 
 
 ROOT = Path(__file__).resolve().parents[1]
-MODEL_PATH = ROOT / "models" / "danny_biped.xml"
 
 LIFT_HEIGHT = 0.03  # m
 N_STEPS = 4
@@ -371,6 +370,7 @@ def check_acceptance(
 def main() -> int:
     parser = argparse.ArgumentParser(description="Marcha estática del bípedo")
     parser.add_argument("--view", action="store_true", help="verlo (requiere mjpython)")
+    parser.add_argument("--robot", choices=sorted(ROBOTS), default="biped", help="configuración del robot")
     parser.add_argument("--speed", type=float, default=1.0, help="divide la duración de las transiciones")
     parser.add_argument("--hold", type=float, default=HOLD_TIME, help="pausa tras cada transición [s]")
     parser.add_argument("--knee", type=float, default=Gait.knee_deg, help="rodillas de pie [°]")
@@ -387,9 +387,10 @@ def main() -> int:
     args = parser.parse_args()
     gait = Gait(args.knee, args.step, args.width, args.inset, args.turn)
 
-    print(f"MuJoCo {mujoco.__version__} | modelo: {MODEL_PATH.name}")
-    model = mujoco.MjModel.from_xml_path(str(MODEL_PATH))
-    nominal = mujoco.MjModel.from_xml_path(str(MODEL_PATH))
+    model_path = ROOT / "models" / ROBOTS[args.robot].file
+    print(f"MuJoCo {mujoco.__version__} | modelo: {model_path.name}")
+    model = mujoco.MjModel.from_xml_path(str(model_path))
+    nominal = mujoco.MjModel.from_xml_path(str(model_path))
     model.body_mass[:] *= 1.0 + args.mass_error
     model.body_inertia[:] *= 1.0 + args.mass_error
     pelvis_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "pelvis")

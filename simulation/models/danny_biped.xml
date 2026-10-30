@@ -1,4 +1,4 @@
-<mujoco model="Danny Biped">
+<mujoco model="Danny danny_biped">
   <compiler angle="radian"/>
 
   <option integrator="implicitfast"/>

@@ -32,13 +32,6 @@ SOLE_BELOW_ANKLE = 0.04
 FOOT_HALF = (0.07, 0.04, 0.01)
 LEG_LENGTH = THIGH_LENGTH + SHIN_LENGTH
 
-# Masas [kg]
-PELVIS_MASS = 1.2
-TORSO_MASS = 4.0
-THIGH_MASS = 0.7
-SHIN_MASS = 0.5
-FOOT_MASS = 0.2
-
 # Articulaciones. Armature: inercia del motor reflejada por la reductora. Sin
 # ella, los tobillos son tan ligeros que resuenan a 12 Hz con el contacto.
 JOINT_DAMPING = 0.5  # N·m·s/rad
@@ -80,6 +73,73 @@ LEG_JOINTS = (
 HIP_JOINTS = LEG_JOINTS[:3]
 KNEE_JOINT = LEG_JOINTS[3]
 ANKLE_JOINTS = LEG_JOINTS[4:]
+
+# Cintura (etapa 3.5.3): solo en el humanoide. Yaw sobre la pelvis y pitch encima.
+WAIST_JOINTS = (
+    Joint("waist_yaw", (0, 0, 1), (-0.7854, 0.7854), 0.0),  # ±45°
+    Joint("waist_pitch", (0, 1, 0), (-0.2618, 0.7854), 0.0),  # -15° a 45°
+)
+
+# Humanoide: alturas respecto a la pelvis [m]
+WAIST_ABOVE_PELVIS = 0.04
+WAIST_LINK_HALF = (0.03, 0.05, 0.02)
+UPPER_TORSO_HALF = (0.06, 0.10, 0.07)
+UPPER_TORSO_OFFSET = 0.07  # centro, sobre la cintura
+ARM_BALLAST_HALF = (0.04, 0.14, 0.05)
+ARM_BALLAST_OFFSET = 0.05
+HEAD_BALLAST_RADIUS = 0.045
+HEAD_BALLAST_OFFSET = 0.205
+
+
+@dataclass(frozen=True)
+class Robot:
+    """
+    Una configuración del robot. Las masas del humanoide son las del presupuesto de
+    documentation/phase-3.5-mass-budget.md, con el margen de 0,31 kg en el torso.
+    Los lastres ocupan el lugar de brazos y cabeza hasta que existan esas piezas.
+    """
+
+    file: str
+    pelvis_mass: float
+    thigh_mass: float
+    shin_mass: float
+    foot_mass: float
+    upper_body_mass: float  # torso del bípedo o torso superior del humanoide [kg]
+    leg_kv: dict[str, float]
+    waist_mass: float = 0.0
+    arm_ballast: float = 0.0
+    head_ballast: float = 0.0
+    waist_kv: dict[str, float] | None = None
+
+    @property
+    def has_waist(self) -> bool:
+        return self.waist_kv is not None
+
+
+BIPED = Robot(
+    file="danny_biped.xml",
+    pelvis_mass=1.2,
+    thigh_mass=0.7,
+    shin_mass=0.5,
+    foot_mass=0.2,
+    upper_body_mass=4.0,
+    leg_kv={joint.part: joint.kv for joint in LEG_JOINTS},
+)
+HUMANOID = Robot(
+    file="danny_humanoid.xml",
+    pelvis_mass=2.0,
+    thigh_mass=1.0,
+    shin_mass=0.77,
+    foot_mass=0.2,
+    upper_body_mass=2.8,
+    leg_kv={"hip_yaw": 1.68, "hip_roll": 4.83, "hip_pitch": 4.84, "knee": 2.53,
+            "ankle_pitch": 9.1, "ankle_roll": 9.1},
+    waist_mass=0.2,
+    arm_ballast=1.67,
+    head_ballast=0.39,
+    waist_kv={"waist_yaw": 3.0, "waist_pitch": 3.75},
+)
+ROBOTS = {"biped": BIPED, "humanoid": HUMANOID}
 
 JOINT_PARTS = tuple(joint.part for joint in LEG_JOINTS)
 JOINTS = tuple(f"{side}_{part}_joint" for side in SIDES for part in JOINT_PARTS)

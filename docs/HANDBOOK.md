@@ -884,6 +884,62 @@ mano**: una prueba comprueba que coincide con la especificación.
 Las pruebas que necesitan una variante del robot (pelvis fija, retardo de motor) ya no
 editan texto XML: la construyen con `MjSpec`.
 
+### Experimento 18 — Torso y cintura: el primer humanoide
+
+**Etapa 3.5.3.** `danny_humanoid.xml` añade al bípedo una cintura de 2 ejes (yaw y pitch)
+y un torso superior. Brazos y cabeza aún no existen: son lastres fijos de 1,67 y 0,39 kg,
+sin colisión, para que masa y CdM ya sean los del robot completo. Pesa 11,0 kg, mide 0,70
+m y su CdM queda a 38,2 cm del suelo, con 14 GDL.
+
+`Biped` sirve para los dos modelos: lo que no es pierna lo sujeta su motor en
+`held_target`, y los scripts aceptan `--robot humanoid`. Las piernas pesan más que en el
+bípedo, así que sus `kv` se reajustaron con el mismo criterio de amortiguación bajo carga.
+
+**Criterio, fijado antes de medir:** E10 a E13 deben pasar con los mismos límites,
+primero con la cintura sujeta y después moviéndola. Los límites de empujón se miden de
+nuevo.
+
+| Prueba | Fallos | Inclinación máx. | Error en movimiento | Par máx. |
+|---|---|---|---|---|
+| E11, marcha lenta | 0 | 0,79° | 0,49° | 8,5 N·m |
+| E12, marcha rápida, espera 0,3 s | 0 | 1,25° | 0,72° | 8,6 N·m |
+| E13, marcha con giro | 0 | 0,54° | 0,40° | 8,1 N·m |
+
+**Un criterio no se cumplió tal cual.** E12 con la espera original de 0,25 s da 4 fallos:
+error en reposo de 0,5023° con límite de 0,5°. Subir la espera a 0,3 s lo resuelve, pero es
+**un cambio de plan, no de límite**: el humanoide es algo más lento (27,4 s frente a 26,6
+s). E13 sí pasa con 0,25 s.
+
+**Con la cintura moviéndose** a 0,25 Hz, de pie, los pies no se mueven (0,11 mm como
+máximo), la cintura sigue su objetivo con menos de 0,4° de error y el CdM queda a más de 50
+mm del borde del apoyo. Andando, E13 cumple con ±10° de yaw (es prueba exigida), y sin
+exigir también con ±20° y ±30° de yaw y con 10°, 20° y 30° de pitch. Se comprobó aparte que
+la cintura se movía de verdad. El margen del CdM apenas cambia (26,7 mm) porque el límite
+lo marca la dirección y, y la cintura se mueve sobre todo en x. Son movimientos lentos y
+sin carga: no demuestran que se pueda usar la cintura en cualquier tarea.
+
+**Empujones.** Máximos medidos: 48 N adelante, 49 N atrás y 58 N de lado (bípedo: 26 y 34
+N). Los límites pasan a 46, 47 y 56 N, lo medido menos 2 N.
+
+**Sin explicar.** Es más de lo que predicen los modelos simples:
+
+| | Masa puntual | Cuerpo rígido que vuelca | Medido (adelante) |
+|---|---|---|---|
+| Bípedo | 28 N | 33 N | 26 N |
+| Humanoide | 41 N | 43 N | 48 N |
+
+El bípedo queda por debajo y el humanoide por encima, así que falta algo. Se descartaron
+dos causas midiendo: el cuerpo no se dobla por la cintura (pelvis y torso se inclinan
+igual, y la cintura cede menos de 0,8°), y la amortiguación de tobillos apenas influye
+(47 a 49 N con `kv` de ×0,5 a ×2). La causa sigue abierta. No afecta a la marcha, y estos
+límites solo detectan regresiones.
+
+**Autocolisión.** El torso colisiona, pero dentro de los rangos de la cadera no llega a
+tocar el muslo: solo se detecta el contacto pasado el límite.
+
+**Resultado:** 149 pruebas y 21 comprobaciones pasan. Las 277 métricas del bípedo no
+cambian. Las pruebas están en `tests/test_humanoid.py`.
+
 ---
 
 ## 3. La pierna de 2 GDL en detalle

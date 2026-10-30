@@ -8,6 +8,7 @@ import numpy as np
 
 import biped_control
 import build_model
+import robot_spec as spec
 from conftest import ROOT, load_model, record
 from leg_control import leg_ik
 
@@ -40,7 +41,7 @@ def test_geometry_constants_match_model():
 
 def test_versioned_model_matches_the_specification():
     """danny_biped.xml no se edita a mano: debe salir igual de robot_spec.py."""
-    assert build_model.MODEL_PATH.read_text() == build_model.build_biped().to_xml()
+    assert build_model.model_path(spec.BIPED).read_text() == build_model.build_biped().to_xml()
 
 
 def test_no_robot_dimensions_are_duplicated_in_scripts():

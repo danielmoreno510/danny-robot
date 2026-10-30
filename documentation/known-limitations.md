@@ -1,7 +1,8 @@
 # Limitaciones conocidas
 
-Estado actual del robot Danny (modelo `danny_biped.xml`, 70 cm, 8 kg, 12 GDL). Las cifras
-salen de `results/phase3_metrics.json`, y el detalle está en la
+Estado actual del robot Danny. Salvo que se indique, las cifras son del bípedo
+(`danny_biped.xml`, 70 cm, 8 kg, 12 GDL); el humanoide en construcción tiene su propia
+sección. Las cifras salen de `results/phase3_metrics.json`, y el detalle está en la
 [validación de la fase 3](phase-3-validation.md). Este documento se mantiene al día.
 
 ## Lo que NO está implementado
@@ -63,9 +64,22 @@ La marcha sí tolera, en simulación: control de 50 Hz, 10 ms de retardo, 10 ms 
 retardo de motor y fricción articular de 1 N·m. Con 20 ms de cualquiera de los dos
 retardos, incumple.
 
+## Humanoide en construcción
+
+`danny_humanoid.xml` (11 kg, 14 GDL), tras la etapa 3.5.3:
+
+- Brazos y cabeza son lastres fijos, sin colisión. Los experimentos de sensibilidad no se
+  han repetido con este modelo.
+- La marcha rápida necesita 0,3 s de espera entre pasos: con 0,25 s incumple por muy poco
+  (0,5023° frente a 0,5°).
+- El plan de la marcha no conoce la cintura. Se mide que tolera ±30° de yaw y 30° de
+  pitch, a 0,25 Hz y sin carga, pero nada la usa para equilibrar.
+- Los límites de empujón (46 a 56 N) son lo medido menos 2 N. El máximo en x, 48 N, supera
+  los 43 N de la estimación de cuerpo rígido: esa diferencia sigue **sin explicar**.
+
 ## Modelo físico
 
-- Sin brazos, cabeza ni cintura: el torso es una masa provisional.
+- En el bípedo no hay brazos, cabeza ni cintura: el torso es una masa provisional.
 - El reparto de masas no está medido.
 - El contacto pie-suelo usa parámetros por defecto, no medidos.
 - La planta es rígida.
