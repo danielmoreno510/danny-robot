@@ -9,7 +9,7 @@ permiten.
 
 Hoy Danny existe solo en simulación, con [MuJoCo](https://mujoco.org). Hay dos modelos:
 el bípedo de la fase 3 (70 cm, 8 kg, 12 grados de libertad) y el humanoide completo en
-validación (70 cm, 11 kg, 30 grados de libertad).
+validación (70 cm, 11 kg, 31 grados de libertad).
 
 > **Importante:** las dimensiones, masas y motores del modelo son **provisionales**
 > hasta elegir los motores (etapa 31). No deben usarse para fabricar piezas.
@@ -21,7 +21,7 @@ validación (70 cm, 11 kg, 30 grados de libertad).
 - Camina en marcha estática: pasos de 8 cm y giros, con cada pie a menos de 1 mm
   de donde se planificó.
 - Aguanta empujones de 24 a 32 N durante 0,1 s sin dar un paso, de forma pasiva.
-- El humanoide (11 kg y 30 GDL: cintura, brazos de 7 GDL, manos rígidas, cuello y cabeza
+- El humanoide (11 kg y 31 GDL: cintura de 3 ejes, brazos de 7 GDL, manos rígidas, cuello y cabeza
   simple) repite el equilibrio y la marcha, con los brazos en postura fija y también
   con la cintura moviéndose.
 - Sigue caminando aunque sus masas difieran un ±10 % de las que cree tener.
@@ -116,7 +116,9 @@ Los scripts con `--view` imprimen primero el análisis y después abren la venta
 | [documentation/known-limitations.md](documentation/known-limitations.md) | Limitaciones actuales del robot |
 | [documentation/phase-3.5-proposal.md](documentation/phase-3.5-proposal.md) | Propuesta aprobada del humanoide completo |
 | [documentation/phase-3.5-mass-budget.md](documentation/phase-3.5-mass-budget.md) | Presupuesto de masa con motores de catálogo |
-| [documentation/whole-body-motion-review.md](documentation/whole-body-motion-review.md) | Revisión del cuerpo para movimiento natural: propuesta pendiente |
+| [documentation/whole-body-motion-review.md](documentation/whole-body-motion-review.md) | Revisión del cuerpo para movimiento natural y plan de la fase 4 |
+| [documentation/phase-4-readiness-audit.md](documentation/phase-4-readiness-audit.md) | Auditoría de preparación: qué falta para entrenar |
+| [PROJECT_HANDOFF.md](PROJECT_HANDOFF.md) | Relevo: cómo seguir en otro chat o en otra computadora |
 | [CLAUDE.md](CLAUDE.md) | Reglas de trabajo y estado actual, para continuar el proyecto con Claude Code |
 
 **Etapas y experimentos.** Las **etapas** (1 a 76) son los pasos del roadmap. Los
@@ -129,6 +131,7 @@ danny-robot/
 ├── README.md           este archivo
 ├── ROADMAP.md          plan del proyecto
 ├── CLAUDE.md           reglas y estado, para Claude Code
+├── PROJECT_HANDOFF.md  relevo para seguir en otro chat u otra computadora
 ├── requirements.txt    dependencias fijadas
 ├── docs/
 │   └── HANDBOOK.md     detalle técnico de cada experimento
@@ -137,7 +140,8 @@ danny-robot/
 │   ├── known-limitations.md    limitaciones actuales
 │   ├── phase-3.5-proposal.md   propuesta del humanoide completo
 │   ├── phase-3.5-mass-budget.md   presupuesto de masa
-│   └── whole-body-motion-review.md   revisión para movimiento natural
+│   ├── whole-body-motion-review.md   revisión para movimiento natural
+│   └── phase-4-readiness-audit.md   auditoría de preparación
 ├── tests/              suite de validación automática
 ├── results/            salida de la última ejecución de run_checks.py
 └── simulation/
@@ -148,7 +152,7 @@ danny-robot/
     │   ├── leg_2dof_foot.xml       E8: pierna con pie
     │   ├── leg_6dof.xml            E9: pierna didáctica de 6 GDL con pie plano
     │   ├── danny_biped.xml         E10 en adelante: generado, no editar a mano
-    │   └── danny_humanoid.xml      E18 a E21: humanoide de 30 GDL; generado, no editar a mano
+    │   └── danny_humanoid.xml      E18 a E22: humanoide de 31 GDL; generado, no editar a mano
     └── scripts/
         ├── robot_spec.py           datos del robot: medidas, masas, articulaciones
         ├── build_model.py          genera los modelos desde robot_spec.py

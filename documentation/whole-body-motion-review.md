@@ -1,7 +1,11 @@
 # Revisión del cuerpo completo para movimiento natural
 
-**Estado: PROPUESTA, pendiente de revisión del usuario.** Nada de la sección 7 está
-implementado. La fase 3.5 sigue abierta y la fase 4 no ha empezado.
+**Estado: APROBADA por el usuario.** Los cambios 1 y 2 de la sección 7 están hechos (E22 en el
+handbook); los 3 y 4 siguen pendientes. Las secciones 3 a 6 describen el modelo **anterior**
+a esos cambios, de 30 GDL. La fase 3.5 sigue abierta y la fase 4 no ha empezado.
+
+Resultado de E22: el balanceo de ±20° a 1,5 Hz pasa de 1,95 a 1,09 N·m, y el brazo baja de ζ
+1,6 a 0,63, aunque con un amortiguamiento que sigue siendo una estimación.
 
 ## 1. Objetivo y regla de esta revisión
 
@@ -225,9 +229,7 @@ Los límites concretos están en el [roadmap](../ROADMAP.md#fase-4--aprendizaje-
 Son provisionales: se fijan definitivamente antes de cada hito, tras comprobar que son
 físicamente posibles.
 
-## 10. Qué necesito que decidas
+## 10. Decisiones
 
-1. **Actuador por articulación:** aprobar el cambio 1.
-2. **Roll de cintura:** aprobar 31 GDL o seguir con 30.
-3. **Orden:** propongo hacer estos cambios antes de la etapa 3.5.7, para integrar y validar
-   el cuerpo una sola vez.
+El usuario aprobó el actuador por articulación y el roll de cintura, antes de la etapa
+3.5.7.

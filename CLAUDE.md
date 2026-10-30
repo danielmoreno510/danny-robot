@@ -1,7 +1,8 @@
 # Robot Danny — instrucciones para Claude
 
 Robot humanoide autónomo de unos 70 cm, hoy solo en simulación con MuJoCo. El
-usuario escribe en español: responde en español. Lee [README.md](README.md) para
+usuario escribe en español: responde en español. **Empieza por
+[PROJECT_HANDOFF.md](PROJECT_HANDOFF.md).** Lee [README.md](README.md) para
 la visión general y [ROADMAP.md](ROADMAP.md) para el plan y el estado de cada
 etapa. Ese estado es la fuente de verdad: mantenlo al día.
 
@@ -41,9 +42,9 @@ Las 21 comprobaciones deben pasar antes de empezar a trabajar. Si no pasan, dilo
 6. **Commit y push solo cuando el usuario lo pida.**
 7. **Avisar al terminar cada fase.** Una fase necesita implementación, validación
    reproducible y documentación.
-8. **Dejar el relevo escrito al terminar cada fase.** Actualiza la sección «Estado actual»
-   de este archivo para que un chat nuevo pueda seguir sin nada más: qué se hizo, en qué
-   punto está, qué sigue, decisiones tomadas y pendientes, y qué comprobar primero.
+8. **Dejar el relevo escrito al terminar cada fase.** Actualiza `PROJECT_HANDOFF.md` y la
+   sección «Estado actual» de este archivo. El usuario abre un chat nuevo entre fases: debe
+   poder seguirse desde otro chat u otra computadora sin nada más.
 
 ## Cómo se trabaja
 
@@ -75,18 +76,19 @@ ventana no se ha abierto.
 
 Fase 3 en **CONDITIONAL PASS**, revisada y aceptada por el usuario. Limitaciones en
 `documentation/known-limitations.md`. **Actual: fase 3.5, humanoide completo.**
-La propuesta aprobada está en `documentation/phase-3.5-proposal.md`: 30 GDL y 70 cm. El
+La propuesta aprobada está en `documentation/phase-3.5-proposal.md`, y la revisión
+`documentation/whole-body-motion-review.md` la amplió a 31 GDL. Mide 70 cm. El
 objetivo de masa es 11 kg, con el reparto de `documentation/phase-3.5-mass-budget.md`.
 
-Hecha la etapa 3.5.6 (`danny_humanoid.xml`: 30 GDL con cabeza simple). **Antes de la 3.5.7,
-el usuario debe revisar `documentation/whole-body-motion-review.md`: no implementes cambios
-de arquitectura hasta entonces.**
+Hechas la etapa 3.5.6 y la revisión para movimiento natural (E22): 31 GDL, cada articulación
+con su motor en `robot_spec.py`, y curva de par-velocidad siempre activa en el humanoide.
+Armature y amortiguamiento son estimaciones. **Siguiente: 3.5.7, integración.**
 
 **Se avanza por etapas, con revisión: no implementes todo a la vez.** Después de la fase 3.5 viene la fase 4, cuyo entorno debe cumplir la
 lista del roadmap. No marques como implementados la compensación dinámica ni el
 equilibrio activo.
 
-Comprobaciones: `run_checks.py` (21, unos 2 minutos) y `python -m pytest tests` (168, unos
+Comprobaciones: `run_checks.py` (21, unos 2 minutos) y `python -m pytest tests` (189, unos
 8 minutos).
 Las pruebas de realismo miden sin exigir: que pasen no significa que el robot aguante
 ese efecto. Mira `results/phase3_metrics.json`.
@@ -100,8 +102,8 @@ ese efecto. Mira `results/phase3_metrics.json`.
 
 - El bípedo (`danny_biped.xml`) mide 70 cm y pesa 8 kg, con torso provisional. El
   humanoide (`danny_humanoid.xml`) pesa 11 kg, provisionales hasta la etapa 31.
-- La marcha rápida del humanoide (E12) usa una espera de 0,3 s, no 0,25 s: con 0,25 s
-  incumple por muy poco el error en reposo. Ver E18.
+- La marcha rápida del humanoide (E12) usa una espera de 0,35 s, no 0,25 s: con menos,
+  incumple por muy poco el error en reposo. Ver E18 y E22.
 - El paso de recuperación no funcionó con control clásico: el robot salta en vez
   de dar un paso. Se pasó a la etapa 26. El código está en el commit `6c083cc`.
 - La marcha usa compensación estática. La dinámica se probó (E15) y se eliminó: no

@@ -1061,6 +1061,62 @@ con la frecuencia propia y la inercia medidas.
 La revisión de todo el cuerpo está en
 [documentation/whole-body-motion-review.md](../documentation/whole-body-motion-review.md).
 
+### Experimento 22 — Un motor para cada articulación y roll de cintura
+
+**Dos cambios aprobados tras la revisión.** Antes, todas las articulaciones compartían ±20
+N·m, `kp` de 100 y el mismo amortiguamiento, de modo que una muñeca podía hacer 10 veces más
+par que su motor real. Ahora `robot_spec.py` tiene una tabla `Motor`, y `HUMANOID.motors` dice
+cuál lleva cada articulación. El bípedo conserva sus valores: su XML no cambia.
+
+| Motor | Par de pico | Vel. en vacío | `kp` | Armature | Amortiguamiento |
+|---|---|---|---|---|---|
+| RobStride 01 | 17 N·m | 33 rad/s | 100 | 0,01 | 0,1 |
+| RobStride 00 | 14 N·m | 33 rad/s | 85 | 0,01 | 0,1 |
+| XM540 | 7,3 N·m | 5,55 rad/s | 45 | 0,01 | 0,2 |
+| XM430 | 4,1 N·m | 4,8 rad/s | 25 | 0,005 | 0,15 |
+| STS3215 | 1,9 N·m | 4,7 rad/s | 12 | 0,002 | 0,05 |
+
+Par y velocidad son de catálogo, y los del STS3215 están sin confirmar. **`kp` es una regla
+(unas 6 veces el pico), y armature y amortiguamiento son estimaciones** que la fase 4 debe
+variar. La curva de par-velocidad ya está siempre activa en el humanoide. Los `kv` se
+recalcularon con la inercia medida.
+
+La cintura pasa a tener tres ejes, con roll de ±20°: 31 GDL. Ese motor consume el margen de
+masa del torso (2,48 kg), y el total sigue en 11,004 kg.
+
+**Criterio, fijado antes de medir:**
+
+| Comprobación | Límite | Medido |
+|---|---|---|
+| Masa | 11,0 ± 0,01 kg | 11,004 kg |
+| Límites de cada motor en el modelo | los de la tabla | cumple |
+| ζ del brazo | < 1 | 0,63 |
+| Roll con pelvis inclinada 5° | torso vertical | cumple |
+| Moviendo el roll ±10° de pie | error < 1°, pies < 5 mm | 0,17°, 0,06 mm |
+| Balanceo de brazos ±20° a 1,5 Hz | < 7,3 N·m y 5,55 rad/s | 1,09 N·m y 3,4 rad/s |
+| Sin contactos en todo el rango de la cintura | ninguno | **no cumple** |
+| E12, espera de 0,3 s | 0 fallos | **no cumple** |
+| Métricas del bípedo | sin cambios | sin cambios |
+
+**Dos criterios no se cumplieron:**
+
+- **Contactos de la cintura.** Con ±20° de roll aparecen contactos reales: mano o antebrazo con
+  muslo y pelvis, y torso con muslo. Son 124 de 2223 posturas de la malla. Hasta ±15° no hay
+  ninguno. Se aceptó, porque separar más los brazos los alejaría de una postura natural. La
+  prueba exige ahora rango libre hasta ±15°.
+- **E12.** Con menos amortiguamiento, el cuerpo tarda más en asentarse: el error en reposo llega
+  a 0,58° con 0,3 s de espera. Con 0,35 s pasa, y dura 28,3 s. Como en E18, es un cambio de plan,
+  no de límite.
+
+**Lo demás, con motores realistas:** E11 y E13 sin fallos, y empujones de 48, 49 y 59 N, igual
+que antes. E13 también cumple con ±10° de roll, ±30° de yaw, 30° de pitch, cuello en
+movimiento y balanceo de brazos. La marcha clásica sigue siendo lentísima y pide velocidades
+bajas, así que la curva de par-velocidad apenas actúa en ella: esta prueba **no** demuestra que
+los motores basten para una marcha natural.
+
+**Pendiente:** medir motores reales y confirmar el STS3215; comparar el pie plano con uno
+redondeado; añadir puntos de seguimiento e IMU de cabeza.
+
 ---
 
 ## 3. La pierna de 2 GDL en detalle

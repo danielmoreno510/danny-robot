@@ -7,8 +7,8 @@ de diseño, no resultados de simulación.
 **Actualización:** el [presupuesto con motores de catálogo](phase-3.5-mass-budget.md) dio
 10,7 kg y otro reparto de masa, y el objetivo pasó a **11 kg**. Ese documento sustituye a
 la sección 4 de esta propuesta. La
-[revisión para movimiento natural](whole-body-motion-review.md) propone cambios a esta
-propuesta, aún sin aprobar.
+[revisión para movimiento natural](whole-body-motion-review.md), aprobada, añade el roll de
+cintura (31 GDL) y un motor por articulación.
 
 ## 1. Objetivo y por qué
 

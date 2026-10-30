@@ -765,14 +765,19 @@
   "unit": "m"
  },
  "humanoide.balanceo_brazos.par": {
-  "value": 1.9461284149318114,
+  "value": 1.092053941948298,
   "limit": "< 7,3",
   "unit": "N·m"
  },
  "humanoide.balanceo_brazos.velocidad": {
-  "value": 3.3408180806729977,
+  "value": 3.42175845332151,
   "limit": "< 5,55",
   "unit": "rad/s"
+ },
+ "humanoide.brazo.frecuencia_propia": {
+  "value": 0.8727778454018581,
+  "limit": "informativa",
+  "unit": "Hz"
  },
  "humanoide.brazo.par_elbow_carga_0": {
   "value": 0.29528099999800805,
@@ -785,12 +790,12 @@
   "unit": "N·m"
  },
  "humanoide.brazo.par_shoulder_pitch_carga_0": {
-  "value": 0.8672530499941494,
+  "value": 0.8672530499941493,
   "limit": "< 7.3",
   "unit": "N·m"
  },
  "humanoide.brazo.par_shoulder_pitch_carga_0.3": {
-  "value": 1.7501530499881932,
+  "value": 1.750153049988193,
   "limit": "< 7.3",
   "unit": "N·m"
  },
@@ -814,6 +819,11 @@
   "limit": "= 6",
   "unit": ""
  },
+ "humanoide.brazo.zeta": {
+  "value": 0.6323212048314856,
+  "limit": "< 1",
+  "unit": ""
+ },
  "humanoide.cabeza.altura_centro": {
   "value": 0.655,
   "limit": "0,655 ± 0,005",
@@ -825,67 +835,92 @@
   "unit": ""
  },
  "humanoide.cdm_altura": {
-  "value": 0.3797369138495093,
+  "value": 0.3777649036713923,
   "limit": "0,36 a 0,42",
   "unit": "m"
  },
+ "humanoide.cintura.posturas_con_contacto_a_20": {
+  "value": 124.0,
+  "limit": "informativa",
+  "unit": ""
+ },
+ "humanoide.cintura_roll10.deriva_pies": {
+  "value": 0.05706655407763416,
+  "limit": "< 5",
+  "unit": "mm"
+ },
+ "humanoide.cintura_roll10.error_cintura": {
+  "value": 0.16779453923430865,
+  "limit": "< 1",
+  "unit": "°"
+ },
+ "humanoide.cintura_roll5.deriva_pies": {
+  "value": 0.028528917371014602,
+  "limit": "< 5",
+  "unit": "mm"
+ },
+ "humanoide.cintura_roll5.error_cintura": {
+  "value": 0.08389690585210498,
+  "limit": "< 1",
+  "unit": "°"
+ },
  "humanoide.cintura_yaw0_pitch30.deriva_pies": {
-  "value": 0.05628654426492973,
+  "value": 0.04958242406692963,
   "limit": "< 5",
   "unit": "mm"
  },
  "humanoide.cintura_yaw0_pitch30.error_cintura": {
-  "value": 0.07522892543147318,
+  "value": 0.034735011233431284,
   "limit": "< 1",
   "unit": "°"
  },
  "humanoide.cintura_yaw0_pitch30.margen_cdm": {
-  "value": 54.182153976290266,
+  "value": 55.17707959100481,
   "limit": "> 15",
   "unit": "mm"
  },
  "humanoide.cintura_yaw0_pitch30.par_max": {
-  "value": 3.2033251771832596,
+  "value": 3.2013866325067255,
   "limit": "< 20",
   "unit": "N·m"
  },
  "humanoide.cintura_yaw30_pitch0.deriva_pies": {
-  "value": 0.07503950522088126,
+  "value": 0.07106889451514689,
   "limit": "< 5",
   "unit": "mm"
  },
  "humanoide.cintura_yaw30_pitch0.error_cintura": {
-  "value": 0.4434383812779374,
+  "value": 0.3885989090601367,
   "limit": "< 1",
   "unit": "°"
  },
  "humanoide.cintura_yaw30_pitch0.margen_cdm": {
-  "value": 69.73633257261216,
+  "value": 69.73246124873859,
   "limit": "> 15",
   "unit": "mm"
  },
  "humanoide.cintura_yaw30_pitch0.par_max": {
-  "value": 3.240514781251711,
+  "value": 3.227113534238782,
   "limit": "< 20",
   "unit": "N·m"
  },
  "humanoide.cintura_yaw30_pitch30.deriva_pies": {
-  "value": 0.10280730458698702,
+  "value": 0.09297612661777684,
   "limit": "< 5",
   "unit": "mm"
  },
  "humanoide.cintura_yaw30_pitch30.error_cintura": {
-  "value": 0.4434327615928216,
+  "value": 0.38859519656023583,
   "limit": "< 1",
   "unit": "°"
  },
  "humanoide.cintura_yaw30_pitch30.margen_cdm": {
-  "value": 54.010847582040014,
+  "value": 54.99714606581156,
   "limit": "> 15",
   "unit": "mm"
  },
  "humanoide.cintura_yaw30_pitch30.par_max": {
-  "value": 3.240514781251711,
+  "value": 3.2056055008559525,
   "limit": "< 20",
   "unit": "N·m"
  },
@@ -900,7 +935,7 @@
   "unit": "s"
  },
  "humanoide.e11.error_movimiento": {
-  "value": 0.4906655433869825,
+  "value": 0.5228879688159627,
   "limit": "< 1",
   "unit": "°"
  },
@@ -910,27 +945,27 @@
   "unit": ""
  },
  "humanoide.e11.incl_max": {
-  "value": 0.7836289751887131,
+  "value": 0.9064208467677025,
   "limit": "< 5",
   "unit": "°"
  },
  "humanoide.e11.par_max": {
-  "value": 8.496832343502241,
+  "value": 8.494636406224242,
   "limit": "< 20",
   "unit": "N·m"
  },
  "humanoide.e11.pie_fuera": {
-  "value": 1.3147111204539246,
+  "value": 1.5421917257127675,
   "limit": "< 5",
   "unit": "mm"
  },
  "humanoide.e12.duracion": {
-  "value": 27.429999999995676,
+  "value": 28.279999999995205,
   "limit": "informativa",
   "unit": "s"
  },
  "humanoide.e12.error_movimiento": {
-  "value": 0.709934395970442,
+  "value": 0.7459732372588215,
   "limit": "< 1",
   "unit": "°"
  },
@@ -940,17 +975,17 @@
   "unit": ""
  },
  "humanoide.e12.incl_max": {
-  "value": 1.2382954458759003,
+  "value": 1.4387647058701012,
   "limit": "< 5",
   "unit": "°"
  },
  "humanoide.e12.par_max": {
-  "value": 8.652413032553962,
+  "value": 8.651978626357959,
   "limit": "< 20",
   "unit": "N·m"
  },
  "humanoide.e12.pie_fuera": {
-  "value": 2.958273682564962,
+  "value": 3.4341669736449965,
   "limit": "< 5",
   "unit": "mm"
  },
@@ -960,7 +995,7 @@
   "unit": "s"
  },
  "humanoide.e13.error_movimiento": {
-  "value": 0.4003214645995847,
+  "value": 0.38571386879530856,
   "limit": "< 1",
   "unit": "°"
  },
@@ -970,17 +1005,17 @@
   "unit": ""
  },
  "humanoide.e13.incl_max": {
-  "value": 0.5356416915013862,
+  "value": 0.5812970896054991,
   "limit": "< 5",
   "unit": "°"
  },
  "humanoide.e13.par_max": {
-  "value": 8.113763934172406,
+  "value": 8.112697804826146,
   "limit": "< 20",
   "unit": "N·m"
  },
  "humanoide.e13.pie_fuera": {
-  "value": 0.8784436736898451,
+  "value": 1.0616149369178483,
   "limit": "< 5",
   "unit": "mm"
  },
@@ -1019,13 +1054,18 @@
   "limit": "= 0",
   "unit": ""
  },
+ "humanoide.marcha_cintura_roll10.fallos": {
+  "value": 0.0,
+  "limit": "informativa",
+  "unit": ""
+ },
  "humanoide.marcha_cintura_yaw0_pitch10.fallos": {
   "value": 0.0,
   "limit": "informativa",
   "unit": ""
  },
  "humanoide.marcha_cintura_yaw0_pitch10.margen_cdm": {
-  "value": 26.731236290259424,
+  "value": 26.741494421113607,
   "limit": "informativa",
   "unit": "mm"
  },
@@ -1035,7 +1075,7 @@
   "unit": ""
  },
  "humanoide.marcha_cintura_yaw0_pitch20.margen_cdm": {
-  "value": 26.726930116196687,
+  "value": 26.736668013702023,
   "limit": "informativa",
   "unit": "mm"
  },
@@ -1045,7 +1085,7 @@
   "unit": ""
  },
  "humanoide.marcha_cintura_yaw0_pitch30.margen_cdm": {
-  "value": 26.700874530276433,
+  "value": 26.62420643455882,
   "limit": "informativa",
   "unit": "mm"
  },
@@ -1055,7 +1095,7 @@
   "unit": ""
  },
  "humanoide.marcha_cintura_yaw10_pitch0.margen_cdm": {
-  "value": 26.620733552288403,
+  "value": 26.647026947272522,
   "limit": "informativa",
   "unit": "mm"
  },
@@ -1065,7 +1105,7 @@
   "unit": ""
  },
  "humanoide.marcha_cintura_yaw20_pitch0.margen_cdm": {
-  "value": 26.485520208888545,
+  "value": 26.51313774540612,
   "limit": "informativa",
   "unit": "mm"
  },
@@ -1075,7 +1115,7 @@
   "unit": ""
  },
  "humanoide.marcha_cintura_yaw30_pitch0.margen_cdm": {
-  "value": 26.34927269451578,
+  "value": 26.377324414218613,
   "limit": "informativa",
   "unit": "mm"
  },
@@ -1085,27 +1125,27 @@
   "unit": ""
  },
  "humanoide.masa": {
-  "value": 11.004,
+  "value": 11.003999999999998,
   "limit": "11,0 ± 0,01",
   "unit": "kg"
  },
  "humanoide.pie_left.incl_max": {
-  "value": 0.2037639521354498,
+  "value": 0.20607560918186316,
   "limit": "< 2",
   "unit": "°"
  },
  "humanoide.pie_left.margen_cdm": {
-  "value": 26.763046859376637,
+  "value": 26.754201219706466,
   "limit": "> 15",
   "unit": "mm"
  },
  "humanoide.pie_right.incl_max": {
-  "value": 0.2037639521354498,
+  "value": 0.20607560918186316,
   "limit": "< 2",
   "unit": "°"
  },
  "humanoide.pie_right.margen_cdm": {
-  "value": 26.76304685937663,
+  "value": 26.754201219706466,
   "limit": "> 15",
   "unit": "mm"
  },
@@ -1528,6 +1568,21 @@
   "value": 0.002,
   "limit": "0,002 (500 Hz)",
   "unit": "s"
+ },
+ "preparacion.error_peso_pies": {
+  "value": 2.1744270828349954e-07,
+  "limit": "< 1",
+  "unit": "%"
+ },
+ "preparacion.gdl": {
+  "value": 31.0,
+  "limit": "= 31",
+  "unit": ""
+ },
+ "preparacion.sobrepaso_tope": {
+  "value": 2.7169269761627137,
+  "limit": "< 3.0",
+  "unit": "°"
  },
  "realismo.backlash": {
   "value": null,

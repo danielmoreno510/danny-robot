@@ -124,7 +124,7 @@ recuperación con un paso pasa a la etapa 26, con aprendizaje por refuerzo.
 
 **Objetivo:** construir el Danny completo en simulación antes de entrenar la
 locomoción principal: dos piernas, pelvis, cintura, torso, dos brazos, muñecas, manos
-simplificadas, cuello y cabeza, en torno a 30 GDL sin contar dedos.
+simplificadas, cuello y cabeza: 31 GDL, sin dedos.
 
 **Entregable:** modelo integrado y validado, con el equilibrio y la marcha cuasiestática
 reproducidos sobre el cuerpo completo.
@@ -148,8 +148,8 @@ reproducidos sobre el cuerpo completo.
 | 3.5.4 | Brazos | ✅ E19: 7 GDL por brazo, en postura fija; 28 GDL en total |
 | 3.5.5 | Manos | ✅ E20: bloque rígido de 0,16 kg, sin dedos |
 | 3.5.6 | Cabeza y cuello | ✅ E21: 30 GDL; cabeza simple, sin cara |
-| Revisión | Cuerpo completo para movimiento natural | 🔄 [Propuesta](documentation/whole-body-motion-review.md) pendiente de decisión |
-| 3.5.7 | Integración: equilibrio y marcha con todo el cuerpo | ⏳ Tras la revisión |
+| Revisión | Cuerpo completo para movimiento natural | ✅ [Revisión](documentation/whole-body-motion-review.md); E22: motor por articulación y roll de cintura, 31 GDL |
+| 3.5.7 | Integración: equilibrio y marcha con todo el cuerpo | ⏳ Siguiente |
 | 3.5.8 | Validación y documentación | ⏳ |
 
 **Reglas:** descripción modular del robot, sin duplicar articulaciones, geometría ni
@@ -194,6 +194,11 @@ Cada hito se valida con cifras, no por cómo se ve. Los límites son **provision
 fijan antes de empezar cada hito, tras comprobar que son físicamente posibles. `L` = 0,36 m,
 y Fr es el número de Froude. Ninguno se ha ejecutado todavía.
 
+**Orden de ejecución:** A, C, D, E, B, F, G, H, I. Primero se demuestra que Danny puede seguir
+una referencia humana adaptada, y solo después se entrena la locomoción general con estilo
+natural. **Requisito común:** posturas dentro de rangos biomecánicos, y siempre dentro de lo
+que pueden hacer los motores.
+
 | Hito | Etapas | Criterio de aceptación provisional |
 |---|---|---|
 | A. Equilibrio activo | 23 | Usa la IMU; de pie, 60 s sin caer con ruido y retardo; supera los límites de empujón de la marcha clásica |
@@ -204,17 +209,18 @@ y Fr es el número de Froude. Ninguno se ha ejecutado todavía.
 | F. Brazos y torso coordinados | 24 | Brazo y pierna opuestos en fase (±30°); pelvis y tórax en oposición; cabeza dentro de ±5° |
 | G. Transiciones suaves | 25 | Parado, marcha y giro sin pausas ni pico de sacudida superior a 1,5 veces el de la marcha estable |
 | H. Robustez y recuperación | 26, 27 | Recupera un impulso normalizado fijado en la etapa 26, dando pasos; cumple con variaciones de masa y contacto |
-| I. Evaluación de naturalidad | 28 | Informe de todas las métricas normalizadas; variabilidad del paso por debajo del 5 %; suavidad y coste de transporte mejor que la política sin imitación |
+| I. Evaluación de naturalidad | 28 | Informe de todas las métricas normalizadas; más del 99 % del tiempo en rangos humanos; variabilidad del paso por debajo del 5 %; suavidad y coste de transporte mejor que la política sin imitación |
 
 Qué métricas sirven a 70 cm y cómo normalizarlas: sección 9 de la
-[revisión](documentation/whole-body-motion-review.md).
+[revisión](documentation/whole-body-motion-review.md). Fórmulas, herramientas elegidas y
+requisitos previos: [auditoría de preparación](documentation/phase-4-readiness-audit.md).
 
 **Tecnologías:** MuJoCo, Python, PyTorch, PPO con seguimiento de movimiento y estilo
 adversarial, Isaac Lab si conviene, y GPU NVIDIA local o en la nube para entrenar.
 
 **Observaciones previstas:** orientación del torso, velocidad angular, posiciones
 y velocidades articulares, contactos de los pies y velocidad objetivo.
-**Acciones:** objetivos de las 30 articulaciones: el cuerpo se controla como un todo, sin
+**Acciones:** objetivos de las 31 articulaciones: el cuerpo se controla como un todo, sin
 partes fijas.
 
 ## Fase 5 — Diseño mecánico del humanoide

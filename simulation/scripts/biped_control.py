@@ -23,6 +23,7 @@ from robot_spec import (
     ACTUATORS,
     HELD_PARTS,
     HIP_BELOW_PELVIS,
+    HUMANOID,
     HIP_Y,
     JOINT_LIMITS,
     JOINTS,
@@ -33,6 +34,7 @@ from robot_spec import (
     THIGH_LENGTH,
     TORQUE_SENSORS,
     held_angle,
+    short_part,
 )
 
 
@@ -139,15 +141,15 @@ class Biped:
         nominal_model: mujoco.MjModel | None = None,
     ):
         """
-        max_joint_speed: velocidad de vacío de los motores [rad/s]; None = sin
-        curva de par-velocidad.
+        max_joint_speed: velocidad de vacío del bípedo [rad/s]; None = sin curva
+        de par-velocidad. El humanoide la tiene siempre activa, con los datos de
+        cada motor, e ignora este valor.
         nominal_model: el modelo que cree tener el controlador, si difiere del
         que se simula (auditoría de robustez); None = el mismo.
         """
         self.model = model
         self.data = data
         self.viewer = viewer
-        self.max_joint_speed = max_joint_speed
         # Lo que no es pierna (cintura y brazos) lo sujeta su motor en 'held_target'
         held = [part for part in HELD_PARTS if mujoco.mj_name2id(
             model, mujoco.mjtObj.mjOBJ_JOINT, f"{part}_joint") >= 0]
@@ -161,6 +163,10 @@ class Biped:
         self.held_qpos = [int(model.jnt_qposadr[j]) for j in held_ids]
         self.control_qpos = [*self.joint_qpos, *self.held_qpos]
         self.torque_sensors = (*TORQUE_SENSORS, *(f"{p}_torque" for p in held))
+        self.speed_limit = max_joint_speed
+        if held:
+            parts = (*(name.removesuffix("_joint") for name in JOINTS), *held)
+            self.speed_limit = np.array([HUMANOID.motor(short_part(p)).no_load_speed for p in parts])
         self.pelvis_id = get_id(model, mujoco.mjtObj.mjOBJ_BODY, "pelvis")
         self.foot_ids = [get_id(model, mujoco.mjtObj.mjOBJ_BODY, f"{s}_foot") for s in SIDES]
         self.foot_geoms = {get_id(model, mujoco.mjtObj.mjOBJ_GEOM, f"{s}_foot_geom") for s in SIDES}
@@ -283,7 +289,7 @@ class Biped:
         q = self.data.qpos[self.control_qpos]
         speed = self.data.qvel[self.dof_ids]
         torque = self.kp * (ctrl - q) - self.kv * speed
-        available = self.force_limit * np.clip(1.0 - np.abs(speed) / self.max_joint_speed, 0.0, 1.0)
+        available = self.force_limit * np.clip(1.0 - np.abs(speed) / self.speed_limit, 0.0, 1.0)
         forward = np.sign(torque) == np.sign(speed)
         torque = np.where(forward, np.clip(torque, -available, available), torque)
         return q + (torque + self.kv * speed) / self.kp
@@ -309,7 +315,7 @@ class Biped:
     def step(self, pose: Pose, swing: str | None) -> None:
         step_start = time.monotonic()
         ctrl = self.step_targets(pose, swing)
-        if self.max_joint_speed is not None:
+        if self.speed_limit is not None:
             ctrl = self.limit_torque_speed(ctrl)
 
         self.data.ctrl[self.actuator_ids] = ctrl

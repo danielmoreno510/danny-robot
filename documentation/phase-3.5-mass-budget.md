@@ -1,5 +1,8 @@
 # Presupuesto de masa con motores de catálogo (etapa 3.5.1)
 
+**Actualización:** el roll de cintura añade un RobStride 00 (0,31 kg) y consume todo el
+margen: el modelo tiene 31 GDL y sigue en 11,0 kg. Ver E22 en el handbook.
+
 **Resultado:** el humanoide de 30 GDL es viable, pero el presupuesto da **10,7 kg**, no
 los 10 kg aprobados, y reparte la masa de otra forma. **Decisión del usuario: objetivo de
 11 kg**, con 0,3 kg de margen, y el reparto de la sección 4.

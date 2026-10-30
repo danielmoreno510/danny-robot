@@ -66,20 +66,20 @@ retardos, incumple.
 
 ## Humanoide en construcción
 
-`danny_humanoid.xml` (11 kg, 30 GDL), tras la etapa 3.5.6:
+`danny_humanoid.xml` (11 kg, 31 GDL), tras E22:
 
 - Cabeza simple y manos rígidas, sin dedos.
   Los experimentos de sensibilidad no se
   han repetido con este modelo.
 - La marcha clásica es lentísima (Froude 0,00002): no dice nada de una marcha natural.
 - Los brazos se han balanceado a ±20°, sin sincronizar con los pasos.
-- **Todas las articulaciones comparten par (±20 N·m), `kp`, `armature` y amortiguamiento**,
-  también muñecas y cuello. El brazo queda sobreamortiguado y no oscila libremente. Es el
-  mayor límite para el movimiento natural: ver la
-  [revisión](whole-body-motion-review.md).
-- La cintura no tiene roll y el pie es plano y rígido.
-- La marcha rápida necesita 0,3 s de espera entre pasos: con 0,25 s incumple por muy poco
-  (0,5023° frente a 0,5°).
+- Cada articulación tiene su motor, pero **`armature` y amortiguamiento son estimaciones
+  sin medir**, y el `kp` sale de una regla. Los datos del STS3215 están sin confirmar. Sigue
+  sin modelarse si los servos de 152:1 se dejan mover desde fuera.
+- Con ±20° de roll de cintura hay contactos reales de brazos y torso con muslos y pelvis.
+- El margen de masa del torso está agotado.
+- El pie es plano y rígido.
+- La marcha rápida necesita 0,35 s de espera entre pasos: con 0,3 s incumple por muy poco.
 - El plan de la marcha no conoce la cintura. Se mide que tolera ±30° de yaw y 30° de
   pitch, a 0,25 Hz y sin carga, pero nada la usa para equilibrar.
 - Los límites de empujón (46 a 57 N) son lo medido menos 2 N. El máximo en x, 48 N, supera

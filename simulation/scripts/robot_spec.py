@@ -7,7 +7,7 @@ motores (etapa 31). Las proporciones del humanoide completo están en
 documentation/phase-3.5-proposal.md.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import numpy as np
 
@@ -32,14 +32,31 @@ SOLE_BELOW_ANKLE = 0.04
 FOOT_HALF = (0.07, 0.04, 0.01)
 LEG_LENGTH = THIGH_LENGTH + SHIN_LENGTH
 
-# Articulaciones. Armature: inercia del motor reflejada por la reductora. Sin
-# ella, los tobillos son tan ligeros que resuenan a 12 Hz con el contacto.
-JOINT_DAMPING = 0.5  # N·m·s/rad
-JOINT_ARMATURE = 0.01  # kg·m²
 
-# Motores de posición
-MOTOR_KP = 100.0  # N·m/rad
-MOTOR_TORQUE_LIMIT = 20.0  # N·m, provisional
+@dataclass(frozen=True)
+class Motor:
+    """
+    Un tipo de motor. Par y velocidad vienen del catálogo
+    (documentation/phase-3.5-mass-budget.md); los del STS3215 están sin confirmar.
+    kp sigue una regla: unas 6 veces el par de pico, sin redondeo fino.
+    Armature (inercia reflejada por la reductora) y damping son ESTIMACIONES sin
+    medir: la fase 4 debe variarlas. Sin armature, los tobillos resuenan a 12 Hz
+    con el contacto.
+    """
+
+    peak_torque: float  # N·m
+    no_load_speed: float  # rad/s
+    kp: float  # N·m/rad
+    armature: float  # kg·m²
+    damping: float  # N·m·s/rad
+
+
+GENERIC_MOTOR = Motor(20.0, 20.0, 100.0, 0.01, 0.5)  # el del bípedo: provisional
+ROBSTRIDE_01 = Motor(17.0, 33.0, 100.0, 0.01, 0.1)
+ROBSTRIDE_00 = Motor(14.0, 33.0, 85.0, 0.01, 0.1)
+XM540 = Motor(7.3, 5.55, 45.0, 0.01, 0.2)
+XM430 = Motor(4.1, 4.8, 25.0, 0.005, 0.15)
+STS3215 = Motor(1.9, 4.7, 12.0, 0.002, 0.05)
 
 
 @dataclass(frozen=True)
@@ -74,9 +91,11 @@ HIP_JOINTS = LEG_JOINTS[:3]
 KNEE_JOINT = LEG_JOINTS[3]
 ANKLE_JOINTS = LEG_JOINTS[4:]
 
-# Cintura (etapa 3.5.3): solo en el humanoide. Yaw sobre la pelvis y pitch encima.
+# Cintura: solo en el humanoide. Yaw sobre la pelvis, y encima roll y pitch. El roll
+# deja el torso vertical mientras la pelvis se inclina al andar.
 WAIST_JOINTS = (
     Joint("waist_yaw", (0, 0, 1), (-0.7854, 0.7854), 0.0),  # ±45°
+    Joint("waist_roll", (1, 0, 0), (-0.3491, 0.3491), 0.0),  # ±20°
     Joint("waist_pitch", (0, 1, 0), (-0.2618, 0.7854), 0.0),  # -15° a 45°
 )
 
@@ -105,6 +124,7 @@ ARM_HOLD_ANGLES = {"shoulder_roll": 0.2618, "elbow": 0.3491}  # rad
 # Humanoide: alturas respecto a la pelvis [m]
 WAIST_ABOVE_PELVIS = 0.04
 WAIST_LINK_HALF = (0.03, 0.05, 0.02)
+WAIST_ROLL_LINK_HALF = (0.03, 0.04, 0.015)
 UPPER_TORSO_HALF = (0.06, 0.085, 0.07)
 UPPER_TORSO_OFFSET = 0.07  # centro, sobre la cintura
 SHOULDER_Y = 0.11
@@ -135,7 +155,9 @@ class Robot:
     foot_mass: float
     upper_body_mass: float  # torso del bípedo o torso superior del humanoide [kg]
     leg_kv: dict[str, float]
+    motors: dict[str, Motor] = field(default_factory=dict)  # por articulación
     waist_mass: float = 0.0
+    waist_roll_mass: float = 0.0
     shoulder_mass: float = 0.0
     upper_arm_mass: float = 0.0
     forearm_mass: float = 0.0
@@ -145,6 +167,9 @@ class Robot:
     waist_kv: dict[str, float] | None = None
     arm_kv: dict[str, float] | None = None
     neck_kv: dict[str, float] | None = None
+
+    def motor(self, part: str) -> Motor:
+        return self.motors.get(part, GENERIC_MOTOR)
 
     @property
     def has_waist(self) -> bool:
@@ -170,20 +195,29 @@ HUMANOID = Robot(
     thigh_mass=1.0,
     shin_mass=0.77,
     foot_mass=0.2,
-    upper_body_mass=2.79,
-    leg_kv={"hip_yaw": 1.68, "hip_roll": 4.83, "hip_pitch": 4.84, "knee": 2.53,
-            "ankle_pitch": 9.1, "ankle_roll": 9.1},
+    upper_body_mass=2.48,
+    leg_kv={"hip_yaw": 1.8, "hip_roll": 4.83, "hip_pitch": 4.84, "knee": 2.53,
+            "ankle_pitch": 8.4, "ankle_roll": 8.4},
+    motors={
+        "hip_yaw": ROBSTRIDE_00, "hip_roll": ROBSTRIDE_01, "hip_pitch": ROBSTRIDE_01,
+        "knee": ROBSTRIDE_01, "ankle_pitch": ROBSTRIDE_00, "ankle_roll": ROBSTRIDE_00,
+        "waist_yaw": ROBSTRIDE_00, "waist_roll": ROBSTRIDE_00, "waist_pitch": ROBSTRIDE_00,
+        "shoulder_pitch": XM540, "shoulder_roll": XM540, "shoulder_yaw": XM540, "elbow": XM430,
+        "wrist_yaw": STS3215, "wrist_pitch": STS3215, "wrist_roll": STS3215,
+        "neck_yaw": STS3215, "neck_pitch": STS3215,
+    },
     waist_mass=0.2,
+    waist_roll_mass=0.31,
     shoulder_mass=0.215,
     upper_arm_mass=0.347,
     forearm_mass=0.115,
     hand_mass=0.16,
     neck_mass=0.09,
     head_mass=0.31,
-    waist_kv={"waist_yaw": 3.74, "waist_pitch": 4.19},
-    arm_kv={"shoulder_pitch": 2.67, "shoulder_roll": 2.67, "shoulder_yaw": 1.65, "elbow": 1.9,
-            "wrist_yaw": 1.6, "wrist_pitch": 1.61, "wrist_roll": 1.61},
-    neck_kv={"neck_yaw": 1.62, "neck_pitch": 1.65},
+    waist_kv={"waist_yaw": 3.42, "waist_roll": 4.66, "waist_pitch": 3.77},
+    arm_kv={"shoulder_pitch": 1.77, "shoulder_roll": 1.79, "shoulder_yaw": 1.11, "elbow": 0.76,
+            "wrist_yaw": 0.25, "wrist_pitch": 0.26, "wrist_roll": 0.26},
+    neck_kv={"neck_yaw": 0.26, "neck_pitch": 0.28},
 )
 ROBOTS = {"biped": BIPED, "humanoid": HUMANOID}
 
@@ -204,9 +238,15 @@ def mirrored_axis(joint: Joint, side: str) -> tuple[float, float, float]:
     return joint.axis if side == "left" else (-x, y, -z)
 
 
+def short_part(part: str) -> str:
+    """La articulación sin su lado: 'left_elbow' -> 'elbow'."""
+    side, _, rest = part.partition("_")
+    return rest if side in SIDES else part
+
+
 def held_angle(part: str) -> float:
     """Ángulo [rad] en que se sujeta una articulación que no es de pierna."""
-    return ARM_HOLD_ANGLES.get(part.split("_", 1)[1], 0.0) if part.split("_")[0] in SIDES else 0.0
+    return ARM_HOLD_ANGLES.get(short_part(part), 0.0)
 
 
 LEG_JOINT_LIMITS = np.array([joint.limits for joint in LEG_JOINTS])

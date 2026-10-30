@@ -35,7 +35,7 @@ CHECKS = [
                                       "--inset", "0.012", "--speed", "2", "--hold", "0.25"]),
     ("humanoid_e10_balance", "balance_biped.py", ["--robot", "humanoid"]),
     ("humanoid_e11_walk", "walk_biped.py", ["--robot", "humanoid"]),
-    ("humanoid_e12_walk_fast", "walk_biped.py", ["--robot", "humanoid", "--speed", "1.27", "--hold", "0.3"]),
+    ("humanoid_e12_walk_fast", "walk_biped.py", ["--robot", "humanoid", "--speed", "1.27", "--hold", "0.35"]),
     ("humanoid_e13_walk_turn", "walk_biped.py", ["--robot", "humanoid", *E13_WALK]),
     ("humanoid_e14_push", "push_biped.py", ["--robot", "humanoid"]),
     ("audit_mass_plus10", "walk_biped.py", [*E13_WALK, "--mass-error", "0.1"]),

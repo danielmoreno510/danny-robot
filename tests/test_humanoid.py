@@ -12,7 +12,7 @@ import pytest
 import push_biped
 import robot_spec as spec
 import walk_biped
-from biped_control import Pose, center_com_over, pelvis_height
+from biped_control import Biped, Pose, center_com_over, pelvis_height
 from build_model import build_robot
 from conftest import ROOT, RecordingBiped, foot_corners, polygon_margin, record
 from helpers import E11, E13, run_walk
@@ -22,6 +22,7 @@ WIDTH = 0.05
 WAIST_FREQUENCY = 0.25  # Hz
 HAND_LOAD = 0.3  # kg, en el presupuesto de masa
 ARM_SWING_DEG = 20
+YAW_PITCH = [0, 2]  # posiciones de esos ejes en held_target, tras los de la cintura
 
 
 def humanoid():
@@ -79,7 +80,7 @@ def torso_thigh_contact(hip, knee):
     for side in spec.SIDES:
         data.qpos[model.joint(f"{side}_hip_pitch_joint").qposadr[0]] = hip
         data.qpos[model.joint(f"{side}_knee_joint").qposadr[0]] = knee
-    data.qpos[model.joint("waist_pitch_joint").qposadr[0]] = spec.WAIST_JOINTS[1].limits[1]
+    data.qpos[model.joint("waist_pitch_joint").qposadr[0]] = spec.WAIST_JOINTS[2].limits[1]
     mujoco.mj_forward(model, data)
     return "torso_geom" in {model.geom(int(g)).name for c in data.contact[: data.ncon] for g in (c.geom1, c.geom2)}
 
@@ -92,7 +93,7 @@ def test_torso_collides_only_beyond_the_hip_limit():
 
 @pytest.mark.parametrize("name,gait,speed,hold", [
     ("e11", E11, 1.0, 1.5),
-    ("e12", E11, 1.27, 0.30),
+    ("e12", E11, 1.27, 0.35),
     ("e13", E13, 1.27, 0.25),
 ])
 def test_walking_with_waist_held(name, gait, speed, hold, monkeypatch):
@@ -148,12 +149,12 @@ def test_moving_waist_while_standing(yaw, pitch):
     for _ in range(500):
         biped.step(stand, None)
     start = len(biped.log["t"])
-    waist = [model.joint(f"{j.part}_joint").qposadr[0] for j in spec.WAIST_JOINTS]
+    waist = [model.joint(f"{spec.WAIST_JOINTS[i].part}_joint").qposadr[0] for i in YAW_PITCH]
     tracking = 0.0
     for i in range(round(8.0 / dt)):
-        biped.held_target[:2] = waist_motion(i * dt, yaw, pitch)
+        biped.held_target[YAW_PITCH] = waist_motion(i * dt, yaw, pitch)
         biped.step(stand, None)
-        tracking = max(tracking, np.abs(data.qpos[waist] - biped.held_target[:2]).max())
+        tracking = max(tracking, np.abs(data.qpos[waist] - biped.held_target[YAW_PITCH]).max())
     a = biped.arrays()
     drift = np.linalg.norm(a["soles"][start:, :, :2] - a["soles"][start, :, :2], axis=2).max()
     polygon = np.vstack([foot_corners(a["soles"][start, 0], 0), foot_corners(a["soles"][start, 1], 0)])
@@ -171,7 +172,7 @@ def test_moving_waist_while_standing(yaw, pitch):
 def walk_moving_waist(monkeypatch, yaw, pitch):
     class Swinging(RecordingBiped):
         def step(self, pose, swing):
-            self.held_target[:2] = waist_motion(self.data.time, yaw, pitch)
+            self.held_target[YAW_PITCH] = waist_motion(self.data.time, yaw, pitch)
             super().step(pose, swing)
 
     _, results, saturation, collided, model, error = run_walk(
@@ -252,7 +253,7 @@ def test_hand_reaches_the_torso_and_collides():
 
 def test_arm_joints_follow_the_approved_ranges():
     model = humanoid()
-    assert model.nu == 30
+    assert model.nu == 31
     for joint in spec.ARM_JOINTS:
         for side in spec.SIDES:
             item = model.joint(f"{side}_{joint.part}_joint")
@@ -325,21 +326,27 @@ def test_arm_sweep_finds_only_real_collisions():
     assert 0 < hits < trials
 
 
-def test_arms_clear_the_body_across_the_whole_waist_range():
-    """Postura fija de los brazos, de pie, con la cintura en sus extremos."""
+def test_arms_clear_the_body_up_to_15_degrees_of_waist_roll():
+    """Postura fija de los brazos, de pie. Con ±20° de roll sí hay contactos reales."""
     model = humanoid()
     data = mujoco.MjData(model)
     biped = RecordingBiped(model, data)
     stand = Pose(np.array([0.0, 0.0, pelvis_height(KNEE)]), np.array([0.0, WIDTH, 0.0]), np.array([0.0, -WIDTH, 0.0]))
     floor = model.geom("floor").id
-    yaw_limits, pitch_limits = (j.limits for j in spec.WAIST_JOINTS)
+    yaw_limits, roll_limits, pitch_limits = (j.limits for j in spec.WAIST_JOINTS)
+    extreme = 0
     for yaw in np.linspace(*yaw_limits, 19):
-        for pitch in np.linspace(*pitch_limits, 13):
-            biped.held_target[:2] = yaw, pitch
-            biped.set_pose(data, stand)
-            pairs = [(model.geom(int(c.geom1)).name, model.geom(int(c.geom2)).name)
-                     for c in data.contact[: data.ncon] if floor not in (c.geom1, c.geom2)]
-            assert not pairs, (yaw, pitch, pairs)
+        for roll in np.linspace(*roll_limits, 9):
+            for pitch in np.linspace(*pitch_limits, 13):
+                biped.held_target[:3] = yaw, roll, pitch
+                biped.set_pose(data, stand)
+                pairs = [(model.geom(int(c.geom1)).name, model.geom(int(c.geom2)).name)
+                         for c in data.contact[: data.ncon] if floor not in (c.geom1, c.geom2)]
+                if abs(roll) > math.radians(15.5):
+                    extreme += bool(pairs)
+                else:
+                    assert not pairs, (yaw, roll, pitch, pairs)
+    record("humanoide.cintura.posturas_con_contacto_a_20", extreme, "informativa")
 
 
 def test_head_position_and_inertia():
@@ -466,6 +473,98 @@ def test_walking_with_arm_swing(monkeypatch):
     failures = walk_biped.check_acceptance(results, saturation, walk_biped.total_weight(model), collided)
     record("humanoide.marcha_balanceo_brazos.fallos", len(failures), "= 0")
     assert not failures, failures[:3]
+
+
+@pytest.mark.parametrize("part", ["hip_roll", "ankle_pitch", "waist_roll", "shoulder_pitch", "elbow", "wrist_yaw", "neck_yaw"])
+def test_each_joint_uses_its_own_motor(part):
+    model = humanoid()
+    motor = spec.HUMANOID.motor(part)
+    name = part if part.startswith(("waist", "neck")) else f"left_{part}"
+    actuator = model.actuator(f"{name}_motor")
+    joint = model.joint(f"{name}_joint")
+    assert actuator.forcerange[1] == motor.peak_torque
+    assert actuator.gainprm[0] == motor.kp
+    assert joint.damping[0] == motor.damping
+    assert joint.armature[0] == motor.armature
+
+
+def test_torque_speed_curve_is_always_on():
+    model = humanoid()
+    biped = Biped(model, mujoco.MjData(model))
+    assert len(biped.speed_limit) == model.nu
+    assert biped.speed_limit.min() == spec.STS3215.no_load_speed
+
+
+def test_arm_can_swing_like_a_pendulum():
+    """Sobreamortiguado (zeta >= 1) no podría oscilar libremente."""
+    model = humanoid()
+    data = mujoco.MjData(model)
+    arm_pose(model, data, shoulder_pitch=-1.5708)
+    data.qacc[:] = 0.0
+    mujoco.mj_inverse(model, data)
+    dof = model.joint("left_shoulder_pitch_joint").dofadr[0]
+    unit, row = np.zeros(model.nv), np.zeros(model.nv)
+    unit[dof] = 1.0
+    mujoco.mj_mulM(model, data, row, unit)
+    inertia = row[dof]
+    frequency = math.sqrt(abs(data.qfrc_inverse[dof]) / inertia)
+    zeta = model.dof_damping[dof] / (2 * inertia * frequency)
+    record("humanoide.brazo.frecuencia_propia", frequency / (2 * math.pi), "informativa", "Hz")
+    record("humanoide.brazo.zeta", zeta, "< 1")
+    assert zeta < 1
+
+
+def test_waist_roll_keeps_the_torso_upright():
+    """Con la pelvis inclinada 5°, el roll contrario deja el torso vertical."""
+    model = humanoid()
+    data = mujoco.MjData(model)
+    half = math.radians(5) / 2
+    data.qpos[2] = 1.0
+    data.qpos[3:7] = math.cos(half), math.sin(half), 0.0, 0.0
+    data.qpos[model.joint("waist_roll_joint").qposadr[0]] = -math.radians(5)
+    mujoco.mj_forward(model, data)
+    up = data.xmat[model.body("torso").id].reshape(3, 3)[:, 2]
+    assert np.allclose(up, [0, 0, 1], atol=1e-6)
+
+
+@pytest.mark.parametrize("amplitude", [5, 10])
+def test_moving_waist_roll_while_standing(amplitude):
+    model = humanoid()
+    data = mujoco.MjData(model)
+    biped = RecordingBiped(model, data)
+    stand = Pose(np.array([0.0, 0.0, pelvis_height(KNEE)]), np.array([0.0, WIDTH, 0.0]), np.array([0.0, -WIDTH, 0.0]))
+    stand = center_com_over(biped, stand, "left", inset=WIDTH)
+    biped.set_pose(data, stand)
+    dt = model.opt.timestep
+    for _ in range(500):
+        biped.step(stand, None)
+    start = len(biped.log["t"])
+    qpos = model.joint("waist_roll_joint").qposadr[0]
+    tracking = 0.0
+    for i in range(round(8.0 / dt)):
+        biped.held_target[1] = math.radians(amplitude) * math.sin(2 * math.pi * WAIST_FREQUENCY * i * dt)
+        biped.step(stand, None)
+        tracking = max(tracking, abs(data.qpos[qpos] - biped.held_target[1]))
+    a = biped.arrays()
+    drift = np.linalg.norm(a["soles"][start:, :, :2] - a["soles"][start, :, :2], axis=2).max()
+    record(f"humanoide.cintura_roll{amplitude}.deriva_pies", 1000 * drift, "< 5", "mm")
+    record(f"humanoide.cintura_roll{amplitude}.error_cintura", math.degrees(tracking), "< 1", "°")
+    assert drift < 0.005
+    assert math.degrees(tracking) < 1.0
+
+
+def test_walking_with_waist_roll(monkeypatch):
+    """E13 con ±10° de roll de cintura. Sin exigir: la marcha clásica no lo planifica."""
+
+    class Rolling(RecordingBiped):
+        def step(self, pose, swing):
+            self.held_target[1] = math.radians(10) * math.sin(2 * math.pi * WAIST_FREQUENCY * self.data.time)
+            super().step(pose, swing)
+
+    _, results, saturation, collided, model, error = run_walk(
+        monkeypatch, E13, 1.27, 0.25, biped_class=Rolling, model=humanoid())
+    value = error if error else len(walk_biped.check_acceptance(results, saturation, walk_biped.total_weight(model), collided))
+    record("humanoide.marcha_cintura_roll10.fallos", value, "informativa")
 
 
 def test_generated_humanoid_matches_specification():
