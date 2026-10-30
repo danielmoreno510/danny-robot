@@ -43,6 +43,7 @@ el trabajo o lo implemente por su cuenta.
 | 7 | Compensación de gravedad (`GravityCompensator`) | ✅ PASS, error < 0,2° |
 | 8 | Pie, contacto y sentadilla (`leg_2dof_foot.xml`, `squat_leg_2dof.py`) | ✅ PASS con compensación de apoyo |
 | 9 | Pierna de 6 GDL con pie plano (`leg_6dof.xml`, `analyze_leg_6dof.py`) | ✅ PASS en aire y en apoyo |
+| 10 | Bípedo con pelvis libre: equilibrio en un pie (`biped_6dof.xml`, `balance_biped.py`) | ✅ PASS |
 
 La pierna de 2 GDL recorre su secuencia de posiciones con un torque pico de
 **5,3 N·m** (límite: 20 N·m), sin saturar, y llega **exactamente** a cada
@@ -54,6 +55,10 @@ rodilla con un torque de rodilla de **7,2 N·m**, sin que el pie deslice.
 La pierna completa de 6 GDL (cadera de 3 ejes, rodilla, tobillo de 2 ejes y pie
 plano) mueve cada eje en el sentido documentado y hace la misma sentadilla con
 el pie plano a menos de 0,03°.
+
+El bípedo, con la pelvis libre (`freejoint`), se pone de pie, hace una
+sentadilla, pasa el peso a la pierna izquierda y **se sostiene sobre un pie**
+con el otro 5 cm en el aire, con la pelvis inclinada menos de 1°.
 
 ---
 
@@ -109,6 +114,12 @@ que debe terminar con `PASS` para la compensación de apoyo. Y para la etapa 9:
 python simulation/scripts/analyze_leg_6dof.py
 ```
 
+Y para la etapa 10:
+
+```bash
+python simulation/scripts/balance_biped.py
+```
+
 ### Visor en macOS: `mjpython`
 
 En macOS el visor interactivo (`mujoco.viewer.launch_passive`) **solo funciona
@@ -134,6 +145,7 @@ Desde la carpeta del proyecto, sin necesidad de activar `.venv`:
 | 6–7 — pierna colgando | `.venv/bin/mjpython simulation/scripts/control_leg_2dof.py` |
 | 8 — sentadilla con pie | `.venv/bin/mjpython simulation/scripts/squat_leg_2dof.py --view` |
 | 9 — pierna de 6 GDL | `.venv/bin/mjpython simulation/scripts/analyze_leg_6dof.py --view` |
+| 10 — bípedo en equilibrio | `.venv/bin/mjpython simulation/scripts/balance_biped.py --view` |
 
 Los scripts con `--view` primero imprimen el análisis y después abren la
 ventana. Cierra la ventana para terminar.
@@ -153,15 +165,17 @@ humanoid-h1/
     │   ├── single_joint.xml       etapa 2: un segmento + motor
     │   ├── leg_2dof.xml           etapas 4-7: pierna 2 GDL colgando
     │   ├── leg_2dof_foot.xml      etapa 8: pierna 2 GDL con pie, pelvis en vertical
-    │   └── leg_6dof.xml           etapa 9: pierna de 6 GDL con pie plano
+    │   ├── leg_6dof.xml           etapa 9: pierna de 6 GDL con pie plano
+    │   └── biped_6dof.xml         etapa 10: dos piernas de 6 GDL, pelvis libre
     └── scripts/
-        ├── leg_control.py         utilidades compartidas: compensadores, perfil, sensores
+        ├── leg_control.py         utilidades compartidas: compensadores, IK, perfil, sensores
         ├── view_falling_box.py    ver caer el cubo
         ├── control_single_joint.py  mover una articulación
         ├── analyze_leg_2dof.py    análisis de esfuerzos + compensación de gravedad
         ├── control_leg_2dof.py    ver la pierna colgando (suave + gravedad)
         ├── squat_leg_2dof.py      sentadilla con el pie apoyado
-        └── analyze_leg_6dof.py    pierna de 6 GDL: aire y apoyo
+        ├── analyze_leg_6dof.py    pierna de 6 GDL: aire y apoyo
+        └── balance_biped.py       bípedo: de pie, sentadilla, apoyo en un pie
 ```
 
 **Nombres.** Los modelos se llaman por lo que contienen (`leg_2dof_foot` =
@@ -205,6 +219,10 @@ de articulaciones a cero:
 | `ankle_roll` | x | el borde izquierdo (+y) del pie sube |
 
 `analyze_leg_6dof.py` comprueba cada fila de esta tabla en simulación.
+
+En el bípedo (etapa 10) las dos piernas tienen **los mismos ejes y signos**
+(no son espejo): `hip_roll` + lleva cualquiera de los dos pies hacia +y. Los
+nombres llevan el lado delante: `left_knee_joint`, `right_hip_roll_motor`.
 
 **Paso de integración.** `timestep = 0.002` s (500 Hz) en todos los modelos.
 Desde la etapa 9, integrador `implicitfast` (ver
@@ -499,6 +517,97 @@ hip_pitch = −rodilla / 2,    ankle_pitch = −rodilla / 2
    mando necesita margen. Se amplió a −5°; el tope (`range`) sigue en 0°.
    **PASS**.
 
+### Etapa 10 — Bípedo: equilibrio en un pie
+
+```bash
+python simulation/scripts/balance_biped.py           # informe en la terminal
+mjpython simulation/scripts/balance_biped.py --view  # además, verlo (~20 s)
+```
+
+Primera vez que **nada sujeta la pelvis**: tiene `freejoint` y solo la
+sostienen las piernas, así que el robot se puede caer. Modelo `biped_6dof.xml`:
+
+- Dos piernas de 6 GDL iguales a la de la etapa 9, con las caderas en
+  y = ±0,1 m (20 cm entre pies).
+- Pelvis de 16 × 30 × 10 cm y 2 kg, con un sensor de orientación y posición
+  (`pelvis_quat`, `pelvis_pos`), como la IMU de un robot real.
+- Mismas ganancias, límites e integrador que la etapa 9. Peso total: 6,2 kg →
+  **60,82 N**.
+
+**Secuencia.**
+
+1. De pie, rodillas a 40°.
+2. Sentadilla a 80° y vuelta a 40°.
+3. Pasar el peso a la izquierda.
+4. Levantar el pie derecho 5 cm y bajarlo.
+5. Volver al centro.
+
+Cada paso dura 1,5 s de transición + 1,5 s quieto. De pie se usa 40° de
+rodilla, y no 20°, porque al desplazar la pelvis de lado la pierna tiene que
+alcanzar más lejos y necesita margen para estirarse.
+
+**Novedad 1: cinemática inversa (`leg_ik` en `leg_control.py`).** Hasta ahora
+se daban ángulos. Ahora se da *dónde* tienen que estar la pelvis y los pies, y
+`leg_ik` calcula los 6 ángulos de cada pierna, con el pie plano y mirando
+adelante:
+
+1. `hip_roll = atan2(y, −z)` inclina el plano de la pierna hasta el tobillo.
+2. En ese plano, cadera y rodilla forman un brazo de 2 eslabones: la ley del
+   coseno da la rodilla, y la cadera apunta al tobillo menos lo que aporta la
+   rodilla.
+3. El tobillo deshace los giros: `ankle_pitch = −(hip_pitch + knee)`,
+   `ankle_roll = −hip_roll`.
+
+Se comprobó contra la cinemática directa de MuJoCo en 5 posiciones: error
+0,000 mm, pie plano, yaw 0°. La secuencia se interpola **en el espacio de
+tareas** (posiciones de pelvis y pies) y se resuelve la IK en cada paso. Si se
+interpolaran ángulos, el pie de apoyo se arrastraría a mitad de transición.
+
+**Novedad 2: dónde poner el centro de masas.** Para sostenerse en el pie
+izquierdo, el centro de masas (CdM) tiene que estar encima de él. El script
+busca por bisección el desplazamiento de la pelvis que lo consigue, ya con el
+pie derecho levantado: **15,9 cm**. Es más que los 10 cm hasta el centro del
+pie, porque la pierna levantada (2,1 kg) queda al otro lado.
+
+**Novedad 3: compensación con dos pies.** `StanceCompensator` acepta ahora
+varios pies y la fracción de peso de cada uno:
+
+- En doble apoyo, la fracción sale de dónde está el CdM entre los dos pies.
+- Con un pie en el aire, todo el peso va al otro.
+
+**Criterios de aceptación**, fijados antes de la primera ejecución:
+
+1. Ninguna saturación.
+2. Pelvis inclinada < 5° en todo momento (no se cae).
+3. Pelvis a < 1 cm de su posición planificada.
+4. Ningún pie desliza > 5 mm.
+5. Fuerzas: con dos pies, suma = peso ± 5 %; con uno, pie izquierdo = peso y
+   derecho = 0.
+6. Pie levantado ≥ 4 cm.
+7. CdM dentro del pie de apoyo con ≥ 2 cm de margen.
+8. Error articular < 0,5°.
+
+**Lo que pasó por el camino:**
+
+1. *Primera ejecución:* no se cayó (inclinación ≤ 2,9°), levantó el pie y no
+   saturó nada. Pero la pelvis quedaba a 13 mm de su sitio y el error articular
+   llegaba a 0,93°. FAIL. También salió un fallo falso: "pie derecho abajo" se
+   evaluaba como si el pie estuviera en el aire, porque quedaba a 1,3 mm del
+   suelo. El criterio pasó a usar el plan, no la medida.
+2. *La causa:* en sentadilla, muslos y tibias van hacia delante y el **CdM
+   queda ~4,6 cm delante de los tobillos**. El compensador aplicaba la fuerza
+   del suelo *en el tobillo*, pero en realidad actúa bajo el CdM (en el
+   **centro de presiones**). Faltaba el torque de tobillo que evita que el
+   cuerpo vuelque hacia delante: el tobillo cedía `τ / kp` y la pelvis se
+   inclinaba.
+3. *Solución:* el compensador acepta el punto donde actúa cada fuerza
+   (`mj_jac` en lugar de `mj_jacBody`). El bípedo usa x = la del CdM, y = la de
+   cada pie. Las etapas 8 y 9 siguen usando el tobillo, que allí vale porque el
+   CdM está encima. **PASS**: inclinación < 1°, pelvis a < 1,5 mm, error
+   articular < 0,1°.
+4. *¿Hace falta compensar?* Sin compensación el robot **se cae** a los 9,7 s,
+   a mitad del cambio de peso.
+
 ---
 
 ## 6. La pierna de 2 GDL en detalle
@@ -712,6 +821,25 @@ Al volver a 20° el pie se desplaza 3,3 mm: pasa el criterio (5 mm), pero es lo
 más justo de la prueba. Subir rápido desde 120° pide aceleración, y los
 compensadores solo cubren la parte estática. Ver [Hoja de ruta](#9-hoja-de-ruta).
 
+### Etapa 10: bípedo en equilibrio (`balance_biped.py`)
+
+Valores al final de cada sostén. Inclinación = máximo durante la fase.
+
+| Fase | Error pelvis [mm] | Inclin. máx [°] | Desliz. izq / der [mm] | Pie izq / der [N] | Pie der. sobre el suelo [mm] | Margen CdM [mm] | Error art. [°] |
+|---|---|---|---|---|---|---|---|
+| Sentadilla 80° | 0,91 | 0,27 | 0,20 / 0,20 | 30,4 / 30,4 | — | — | 0,00 |
+| De pie 40° | 0,94 | 0,37 | 0,39 / 0,39 | 30,4 / 30,4 | — | — | 0,01 |
+| Peso a la izquierda (15,9 cm) | 0,63 | 0,98 | 0,50 / 1,39 | 60,5 / 0,3 | — | — | 0,07 |
+| **Pie derecho arriba 5 cm** | 0,91 | 0,16 | 0,50 / — | **60,8 / 0,0** | **49,5** | **49,9** | 0,02 |
+| Pie derecho abajo | 0,79 | 0,41 | 0,45 / 1,09 | 60,5 / 0,4 | — | — | 0,07 |
+| Vuelta al centro | 1,48 | 0,38 | 0,54 / 1,79 | 30,4 / 30,4 | — | — | 0,06 |
+
+Ningún motor saturado. Con el pie derecho en el aire, el CdM está a 49,9 mm
+del borde del pie izquierdo: prácticamente en su centro (medio ancho = 50 mm).
+
+La mayor inclinación (0,98°) aparece *durante* el cambio de peso, no en el
+sostén: mover 6,2 kg de lado pide aceleración, y la compensación es estática.
+
 ---
 
 ## 8. Lecciones aprendidas
@@ -770,6 +898,15 @@ compensación no se recorte.
 error más común al montar un robot, y en el modelo es igual de fácil
 equivocarse. La etapa 9 lo comprueba en cada ejecución.
 
+**La fuerza del suelo actúa bajo el centro de masas, no en el tobillo.** Con un
+pie fijo y la pelvis guiada da igual, pero con la pelvis libre el cuerpo puede
+volcar sobre el tobillo, y el compensador tiene que poner la fuerza donde está
+de verdad (el centro de presiones).
+
+**Planificar en el espacio de tareas.** Interpolar posiciones de pelvis y pies
+y resolver la IK en cada paso mantiene el pie de apoyo quieto. Interpolar
+ángulos no lo garantiza.
+
 **Medir con el tiempo de simulación.** Si la lógica usa el reloj del ordenador,
 el movimiento cambia según la carga de la máquina. Con `data.time` es
 reproducible.
@@ -779,18 +916,24 @@ reproducible.
 ## 9. Hoja de ruta
 
 Hecho: compensación de gravedad (etapa 7), pie y contacto (etapa 8), pierna
-de 6 GDL (etapa 9).
+de 6 GDL (etapa 9), bípedo con pelvis libre en equilibrio sobre un pie
+(etapa 10).
 
 Siguientes pasos propuestos, en orden. Cada uno debería tener su modelo o
 script y un criterio de aceptación comprobable, como en la etapa 5.
 
-1. **Dos piernas y `freejoint`.** La pelvis queda libre: hay que mantener el
-   equilibrio de pie. Se puede empezar con un compensador dinámico (que incluya
-   aceleraciones, no solo estática) para reducir el desplazamiento del pie al
-   subir rápido.
-2. **Dimensiones reales.** Sustituir medidas y masas didácticas por las del
+1. **Primer paso.** Encadenar lo de la etapa 10 con el pie derecho avanzando
+   en x al levantarse: peso a la izquierda → pie derecho arriba y adelante →
+   abajo → peso a la derecha → pie izquierdo adelante. Criterio: dar 4 pasos
+   sin caerse y sin que el pie de apoyo deslice.
+2. **Compensación dinámica.** Incluir las aceleraciones (no solo la estática)
+   para reducir la inclinación durante los cambios de peso y poder ir más
+   rápido.
+3. **Equilibrio activo.** Corregir la postura con la IMU (`pelvis_quat`) y las
+   fuerzas de los pies si algo empuja al robot. Criterio: aguantar un empujón
+   en la pelvis sin caerse.
+4. **Dimensiones reales.** Sustituir medidas y masas didácticas por las del
    robot de referencia y convertir los torques medidos en requisitos de motor.
-3. **Caminar.** Generador de pasos y control de equilibrio (ZMP o similar).
 
 ---
 
@@ -816,6 +959,14 @@ script y un criterio de aceptación comprobable, como en la etapa 5.
 - **Restricción de igualdad**: condición que MuJoCo impone entre elementos del
   modelo (aquí, fijar la altura de la pelvis). Se activa y desactiva con
   `data.eq_active`.
+- **Centro de masas (CdM)**: punto medio de toda la masa del robot. Para no
+  caerse, su proyección en el suelo tiene que caer dentro de los pies.
+- **Centro de presiones**: punto del suelo donde actúa, en total, la fuerza de
+  un pie. Si el robot está quieto, queda bajo el CdM.
+- **Cinemática inversa (IK)**: calcular los ángulos de las articulaciones a
+  partir de dónde se quiere el pie. La directa es al revés.
+- **`freejoint`**: articulación de 6 GDL sin restricciones. Un cuerpo con
+  `freejoint` solo se sostiene por sus contactos.
 - **Feedforward**: parte del control que se calcula de antemano con el modelo
   (aquí, el torque de gravedad), en lugar de reaccionar al error medido.
 - **qfrc_bias**: fuerzas de gravedad, Coriolis y centrífugas que calcula MuJoCo

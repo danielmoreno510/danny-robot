@@ -4,7 +4,8 @@ H1 - Utilidades de control compartidas por los scripts de la pierna.
   - get_id, read_sensors: buscar elementos del modelo por nombre y leer sensores.
   - interpolate: perfil coseno entre dos objetivos articulares (etapa 5).
   - GravityCompensator: feedforward de gravedad con la pierna en el aire (etapa 7).
-  - StanceCompensator: feedforward con el pie apoyado en el suelo (etapa 8).
+  - StanceCompensator: feedforward con uno o dos pies apoyados (etapas 8-10).
+  - leg_ik: cinemática inversa de una pierna de 6 GDL con el pie plano (etapa 10).
   - SQUAT_KNEE_DEG: la sentadilla de las etapas 8 y 9.
 """
 
@@ -89,17 +90,27 @@ def total_weight(model: mujoco.MjModel) -> float:
 
 class StanceCompensator:
     """
-    Feedforward para la pierna apoyada en el suelo.
+    Feedforward para las piernas apoyadas en el suelo.
 
-    En apoyo el motor no solo sostiene la pierna: el suelo empuja el pie
-    hacia arriba con todo el peso, y ese empuje hay que llevarlo hasta la
-    pelvis. En equilibrio estático:
+    En apoyo el motor no solo sostiene la pierna: el suelo empuja cada pie
+    hacia arriba con una parte del peso, y ese empuje hay que llevarlo
+    hasta la pelvis. En equilibrio estático:
 
-        tau = tau_g(q) - J_pie(q)^T * F_suelo,   F_suelo = (0, 0, peso)
+        tau = tau_g(q) - sum_i J_pie_i(q)^T * F_i,   F_i = (0, 0, f_i * peso)
 
-    J_pie es el jacobiano de la posición del pie: traduce una fuerza en el
-    pie a torques en cada articulación. Se pide que F_suelo sea vertical,
-    sin componente horizontal, para que el pie no empuje de lado.
+    J_pie_i es el jacobiano de la posición del pie i: traduce una fuerza en
+    el pie a torques en cada articulación. f_i es la fracción del peso que
+    carga ese pie (suman 1). Se pide F_i vertical, sin componente
+    horizontal, para que los pies no empujen de lado.
+
+    Con un solo pie (etapas 8 y 9), f = 1. Con dos (etapa 10), el script
+    reparte el peso según dónde está el centro de masas.
+
+    Dónde se aplica F_i importa. Por defecto, en el tobillo (origen del body
+    del pie): vale si el centro de masas está encima. Si no (etapa 10: en
+    sentadilla el CdM queda delante de los tobillos), hay que aplicarla en
+    el centro de presiones, bajo el CdM; si no, falta el torque de tobillo
+    que evita que el cuerpo vuelque y el tobillo cede.
 
     Como en GravityCompensator, el objetivo se adelanta tau / kp.
     """
@@ -109,24 +120,80 @@ class StanceCompensator:
         model: mujoco.MjModel,
         actuator_ids: list[int],
         dof_ids: list[int],
-        foot_id: int,
+        foot_ids: list[int],
     ):
         self.model = model
         self.scratch = mujoco.MjData(model)
         self.dof_ids = dof_ids
-        self.foot_id = foot_id
+        self.foot_ids = foot_ids
         self.kp = model.actuator_gainprm[actuator_ids, 0].copy()
-        self.ground_force = np.array([0.0, 0.0, total_weight(model)])
+        self.weight = total_weight(model)
         self.jacobian = np.zeros((3, model.nv))
 
-    def torque(self, qpos: np.ndarray) -> np.ndarray:
+    def torque(
+        self,
+        qpos: np.ndarray,
+        support: list[float] | None = None,
+        points: list[np.ndarray] | None = None,
+    ) -> np.ndarray:
+        """
+        support: fracción del peso en cada pie; None = a partes iguales.
+        points: punto del mundo donde actúa la fuerza de cada pie;
+        None = el tobillo.
+        """
+        if support is None:
+            support = [1.0 / len(self.foot_ids)] * len(self.foot_ids)
         self.scratch.qpos[:] = qpos
         self.scratch.qvel[:] = 0.0
         mujoco.mj_forward(self.model, self.scratch)
-        mujoco.mj_jacBody(self.model, self.scratch, self.jacobian, None, self.foot_id)
-        tau = self.scratch.qfrc_bias - self.jacobian.T @ self.ground_force
+        if points is None:
+            points = [self.scratch.xpos[foot_id] for foot_id in self.foot_ids]
+        tau = self.scratch.qfrc_bias.copy()
+        for foot_id, fraction, point in zip(self.foot_ids, support, points):
+            mujoco.mj_jac(self.model, self.scratch, self.jacobian, None, point, foot_id)
+            tau -= self.jacobian.T @ np.array([0.0, 0.0, fraction * self.weight])
         return tau[self.dof_ids]
 
-    def offset(self, qpos: np.ndarray) -> np.ndarray:
+    def offset(
+        self,
+        qpos: np.ndarray,
+        support: list[float] | None = None,
+        points: list[np.ndarray] | None = None,
+    ) -> np.ndarray:
         """Desplazamiento del objetivo [rad] por articulación."""
-        return self.torque(qpos) / self.kp
+        return self.torque(qpos, support, points) / self.kp
+
+
+def leg_ik(
+    ankle_in_hip: np.ndarray,
+    thigh_length: float = 0.25,
+    shin_length: float = 0.25,
+) -> np.ndarray:
+    """
+    Cinemática inversa de una pierna de 6 GDL con el pie plano y recto.
+
+    ankle_in_hip: posición del tobillo respecto a la cadera [m], en los ejes
+    de la pelvis (que se supone horizontal). Devuelve los 6 ángulos [rad] en
+    el orden hip_yaw, hip_roll, hip_pitch, knee, ankle_pitch, ankle_roll.
+
+      1. hip_roll inclina el plano de la pierna hasta que contiene el tobillo.
+      2. En ese plano, cadera + rodilla son un brazo de 2 eslabones
+         (ley del coseno).
+      3. El tobillo deshace los giros para que la planta quede horizontal:
+         ankle_pitch = -(hip_pitch + knee), ankle_roll = -hip_roll.
+    El yaw se deja a 0 (pie mirando adelante).
+    """
+    x, y, z = ankle_in_hip
+    hip_roll = math.atan2(y, -z)
+    down = math.hypot(y, z)  # distancia hacia "abajo" dentro del plano de la pierna
+
+    a, b = thigh_length, shin_length
+    reach = min(math.hypot(x, down), a + b)  # sin pasarse de la pierna estirada
+    cos_inner = (a * a + b * b - reach * reach) / (2 * a * b)
+    knee = math.pi - math.acos(max(-1.0, min(1.0, cos_inner)))
+
+    # Ángulo hacia el tobillo menos lo que aporta la rodilla doblada.
+    # Signos: hip_pitch + lleva el pie atrás (-x), por eso atan2(-x, ...).
+    hip_pitch = math.atan2(-x, down) - math.atan2(b * math.sin(knee), a + b * math.cos(knee))
+
+    return np.array([0.0, hip_roll, hip_pitch, knee, -(hip_pitch + knee), -hip_roll])

@@ -120,7 +120,7 @@ def run_squat(
     compensator = {
         "ninguna": None,
         "gravedad (aire)": GravityCompensator(model, actuator_ids, dof_ids),
-        "apoyo": StanceCompensator(model, actuator_ids, dof_ids, foot_id),
+        "apoyo": StanceCompensator(model, actuator_ids, dof_ids, [foot_id]),
     }[compensation]
 
     # Postura inicial con el pie justo tocando el suelo

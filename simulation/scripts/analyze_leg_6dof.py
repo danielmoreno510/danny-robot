@@ -239,7 +239,7 @@ def run_stance(sim: Simulation) -> list[StanceResult]:
     foot_id = get_id(sim.model, mujoco.mjtObj.mjOBJ_BODY, "foot")
     start = squat_targets(SQUAT_KNEE_DEG[0])
     sim.reset(start, pelvis_height(SQUAT_KNEE_DEG[0]) - PELVIS_BODY_Z, hold_pelvis=False,
-              compensator=StanceCompensator(sim.model, sim.actuator_ids, sim.dof_ids, foot_id))
+              compensator=StanceCompensator(sim.model, sim.actuator_ids, sim.dof_ids, [foot_id]))
     sim.hold(start, SETTLE_TIME)
     sole_start, _ = sim.sole()
 
