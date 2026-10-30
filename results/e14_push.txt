@@ -1,10 +1,10 @@
-MuJoCo 3.17.0 | modelo: biped_6dof.xml | empujón de 0.1 s
+MuJoCo 3.17.0 | modelo: danny.xml | empujón de 0.1 s
 
 Dirección  | máximo medido | límite definido | incl. pico | pies movidos
-  adelante |  25.0 N       |  23.0 N         |  13.9°     |   2.6 mm
-  atrás    |  26.0 N       |  24.0 N         |  13.6°     |  14.8 mm
-  izquierda|  27.0 N       |  25.0 N         |   9.5°     |  12.9 mm
-  derecha  |  27.0 N       |  25.0 N         |   9.5°     |  12.9 mm
+  adelante |  24.0 N       |  22.0 N         |   8.0°     |   0.9 mm
+  atrás    |  25.0 N       |  23.0 N         |   9.0°     |   1.2 mm
+  izquierda|  33.0 N       |  31.0 N         |  11.2°     |   5.3 mm
+  derecha  |  33.0 N       |  31.0 N         |  11.2°     |   5.3 mm
 
 === Criterios de aceptación ===
   PASS: se recupera de los empujones definidos en las cuatro direcciones, sin dar un paso

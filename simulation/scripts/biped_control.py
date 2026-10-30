@@ -1,12 +1,12 @@
 """
-Danny - Utilidades del bípedo (biped_6dof.xml), compartidas por los experimentos 10 y 11.
+Danny - Utilidades del bípedo (danny.xml), compartidas por los experimentos 10 y 11.
 
   - Pose: dónde están la pelvis y las plantas de los pies (espacio de tareas).
   - joint_targets: IK de las dos piernas para una Pose.
   - leg_reach: cuánto se estira cada pierna en una Pose (1 = recta).
   - joints_out_of_range: articulaciones que una Pose saca de su rango.
   - Biped: estado del robot, reparto del peso y un paso de simulación con
-    StanceCompensator (estático o dinámico) y feedforward de velocidad.
+    StanceCompensator y feedforward de velocidad.
   - center_com_over: mueve la pelvis hasta que el CdM queda sobre un pie.
   - rotation_z: rotación alrededor de la vertical.
 """
@@ -28,12 +28,15 @@ ACTUATORS = tuple(f"{side}_{p}_motor" for side in SIDES for p in JOINT_PARTS)
 POSITION_SENSORS = tuple(f"{side}_{p}_pos" for side in SIDES for p in JOINT_PARTS)
 TORQUE_SENSORS = tuple(f"{side}_{p}_torque" for side in SIDES for p in JOINT_PARTS)
 
-LEG_LENGTH = 0.5  # m, muslo + tibia
-HIP_Y = 0.1  # m, caderas en y = ±0.1
+THIGH_LENGTH = 0.16  # m
+SHIN_LENGTH = 0.16  # m
+LEG_LENGTH = THIGH_LENGTH + SHIN_LENGTH
+HIP_Y = 0.07  # m, caderas en y = ±0.07
 HIP_BELOW_PELVIS = 0.05  # m
 SOLE_BELOW_ANKLE = 0.04  # m
-FOOT_HALF = np.array([0.10, 0.05])  # m, medio largo y medio ancho de la planta
+FOOT_HALF = np.array([0.07, 0.04])  # m, medio largo y medio ancho de la planta
 
+LOADED_FOOT_FORCE = 10.0  # N, a partir de aquí el pie se considera cargado
 FALL_TILT_DEG = 30.0  # a partir de aquí se considera caído
 
 
@@ -111,7 +114,7 @@ def joint_targets(pose: Pose) -> np.ndarray:
     """
     targets = []
     for vector, foot_yaw in zip(_ankles_in_hips(pose), (pose.left_yaw, pose.right_yaw)):
-        angles = leg_ik(rotation_z(-foot_yaw) @ vector)
+        angles = leg_ik(rotation_z(-foot_yaw) @ vector, THIGH_LENGTH, SHIN_LENGTH)
         angles[0] = foot_yaw - pose.pelvis_yaw
         targets.append(angles)
     return np.concatenate(targets)
@@ -139,18 +142,18 @@ class Biped:
         model: mujoco.MjModel,
         data: mujoco.MjData,
         viewer=None,
-        dynamic: bool = False,
         max_joint_speed: float | None = None,
+        nominal_model: mujoco.MjModel | None = None,
     ):
         """
-        dynamic: compensación con dinámica inversa (experimento 15). Mejora los
-        pies a velocidad alta; a velocidad normal empata con la estática, que
-        es la que se usa por defecto.
+        max_joint_speed: velocidad de vacío de los motores [rad/s]; None = sin
+        curva de par-velocidad.
+        nominal_model: el modelo que cree tener el controlador, si difiere del
+        que se simula (auditoría de robustez); None = el mismo.
         """
         self.model = model
         self.data = data
         self.viewer = viewer
-        self.dynamic = dynamic
         self.max_joint_speed = max_joint_speed
         self.actuator_ids = [get_id(model, mujoco.mjtObj.mjOBJ_ACTUATOR, n) for n in ACTUATORS]
         joint_ids = [get_id(model, mujoco.mjtObj.mjOBJ_JOINT, n) for n in JOINTS]
@@ -162,16 +165,12 @@ class Biped:
         self.feet_collided = False
         self.sole_ids = [get_id(model, mujoco.mjtObj.mjOBJ_SITE, f"{s}_sole_site") for s in SIDES]
         self.force_limit = model.actuator_forcerange[self.actuator_ids, 1]
-        self.compensator = StanceCompensator(model, self.actuator_ids, self.dof_ids, self.foot_ids)
+        self.plan_model = model if nominal_model is None else nominal_model
+        self.compensator = StanceCompensator(self.plan_model, self.actuator_ids, self.dof_ids, self.foot_ids)
         # Motor de posición: tau = kp (ctrl - q) - kv q'. biasprm = [0, -kp, -kv].
         self.kp = model.actuator_gainprm[self.actuator_ids, 0].copy()
         self.kv = -model.actuator_biasprm[self.actuator_ids, 2].copy()
-        # Historia del plan para derivar por diferencias: (objetivo articular,
-        # pelvis) de los dos pasos anteriores. Vacía tras set_pose.
-        self.history: list[tuple[np.ndarray, np.ndarray]] = []
-        self.dynamics_scratch = mujoco.MjData(model)
-        self.inverse = np.zeros(model.nv)
-        self.point_jacobian = np.zeros((3, model.nv))
+        self.previous_target: np.ndarray | None = None
         self.saturated_steps = np.zeros(len(JOINTS))
         self.total_steps = 0
 
@@ -180,12 +179,12 @@ class Biped:
     def set_pose(self, data: mujoco.MjData, pose: Pose) -> None:
         """Pone qpos en la pose (pelvis horizontal) y calcula la cinemática."""
         if data is self.data:
-            self.history = []
+            self.previous_target = None
         data.qpos[0:3] = pose.pelvis
         half_yaw = 0.5 * pose.pelvis_yaw
         data.qpos[3:7] = [math.cos(half_yaw), 0.0, 0.0, math.sin(half_yaw)]
         data.qpos[self.joint_qpos] = joint_targets(pose)
-        mujoco.mj_forward(self.model, data)
+        mujoco.mj_forward(self.model if data is self.data else self.plan_model, data)
 
     def com(self, data: mujoco.MjData | None = None) -> np.ndarray:
         data = self.data if data is None else data
@@ -212,90 +211,64 @@ class Biped:
 
     # --- reparto del peso ------------------------------------------------------
 
-    def support(self, swing: str | None, reference: np.ndarray | None = None) -> list[float]:
+    def estimated_com(self) -> np.ndarray:
         """
-        Fracción de la fuerza del suelo en cada pie (izq, der). Con un pie en
-        el aire, todo al otro. En doble apoyo, según dónde cae 'reference' en
-        la recta entre los dos pies: el CdM (estático) o el ZMP (dinámico).
+        CdM que cree el controlador: el del modelo nominal en la postura medida.
+        Un robot real solo conoce eso; si su modelo está mal, este dato también.
+        """
+        estimator = self.compensator.scratch
+        estimator.qpos[:] = self.data.qpos
+        estimator.qvel[:] = 0.0
+        mujoco.mj_forward(self.plan_model, estimator)
+        return estimator.subtree_com[self.pelvis_id].copy()
+
+    def has_light_contact(self) -> bool:
+        """¿Hay un pie con carga apoyado en 2 puntos o menos? Es que se balancea."""
+        counts = dict.fromkeys(self.foot_geoms, 0)
+        for contact in self.data.contact[: self.data.ncon]:
+            for geom in (int(contact.geom1), int(contact.geom2)):
+                if geom in counts:
+                    counts[geom] += 1
+        for side in SIDES:
+            geom = get_id(self.model, mujoco.mjtObj.mjOBJ_GEOM, f"{side}_foot_geom")
+            force = self.data.sensor(f"{side}_foot_force").data[0]
+            if force > LOADED_FOOT_FORCE and counts[geom] <= 2:
+                return True
+        return False
+
+    def support(self, swing: str | None) -> list[float]:
+        """
+        Fracción del peso en cada pie (izq, der). Con un pie en el aire, todo
+        al otro. En doble apoyo, según dónde cae el CdM en la recta entre los
+        dos pies.
         """
         if swing == "right":
             return [1.0, 0.0]
         if swing == "left":
             return [0.0, 1.0]
-        reference = self.com()[:2] if reference is None else reference
         left, right = self.soles()[:, :2]
         line = left - right
-        fraction = float((reference - right) @ line / (line @ line))
+        fraction = float((self.estimated_com()[:2] - right) @ line / (line @ line))
         fraction = min(1.0, max(0.0, fraction))
         return [fraction, 1.0 - fraction]
 
-    def pressure_points(self, swing: str | None, reference: np.ndarray | None = None) -> list[np.ndarray]:
+    def pressure_points(self, swing: str | None) -> list[np.ndarray]:
         """
-        Dónde actúa la fuerza de cada pie. Con un pie, en 'reference' (CdM o
-        ZMP). Con dos, cada uno en su pie desplazado lo que 'reference' se sale
-        de la recta entre pies, para que el centro de presiones total quede ahí.
+        Dónde actúa la fuerza de cada pie. Con un pie, bajo el CdM. Con dos,
+        cada uno en su pie desplazado lo que el CdM se sale de la recta entre
+        pies, para que el centro de presiones total quede bajo el CdM.
         """
-        reference = self.com()[:2] if reference is None else reference
+        com = self.estimated_com()
         soles = self.soles()
         if swing is not None:
-            return [np.array([reference[0], reference[1], sole[2]]) for sole in soles]
+            return [np.array([com[0], com[1], sole[2]]) for sole in soles]
         left, right = soles[:, :2]
         line = left - right
-        fraction = float((reference - right) @ line / (line @ line))
-        offset = reference - (right + fraction * line)
+        fraction = float((com[:2] - right) @ line / (line @ line))
+        offset = com[:2] - (right + fraction * line)
         return [np.array([*(sole[:2] + offset), sole[2]]) for sole in soles]
 
     # --- pasos ----------------------------------------------------------------
-
-    def plan_derivatives(self, target: np.ndarray, pelvis: np.ndarray) -> tuple[np.ndarray, ...]:
-        """
-        Por diferencias finitas sobre el plan: (q' articular, q'' articular,
-        aceleración de la pelvis). 'pelvis' son posición y giro, y la aceleración
-        también. Ceros mientras no hay historia suficiente.
-        """
-        self.history = (self.history + [(target, pelvis.copy())])[-3:]
-        dt = self.model.opt.timestep
-        if len(self.history) < 2:
-            return np.zeros_like(target), np.zeros_like(target), np.zeros(4)
-        (q1, _), (q2, _) = self.history[-2:]
-        velocity = (q2 - q1) / dt
-        if len(self.history) < 3:
-            return velocity, np.zeros_like(target), np.zeros(4)
-        (q0, p0), (q1, p1), (q2, p2) = self.history
-        return velocity, (q2 - 2 * q1 + q0) / dt**2, (p2 - 2 * p1 + p0) / dt**2
-
-    def required_contact(self, qacc: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-        """
-        Fuerza total del suelo [N] y punto del suelo donde tiene que actuar (el
-        ZMP), para que el robot haga la aceleración qacc.
-
-        La dinámica inversa (mj_rne) da lo que necesita cada grado de libertad.
-        Los 6 de la pelvis (freejoint) no tienen motor: solo los puede aportar
-        el suelo. Las 3 filas lineales son la fuerza total del suelo. Las 3
-        angulares, el momento que esa fuerza tiene que hacer: de ahí sale el
-        punto (mínimos cuadrados; el momento vertical, que un punto no puede
-        dar, queda para la fricción de los pies). Incluye el momento angular de
-        las piernas, que la fórmula del carro y la mesa ignora.
-        """
-        scratch = self.dynamics_scratch
-        scratch.qpos[:] = self.data.qpos
-        scratch.qvel[:] = self.data.qvel
-        mujoco.mj_forward(self.model, scratch)
-        scratch.qacc[:] = qacc
-        mujoco.mj_rne(self.model, scratch, 1, self.inverse)
-        force = self.inverse[0:3].copy()
-
-        ground_z = float(np.min(self.soles()[:, 2]))
-
-        def base_moment(x: float, y: float) -> np.ndarray:
-            point = np.array([x, y, ground_z])
-            mujoco.mj_jac(self.model, scratch, self.point_jacobian, None, point, self.pelvis_id)
-            return self.point_jacobian[:, 3:6].T @ force
-
-        origin = base_moment(0.0, 0.0)
-        columns = np.column_stack([base_moment(1.0, 0.0) - origin, base_moment(0.0, 1.0) - origin])
-        point, *_ = np.linalg.lstsq(columns, self.inverse[3:6] - origin, rcond=None)
-        return force, point
 
     def limit_torque_speed(self, ctrl: np.ndarray) -> np.ndarray:
         """
@@ -314,43 +287,19 @@ class Biped:
     def step_targets(self, pose: Pose, swing: str | None) -> np.ndarray:
         """ctrl de los 12 motores para seguir 'pose' en este paso."""
         target = joint_targets(pose)
-        pelvis = np.array([*pose.pelvis, pose.pelvis_yaw])
-        velocity, acceleration, pelvis_acc = self.plan_derivatives(target, pelvis)
+        velocity = np.zeros_like(target)
+        if self.previous_target is not None:
+            velocity = (target - self.previous_target) / self.model.opt.timestep
+        self.previous_target = target
 
         # Feedforward de velocidad: el amortiguamiento del motor (-kv q') frena
         # hacia velocidad cero, así que en movimiento la articulación se
         # retrasa (kv / kp) q'. Sumando (kv / kp) q'_deseada al objetivo, el
         # motor da kp (q_obj - q) + kv (q'_deseada - q') y sigue sin retraso.
-        ctrl = target + self.kv / self.kp * velocity
-
-        if not self.dynamic:
-            return ctrl + self.compensator.offset(
-                self.data.qpos, self.support(swing), self.pressure_points(swing)
-            )
-
-        qacc = np.zeros(self.model.nv)
-        qacc[0:3] = pelvis_acc[:3]  # freejoint: lineal en ejes del mundo
-        qacc[5] = pelvis_acc[3]  # angular en ejes de la pelvis; se supone horizontal
-        qacc[self.dof_ids] = acceleration
-        ground_force, zmp = self.required_contact(qacc)
-        if swing is None:
-            # Con dos pies, el reparto real del peso sigue al CdM, no al ZMP, y la
-            # fuerza horizontal no se reparte en proporción (experimento 15).
-            return ctrl + self.compensator.offset(
-                self.data.qpos,
-                self.support(None),
-                self.pressure_points(None),
-                qvel=self.data.qvel,
-                qacc=qacc,
-                ground_force=np.array([0.0, 0.0, ground_force[2]]),
-            )
-        return ctrl + self.compensator.offset(
-            self.data.qpos,
-            self.support(swing, zmp),
-            self.pressure_points(swing, zmp),
-            qvel=self.data.qvel,
-            qacc=qacc,
-            ground_force=ground_force,
+        return (
+            target
+            + self.kv / self.kp * velocity
+            + self.compensator.offset(self.data.qpos, self.support(swing), self.pressure_points(swing))
         )
 
     def step(self, pose: Pose, swing: str | None) -> None:
@@ -389,7 +338,7 @@ def center_com_over(biped: Biped, pose: Pose, side: str, inset: float = 0.0) -> 
     que le falta al CdM. Converge porque el CdM se mueve algo menos que la
     pelvis (las piernas no la siguen del todo).
     """
-    scratch = mujoco.MjData(biped.model)
+    scratch = mujoco.MjData(biped.plan_model)
     inward = np.array([0.0, -inset if side == "left" else inset, 0.0])
     target = (pose.sole(side) + rotation_z(pose.yaw(side)) @ inward)[:2]
     pelvis = pose.pelvis.copy()

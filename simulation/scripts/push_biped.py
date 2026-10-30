@@ -24,10 +24,10 @@ from biped_control import Biped, Pose, center_com_over, pelvis_height
 
 
 ROOT = Path(__file__).resolve().parents[1]
-MODEL_PATH = ROOT / "models" / "biped_6dof.xml"
+MODEL_PATH = ROOT / "models" / "danny.xml"
 
 STAND_KNEE_DEG = 56.0
-FOOT_Y = 0.07  # m, distancia de cada pie al centro
+FOOT_Y = 0.05  # m, distancia de cada pie al centro
 
 PUSH_TIME = 0.1  # s
 SETTLE_TIME = 1.0  # s, antes del empujón
@@ -42,8 +42,8 @@ DIRECTIONS = {
 }
 
 # Límites definidos [N]: lo medido, redondeado a la baja con 2 N de margen.
-# El máximo físico sin dar un paso es de unos 29 N en x y 35 N en y.
-REQUIRED_FORCE = {"adelante": 23.0, "atrás": 24.0, "izquierda": 25.0, "derecha": 25.0}
+# El máximo físico sin dar un paso es de unos 28 N en x y 36 N en y.
+REQUIRED_FORCE = {"adelante": 22.0, "atrás": 23.0, "izquierda": 31.0, "derecha": 31.0}
 
 # Se considera recuperado si acaba así
 MAX_FINAL_TILT_DEG = 2.0

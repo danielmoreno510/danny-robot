@@ -18,6 +18,9 @@ SCRIPTS = ROOT / "simulation" / "scripts"
 RESULTS = ROOT / "results"
 
 # (archivo de resultados, script, argumentos)
+E13_WALK = ["--knee", "56", "--step", "0.08", "--width", "0.05", "--inset", "0.012",
+            "--turn", "45", "--speed", "1.27", "--hold", "0.25"]
+
 CHECKS = [
     ("kinematics", "check_kinematics.py", []),
     ("e05_e07_leg_2dof", "analyze_leg_2dof.py", []),
@@ -26,11 +29,16 @@ CHECKS = [
     ("e10_balance", "balance_biped.py", []),
     ("e11_walk", "walk_biped.py", []),
     ("e12_walk_fast", "walk_biped.py", ["--speed", "1.27", "--hold", "0.25"]),
-    ("e13_walk_turn", "walk_biped.py", ["--knee", "56", "--step", "0.12", "--width", "0.07",
-                                        "--inset", "0.02", "--turn", "45", "--speed", "1.27", "--hold", "0.25"]),
+    ("e13_walk_turn", "walk_biped.py", E13_WALK),
     ("e14_push", "push_biped.py", []),
-    ("e15_walk_dynamic", "walk_biped.py", ["--knee", "56", "--step", "0.12", "--width", "0.07",
-                                           "--inset", "0.02", "--speed", "2", "--hold", "0.25", "--dynamic"]),
+    ("e15_walk_x2", "walk_biped.py", ["--knee", "56", "--step", "0.08", "--width", "0.05",
+                                      "--inset", "0.012", "--speed", "2", "--hold", "0.25"]),
+    ("audit_mass_plus10", "walk_biped.py", [*E13_WALK, "--mass-error", "0.1"]),
+    ("audit_mass_minus10", "walk_biped.py", [*E13_WALK, "--mass-error", "-0.1"]),
+    ("audit_torso_plus10", "walk_biped.py", [*E13_WALK, "--torso-error", "0.1"]),
+    ("audit_torso_minus10", "walk_biped.py", [*E13_WALK, "--torso-error", "-0.1"]),
+    ("audit_friction_06", "walk_biped.py", [*E13_WALK, "--friction", "0.6"]),
+    ("audit_timestep_half", "walk_biped.py", [*E13_WALK, "--timestep", "0.001"]),
 ]
 
 

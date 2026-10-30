@@ -10,7 +10,7 @@ cada paso leg_ik calcula los ángulos de cada pierna:
   3. pasar el peso a la izquierda: la pelvis se desplaza hasta que el
      centro de masas (con el pie derecho levantado) queda sobre el pie
      izquierdo
-  4. levantar el pie derecho 5 cm, bajarlo
+  4. levantar el pie derecho 3 cm, bajarlo
   5. volver al centro
 
 Las fracciones de peso de StanceCompensator salen de dónde está el centro
@@ -48,11 +48,11 @@ from leg_control import HOLD_TIME, TRANSITION_TIME, interpolate, read_sensors, t
 
 
 ROOT = Path(__file__).resolve().parents[1]
-MODEL_PATH = ROOT / "models" / "biped_6dof.xml"
+MODEL_PATH = ROOT / "models" / "danny.xml"
 
 STAND_KNEE_DEG = 40
 SQUAT_KNEE_DEG = 80
-LIFT_HEIGHT = 0.05  # m, altura a la que sube el pie derecho
+LIFT_HEIGHT = 0.03  # m, altura a la que sube el pie derecho
 
 SETTLE_TIME = 1.0  # s
 
@@ -61,7 +61,7 @@ MAX_TILT_DEG = 5.0
 MAX_PELVIS_ERROR = 0.01  # m
 MAX_FOOT_SLIP = 0.005  # m
 FORCE_RELATIVE = 0.05
-MIN_CLEARANCE = 0.04  # m
+MIN_CLEARANCE = 0.025  # m
 MIN_COM_MARGIN = 0.02  # m
 MAX_JOINT_ERROR_DEG = 0.5
 

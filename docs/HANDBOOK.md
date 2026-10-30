@@ -533,7 +533,7 @@ de este experimento.
 
 - `--speed`: divide la duración de las transiciones.
 - `--hold`: fija la pausa tras cada transición (por defecto 1,5 s).
-- `--dynamic`: usa la compensación dinámica en lugar de la estática.
+- `--dynamic`: usaba la compensación dinámica; se eliminó en el experimento 16.
 
 **Lo que pasó por el camino:**
 
@@ -593,7 +593,7 @@ robot apenas tiene tiempo de asentarse antes de medir.
 
 **Corrección posterior:** las filas "dinámica" de esta tabla son de una versión
 con un error en el reparto entre pies. El experimento 15 lo explica y lo corrige.
-Por defecto, `Biped` usa la compensación estática.
+La compensación dinámica se eliminó después: ver el experimento 16.
 
 ### Experimento 13 — Marcha más natural: pasos largos y giro
 
@@ -698,6 +698,9 @@ pies no se muevan, los pies están más juntos y los motores tienen curva.
    paso. El código está en el historial de git, commit `6c083cc`
    (`recover_biped.py`).
 
+*(Las cifras de la tabla de arriba son del modelo de 60 cm; las del cuerpo de Danny
+están en el experimento 16.)*
+
 **Lo que sí funcionó: mirar la caída.** De pie, el CdM estaba **3,4 cm por
 delante** de los pies, porque los muslos adelantan masa, y el margen real era de
 6,6 cm. Centrarlo con `center_com_over` subió de 16 a 25 N. También se comprobó
@@ -708,10 +711,6 @@ cambiaba. Los 33 rad/s medidos eran un pico de 2 ms por el impacto.
 del simulador, sin ruido; el ±20 N·m y los 20 rad/s son provisionales.
 
 ### Experimento 15 — Por qué la compensación dinámica inclinaba más
-
-```bash
-python simulation/scripts/walk_biped.py --knee 56 --step 0.12 --width 0.07 --inset 0.02 --speed 2 --hold 0.25 --dynamic
-```
 
 En el experimento 12, la compensación dinámica inclinaba más la pelvis que la
 estática y no se sabía por qué. **Etapa 18 cerrada: causa encontrada y corregida.**
@@ -764,15 +763,101 @@ Con giro de 45°:
 | ×2,5, 0,25 s | estática | 6,29 mm | 2,26° | 15 |
 | ×2,5, 0,25 s | dinámica | 7,85 mm | 2,19° | 18 |
 
-**Decisión.** Al pie de la letra, el criterio no se cumple: a ritmo normal los pies
-quedan 0,2 mm peor, aunque ambas están lejos del límite de 5 mm. Se **cambió** la
-decisión inicial de eliminarla, porque a doble velocidad sí aporta: con giro pasa
-de 16 fallos a 1. Queda como opción (`--dynamic`), y la estática sigue por defecto.
-Más allá de ×2 no ayuda, y con ×3 cae con cualquiera de las dos: para ir más
-rápido hará falta otra forma de andar (marcha dinámica).
+**Decisión posterior.** Estos números son del modelo de 60 cm. Con el cuerpo de
+Danny (experimento 16) la ventaja desaparece: la estática ya pasa a ×2 y a ×2,5
+caen las dos. Se aplicó el criterio inicial y **la compensación dinámica se
+eliminó**. El código está en el commit `f24ed39` (`required_contact`).
 
-**Limitación:** con dos pies solo se compensa la parte vertical; la fuerza
-horizontal real entre pies no se modela.
+### Experimento 16 — El cuerpo de Danny: 70 cm y 8 kg
+
+**Etapas 13 y 20.** Hasta aquí, el bípedo medía 60 cm, sin torso, con piernas de
+50 cm. Los números de los experimentos 10 a 15 de este handbook son de **ese
+modelo**, y explican el camino. Los valores actuales, con el cuerpo de Danny, son
+los de esta sección y los de `results/`.
+
+Modelo `danny.xml` (provisional hasta la etapa 31):
+
+| Parte | Medida | Masa |
+|---|---|---|
+| Pie | 14 × 8 cm, tobillo a 4 cm del suelo | 0,2 kg × 2 |
+| Tibia | 16 cm | 0,5 kg × 2 |
+| Muslo | 16 cm | 0,7 kg × 2 |
+| Pelvis | caderas a ±7 cm | 1,2 kg |
+| Torso, sin brazos ni articulación | hasta los 70 cm | 4 kg |
+
+Medido en el modelo: 8,0 kg, 0,70 m y CdM a 41,6 cm. Las distancias de las marchas
+se escalaron con la pierna (factor 0,64): pasos de 5 y 8 cm, pie libre a 3 cm,
+pies a ±5 cm. Criterios iguales, con la altura mínima del pie libre escalada a 2,5
+cm.
+
+**La vibración.** Al pasar al modelo nuevo, E10 falló: los dos pies se desplazaban
+12 mm. No era deslizamiento: la fuerza en los pies oscilaba entre 4 y 106 N, a
+**12 Hz**. Los tobillos eran tan ligeros que resonaban con el contacto blando. La
+solución física: `armature`, la inercia del motor reflejada por la reductora, que
+el modelo ignoraba. Con 0,01 kg·m² la oscilación desaparece y los pies quedan a
+menos de 1 mm. `kv` se recalculó con esa inercia.
+
+**Resultados** (`results/`):
+
+| Prueba | Tiempo | Pie máx. | Inclin. máx. | Error art. |
+|---|---|---|---|---|
+| E11: 4 pasos de 5 cm | 53,6 s | 1,4 mm | 0,79° | 0,12° |
+| E12: lo mismo, más rápido | 26,6 s | 3,3 mm | 1,24° | 0,44° |
+| E13: 4 pasos de 8 cm y giro de 45° | 50,3 s | 0,8 mm | 0,57° | 0,22° |
+| 4 pasos de 8 cm a ×2 | 19,0 s | 1,0 mm | 1,74° | 0,25° |
+
+El "error art." se mide al final de cada sostén. Durante el movimiento es mayor, y
+desde la auditoría se limita a 1°: 0,54° en E11, 0,70° en E12, 0,38° en E13 y 0,94°
+a ×2, la prueba más justa. A ×2, además, un pie cargado se apoya en 2 puntos o
+menos hasta el 11,8 % del tiempo de la peor fase: los pies se balancean.
+
+**Empujones sin paso:** 24 N adelante, 25 N atrás y 33 N de lado. Límites definidos,
+con 2 N de margen: 22, 23 y 31 N. El máximo físico estimado es de 28 N y 36 N.
+
+**Auditoría técnica (etapa 20).** Una revisión independiente del código encontró
+problemas que las pruebas no veían, y se corrigieron:
+
+- *Las métricas solo se medían al final de cada sostén.* Ahora también durante el
+  movimiento: error articular < 1° y pelvis < 2 cm. Estos límites se fijaron con
+  los datos ya vistos.
+- *La prueba de masas no era ciega.* Escalaba todo por igual, así que el CdM no
+  cambiaba, y el controlador leía el CdM real del simulador. Ahora lo calcula con
+  su modelo nominal y la postura medida (`estimated_com`), y se prueba también
+  cambiando solo el torso.
+- *La compensación dinámica ya no aportaba* con este cuerpo, y se eliminó.
+- `check_kinematics.py` dice "planos" y ahora lo comprueba también en el bípedo.
+
+**Robustez.** La marcha del E13, con el controlador sin saber el cambio:
+
+| Variación | Resultado | Error en movimiento |
+|---|---|---|
+| Masas e inercias ±10 % | ✅ | 0,60° |
+| Pelvis y torso ±10 % | ✅ | 0,51° |
+| Fricción 0,6 | ✅ | 0,35° |
+| Paso de simulación de 1 ms | ✅ | 0,37° |
+
+**Límites conocidos.** El control sigue su plan sin corregir con la IMU, y eso lo
+hace frágil. Medido con la misma marcha, sin que el controlador lo sepa:
+
+| Variación | Resultado |
+|---|---|
+| CdM de pelvis y torso +0,5 cm | ✅ pie a 4,7 mm, casi en el límite de 5 mm |
+| CdM de pelvis y torso ±1 cm | ❌ 10-22 fallos, pie a 8-10 mm |
+| Suelo inclinado 0,1° | ✅ pie a 3,2 mm |
+| Suelo inclinado 0,25° | ❌ 10 fallos |
+| Suelo inclinado 0,5° | ❌ 27-34 fallos, pie a 13 mm |
+
+En estos casos no cae, pero incumple los criterios. La revisión independiente vio
+además, con un controlador de prueba fuera del repositorio, caídas con empujones
+de 22-23 N si el CdM está desplazado 1 cm, y con un retardo de 6 ms o más en el lazo
+de control; no se ha repetido en el proyecto. Toleró sesgo de IMU de 1°, ruido de
+encoder de 0,5° y fricción 0,3.
+
+**Más límites:** los empujones se prueban solo en doble apoyo y se juzgan por el
+estado final (a 31 N un pie se descarga por completo y sube 1,9 cm), y los límites
+de E14 son lo medido menos 2 N, así que solo detectan regresiones. Los rangos
+articulares se comprueban al planificar la marcha, no en las demás pruebas. Durante
+la transferencia de peso, el CdM queda entre los pies, no sobre uno de ellos.
 
 ---
 

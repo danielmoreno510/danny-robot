@@ -1,45 +1,46 @@
-MuJoCo 3.17.0 | modelo: biped_6dof.xml
-Peso total: 60.82 N | 4 pasos de 12 cm, giro 45°, rodillas 56°, pies a ±7 cm | transiciones x1.27, pausas 0.25 s | compensación estática
+MuJoCo 3.17.0 | modelo: danny.xml
+Peso total: 78.48 N | 4 pasos de 8 cm, giro 45°, rodillas 56°, pies a ±5 cm | transiciones x1.27, pausas 0.25 s
 
 Fase                              | err pelvis | incl. máx | err yaw | desliz. izq/der | pie izq/der [N] | altura pie libre | margen CdM | error art.
                                   | [mm]       | [°]       | [°]     | [mm]            |                 | [mm]             | [mm]       | [°]
-  paso 1: peso al izquierdo       |  0.62      |  0.23     | -0.05   |   0.1 /   0.2  |  51.6 /   9.2   |    —             |    —       |  0.06
-  paso 1: pie derecho arriba      |  1.26      |  0.42     | -0.03   |   0.1 /    —   |  60.8 /   0.0   |  49.1            |  29.2      |  0.02
-  paso 1: pie derecho adelante    |  1.63      |  0.37     | -0.05   |   0.2 /    —   |  60.8 /   0.0   |  48.8            |  28.9      |  0.05
-  paso 1: pie derecho abajo       |  0.45      |  0.22     | -0.07   |   0.2 /   0.4  |  58.6 /   2.0   |    —             |  29.0      |  0.13
-  paso 2: peso al derecho         |  1.32      |  0.56     | -0.27   |   0.2 /   0.7  |   6.7 /  54.2   |    —             |    —       |  0.10
-  paso 2: pie izquierdo arriba    |  1.29      |  0.40     | -0.28   |    —  /   0.7  |   0.0 /  60.8   |  49.2            |  29.1      |  0.02
-  paso 2: pie izquierdo adelante  |  1.31      |  0.44     | -0.25   |    —  /   0.8  |   0.0 /  60.8   |  48.8            |  29.1      |  0.08
-  paso 2: pie izquierdo abajo     |  0.80      |  0.23     | -0.24   |   0.7 /   0.8  |   2.0 /  58.6   |    —             |  28.9      |  0.12
-  paso 3: peso al izquierdo       |  0.72      |  0.56     | -0.04   |   0.7 /   0.8  |  54.2 /   6.7   |    —             |    —       |  0.10
-  paso 3: pie derecho arriba      |  2.03      |  0.40     | -0.02   |   0.7 /    —   |  60.8 /   0.0   |  49.2            |  29.1      |  0.02
-  paso 3: pie derecho adelante    |  1.88      |  0.44     | -0.05   |   0.7 /    —   |  60.8 /   0.0   |  48.8            |  29.1      |  0.08
-  paso 3: pie derecho abajo       |  1.07      |  0.23     | -0.06   |   0.7 /   1.0  |  58.6 /   2.0   |    —             |  29.0      |  0.12
-  paso 4: peso al derecho         |  1.96      |  0.56     | -0.27   |   0.7 /   1.4  |   6.7 /  54.2   |    —             |    —       |  0.10
-  paso 4: pie izquierdo arriba    |  1.02      |  0.40     | -0.28   |    —  /   1.4  |   0.0 /  60.8   |  49.2            |  29.1      |  0.02
-  paso 4: pie izquierdo adelante  |  0.72      |  0.44     | -0.25   |    —  /   1.4  |   0.0 /  60.8   |  48.8            |  29.1      |  0.08
-  paso 4: pie izquierdo abajo     |  0.99      |  0.23     | -0.24   |   1.4 /   1.5  |   2.0 /  58.6   |    —             |  28.9      |  0.12
-  paso 5: peso al izquierdo       |  1.16      |  0.56     | -0.04   |   1.4 /   1.4  |  54.2 /   6.7   |    —             |    —       |  0.10
-  paso 5: pie derecho arriba      |  2.69      |  0.40     | -0.02   |   1.4 /    —   |  60.8 /   0.0   |  49.2            |  29.1      |  0.02
-  paso 5: pie derecho adelante    |  2.58      |  0.43     | -0.02   |   1.4 /    —   |  60.8 /   0.0   |  48.9            |  29.1      |  0.09
-  paso 5: pie derecho abajo       |  1.97      |  0.24     | -0.01   |   1.4 /   1.7  |  58.5 /   2.2   |    —             |  27.5      |  0.11
-  paso 6: peso al derecho         |  2.32      |  0.43     | -0.16   |   1.4 /   1.6  |   9.2 /  51.6   |    —             |    —       |  0.07
-  paso 6: pie izquierdo arriba    |  1.07      |  0.43     | -0.17   |    —  /   1.7  |   0.0 /  60.8   |  49.2            |  29.2      |  0.02
-  paso 6: pie izquierdo adelante  |  1.23      |  0.35     | -0.14   |    —  /   1.6  |   0.0 /  60.8   |  48.9            |  28.8      |  0.05
-  paso 6: pie izquierdo abajo     |  1.48      |  0.23     | -0.12   |   1.5 /   1.7  |   2.1 /  58.6   |    —             |  30.9      |  0.10
-  paso 7: peso al izquierdo       |  1.58      |  0.38     | -0.04   |   1.4 /   1.5  |  52.6 /   8.2   |    —             |    —       |  0.06
-  paso 7: pie derecho arriba      |  2.12      |  0.39     | -0.03   |   1.3 /    —   |  60.8 /   0.0   |  49.2            |  29.2      |  0.03
-  paso 7: pie derecho adelante    |  2.41      |  0.42     | -0.02   |   1.4 /    —   |  60.8 /   0.0   |  48.9            |  28.9      |  0.07
-  paso 7: pie derecho abajo       |  1.90      |  0.23     | -0.01   |   1.4 /   1.6  |  58.5 /   2.2   |    —             |  27.5      |  0.12
-  paso 8: peso al derecho         |  2.20      |  0.43     | -0.14   |   1.3 /   1.5  |   9.2 /  51.6   |    —             |    —       |  0.07
-  paso 8: pie izquierdo arriba    |  1.44      |  0.43     | -0.15   |    —  /   1.5  |   0.0 /  60.8   |  49.2            |  29.2      |  0.02
-  paso 8: pie izquierdo adelante  |  1.52      |  0.38     | -0.11   |    —  /   1.5  |   0.0 /  60.8   |  48.9            |  28.8      |  0.06
-  paso 8: pie izquierdo abajo     |  1.58      |  0.23     | -0.11   |   1.3 /   1.6  |   2.2 /  58.5   |    —             |  29.2      |  0.12
-  peso al centro                  |  1.83      |  0.38     | -0.05   |   1.4 /   1.5  |  35.5 /  25.3   |    —             |    —       |  0.07
+  paso 1: peso al izquierdo       |  0.42      |  0.27     | -0.00   |   0.0 /   0.1  |  66.4 /  12.0   |    —             |    —       |  0.10
+  paso 1: pie derecho arriba      |  1.73      |  0.38     |  0.00   |   0.1 /    —   |  78.5 /   0.0   |  28.8            |  26.3      |  0.05
+  paso 1: pie derecho adelante    |  1.13      |  0.28     | -0.01   |   0.1 /    —   |  78.5 /   0.0   |  29.0            |  27.0      |  0.02
+  paso 1: pie derecho abajo       |  1.23      |  0.35     |  0.00   |   0.2 /   0.3  |  77.0 /   1.4   |    —             |  28.7      |  0.19
+  paso 2: peso al derecho         |  0.40      |  0.55     | -0.03   |   0.0 /   0.1  |  10.3 /  68.1   |    —             |    —       |  0.12
+  paso 2: pie izquierdo arriba    |  1.69      |  0.38     | -0.01   |    —  /   0.1  |   0.0 /  78.5   |  28.9            |  26.3      |  0.05
+  paso 2: pie izquierdo adelante  |  1.37      |  0.29     | -0.01   |    —  /   0.1  |   0.0 /  78.5   |  29.0            |  26.7      |  0.01
+  paso 2: pie izquierdo abajo     |  1.33      |  0.35     | -0.02   |   0.3 /   0.3  |   1.4 /  77.1   |    —             |  28.8      |  0.21
+  paso 3: peso al izquierdo       |  0.44      |  0.57     |  0.01   |   0.2 /   0.1  |  68.1 /  10.3   |    —             |    —       |  0.12
+  paso 3: pie derecho arriba      |  1.74      |  0.38     | -0.01   |   0.2 /    —   |  78.5 /   0.0   |  28.9            |  26.3      |  0.05
+  paso 3: pie derecho adelante    |  1.41      |  0.29     | -0.01   |   0.2 /    —   |  78.5 /   0.0   |  29.0            |  26.7      |  0.01
+  paso 3: pie derecho abajo       |  1.34      |  0.36     | -0.00   |   0.3 /   0.4  |  77.1 /   1.4   |    —             |  28.8      |  0.21
+  paso 4: peso al derecho         |  0.48      |  0.57     | -0.03   |   0.2 /   0.3  |  10.3 /  68.1   |    —             |    —       |  0.12
+  paso 4: pie izquierdo arriba    |  1.68      |  0.38     | -0.01   |    —  /   0.3  |   0.0 /  78.5   |  28.9            |  26.3      |  0.05
+  paso 4: pie izquierdo adelante  |  1.38      |  0.29     | -0.01   |    —  /   0.3  |   0.0 /  78.5   |  29.0            |  26.7      |  0.01
+  paso 4: pie izquierdo abajo     |  1.45      |  0.36     | -0.02   |   0.3 /   0.4  |   1.4 /  77.1   |    —             |  28.8      |  0.21
+  paso 5: peso al izquierdo       |  0.55      |  0.57     |  0.01   |   0.3 /   0.3  |  68.1 /  10.3   |    —             |    —       |  0.12
+  paso 5: pie derecho arriba      |  1.78      |  0.38     | -0.01   |   0.3 /    —   |  78.5 /   0.0   |  28.9            |  26.3      |  0.05
+  paso 5: pie derecho adelante    |  1.40      |  0.29     | -0.01   |   0.4 /    —   |  78.5 /   0.0   |  29.1            |  26.8      |  0.00
+  paso 5: pie derecho abajo       |  1.52      |  0.35     |  0.01   |   0.4 /   0.4  |  76.6 /   1.9   |    —             |  28.4      |  0.22
+  paso 6: peso al derecho         |  0.67      |  0.53     | -0.04   |   0.3 /   0.4  |  13.3 /  65.1   |    —             |    —       |  0.13
+  paso 6: pie izquierdo arriba    |  1.66      |  0.35     | -0.01   |    —  /   0.4  |   0.0 /  78.5   |  28.9            |  26.4      |  0.04
+  paso 6: pie izquierdo adelante  |  1.30      |  0.29     | -0.01   |    —  /   0.5  |   0.0 /  78.5   |  29.1            |  26.9      |  0.01
+  paso 6: pie izquierdo abajo     |  1.26      |  0.34     | -0.01   |   0.6 /   0.5  |   1.7 /  76.8   |    —             |  29.5      |  0.22
+  paso 7: peso al izquierdo       |  0.65      |  0.43     |  0.02   |   0.5 /   0.5  |  65.6 /  12.7   |    —             |    —       |  0.13
+  paso 7: pie derecho arriba      |  1.46      |  0.32     |  0.01   |   0.5 /    —   |  78.5 /   0.0   |  28.9            |  26.5      |  0.04
+  paso 7: pie derecho adelante    |  1.03      |  0.36     |  0.02   |   0.5 /    —   |  78.5 /   0.0   |  29.1            |  27.0      |  0.02
+  paso 7: pie derecho abajo       |  1.73      |  0.34     |  0.04   |   0.7 /   0.5  |  76.5 /   2.0   |    —             |  28.3      |  0.20
+  paso 8: peso al derecho         |  0.87      |  0.53     | -0.02   |   0.5 /   0.6  |  13.3 /  65.1   |    —             |    —       |  0.14
+  paso 8: pie izquierdo arriba    |  1.90      |  0.35     |  0.00   |    —  /   0.6  |   0.0 /  78.5   |  28.9            |  26.4      |  0.04
+  paso 8: pie izquierdo adelante  |  1.46      |  0.28     |  0.00   |    —  /   0.6  |   0.0 /  78.5   |  29.1            |  26.9      |  0.01
+  paso 8: pie izquierdo abajo     |  1.34      |  0.34     | -0.01   |   0.8 /   0.6  |   1.9 /  76.6   |    —             |  29.0      |  0.22
+  peso al centro                  |  0.75      |  0.37     |  0.03   |   0.7 /   0.6  |  40.5 /  38.0   |    —             |    —       |  0.06
 
-  Pelvis al final: (66.9, 11.4) cm, rumbo 44.9°, tras 8 pasos
+  Pelvis al final: (44.7, 7.7) cm, rumbo 45.0°, tras 8 pasos
+  En movimiento: error articular máx 0.38°, pelvis máx 3.8 mm, pie cargado con <= 2 apoyos 0.0 % de la peor fase
   Ningún motor saturado.
-  Duración total: 50.6 s
+  Duración total: 50.3 s
 
 === Criterios de aceptación ===
   PASS: sin caerse, pies en su sitio, CdM siempre sobre el pie de apoyo, sin saturación

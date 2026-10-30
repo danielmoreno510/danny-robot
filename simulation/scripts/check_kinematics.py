@@ -22,7 +22,7 @@ from leg_control import leg_ik
 
 ROOT = Path(__file__).resolve().parents[1]
 LEG_MODEL = ROOT / "models" / "leg_6dof.xml"
-BIPED_MODEL = ROOT / "models" / "biped_6dof.xml"
+BIPED_MODEL = ROOT / "models" / "danny.xml"
 
 LEG_JOINTS = ("hip_yaw", "hip_roll", "hip_pitch", "knee", "ankle_pitch", "ankle_roll")
 
@@ -37,9 +37,9 @@ LEG_CASES = [
 
 # (pelvis x, pelvis yaw, pie izq x, pie izq yaw, pie der x, pie der yaw)
 BIPED_CASES = [
-    (0.10, 0.6, 0.15, 0.0, 0.07, 0.3),
-    (0.05, -0.4, 0.10, -0.2, 0.02, 0.2),
-    (0.20, 0.785, 0.25, 0.5, 0.17, 0.785),
+    (0.10, 0.6, 0.13, 0.0, 0.07, 0.3),
+    (0.05, -0.4, 0.07, -0.2, 0.02, 0.2),
+    (0.20, 0.785, 0.22, 0.5, 0.17, 0.785),
 ]
 
 MAX_POSITION_ERROR = 1e-6  # m
@@ -71,9 +71,9 @@ def check_biped() -> list[str]:
     failures = []
     for pelvis_x, pelvis_yaw, left_x, left_yaw, right_x, right_yaw in BIPED_CASES:
         pose = Pose(
-            np.array([pelvis_x, 0.02, 0.47]),
-            np.array([left_x, 0.10, 0.0]),
-            np.array([right_x, -0.10, 0.02]),
+            np.array([pelvis_x, 0.01, 0.34]),
+            np.array([left_x, 0.07, 0.0]),
+            np.array([right_x, -0.07, 0.02]),
             pelvis_yaw,
             left_yaw,
             right_yaw,
@@ -83,8 +83,10 @@ def check_biped() -> list[str]:
             rotation = data.site_xmat[biped.sole_ids[index]].reshape(3, 3)
             error = float(np.linalg.norm(data.site_xpos[biped.sole_ids[index]] - sole))
             yaw_error = abs(math.degrees(math.atan2(rotation[1, 0], rotation[0, 0]) - yaw))
-            print(f"  bípedo, pie {index}: error {1000 * error:.4f} mm, giro {yaw_error:.4f}°")
-            if error > MAX_POSITION_ERROR or yaw_error > MAX_ANGLE_ERROR_DEG:
+            tilt = math.degrees(math.acos(min(1.0, rotation[2, 2])))
+            print(f"  bípedo, pie {index}: error {1000 * error:.4f} mm, giro {yaw_error:.4f}°, "
+                  f"inclinación {tilt:.4f}°")
+            if error > MAX_POSITION_ERROR or yaw_error > MAX_ANGLE_ERROR_DEG or tilt > MAX_ANGLE_ERROR_DEG:
                 failures.append(f"bípedo, pie {index}, yaw {yaw:.2f}")
     return failures
 

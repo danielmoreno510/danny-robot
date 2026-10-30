@@ -115,15 +115,6 @@ class StanceCompensator:
     que evita que el cuerpo vuelque y el tobillo cede.
 
     Como en GravityCompensator, el objetivo se adelanta tau / kp.
-
-    Versión dinámica (experimento 12): si se dan qvel y qacc (la aceleración
-    deseada), tau_g(q) se sustituye por la dinámica inversa completa,
-
-        M(q) qacc + C(q, qvel) + tau_g(q)     (mj_rne con aceleración)
-
-    y la fuerza total del suelo deja de ser solo el peso: hay que pasar
-    ground_force = m (g + a_CdM), que incluye la fuerza horizontal para
-    acelerar el cuerpo. El script elige también los puntos (el ZMP).
     """
 
     def __init__(
@@ -140,46 +131,38 @@ class StanceCompensator:
         self.kp = model.actuator_gainprm[actuator_ids, 0].copy()
         self.weight = total_weight(model)
         self.jacobian = np.zeros((3, model.nv))
-        self.inverse = np.zeros(model.nv)
 
     def torque(
         self,
         qpos: np.ndarray,
         support: list[float] | None = None,
         points: list[np.ndarray] | None = None,
-        qvel: np.ndarray | None = None,
-        qacc: np.ndarray | None = None,
-        ground_force: np.ndarray | None = None,
     ) -> np.ndarray:
         """
-        support: fracción de la fuerza del suelo en cada pie; None = a partes iguales.
+        support: fracción del peso en cada pie; None = a partes iguales.
         points: punto del mundo donde actúa la fuerza de cada pie; None = el tobillo.
-        qvel, qacc: para la versión dinámica; None = estática.
-        ground_force: fuerza total del suelo [N]; None = el peso, vertical.
         """
         if support is None:
             support = [1.0 / len(self.foot_ids)] * len(self.foot_ids)
-        if ground_force is None:
-            ground_force = np.array([0.0, 0.0, self.weight])
         self.scratch.qpos[:] = qpos
-        self.scratch.qvel[:] = 0.0 if qvel is None else qvel
+        self.scratch.qvel[:] = 0.0
         mujoco.mj_forward(self.model, self.scratch)
         if points is None:
             points = [self.scratch.xpos[foot_id] for foot_id in self.foot_ids]
-        if qacc is None:
-            tau = self.scratch.qfrc_bias.copy()
-        else:
-            self.scratch.qacc[:] = qacc
-            mujoco.mj_rne(self.model, self.scratch, 1, self.inverse)
-            tau = self.inverse.copy()
+        tau = self.scratch.qfrc_bias.copy()
         for foot_id, fraction, point in zip(self.foot_ids, support, points):
             mujoco.mj_jac(self.model, self.scratch, self.jacobian, None, point, foot_id)
-            tau -= self.jacobian.T @ (fraction * ground_force)
+            tau -= self.jacobian.T @ np.array([0.0, 0.0, fraction * self.weight])
         return tau[self.dof_ids]
 
-    def offset(self, qpos: np.ndarray, *args, **kwargs) -> np.ndarray:
-        """Desplazamiento del objetivo [rad] por articulación. Mismos argumentos que torque."""
-        return self.torque(qpos, *args, **kwargs) / self.kp
+    def offset(
+        self,
+        qpos: np.ndarray,
+        support: list[float] | None = None,
+        points: list[np.ndarray] | None = None,
+    ) -> np.ndarray:
+        """Desplazamiento del objetivo [rad] por articulación."""
+        return self.torque(qpos, support, points) / self.kp
 
 
 def leg_ik(

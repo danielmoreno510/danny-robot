@@ -30,8 +30,8 @@ Así se evita descubrir errores estructurales cuando ya hay piezas fabricadas.
 |---|---|---|---|
 | 1 | Preparación del entorno y fundamentos | 1–5 | ✅ Completada |
 | 2 | Cinemática y articulaciones | 6–11 | ✅ Completada |
-| 3 | Simulación física y control del bípedo | 12–20 | 🔄 Actual |
-| 4 | Aprendizaje por refuerzo y locomoción | 21–28 | ⏳ Pendiente |
+| 3 | Simulación física y control del bípedo | 12–20 | ✅ Completada, con límites conocidos |
+| 4 | Aprendizaje por refuerzo y locomoción | 21–28 | ⏳ Siguiente |
 | 5 | Diseño mecánico del humanoide | 29–35 | ⏳ Pendiente |
 | 6 | Fabricación de las piernas | 36–40 | ⏳ Pendiente |
 | 7 | Electrónica y control físico | 41–46 | ⏳ Pendiente |
@@ -77,15 +77,15 @@ reproducibles. Al terminar se hace una auditoría técnica.
 
 | Etapa | Actividad | Estado | Experimentos |
 |---|---|---|---|
-| 12 | Construir el modelo completo de dos piernas | ✅ | E10 |
-| 13 | Configurar masas, inercias, articulaciones y contactos | 🟡 | E9, E10; valores didácticos |
+| 12 | Construir el modelo completo de dos piernas | ✅ | E10, E16 |
+| 13 | Configurar masas, inercias, articulaciones y contactos | ✅ | E16: `danny.xml`, provisional hasta la etapa 31 |
 | 14 | Mantener el equilibrio sobre ambos pies | ✅ | E10 |
 | 15 | Transferir el peso entre las piernas | ✅ | E10, E11 |
 | 16 | Mantener el equilibrio sobre un solo pie | ✅ | E10, E11 |
 | 17 | Caminar mediante trayectorias cuasiestáticas | ✅ | E11, E12, E13 |
-| 18 | Implementar compensación dinámica | ✅ | E12, E15: opcional, `--dynamic`; aporta a doble velocidad |
-| 19 | Recuperar el equilibrio ante empujones | ✅ | E14: límites definidos sin paso, 23 N adelante, 24 N atrás, 25 N de lado |
-| 20 | Ajustar dimensiones físicas y auditar toda la simulación | ⏳ | — |
+| 18 | Implementar compensación dinámica | ✅ | E12, E15, E16: probada y no adoptada; no aporta con el cuerpo de Danny |
+| 19 | Recuperar el equilibrio ante empujones | ✅ | E14, E16: límites definidos sin paso, 22 N adelante, 23 N atrás, 31 N de lado |
+| 20 | Ajustar dimensiones físicas y auditar toda la simulación | ✅ | E16 |
 
 **Criterios para completar la fase.** El bípedo debe demostrar que puede:
 
@@ -95,17 +95,20 @@ reproducibles. Al terminar se hace una auditoría técnica.
 | Mantenerse sobre cualquiera de los dos pies | ✅ |
 | Transferir su peso de forma controlada | ✅ |
 | Caminar cuatro pasos consecutivos | ✅ |
-| Controlar el contacto de los pies con el suelo | ✅ |
+| Controlar el contacto de los pies con el suelo | ✅ En E13; a ×2 los pies se balancean |
 | Responder a perturbaciones dentro de límites definidos | ✅ E14 |
-| Respetar los límites de las articulaciones | ✅ Se comprueba al planificar la marcha |
-| Registrar métricas de estabilidad y errores de control | ✅ `run_checks.py` las guarda en `results/` |
+| Respetar los límites de las articulaciones | ✅ Se comprueba al planificar la marcha, no en E10 ni E14 |
+| Registrar métricas de estabilidad y errores de control | ✅ `results/`, en reposo y en movimiento |
 
-**Pendiente para cerrar la fase:**
+**Límites conocidos al cerrar la fase** (detalle en el handbook, E16):
 
-- Etapa 13: masas e inercias son didácticas.
-- Etapa 20: ajustar el modelo a los 70 cm del objetivo (hoy mide unos 60 cm, no
-  tiene torso y pesa 6,2 kg) y auditar toda la simulación. Las propuestas del
-  final de este documento afectan a esta etapa.
+- El control sigue su plan sin corregir con la IMU: un error de 1 cm en el CdM o un
+  suelo inclinado 0,25° incumplen los criterios.
+- Las comprobaciones usan estado sin ruido ni retardos.
+
+Esto no contradice los criterios de la fase, pero pesa para el paso al robot real.
+La fase 4 debe tratarlo: las etapas 26 y 27 cubren perturbaciones y variaciones del
+modelo, e incluyen la inclinación del suelo y el reparto de masas.
 
 **Decisión:** el paso de recuperación ante empujones no funcionó con control
 clásico (E14). La etapa 19 se cierra con límites definidos sin dar un paso, y la
@@ -125,7 +128,7 @@ pruebas de estabilidad.
 | 24 | Entrenar locomoción hacia delante y atrás |
 | 25 | Entrenar giros y desplazamientos laterales |
 | 26 | Entrenar resistencia a perturbaciones, incluido el paso de recuperación |
-| 27 | Aplicar domain randomization |
+| 27 | Aplicar domain randomization, incluidos suelo inclinado, reparto de masas y retardos |
 | 28 | Evaluar, optimizar y exportar las políticas |
 
 **Tecnologías:** MuJoCo, Python, PyTorch, algoritmos como PPO, Isaac Lab si
@@ -277,11 +280,8 @@ En total, entre 25 y 60 meses o más.
 
 ## Propuestas pendientes de decidir
 
-1. **Torso provisional en la etapa 20.** Si la fase 4 entrena solo con piernas, y
-   la fase 8 también usa solo piernas, al montar el torso en la fase 9 cambiará
-   toda la dinámica. Bastaría con una masa equivalente.
-2. **Límites de motor realistas antes de la fase 4.** Hoy son ±20 N·m,
+1. **Límites de motor realistas antes de la fase 4.** Hoy son ±20 N·m,
    provisionales. La selección real llega en la etapa 31: convendría estimarlos
    antes y repetir el entrenamiento después de elegir los motores.
-3. **Ruido de sensores y retardos en la fase 3.** El control usa el centro de
-   masas y su velocidad exactos, algo que un robot real no tiene.
+2. **Ruido de sensores y retardos.** Las pruebas usan posiciones sin ruido. Se
+   propone añadirlos en la fase 4, con la etapa 27.

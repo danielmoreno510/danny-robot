@@ -5,23 +5,28 @@ desde cero, paso a paso y en abierto. El objetivo final es que camine, mantenga
 el equilibrio, manipule objetos, entienda instrucciones con inteligencia
 artificial y se comunique a través de una aplicación móvil.
 
-Hoy Danny existe solo en simulación, con [MuJoCo](https://mujoco.org). Es un
-bípedo de dos piernas de 6 grados de libertad, sin torso ni brazos.
+Hoy Danny existe solo en simulación, con [MuJoCo](https://mujoco.org): 70 cm, 8
+kg, dos piernas de 6 grados de libertad y un torso provisional, sin brazos.
 
-> **Importante:** las dimensiones, masas y límites de motor de los modelos son
-> **didácticos y provisionales**. No deben usarse para dimensionar piezas reales.
+> **Importante:** las dimensiones, masas y motores del modelo son **provisionales**
+> hasta elegir los motores (etapa 31). No deben usarse para fabricar piezas.
 
 ## Qué hace hoy
 
 - Se mantiene de pie y sobre cualquiera de los dos pies.
 - Transfiere el peso de una pierna a otra.
-- Camina en marcha estática: pasos de 12 cm y giros, con cada pie a menos de 2 mm
+- Camina en marcha estática: pasos de 8 cm y giros, con cada pie a menos de 1 mm
   de donde se planificó.
-- Aguanta empujones de 23 a 25 N durante 0,1 s sin dar un paso.
+- Aguanta empujones de 22 a 31 N durante 0,1 s sin dar un paso.
+- Sigue caminando aunque sus masas difieran un ±10 % de las que cree tener.
 
 Qué no hace todavía: marcha dinámica, recuperarse dando un paso, y nada con
-hardware real. Hoy el control usa datos exactos del simulador, sin ruido de
-sensores.
+hardware real.
+
+**Límite importante:** el control sigue su plan sin corregir con la IMU. Un error
+de 1 cm en el centro de masas, o un suelo inclinado 0,25°, bastan para incumplir
+los criterios. Los detalles están en el
+[handbook](docs/HANDBOOK.md#experimento-16--el-cuerpo-de-danny-70-cm-y-8-kg).
 
 ## Dónde estamos
 
@@ -29,13 +34,12 @@ sensores.
 |---|---|---|
 | 1 | Entorno y fundamentos | ✅ |
 | 2 | Cinemática y articulaciones | ✅ |
-| **3** | **Simulación física y control del bípedo** | 🔄 **Actual** |
-| 4 | Aprendizaje por refuerzo | ⏳ |
+| 3 | Simulación física y control del bípedo | ✅ con límites conocidos |
+| **4** | **Aprendizaje por refuerzo** | ⏳ **Siguiente** |
 | 5–8 | Diseño mecánico, fabricación, electrónica y paso al robot real | ⏳ |
 | 9–12 | Torso y brazos, visión e IA, manipulación, aplicación móvil | ⏳ |
 
-Faltan por cerrar en la fase 3 las etapas 13 y 20. El detalle está en el
-[roadmap](ROADMAP.md).
+El detalle está en el [roadmap](ROADMAP.md).
 
 ## Instalación
 
@@ -64,7 +68,7 @@ Comprueba que todo funciona (tarda menos de un minuto y no abre ventanas):
 .venv/bin/python simulation/scripts/run_checks.py
 ```
 
-Debe terminar con `10 de 10 comprobaciones pasan`. La salida completa de cada
+Debe terminar con `16 de 16 comprobaciones pasan`. La salida completa de cada
 prueba queda en [results/](results/).
 
 ## Verlo en el simulador
@@ -81,7 +85,7 @@ MuJoCo. Desde la carpeta del proyecto:
 | Pierna de 6 GDL | `.venv/bin/mjpython simulation/scripts/analyze_leg_6dof.py --view` |
 | Equilibrio sobre un pie | `.venv/bin/mjpython simulation/scripts/balance_biped.py --view` |
 | Marcha | `.venv/bin/mjpython simulation/scripts/walk_biped.py --speed 1.27 --hold 0.25 --view` |
-| Marcha con giro | `.venv/bin/mjpython simulation/scripts/walk_biped.py --knee 56 --step 0.12 --width 0.07 --inset 0.02 --turn 45 --speed 1.27 --hold 0.25 --view` |
+| Marcha con giro | `.venv/bin/mjpython simulation/scripts/walk_biped.py --knee 56 --step 0.08 --width 0.05 --inset 0.012 --turn 45 --speed 1.27 --hold 0.25 --view` |
 | Empujón | `.venv/bin/mjpython simulation/scripts/push_biped.py --force 20 --view` |
 
 Los scripts con `--view` imprimen primero el análisis y después abren la ventana.
@@ -114,8 +118,8 @@ danny-robot/
     │   ├── single_joint.xml        E2: un segmento con motor
     │   ├── leg_2dof.xml            E4-E7: pierna colgando
     │   ├── leg_2dof_foot.xml       E8: pierna con pie
-    │   ├── leg_6dof.xml            E9: pierna de 6 GDL con pie plano
-    │   └── biped_6dof.xml          E10-E14: Danny, dos piernas y pelvis libre
+    │   ├── leg_6dof.xml            E9: pierna didáctica de 6 GDL con pie plano
+    │   └── danny.xml               E10 en adelante: Danny, 70 cm y 8 kg
     └── scripts/
         ├── leg_control.py          módulo: compensadores, IK, perfil, sensores
         ├── biped_control.py        módulo: poses, reparto del peso, paso de control
@@ -128,7 +132,7 @@ danny-robot/
         ├── squat_leg_2dof.py       E8: sentadilla
         ├── analyze_leg_6dof.py     E9: pierna de 6 GDL
         ├── balance_biped.py        E10: equilibrio sobre un pie
-        ├── walk_biped.py           E11-E13, E15: marcha, giro y compensación dinámica
+        ├── walk_biped.py           E11-E13: marcha y giro
         └── push_biped.py           E14: empujones
 ```
 

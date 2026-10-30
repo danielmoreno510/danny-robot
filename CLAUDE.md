@@ -15,7 +15,7 @@ python3.12 -m venv .venv
 .venv/bin/python simulation/scripts/run_checks.py
 ```
 
-Las 10 comprobaciones deben pasar antes de empezar a trabajar. Si no pasan, dilo.
+Las 16 comprobaciones deben pasar antes de empezar a trabajar. Si no pasan, dilo.
 
 ## Reglas del usuario
 
@@ -60,25 +60,26 @@ ventana no se ha abierto.
 
 ## Estado actual
 
-Fase 3, simulación física y control del bípedo. Experimentos E1 a E15 hechos. Las
-10 comprobaciones pasan.
+Fases 1, 2 y 3 terminadas. Experimentos E1 a E16 hechos. Las 16 comprobaciones
+pasan. **Siguiente: fase 4, aprendizaje por refuerzo** (etapas 21 a 28).
 
-**Falta para cerrar la fase 3:**
-
-1. **Etapa 13.** Masas, inercias y contactos son didácticos.
-2. **Etapa 20.** Ajustar el modelo a los 70 cm (hoy mide unos 60 cm, sin torso, 6,2
-   kg) y hacer la auditoría técnica de toda la simulación.
+**Límites conocidos de la fase 3**, a tener en cuenta en la fase 4: el control sigue
+su plan sin corregir con la IMU. Un error de 1 cm en el CdM o un suelo inclinado
+0,25° incumplen los criterios. Detalle en el handbook, E16.
 
 **Pendiente de decidir por el usuario:**
 
 - Licencia: el repositorio es público y no tiene.
-- Propuestas del final de `ROADMAP.md`: torso provisional, límites de motor
-  realistas y ruido de sensores.
+- Propuestas del final de `ROADMAP.md`: límites de motor realistas y ruido de
+  sensores.
 
 **Decisiones ya tomadas:**
 
+- Danny mide 70 cm y pesa 8 kg, con torso provisional (`danny.xml`), hasta la
+  etapa 31.
 - El paso de recuperación no funcionó con control clásico: el robot salta en vez
   de dar un paso. Se pasó a la etapa 26. El código está en el commit `6c083cc`.
-- La marcha usa compensación estática por defecto. Lo que permitió ir más rápido
-  fue recortar pausas. La dinámica (`--dynamic`) queda como opción: empata a ritmo
-  normal y mejora a doble velocidad (E15).
+- La marcha usa compensación estática. La dinámica se probó (E15) y se eliminó: no
+  aporta con el cuerpo de Danny. El código está en el commit `f24ed39`.
+- La auditoría de la etapa 20 fue una revisión independiente del código, que
+  encontró fallos que las pruebas no veían: repítela al cerrar cada fase.
