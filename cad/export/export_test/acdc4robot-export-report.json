@@ -1,0 +1,87 @@
+{
+  "active_dof_count": 1,
+  "default_length_units": "mm",
+  "design_name": "(Sin guardar)",
+  "errors": [],
+  "joint_count": 1,
+  "joints": [
+    {
+      "child": "arm_link:1",
+      "export_name": "hinge",
+      "name": "hinge",
+      "object_type": "adsk::fusion::AsBuiltJoint",
+      "parent": "base_link:1",
+      "type": "revolute"
+    }
+  ],
+  "occurrences": [
+    {
+      "body_count": 1,
+      "child_occurrence_count": 0,
+      "component_name": "base_link",
+      "export_name": "base_link_1",
+      "full_path_name": "base_link:1",
+      "referenced_component": false,
+      "transform_fusion_internal_cm": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "visible_mesh_body_count": 0,
+      "visible_solid_brep_count": 1,
+      "visible_surface_brep_count": 0,
+      "visible_unknown_brep_count": 0
+    },
+    {
+      "body_count": 1,
+      "child_occurrence_count": 0,
+      "component_name": "arm_link",
+      "export_name": "arm_link_1",
+      "full_path_name": "arm_link:1",
+      "referenced_component": false,
+      "transform_fusion_internal_cm": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "visible_mesh_body_count": 0,
+      "visible_solid_brep_count": 1,
+      "visible_surface_brep_count": 0,
+      "visible_unknown_brep_count": 0
+    }
+  ],
+  "passed": true,
+  "plugin_version": "1.1.1",
+  "root_links": [
+    "base_link:1"
+  ],
+  "schema_version": 1,
+  "visible_link_count": 2,
+  "warnings": []
+}

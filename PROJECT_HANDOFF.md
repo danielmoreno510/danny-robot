@@ -2,10 +2,14 @@
 
 Punto de entrada para continuar **Robot Danny** en un chat nuevo o en otra computadora.
 
-**Fecha:** 31 de octubre de 2026. **Etapa actual:** 2, diseño en Fusion. La etapa 1 está cerrada salvo la 1.2,
-que va en paralelo.
-**Siguiente paso:** etapa 2.1, probar la exportación Fusion → MuJoCo con un modelo simple, y después la
-cadera. No se compra nada todavía.
+**Fecha:** 31 de octubre de 2026. **Etapa actual:** 3, MuJoCo, con 2.2, 2.3 y 2.4 abiertas por lo físico. La etapa 1 está
+cerrada salvo la 1.2, que va en paralelo.
+**Siguiente paso:** añadir colisiones entre eslabones y preparar el entrenamiento: [resultados](documentation/simulation-results.md).
+El mayor riesgo es levantarse del suelo. El robot completo ya está en CAD:
+[piernas](documentation/lower-body-design.md), [tronco](documentation/upper-body-design.md) y
+[paneles](documentation/panels-and-protection.md). El usuario aún no tiene
+impresora 3D, así que el encaje y el pesado quedan aplazados, y la 2.2 y la 2.3 siguen abiertas. No hace falta comprar un
+servo para seguir: conectores y tornillos salen de proyectos publicados, y solo quedan por medir sus cotas exactas. Claude modela en Fusion por scripts, con `DannyBridge`. No se compra nada todavía.
 
 ## Cómo empezar
 
@@ -54,6 +58,7 @@ entonces el diseño usa datos de ficha.
 
 - Licencia del repositorio, que es público.
 - Compra del banco de pruebas, cuando llegue la etapa 5.1. Precios de referencia en la investigación.
+- Cuándo comprar impresora.
 
 ## Última verificación
 
@@ -62,3 +67,16 @@ y pyflakes, el 31 de octubre de 2026. El handbook se probó dos veces con agente
 toca y por qué, y se corrigieron sus hallazgos. La segunda reprodujo igual los JSON de `results/`. Tras esas
 correcciones no se repitió la prueba. La ventana del visor no se ha visto. No hay simulador, pruebas ni CAD
 en esta nueva etapa.
+
+Etapa 2.1 superada el 31 de octubre de 2026 en Fusion 2706.1.17, en macOS: `BuildExportTest` y `ExportModel` dieron
+`cad/export/export_test/`, que carga en MuJoCo con 0,7536 kg, un 0,00 % de diferencia con el CAD, y el eje en X,
+como en el CAD. Ese modelo mantiene su punto de giro al mover la bisagra. El complemento `DannyBridge` arrancó solo
+al reiniciar Fusion. No se ha comprobado: la ventana del visor, el botón de ACDC4Robot en Fusion, ni un modelo con
+ocurrencias giradas o varias articulaciones. La vista de Fusion sigue con Y arriba, así que los modelos se ven
+tumbados, aunque sus coordenadas sean correctas. La pieza de prueba no se guardó en Fusion.
+
+Etapas 2.2 y 2.3 en curso: el diseño de Fusion tampoco se guarda, se regenera con los seis comandos de
+`documentation/lower-body-design.md`. `check_robot.py` da cero fallos con 24 cuerpos y 23 articulaciones, y
+falla con resultados vacíos, obsoletos o con choques. Esa comprobación no ve el montaje: tanto piernas como
+tronco la pasaron sin poder montarse. Por eso una revisión independiente sondeó los STL en cada iteración. Nada se ha
+impreso ni montado. Lee las limitaciones de esos dos documentos antes de seguir.

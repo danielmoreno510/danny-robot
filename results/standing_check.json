@@ -1,0 +1,7 @@
+{
+ "seconds": 3.0,
+ "worst_tilt_deg": 0.13667723856703157,
+ "center_of_mass_drop_mm": 0.21554443263216427,
+ "final_peak_torque_nm": 0.012636028907454416,
+ "failures": []
+}

@@ -3,7 +3,8 @@
 Humanoide de 40 cm, autónomo y con aspecto de Tesla Optimus, impreso en 3D, con servos de bus y movimiento
 natural aprendido en simulación. Toma del XGO-Duck el servo y el método de entrenamiento, no la forma.
 
-**Estado:** etapa 2, diseño en Fusion, sin empezar. Aún no hay CAD ni piezas. Para unirte al proyecto, empieza por
+**Estado:** etapas 2 y 3, diseño en Fusion y simulación. El robot completo ya está en CAD y en MuJoCo, con una primera capa de paneles. Nada se ha impreso, y
+no hay piezas físicas. Para unirte al proyecto, empieza por
 [PROJECT_HANDOFF.md](PROJECT_HANDOFF.md) y sigue con el [handbook](documentation/HANDBOOK.md).
 
 ## Plan

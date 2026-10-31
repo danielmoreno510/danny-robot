@@ -1,0 +1,927 @@
+{
+ "source_hash": "e63d28d9ea3d63e99129034831b211473c25ade14049c0974cd58b9c865a72cf",
+ "zero_pose": [],
+ "joints": {
+  "left_hip_yaw": [
+   {
+    "degrees": -15.0,
+    "interference": []
+   },
+   {
+    "degrees": -9.4,
+    "interference": []
+   },
+   {
+    "degrees": -3.7,
+    "interference": []
+   },
+   {
+    "degrees": 1.9,
+    "interference": []
+   },
+   {
+    "degrees": 7.5,
+    "interference": []
+   },
+   {
+    "degrees": 13.1,
+    "interference": []
+   },
+   {
+    "degrees": 18.8,
+    "interference": []
+   },
+   {
+    "degrees": 24.4,
+    "interference": []
+   },
+   {
+    "degrees": 30.0,
+    "interference": []
+   }
+  ],
+  "left_hip_roll": [
+   {
+    "degrees": -15.0,
+    "interference": []
+   },
+   {
+    "degrees": -8.8,
+    "interference": []
+   },
+   {
+    "degrees": -2.5,
+    "interference": []
+   },
+   {
+    "degrees": 3.7,
+    "interference": []
+   },
+   {
+    "degrees": 10.0,
+    "interference": []
+   },
+   {
+    "degrees": 16.2,
+    "interference": []
+   },
+   {
+    "degrees": 22.5,
+    "interference": []
+   },
+   {
+    "degrees": 28.7,
+    "interference": []
+   },
+   {
+    "degrees": 35.0,
+    "interference": []
+   }
+  ],
+  "left_hip_pitch": [
+   {
+    "degrees": -100.0,
+    "interference": []
+   },
+   {
+    "degrees": -85.0,
+    "interference": []
+   },
+   {
+    "degrees": -70.0,
+    "interference": []
+   },
+   {
+    "degrees": -55.0,
+    "interference": []
+   },
+   {
+    "degrees": -40.0,
+    "interference": []
+   },
+   {
+    "degrees": -25.0,
+    "interference": []
+   },
+   {
+    "degrees": -10.0,
+    "interference": []
+   },
+   {
+    "degrees": 5.0,
+    "interference": []
+   },
+   {
+    "degrees": 20.0,
+    "interference": []
+   }
+  ],
+  "left_knee": [
+   {
+    "degrees": 0.0,
+    "interference": []
+   },
+   {
+    "degrees": 16.2,
+    "interference": []
+   },
+   {
+    "degrees": 32.5,
+    "interference": []
+   },
+   {
+    "degrees": 48.8,
+    "interference": []
+   },
+   {
+    "degrees": 65.0,
+    "interference": []
+   },
+   {
+    "degrees": 81.3,
+    "interference": []
+   },
+   {
+    "degrees": 97.5,
+    "interference": []
+   },
+   {
+    "degrees": 113.8,
+    "interference": []
+   },
+   {
+    "degrees": 130.0,
+    "interference": []
+   }
+  ],
+  "left_ankle_pitch": [
+   {
+    "degrees": -30.0,
+    "interference": []
+   },
+   {
+    "degrees": -21.2,
+    "interference": []
+   },
+   {
+    "degrees": -12.5,
+    "interference": []
+   },
+   {
+    "degrees": -3.7,
+    "interference": []
+   },
+   {
+    "degrees": 5.0,
+    "interference": []
+   },
+   {
+    "degrees": 13.8,
+    "interference": []
+   },
+   {
+    "degrees": 22.5,
+    "interference": []
+   },
+   {
+    "degrees": 31.2,
+    "interference": []
+   },
+   {
+    "degrees": 40.0,
+    "interference": []
+   }
+  ],
+  "left_ankle_roll": [
+   {
+    "degrees": -20.0,
+    "interference": []
+   },
+   {
+    "degrees": -15.0,
+    "interference": []
+   },
+   {
+    "degrees": -10.0,
+    "interference": []
+   },
+   {
+    "degrees": -5.0,
+    "interference": []
+   },
+   {
+    "degrees": 0.0,
+    "interference": []
+   },
+   {
+    "degrees": 5.0,
+    "interference": []
+   },
+   {
+    "degrees": 10.0,
+    "interference": []
+   },
+   {
+    "degrees": 15.0,
+    "interference": []
+   },
+   {
+    "degrees": 20.0,
+    "interference": []
+   }
+  ],
+  "right_hip_yaw": [
+   {
+    "degrees": -30.0,
+    "interference": []
+   },
+   {
+    "degrees": -24.4,
+    "interference": []
+   },
+   {
+    "degrees": -18.7,
+    "interference": []
+   },
+   {
+    "degrees": -13.1,
+    "interference": []
+   },
+   {
+    "degrees": -7.5,
+    "interference": []
+   },
+   {
+    "degrees": -1.9,
+    "interference": []
+   },
+   {
+    "degrees": 3.8,
+    "interference": []
+   },
+   {
+    "degrees": 9.4,
+    "interference": []
+   },
+   {
+    "degrees": 15.0,
+    "interference": []
+   }
+  ],
+  "right_hip_roll": [
+   {
+    "degrees": -35.0,
+    "interference": []
+   },
+   {
+    "degrees": -28.8,
+    "interference": []
+   },
+   {
+    "degrees": -22.5,
+    "interference": []
+   },
+   {
+    "degrees": -16.2,
+    "interference": []
+   },
+   {
+    "degrees": -10.0,
+    "interference": []
+   },
+   {
+    "degrees": -3.8,
+    "interference": []
+   },
+   {
+    "degrees": 2.5,
+    "interference": []
+   },
+   {
+    "degrees": 8.7,
+    "interference": []
+   },
+   {
+    "degrees": 15.0,
+    "interference": []
+   }
+  ],
+  "right_hip_pitch": [
+   {
+    "degrees": -100.0,
+    "interference": []
+   },
+   {
+    "degrees": -85.0,
+    "interference": []
+   },
+   {
+    "degrees": -70.0,
+    "interference": []
+   },
+   {
+    "degrees": -55.0,
+    "interference": []
+   },
+   {
+    "degrees": -40.0,
+    "interference": []
+   },
+   {
+    "degrees": -25.0,
+    "interference": []
+   },
+   {
+    "degrees": -10.0,
+    "interference": []
+   },
+   {
+    "degrees": 5.0,
+    "interference": []
+   },
+   {
+    "degrees": 20.0,
+    "interference": []
+   }
+  ],
+  "right_knee": [
+   {
+    "degrees": 0.0,
+    "interference": []
+   },
+   {
+    "degrees": 16.2,
+    "interference": []
+   },
+   {
+    "degrees": 32.5,
+    "interference": []
+   },
+   {
+    "degrees": 48.8,
+    "interference": []
+   },
+   {
+    "degrees": 65.0,
+    "interference": []
+   },
+   {
+    "degrees": 81.3,
+    "interference": []
+   },
+   {
+    "degrees": 97.5,
+    "interference": []
+   },
+   {
+    "degrees": 113.8,
+    "interference": []
+   },
+   {
+    "degrees": 130.0,
+    "interference": []
+   }
+  ],
+  "right_ankle_pitch": [
+   {
+    "degrees": -30.0,
+    "interference": []
+   },
+   {
+    "degrees": -21.2,
+    "interference": []
+   },
+   {
+    "degrees": -12.5,
+    "interference": []
+   },
+   {
+    "degrees": -3.7,
+    "interference": []
+   },
+   {
+    "degrees": 5.0,
+    "interference": []
+   },
+   {
+    "degrees": 13.8,
+    "interference": []
+   },
+   {
+    "degrees": 22.5,
+    "interference": []
+   },
+   {
+    "degrees": 31.2,
+    "interference": []
+   },
+   {
+    "degrees": 40.0,
+    "interference": []
+   }
+  ],
+  "right_ankle_roll": [
+   {
+    "degrees": -20.0,
+    "interference": []
+   },
+   {
+    "degrees": -15.0,
+    "interference": []
+   },
+   {
+    "degrees": -10.0,
+    "interference": []
+   },
+   {
+    "degrees": -5.0,
+    "interference": []
+   },
+   {
+    "degrees": 0.0,
+    "interference": []
+   },
+   {
+    "degrees": 5.0,
+    "interference": []
+   },
+   {
+    "degrees": 10.0,
+    "interference": []
+   },
+   {
+    "degrees": 15.0,
+    "interference": []
+   },
+   {
+    "degrees": 20.0,
+    "interference": []
+   }
+  ],
+  "waist_yaw": [
+   {
+    "degrees": -60.0,
+    "interference": []
+   },
+   {
+    "degrees": -45.0,
+    "interference": []
+   },
+   {
+    "degrees": -30.0,
+    "interference": []
+   },
+   {
+    "degrees": -15.0,
+    "interference": []
+   },
+   {
+    "degrees": 0.0,
+    "interference": []
+   },
+   {
+    "degrees": 15.0,
+    "interference": []
+   },
+   {
+    "degrees": 30.0,
+    "interference": []
+   },
+   {
+    "degrees": 45.0,
+    "interference": []
+   },
+   {
+    "degrees": 60.0,
+    "interference": []
+   }
+  ],
+  "left_shoulder_pitch": [
+   {
+    "degrees": -170.0,
+    "interference": []
+   },
+   {
+    "degrees": -143.1,
+    "interference": []
+   },
+   {
+    "degrees": -116.2,
+    "interference": []
+   },
+   {
+    "degrees": -89.4,
+    "interference": []
+   },
+   {
+    "degrees": -62.5,
+    "interference": []
+   },
+   {
+    "degrees": -35.6,
+    "interference": []
+   },
+   {
+    "degrees": -8.8,
+    "interference": []
+   },
+   {
+    "degrees": 18.1,
+    "interference": []
+   },
+   {
+    "degrees": 45.0,
+    "interference": []
+   }
+  ],
+  "left_shoulder_roll": [
+   {
+    "degrees": -10.0,
+    "interference": []
+   },
+   {
+    "degrees": 6.2,
+    "interference": []
+   },
+   {
+    "degrees": 22.5,
+    "interference": []
+   },
+   {
+    "degrees": 38.7,
+    "interference": []
+   },
+   {
+    "degrees": 55.0,
+    "interference": []
+   },
+   {
+    "degrees": 71.2,
+    "interference": []
+   },
+   {
+    "degrees": 87.5,
+    "interference": []
+   },
+   {
+    "degrees": 103.7,
+    "interference": []
+   },
+   {
+    "degrees": 120.0,
+    "interference": []
+   }
+  ],
+  "left_shoulder_yaw": [
+   {
+    "degrees": -80.0,
+    "interference": []
+   },
+   {
+    "degrees": -60.0,
+    "interference": []
+   },
+   {
+    "degrees": -40.0,
+    "interference": []
+   },
+   {
+    "degrees": -20.0,
+    "interference": []
+   },
+   {
+    "degrees": 0.0,
+    "interference": []
+   },
+   {
+    "degrees": 20.0,
+    "interference": []
+   },
+   {
+    "degrees": 40.0,
+    "interference": []
+   },
+   {
+    "degrees": 60.0,
+    "interference": []
+   },
+   {
+    "degrees": 80.0,
+    "interference": []
+   }
+  ],
+  "left_elbow": [
+   {
+    "degrees": -130.0,
+    "interference": []
+   },
+   {
+    "degrees": -113.8,
+    "interference": []
+   },
+   {
+    "degrees": -97.5,
+    "interference": []
+   },
+   {
+    "degrees": -81.3,
+    "interference": []
+   },
+   {
+    "degrees": -65.0,
+    "interference": []
+   },
+   {
+    "degrees": -48.7,
+    "interference": []
+   },
+   {
+    "degrees": -32.5,
+    "interference": []
+   },
+   {
+    "degrees": -16.3,
+    "interference": []
+   },
+   {
+    "degrees": 0.0,
+    "interference": []
+   }
+  ],
+  "right_shoulder_pitch": [
+   {
+    "degrees": -170.0,
+    "interference": []
+   },
+   {
+    "degrees": -143.1,
+    "interference": []
+   },
+   {
+    "degrees": -116.2,
+    "interference": []
+   },
+   {
+    "degrees": -89.4,
+    "interference": []
+   },
+   {
+    "degrees": -62.5,
+    "interference": []
+   },
+   {
+    "degrees": -35.6,
+    "interference": []
+   },
+   {
+    "degrees": -8.8,
+    "interference": []
+   },
+   {
+    "degrees": 18.1,
+    "interference": []
+   },
+   {
+    "degrees": 45.0,
+    "interference": []
+   }
+  ],
+  "right_shoulder_roll": [
+   {
+    "degrees": -120.0,
+    "interference": []
+   },
+   {
+    "degrees": -103.8,
+    "interference": []
+   },
+   {
+    "degrees": -87.5,
+    "interference": []
+   },
+   {
+    "degrees": -71.2,
+    "interference": []
+   },
+   {
+    "degrees": -55.0,
+    "interference": []
+   },
+   {
+    "degrees": -38.8,
+    "interference": []
+   },
+   {
+    "degrees": -22.5,
+    "interference": []
+   },
+   {
+    "degrees": -6.3,
+    "interference": []
+   },
+   {
+    "degrees": 10.0,
+    "interference": []
+   }
+  ],
+  "right_shoulder_yaw": [
+   {
+    "degrees": -80.0,
+    "interference": []
+   },
+   {
+    "degrees": -60.0,
+    "interference": []
+   },
+   {
+    "degrees": -40.0,
+    "interference": []
+   },
+   {
+    "degrees": -20.0,
+    "interference": []
+   },
+   {
+    "degrees": 0.0,
+    "interference": []
+   },
+   {
+    "degrees": 20.0,
+    "interference": []
+   },
+   {
+    "degrees": 40.0,
+    "interference": []
+   },
+   {
+    "degrees": 60.0,
+    "interference": []
+   },
+   {
+    "degrees": 80.0,
+    "interference": []
+   }
+  ],
+  "right_elbow": [
+   {
+    "degrees": -130.0,
+    "interference": []
+   },
+   {
+    "degrees": -113.8,
+    "interference": []
+   },
+   {
+    "degrees": -97.5,
+    "interference": []
+   },
+   {
+    "degrees": -81.3,
+    "interference": []
+   },
+   {
+    "degrees": -65.0,
+    "interference": []
+   },
+   {
+    "degrees": -48.7,
+    "interference": []
+   },
+   {
+    "degrees": -32.5,
+    "interference": []
+   },
+   {
+    "degrees": -16.3,
+    "interference": []
+   },
+   {
+    "degrees": 0.0,
+    "interference": []
+   }
+  ],
+  "neck_yaw": [
+   {
+    "degrees": -70.0,
+    "interference": []
+   },
+   {
+    "degrees": -52.5,
+    "interference": []
+   },
+   {
+    "degrees": -35.0,
+    "interference": []
+   },
+   {
+    "degrees": -17.5,
+    "interference": []
+   },
+   {
+    "degrees": 0.0,
+    "interference": []
+   },
+   {
+    "degrees": 17.5,
+    "interference": []
+   },
+   {
+    "degrees": 35.0,
+    "interference": []
+   },
+   {
+    "degrees": 52.5,
+    "interference": []
+   },
+   {
+    "degrees": 70.0,
+    "interference": []
+   }
+  ],
+  "neck_pitch": [
+   {
+    "degrees": -30.0,
+    "interference": []
+   },
+   {
+    "degrees": -21.2,
+    "interference": []
+   },
+   {
+    "degrees": -12.5,
+    "interference": []
+   },
+   {
+    "degrees": -3.7,
+    "interference": []
+   },
+   {
+    "degrees": 5.0,
+    "interference": []
+   },
+   {
+    "degrees": 13.8,
+    "interference": []
+   },
+   {
+    "degrees": 22.5,
+    "interference": []
+   },
+   {
+    "degrees": 31.2,
+    "interference": []
+   },
+   {
+    "degrees": 40.0,
+    "interference": []
+   }
+  ]
+ },
+ "poses": {
+  "deep_squat": {
+   "left": [],
+   "right": [],
+   "left+right": []
+  },
+  "knee_to_chest": {
+   "left": [],
+   "right": []
+  },
+  "leg_back_knee_bent": {
+   "left": [],
+   "right": [],
+   "left+right": []
+  },
+  "hip_out_and_forward": {
+   "left": [],
+   "right": []
+  },
+  "hip_turned_and_forward": {
+   "left": [],
+   "right": []
+  },
+  "arm_raised_to_side": {
+   "left": [],
+   "right": []
+  },
+  "wave": {
+   "left": [],
+   "right": [],
+   "left+right": []
+  },
+  "arm_forward_bent": {
+   "left": [],
+   "right": [],
+   "left+right": []
+  },
+  "arm_up": {
+   "left": [],
+   "right": [],
+   "left+right": []
+  },
+  "arm_back_bent": {
+   "left": [],
+   "right": []
+  }
+ }
+}

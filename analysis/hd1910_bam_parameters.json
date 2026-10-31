@@ -1,0 +1,9 @@
+{
+ "source": "LuwuDynamics/xgoduck_rl, src/mjlab_microduck/robot/xgoduck/params/1910_m6.json (Apache-2.0). Sin confirmar en nuestros servos.",
+ "kt": 0.6237611235393989,
+ "R": 4.910191564179625,
+ "armature": 0.0017819049974475338,
+ "friction_base": 0.015803365327573494,
+ "friction_stribeck": 0.009590058942953754,
+ "friction_viscous": 0.0003101648214055195
+}

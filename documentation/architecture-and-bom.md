@@ -1,7 +1,8 @@
 # Arquitectura y desglose de piezas
 
 **Etapa 1.3, aprobada por el usuario con 40 cm.** Las cifras salen de `analysis/estimate_robot_budget.py` y
-`analysis/compare_actuators.py`, y son previas al CAD. Nada está comprado.
+`analysis/compare_actuators.py`, y son previas al CAD: la masa medida en CAD es menor, 1,29 kg (E), en
+`results/robot_check.json`. Nada está comprado.
 
 **Base:** **V** fabricante, **S** tienda, **E** estimación. Precios en euros con IVA, consultados el 31 de
 octubre de 2026.
@@ -41,7 +42,7 @@ sube la masa a 2,19 kg y el par al 73 %.
 | Zona | GDL | Articulaciones | Dónde va el servo |
 |---|---|---|---|
 | Pierna, 6 × 2 | 12 | Cadera yaw, roll y pitch; rodilla; tobillo pitch y roll | Yaw en pelvis; roll y pitch en cadera; rodilla en muslo; tobillo en tibia y pie |
-| Cintura | 1 | Yaw | Base del torso |
+| Cintura | 1 | Yaw | Pelvis, junto a los de yaw de cadera. Sale hacia el torso |
 | Brazo, 4 × 2 | 8 | Hombro pitch, roll y yaw; codo | Pitch dentro del torso; roll en hombro; yaw y codo en el brazo |
 | Cuello | 2 | Yaw y pitch | Cuello y cabeza |
 | Manos, después | 4 | Muñeca y pinza, × 2 | Antebrazo y mano: espacio reservado |
@@ -50,6 +51,10 @@ La pierna lleva 6 GDL, no 5 como el XGO-Duck: el roll de tobillo permite apartar
 inclinar el pie, y un humanoide de pies estrechos lo necesita. Cuesta 2 servos y 42 g cerca del suelo.
 
 ## 3. Medidas por tramo
+
+Previas al CAD. El robot ya está modelado, en [lower-body-design.md](lower-body-design.md) y
+[upper-body-design.md](upper-body-design.md): la altura sigue en 395 mm, y la pierna en 200 mm. La pelvis llega hasta unos
+72 mm sobre el eje de cadera porque aloja el servo de cintura, así que el torso empieza más arriba.
 
 | Tramo | 36 cm | 40 cm |
 |---|---|---|
@@ -64,13 +69,13 @@ inclinar el pie, y un humanoide de pies estrechos lo necesita. Cuesta 2 servos y
 
 | Pieza | Forma y medidas de partida |
 |---|---|
-| Torso | Caja afinada a la cintura, unos 72 × 52 × 88 mm a 40 cm: tres capas, de abajo arriba: servo de cintura, electrónica y servos de hombro |
-| Hombros | 132 mm a 40 cm: 72 de torso y 30 por brazo |
-| Pelvis | Los dos servos de yaw de cadera, con caderas a unos ±28 mm. El de cintura va en la base del torso |
-| Muslo y tibia | Viga hueca con los servos dentro, unos 32 × 36 mm, cubierta por un panel |
-| Pie | Placa de unos 85 × 45 mm con suela de TPU |
-| Cabeza | Ovalada, unos 45 × 50 × 55 mm, con cámara detrás de una visera y sitio para el micrófono |
-| Brazo | Unos 175 mm en total a 40 cm, un 44 % de la altura, como una persona |
+| Torso | Caja de 78 × 54,4 × 68,5 mm en CAD, en dos pisos: abajo electrónica, arriba servos de hombro y cuello. Se afina con los paneles en la 2.4 |
+| Hombros | 133,8 mm en CAD: 78 de torso y unos 28 por brazo |
+| Pelvis | 81 mm de ancho, con los dos servos de yaw de cadera a lo largo de X, caderas a ±29 mm, y el de cintura entre ellos |
+| Muslo y tibia | Viga con el servo dentro, de unos 24 × 29 mm en la caja y 30 × 35 mm arriba, con tapa atornillada |
+| Pie | Placa de 85 × 48 mm con suela de TPU |
+| Cabeza | 46 × 50 × 37 mm en CAD, más cuello, con cámara detrás de una ventana. El micrófono queda en el pecho, en la reserva de voz |
+| Brazo | 177 mm en CAD, un 45 % de la altura. Reserva dos servos en el antebrazo para muñeca y pinza |
 
 Todo el aspecto de Optimus viene de **paneles lisos atornillados sobre el esqueleto**, previstos en 100 g.
 Son lo primero que se quita si sobra masa.
@@ -93,7 +98,7 @@ Del robot de 40 cm. Coste por concepto, con repuestos.
 | Interruptor, fusible y XT30 | 1 | 30 × 15 × 12 | Varios | 8 g | 12 € | 12,00 € | E |
 | Cables y conectores | 1 | AMP 2.0, 3 pines | Mazo | 40 g | 20 € | 20,00 € | E |
 | Rodamientos, packs de 14 | 2 | 10 × 15 × 3 y 16 × 22 × 4 | Anillos | 32 g | 35,95 € | 71,90 € | S, masa E |
-| Tornillos e insertos M2 | 1 | M2 | Varios | 60 g | 25 € | 25,00 € | E |
+| Tornillos M2 autorroscantes e insertos | 1 | M2 × 5 a 8, M2,5 × 6 y fijador | Varios | 60 g | 25 € | 25,00 € | E |
 | Estructura y paneles PETG-CF | 3 bobinas | 1 kg cada una | Impresa | 880 g | 33 € | 99,00 € | S, masa E |
 | Suelas TPU 95A | 1 bobina | 1 kg | Impresa | 10 g | 35 € | 35,00 € | S, masa E |
 | FE-URT-2 | 1 | Placa | Banco | - | 15,96 € | 15,96 € | S |
@@ -149,18 +154,20 @@ la alimentación repartida desde la placa.
 2. **Sin precedente** de humanoide con brazos y este servo.
 3. **Tensión:** la batería cae de 8,4 V a unos 6 V. El servo pierde velocidad y par, y el regulador pide 6 V
    mínimo: hay que entrenar con tensión variable y cortar antes de llegar a 6 V.
-4. **Levantarse:** con brazos de 175 mm, sin calcular. Se comprueba en la etapa 3.
+4. **Levantarse:** con brazos de 177 mm, sin calcular. Se comprueba en la etapa 3.
 5. **Radxa:** stock sin confirmar; la NPU de este chip no está garantizada, y la visión debe funcionar en CPU.
 6. **Masa de paneles:** estimada, y sube con cada iteración.
 7. **Masa de estructura:** si supera lo previsto, el margen de par baja deprisa.
-8. **Torso sin holgura:** batería y placa ocupan 65 de 66 mm de ancho y 46 de 46 mm de fondo, sin contar IMU,
-   regulador ni interruptor, y el torso se afina a la cintura. Hay que comprobarlo primero en CAD.
-9. **Batería casera:** los paquetes deben llevar soldadura por puntos y BMS. No se sueldan celdas a mano.
+8. **Conectores del servo:** se sabe que van en muescas de las caras anchas, pero no su medida exacta. Ver
+   [upper-body-design.md](upper-body-design.md).
+9. **Bocina única:** cintura, hombro, yaw de brazo y cuello cuelgan de una bocina, sin dato de carga radial. Se mide en la 5.1, y
+   el rodamiento de 16 × 22 × 4 mm alrededor de la bocina es la mejora prevista.
+10. **Batería casera:** los paquetes deben llevar soldadura por puntos y BMS. No se sueldan celdas a mano.
 
 ## 8. Para empezar en Fusion
 
-1. Modelo del servo: buscar el STEP en la [wiki de Feetech](https://ftservo.github.io/ftservo-wiki/en/products/models/hd-1910-c001/main/)
-   o pedirlo a la tienda. Hacen falta eje, agujeros y estrías. Sin él, medir la maqueta.
+1. Modelo del servo: `BuildRobot` usa el [plano oficial](https://ftservo.github.io/ftservo-wiki/en/products/models/hd-1910-c001/main/).
+   **No uses el STEP de esa página:** `HD-1910-C001-20260902.stp` es de un HL-2915, y mide unos 37 × 23 mm.
 2. Imprimir una [maqueta del servo a escala 1:1](https://makerworld.com/en/models/3502393-feetech-1910-servo-mock-1-1-dummy)
    para probar encajes sin comprar.
 3. Crear el esqueleto con los tramos de la sección 3 como parámetros.
@@ -177,4 +184,7 @@ Las de [research-and-requirements.md](research-and-requirements.md), más:
 [Molicel P30B](https://nkon.nl/novat/molicel-inr18650-p30b-3000mah-30a.html) ·
 [Waveshare Adapter (A)](https://www.waveshare.com/wiki/Bus_Servo_Adapter_(A)) ·
 [Filamentos Bambu](https://eu.store.bambulab.com/en/collections/fiber-reinforced) ·
-[BMI088](https://www.distrelec.de/en/axis-accelerometer-and-gyroscope-seeed-studio-101020584/p/30127498)
+[BMI088](https://www.distrelec.de/en/axis-accelerometer-and-gyroscope-seeed-studio-101020584/p/30127498) ·
+[Hardware de XGO-Duck](https://github.com/LuwuDynamics/xgoduck_hardware) ·
+[Réplica de Microduck con HD-1910](https://github.com/fanhao375/microduck-replica-cad) ·
+[IndieDuck](https://github.com/armature-ai-labs/indieduck)

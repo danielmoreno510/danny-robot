@@ -41,7 +41,7 @@ Necesitas Python 3.12 y `git`. Para cada etapa, además:
 
 | Etapa | Herramienta | Quién |
 |---|---|---|
-| 2 | Autodesk Fusion y [ACDC4Robot 1.1.1](https://github.com/ACDC4Robot/Fusion360/releases/tag/v1.1.1). Comprueba que tu licencia de Fusion permite complementos | Humano: Claude no controla Fusion desde aquí |
+| 2 | Autodesk Fusion y [ACDC4Robot 1.1.1](https://github.com/ACDC4Robot/Fusion360/releases/tag/v1.1.1). Comprueba que tu licencia de Fusion permite complementos | Humano para instalar y activar. Claude modela por scripts con `DannyBridge`, sección 7 |
 | 3 | MuJoCo, por `requirements.txt`, en cualquier equipo | Claude y humano |
 | 4 | GPU NVIDIA, CUDA, Linux o WSL, y `uv` | Equipo con la RTX 3080 Ti. Sin GPU, mjlab solo evalúa |
 | 2 y 5 | Impresora cerrada multimaterial. En la etapa 2, material de prueba; en la 5, PETG-CF, TPU y soldador | Humano |
@@ -124,10 +124,10 @@ Detalle en [architecture-and-bom.md](architecture-and-bom.md).
 | Dato | Valor |
 |---|---|
 | Altura | 395 mm: tobillo 35, tibia 82, muslo 83, cadera 48, torso 88, holgura 4, cabeza 55 |
-| Hombros | 132 mm; torso de 66 mm de ancho interior |
-| Caderas | Unos ±28 mm |
-| Pie | Unos 85 × 45 mm |
-| Masa | Máximo 1,8 kg sin manos y 1,9 kg con manos; 1,66 a 1,78 kg estimados sin manos |
+| Hombros | 133,8 mm; torso de 73 mm de ancho interior |
+| Caderas | ±29 mm |
+| Pie | 85 × 48 mm |
+| Masa | Máximo 1,8 kg sin manos y 1,9 kg con manos; 1,29 kg (E) en CAD, con cables y tornillos estimados |
 | Servo HD-1910-C001 | 34 × 20 × 23 mm, 29 mm con ejes, 21 g, eje doble, 7,4 V |
 | Par del servo | Bloqueo 1,47 N·m y nominal 0,36 N·m a 7,4 V; el continuo real es desconocido |
 | Velocidad del servo | 11,9 rad/s en vacío a 7,4 V |
@@ -136,7 +136,8 @@ Detalle en [architecture-and-bom.md](architecture-and-bom.md).
 ### Rangos de articulación
 
 Objetivo provisional (E), inspirado en una persona. Son criterio de la etapa 2: si uno no se alcanza, para y avisa
-con la causa. Cada rango se comprueba solo, con el resto de articulaciones en pose cero.
+con la causa. Cada rango se comprueba solo, desde la pose de partida de `SweepJointRanges`: con el brazo colgando no hay
+sitio para que una pierna se abra, igual que en una persona. Detalle en [upper-body-design.md](upper-body-design.md).
 
 En pose cero, los ejes son iguales en ambos lados: pitch sobre +Y, roll sobre +X y yaw sobre +Z. Por eso, pitch
 positivo lleva pierna y brazo atrás, y roll positivo lleva el lado izquierdo afuera y el derecho adentro.
@@ -144,16 +145,17 @@ positivo lleva pierna y brazo atrás, y roll positivo lleva el lado izquierdo af
 | Articulación | Eje | Mínimo | Máximo | Qué es |
 |---|---|---:|---:|---|
 | `hip_pitch` | +Y | -100° | 20° | Negativo: pierna adelante |
-| `left_hip_roll` | +X | -3° | 35° | Positivo: afuera. El otro pie limita hacia dentro |
-| `right_hip_roll` | +X | -35° | 3° | Negativo: afuera |
-| `hip_yaw` | +Z | -30° | 30° | |
+| `left_hip_roll` | +X | -15° | 35° | Positivo: afuera. Hacia dentro, con el otro pie apartado |
+| `right_hip_roll` | +X | -35° | 15° | Negativo: afuera |
+| `left_hip_yaw` | +Z | -15° | 30° | Positivo: punta afuera. El otro pie limita hacia dentro |
+| `right_hip_yaw` | +Z | -30° | 15° | Negativo: punta afuera |
 | `knee` | +Y | 0° | 130° | Positivo: dobla |
 | `ankle_pitch` | +Y | -30° | 40° | Positivo: punta abajo |
 | `ankle_roll` | +X | -20° | 20° | |
 | `waist_yaw` | +Z | -60° | 60° | |
 | `shoulder_pitch` | +Y | -170° | 45° | Negativo: brazo adelante |
-| `left_shoulder_roll` | +X | -10° | 120° | Positivo: afuera |
-| `right_shoulder_roll` | +X | -120° | 10° | Negativo: afuera |
+| `left_shoulder_roll` | +X | -10° | 120° | Positivo: afuera. Con el brazo abajo, la pelvis limita cerca de 0° |
+| `right_shoulder_roll` | +X | -120° | 10° | Negativo: afuera. Igual |
 | `shoulder_yaw` | +Z | -80° | 80° | |
 | `elbow` | +Y | -130° | 0° | Negativo: dobla hacia adelante |
 | `neck_yaw` | +Z | -70° | 70° | |
@@ -177,43 +179,85 @@ diseño.
 
 **Reglas del CAD:**
 
-- Un archivo maestro con los tramos de la sección 5 como **parámetros de usuario**: `thigh_length`,
-  `shin_length`, etc.
-- Un componente por eslabón rígido, nombrado en inglés como su función: `pelvis`, `left_thigh`, `left_shin`.
+- Las medidas viven en constantes al principio de cada script de `cad/fusion/`: se cambian ahí y se regenera. Decisión
+  de la etapa 2.2, que sustituye a los parámetros de usuario de Fusion, porque el script ya es reproducible.
+- Un componente por eslabón rígido, nombrado en inglés como su función: `left_thigh`, `left_shin`. La pelvis se
+  llama `base_link`, porque el exportador pide ese nombre o el de un eslabón fijo.
 - Una articulación de Fusion por cada una de la sección 4, con el mismo nombre, eje y signo que la tabla de rangos.
 - **Material con densidad real en cada cuerpo,** porque de ahí salen masas e inercias. Los servos, con su masa
   medida o de ficha, aunque se modelen como caja.
 - Geometría de colisión simple por separado: los pies importan más que nada.
 - Holguras para impresión: probarlas con una pieza pequeña antes de diseñar el resto.
-- Prever: paso de cables por las articulaciones, herramienta para llegar a cada tornillo, y rodamiento en el
-  lado libre de cada eje doble.
-- Crea `cad/` en el primer trabajo: `cad/fusion/` con el archivo `.f3z` y `cad/export/` con el MJCF y sus mallas.
+- Prever: paso de cables por las articulaciones y herramienta para llegar a cada tornillo. El lado libre del eje
+  doble usa la bocina libre del servo, sin rodamiento añadido: sin comprobar con un servo real.
+- `cad/fusion/` guarda los scripts, `cad/export/` el MJCF y sus mallas, y `cad/print/` los STL para imprimir.
 
-**Pasos:**
+**Modelar con Claude:** el complemento `cad/fusion/DannyBridge` ejecuta en Fusion los scripts de `cad/fusion/`,
+cada uno en su carpeta con una función `build(app)`. Se instala una vez en cada equipo:
+
+```bash
+ln -s "$PWD/cad/fusion/DannyBridge" ~/Library/Application\ Support/Autodesk/Autodesk\ Fusion\ 360/API/AddIns/DannyBridge
+```
+
+Reinicia Fusion: su manifiesto hace que arranque solo. Si no responde, abre Scripts y complementos (Mayús+S),
+pestaña Complementos, selecciona `DannyBridge` y pulsa Ejecutar. Después, para probarlo y lanzar la pieza de la
+etapa 2.1:
+
+```bash
+.venv/bin/python analysis/run_fusion_script.py ReportFusionState
+.venv/bin/python analysis/run_fusion_script.py BuildExportTest
+```
+
+El comando muestra lo que devuelve el script y deja la vista en `cad/fusion/bridge_view.png`.
+
+**Exportar:** descomprime `ACDC4Robot-1.1.1.zip` en esa misma carpeta `AddIns`, de modo que quede
+`AddIns/ACDC4Robot/`. `ExportModel` usa su código sin abrir diálogos y escribe en `cad/export/<export_name>/`:
+
+```bash
+.venv/bin/python analysis/run_fusion_script.py ExportModel
+```
+
+Reglas del exportador:
+
+- El diseño necesita el atributo `danny` / `export_name`, porque Fusion no deja renombrar el componente raíz. Ver
+  `BuildExportTest`.
+- En una articulación, la primera ocurrencia es la hija y la segunda el padre.
+- La estructura debe ser plana, sin ocurrencias anidadas, con un componente fijo llamado `base_link`.
+- Los cuerpos de MuJoCo toman el nombre de la ocurrencia: `arm_link` sale como `arm_link_1`.
+- El MJCF no trae colisiones, actuadores, sensores ni suelo: van en una capa aparte.
+
+**Orientación:** los scripts escriben coordenadas REP-103, con Z arriba, sea cual sea la preferencia de Fusion. Con
+Y arriba el modelo es correcto, pero se ve tumbado. Fíate de `camera_up` en `ReportFusionState`: `z_up` dio
+`true` sin documento abierto y `false` con él.
+
+**Pasos:** las órdenes y su estado están en [lower-body-design.md](lower-body-design.md) y
+[upper-body-design.md](upper-body-design.md). `BuildRobot` modela el robot completo, y
+`analysis/estimate_fall_energy.py` escribe la estimación de caída.
 
 | Paso | Qué hacer | Terminado cuando |
 |---|---|---|
-| 2.1 | Instalar ACDC4Robot 1.1.1. Modelar dos eslabones y una articulación, exportar a MJCF y abrirlo en MuJoCo | El modelo carga, la masa difiere menos de un 1 % y el eje menos de 1° del CAD |
-| 2.2 | Conseguir el plano del servo (sección 8 de la arquitectura) e imprimir la [maqueta](https://makerworld.com/en/models/3502393-feetech-1910-servo-mock-1-1-dummy) con material de prueba. Modelar cadera y pierna con parámetros | Rangos de la sección 5 sin choques, encaje comprobado con la maqueta y pieza pesada |
-| 2.3 | Torso, brazos, cabeza y cables. Empezar por la electrónica: el torso va sin holgura | Electrónica con IMU, regulador e interruptor, y servos, caben con espacio para manos y voz |
-| 2.4 | Paneles, protección contra caídas y reservas | Robot completo sin interferencias, y R4 y R10 cumplidos en CAD |
+| 2.1 | Hecho. Instalar ACDC4Robot 1.1.1. Modelar dos eslabones y una articulación, exportar a MJCF y abrirlo en MuJoCo | El modelo carga, la masa difiere menos de un 1 % y el eje menos de 1° del CAD |
+| 2.2 | Conseguir el plano del servo (sección 8 de la arquitectura) e imprimir la [maqueta](https://makerworld.com/en/models/3502393-feetech-1910-servo-mock-1-1-dummy) con material de prueba. Modelar cadera y pierna por script. El usuario aún no tiene impresora | Rangos de la sección 5 sin choques, encaje comprobado con la maqueta y pieza pesada |
+| 2.3 | Torso, brazos, cabeza y cables. Empezar por la electrónica: el torso va sin holgura | Electrónica con IMU, regulador e interruptor, y servos, caben con espacio para manos y voz, y hay salida real para cada conector |
+| 2.4 | Primera iteración hecha: [paneles y protección](panels-and-protection.md). Afinar la forma con el dueño del proyecto | Robot completo sin interferencias, y R4 y R10 cumplidos en CAD |
 
 Para comprobar el modelo exportado sin ventana, con la masa total del CAD en kg, y para verlo:
 
 ```bash
-.venv/bin/python analysis/inspect_model.py cad/export/<modelo>.xml --expected-mass <masa>
+.venv/bin/python analysis/inspect_model.py cad/export/danny/danny.xml --expected-mass 1.1898
 ```
 
 ```bash
-.venv/bin/python -m mujoco.viewer --mjcf=cad/export/<modelo>.xml
+.venv/bin/python -m mujoco.viewer --mjcf=cad/export/danny/danny.xml
 ```
 
 El primero sale con código 1 si el modelo no carga o la masa difiere más de un 1 %, y muestra cada eje para
 compararlo con el CAD. En macOS, este visor va con `python`: con `mjpython` falla. Di siempre si llegaste a ver la
 ventana. En Windows, las órdenes usan `.venv\Scripts\python`.
 
-**Densidad:** en Fusion, asigna al cuerpo impreso una densidad efectiva, no la del material macizo. Parte de
-0,7 g/cm³ (E) y corrígela pesando una pieza impresa en 2.2: de ahí depende R4.
+**Densidad:** en Fusion, asigna al cuerpo impreso una densidad efectiva, no la del material macizo. En piezas
+gruesas, parte de 0,7 g/cm³ (E). Las paredes finas salen macizas: pelvis y piernas usan 1,25 g/cm³ (E). Corrígela
+pesando una pieza impresa en 2.2: de ahí depende R4.
 
 **No se compra nada en esta etapa.** Los rodamientos y el filamento final llegan en la 5. Si necesitas material
 de prueba y no lo tienes, pide aprobación.
@@ -235,7 +279,11 @@ los ajustes de simulación van en un script o archivo aparte, para que sobreviva
 | 3.2 | Medir par y velocidad en cuclillas, apoyo a un pie, marcha y levantarse | Tabla por articulación en `results/` |
 | 3.3 | Corregir el diseño y repetir | Picos de 0,98 N·m o menos a 7,4 V y 0,78 N·m a 6 V, y velocidades por debajo de las de vacío |
 
-Ambos pares son el bloqueo de ficha entre el margen de 1,5, y son provisionales hasta medir el servo.
+Ambos pares son el bloqueo de ficha entre el margen de 1,5, y son provisionales hasta medir el servo. Revisa también la
+curva par-velocidad: el modelo de `xgoduck_rl` da 0,94 N·m de bloqueo a 7,4 V.
+
+**Estado y comandos:** [simulation-results.md](simulation-results.md). Scripts: `analysis/danny_sim.py`, `check_standing.py` y
+`measure_joint_loads.py`.
 
 **De dónde sale el movimiento en 3.2:** aún no hay políticas. Se usan posturas cuasi estáticas y trayectorias
 paramétricas sencillas con cinemática inversa. Son herramientas de medida, no animaciones, y no se conservan.

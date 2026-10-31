@@ -1,0 +1,20 @@
+<mujoco model="export_test">
+    <compiler angle="radian" eulerseq="XYZ" inertiafromgeom="false" />
+    <option timestep="0.002" integrator="implicitfast" />
+    <asset>
+        <mesh name="base_link" file="meshes/base_link.stl" scale="0.001 0.001 0.001" />
+        <mesh name="arm_link_1" file="meshes/arm_link_1.stl" scale="0.001 0.001 0.001" />
+    </asset>
+    <worldbody>
+        <light directional="true" pos="-0.5 0.5 3" dir="0 0 -1" />
+        <body name="base_link" pos="0.0 0.0 0.0" euler="0.0 -0.0 0.0">
+            <geom name="base_link_geom" type="mesh" mesh="base_link" pos="0 0 0" euler="0 0 0" contype="0" conaffinity="0" group="2" />
+            <inertial mass="0.5024" pos="0.0 0.0 0.02" fullinertia="0.00013397333333333325 0.00013397333333333325 0.0001339733333333333 0.0 0.0 0.0" />
+            <body name="arm_link_1" pos="0.0 0.0 0.0" euler="0.0 -0.0 0.0">
+                <joint name="hinge" type="hinge" axis="1.0 0.0 0.0" pos="0.0 0.0 0.04" range="-1.570796 1.570796" limited="true" />
+                <geom name="arm_link_1_geom" type="mesh" mesh="arm_link_1" pos="0 0 0" euler="0 0 0" contype="0" conaffinity="0" group="2" />
+                <inertial mass="0.2512" pos="0.0 0.0 0.08" fullinertia="0.0001423466666666661 0.0001423466666666661 1.6746666666666663e-05 0.0 0.0 0.0" />
+            </body>
+        </body>
+    </worldbody>
+</mujoco>
