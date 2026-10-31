@@ -1,0 +1,182 @@
+{
+ "todo HD-1910 | 22 GDL | 32 cm": {
+  "masa_kg": 1.311,
+  "par_pico_nm": 0.387,
+  "pct_bloqueo_con_margen": 39.5,
+  "supera_nominal_con_margen": true,
+  "marcha_techo_ms": 0.439,
+  "marcha_humana_equivalente_ms": 1.02,
+  "salto_techo_cm": 4.4,
+  "salto_cargado_cm": 1.6
+ },
+ "todo HD-1910 | 22 GDL | 34 cm": {
+  "masa_kg": 1.41,
+  "par_pico_nm": 0.438,
+  "pct_bloqueo_con_margen": 44.6,
+  "supera_nominal_con_margen": true,
+  "marcha_techo_ms": 0.461,
+  "marcha_humana_equivalente_ms": 1.05,
+  "salto_techo_cm": 4.7,
+  "salto_cargado_cm": 1.7
+ },
+ "todo HD-1910 | 22 GDL | 36 cm": {
+  "masa_kg": 1.517,
+  "par_pico_nm": 0.494,
+  "pct_bloqueo_con_margen": 50.4,
+  "supera_nominal_con_margen": true,
+  "marcha_techo_ms": 0.483,
+  "marcha_humana_equivalente_ms": 1.07,
+  "salto_techo_cm": 5.1,
+  "salto_cargado_cm": 1.8
+ },
+ "todo HD-1910 | 26 GDL con muñeca y pinza | 32 cm": {
+  "masa_kg": 1.395,
+  "par_pico_nm": 0.412,
+  "pct_bloqueo_con_margen": 42.0,
+  "supera_nominal_con_margen": true,
+  "marcha_techo_ms": 0.439,
+  "marcha_humana_equivalente_ms": 1.02,
+  "salto_techo_cm": 4.4,
+  "salto_cargado_cm": 1.6
+ },
+ "todo HD-1910 | 26 GDL con muñeca y pinza | 34 cm": {
+  "masa_kg": 1.494,
+  "par_pico_nm": 0.464,
+  "pct_bloqueo_con_margen": 47.3,
+  "supera_nominal_con_margen": true,
+  "marcha_techo_ms": 0.461,
+  "marcha_humana_equivalente_ms": 1.05,
+  "salto_techo_cm": 4.7,
+  "salto_cargado_cm": 1.7
+ },
+ "todo HD-1910 | 26 GDL con muñeca y pinza | 36 cm": {
+  "masa_kg": 1.601,
+  "par_pico_nm": 0.521,
+  "pct_bloqueo_con_margen": 53.1,
+  "supera_nominal_con_margen": true,
+  "marcha_techo_ms": 0.483,
+  "marcha_humana_equivalente_ms": 1.07,
+  "salto_techo_cm": 5.1,
+  "salto_cargado_cm": 1.8
+ },
+ "piernas C044, arriba HD-1910 | 22 GDL | 32 cm": {
+  "masa_kg": 1.719,
+  "par_pico_nm": 0.508,
+  "pct_bloqueo_con_margen": 47.6,
+  "supera_nominal_con_margen": false,
+  "marcha_techo_ms": 0.332,
+  "marcha_humana_equivalente_ms": 0.77,
+  "salto_techo_cm": 2.5,
+  "salto_cargado_cm": 0.9
+ },
+ "piernas C044, arriba HD-1910 | 22 GDL | 34 cm": {
+  "masa_kg": 1.818,
+  "par_pico_nm": 0.564,
+  "pct_bloqueo_con_margen": 52.9,
+  "supera_nominal_con_margen": false,
+  "marcha_techo_ms": 0.349,
+  "marcha_humana_equivalente_ms": 0.79,
+  "salto_techo_cm": 2.7,
+  "salto_cargado_cm": 1.0
+ },
+ "piernas C044, arriba HD-1910 | 22 GDL | 36 cm": {
+  "masa_kg": 1.925,
+  "par_pico_nm": 0.627,
+  "pct_bloqueo_con_margen": 58.8,
+  "supera_nominal_con_margen": true,
+  "marcha_techo_ms": 0.366,
+  "marcha_humana_equivalente_ms": 0.81,
+  "salto_techo_cm": 2.9,
+  "salto_cargado_cm": 1.1
+ },
+ "piernas C044, arriba HD-1910 | 26 GDL con muñeca y pinza | 32 cm": {
+  "masa_kg": 1.803,
+  "par_pico_nm": 0.532,
+  "pct_bloqueo_con_margen": 49.9,
+  "supera_nominal_con_margen": false,
+  "marcha_techo_ms": 0.332,
+  "marcha_humana_equivalente_ms": 0.77,
+  "salto_techo_cm": 2.5,
+  "salto_cargado_cm": 0.9
+ },
+ "piernas C044, arriba HD-1910 | 26 GDL con muñeca y pinza | 34 cm": {
+  "masa_kg": 1.902,
+  "par_pico_nm": 0.59,
+  "pct_bloqueo_con_margen": 55.3,
+  "supera_nominal_con_margen": true,
+  "marcha_techo_ms": 0.349,
+  "marcha_humana_equivalente_ms": 0.79,
+  "salto_techo_cm": 2.7,
+  "salto_cargado_cm": 1.0
+ },
+ "piernas C044, arriba HD-1910 | 26 GDL con muñeca y pinza | 36 cm": {
+  "masa_kg": 2.009,
+  "par_pico_nm": 0.654,
+  "pct_bloqueo_con_margen": 61.3,
+  "supera_nominal_con_margen": true,
+  "marcha_techo_ms": 0.366,
+  "marcha_humana_equivalente_ms": 0.81,
+  "salto_techo_cm": 2.9,
+  "salto_cargado_cm": 1.1
+ },
+ "todo C018 | 22 GDL | 32 cm": {
+  "masa_kg": 2.059,
+  "par_pico_nm": 0.608,
+  "pct_bloqueo_con_margen": 31.0,
+  "supera_nominal_con_margen": false,
+  "marcha_techo_ms": 0.174,
+  "marcha_humana_equivalente_ms": 0.4,
+  "salto_techo_cm": 0.7,
+  "salto_cargado_cm": 0.2
+ },
+ "todo C018 | 22 GDL | 34 cm": {
+  "masa_kg": 2.158,
+  "par_pico_nm": 0.67,
+  "pct_bloqueo_con_margen": 34.2,
+  "supera_nominal_con_margen": true,
+  "marcha_techo_ms": 0.182,
+  "marcha_humana_equivalente_ms": 0.41,
+  "salto_techo_cm": 0.7,
+  "salto_cargado_cm": 0.3
+ },
+ "todo C018 | 22 GDL | 36 cm": {
+  "masa_kg": 2.265,
+  "par_pico_nm": 0.737,
+  "pct_bloqueo_con_margen": 37.6,
+  "supera_nominal_con_margen": true,
+  "marcha_techo_ms": 0.191,
+  "marcha_humana_equivalente_ms": 0.42,
+  "salto_techo_cm": 0.8,
+  "salto_cargado_cm": 0.3
+ },
+ "todo C018 | 26 GDL con muñeca y pinza | 32 cm": {
+  "masa_kg": 2.279,
+  "par_pico_nm": 0.673,
+  "pct_bloqueo_con_margen": 34.3,
+  "supera_nominal_con_margen": true,
+  "marcha_techo_ms": 0.174,
+  "marcha_humana_equivalente_ms": 0.4,
+  "salto_techo_cm": 0.7,
+  "salto_cargado_cm": 0.2
+ },
+ "todo C018 | 26 GDL con muñeca y pinza | 34 cm": {
+  "masa_kg": 2.378,
+  "par_pico_nm": 0.738,
+  "pct_bloqueo_con_margen": 37.7,
+  "supera_nominal_con_margen": true,
+  "marcha_techo_ms": 0.182,
+  "marcha_humana_equivalente_ms": 0.41,
+  "salto_techo_cm": 0.7,
+  "salto_cargado_cm": 0.3
+ },
+ "todo C018 | 26 GDL con muñeca y pinza | 36 cm": {
+  "masa_kg": 2.485,
+  "par_pico_nm": 0.809,
+  "pct_bloqueo_con_margen": 41.3,
+  "supera_nominal_con_margen": true,
+  "marcha_techo_ms": 0.191,
+  "marcha_humana_equivalente_ms": 0.42,
+  "salto_techo_cm": 0.8,
+  "salto_cargado_cm": 0.3
+ }
+}
