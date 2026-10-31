@@ -13,10 +13,37 @@ los parámetros del servo. Cifras en `results/standing_check.json` y `results/jo
 .venv/bin/python analysis/measure_joint_loads.py
 ```
 
-Para ver el robot en el suelo, con gravedad y sus actuadores:
+Para ver el robot en el suelo, con gravedad y sus motores limitados:
 
 ```bash
 .venv/bin/python analysis/view_simulation.py
+```
+
+Con una tarea, la repite en bucle: `squat`, `single_support`, `rise_from_crouch` y `walk` se simulan al momento, y `get_up_prone` y
+`roll_over` son grabaciones de esa simulación:
+
+```bash
+.venv/bin/python analysis/view_simulation.py get_up_prone
+```
+
+Si el robot cae en el visor, el botón Reset o la tecla Retroceso lo devuelven al inicio. Para regenerar el modelo de entrenamiento:
+
+```bash
+.venv/bin/python analysis/export_training_model.py
+```
+
+Las búsquedas de levantarse tardan muchos minutos:
+
+```bash
+.venv/bin/python analysis/search_get_up.py prone --generations 45 --population 240 --seeds 3
+```
+
+```bash
+.venv/bin/python analysis/search_get_up.py prone --verify
+```
+
+```bash
+.venv/bin/python analysis/search_roll_over.py --generations 25 --population 160
 ```
 
 Si el CAD cambia, antes hay que exportarlo con los comandos de [lower-body-design.md](lower-body-design.md).
@@ -26,7 +53,7 @@ Si el CAD cambia, antes hay que exportarlo con los comandos de [lower-body-desig
 | Paso | Criterio | Estado |
 |---|---|---|
 | 3.1 | De pie 3 s, 2° o menos de inclinación y 5 mm o menos de caída del centro de masas | **Cumple:** 0,14° y 0,2 mm |
-| 3.2 | Tabla por articulación en `results/` | **Hecho**, salvo el paso del suelo a cuclillas |
+| 3.2 | Tabla por articulación en `results/` | **Hecho.** El paso del suelo a de pie se probó aparte, por búsqueda |
 | 3.3 | Picos de 0,98 N·m a 7,4 V y 0,78 N·m a 6 V, y velocidades por debajo de las de vacío | **Cumple en lo medido.** Ver el aviso de la curva del motor |
 
 ## Pico por tarea
@@ -55,9 +82,16 @@ marcha salen de una trayectoria de medida, no optimizada, y una política los ca
   pies deben protegerse con colisiones.
 - **Tope de `hip_pitch` confirmado.** Se probaron -130° y -105°: el muslo toca el eslabón yaw y el servo de roll. Sigue en -100°.
 - **Tobillo.** Con el pie plano, -30° limita la cuclilla a unos 60 mm de bajada, con el tronco inclinado 20°.
-- **Levantarse del suelo sigue sin resolver.** Con cadera a -100° y tobillo a -30°, las manos no llegan al suelo con los pies
-  planos, así que no hay una postura sencilla entre el suelo y las cuclillas. Lo medido son los tramos de antes y después.
-  Es el mayor riesgo para R2. Se prueba primero con entrenamiento en la etapa 4, y si falla hay que rediseñar la cadera.
+- **La mecánica permite levantarse.** En simulación directa, con 0,94 N·m por motor y colisiones simples, una búsqueda de
+  entropía cruzada encontró cómo pasar de boca abajo a de pie en 9 s, y otra cómo darse la vuelta desde boca arriba.
+  Con los brazos a los lados el robot se voltea sobre la cabeza: las manos deben ir delante de la cabeza, barriendo por el
+  costado porque el hombro no pasa por detrás. Luego empujan, y las rodillas se recogen.
+- **Pero esa secuencia es frágil.** Sin realimentación solo funciona en las condiciones exactas de la búsqueda: falla a 6 V, con
+  otro rozamiento y con la masa a ±10 %, e incluso al repetirla con los objetivos redondeados. Una búsqueda que puntuaba varias
+  condiciones no lo mejoró. Demuestra que es posible,
+  no que sea fiable, y además satura varios motores durante 1 a 2,6 s. Una política con realimentación debe lograrlo en la etapa 4.
+  La cadera no se rediseña por ahora.
+- **En simulación directa** se sostienen `squat`, `single_support` y `rise_from_crouch`. `walk` cae sin realimentación.
 
 ## Qué no se ha comprobado
 
@@ -65,5 +99,7 @@ marcha salen de una trayectoria de medida, no optimizada, y una política los ca
 - Reparto entre dos pies: es el de menor par, con contactos sin imponer, y solo se valida el centro de presiones en apoyo simple.
 - Fricción dependiente de la carga, holgura de 0,5° y flexión de las piezas.
 - Marcha en bucle cerrado: esta se calcula con dinámica inversa, sin caminar de verdad en simulación.
-- Colisiones entre eslabones: el modelo solo tiene suelas y suelo. Hay que añadirlas para entrenar.
+- Colisiones entre eslabones: ya hay cajas simples por eslabón en `analysis/danny_sim.py`, sin colisionador en los eslabones
+  cortos de cadera, tobillo, cuello y hombro. Son aproximadas: la mecánica fina sale del barrido de Fusion.
+- Darse la vuelta y levantarse no se han encadenado.
 - Calor. Las cifras RMS de `results/joint_loads.json` son la base para estimarlo.

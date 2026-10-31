@@ -11,6 +11,11 @@ MUJOCO_LOG.TXT
 # Archivos de intercambio con Fusion
 cad/fusion/bridge_*
 
+# Entrenamiento: los registros y puntos de control no van al repositorio
+training/logs/
+training/wandb/
+training/.venv/
+
 # macOS
 .DS_Store
 

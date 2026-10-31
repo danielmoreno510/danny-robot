@@ -99,7 +99,7 @@ Del robot de 40 cm. Coste por concepto, con repuestos.
 | Cables y conectores | 1 | AMP 2.0, 3 pines | Mazo | 40 g | 20 € | 20,00 € | E |
 | Rodamientos, packs de 14 | 2 | 10 × 15 × 3 y 16 × 22 × 4 | Anillos | 32 g | 35,95 € | 71,90 € | S, masa E |
 | Tornillos M2 autorroscantes e insertos | 1 | M2 × 5 a 8, M2,5 × 6 y fijador | Varios | 60 g | 25 € | 25,00 € | E |
-| Estructura y paneles PETG-CF | 3 bobinas | 1 kg cada una | Impresa | 880 g | 33 € | 99,00 € | S, masa E |
+| Estructura en PETG-CF negro y paneles en PETG blanco | 3 bobinas | 2 + 1 kg | Impresa | 880 g | 33 € | 99,00 € | S, masa E; CAD: 555 g |
 | Suelas TPU 95A | 1 bobina | 1 kg | Impresa | 10 g | 35 € | 35,00 € | S, masa E |
 | FE-URT-2 | 1 | Placa | Banco | - | 15,96 € | 15,96 € | S |
 | Fuente de 3-12 V y 5 A | 1 | Caja | Banco | - | 18 € | 18,00 € | S |

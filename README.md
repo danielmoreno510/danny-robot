@@ -5,7 +5,8 @@ natural aprendido en simulación. Toma del XGO-Duck el servo y el método de ent
 
 **Estado:** etapas 2 y 3, diseño en Fusion y simulación. El robot completo ya está en CAD y en MuJoCo, con una primera capa de paneles. Nada se ha impreso, y
 no hay piezas físicas. Para unirte al proyecto, empieza por
-[PROJECT_HANDOFF.md](PROJECT_HANDOFF.md) y sigue con el [handbook](documentation/HANDBOOK.md).
+[PROJECT_HANDOFF.md](PROJECT_HANDOFF.md) y sigue con el [handbook](documentation/HANDBOOK.md). Para entrenar, usa la
+[guía de entrenamiento](documentation/training-guide.md).
 
 ## Plan
 

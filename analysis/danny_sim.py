@@ -32,12 +32,38 @@ HAND_Y = 0.0584
 HAND_Z = 0.148
 
 
+# Colisiones simples en coordenadas de pose cero: (mínimo, máximo) en X, Y, Z, en mm. Solo lado izquierdo
+BODY_COLLIDERS = {
+    "base_link": [((-29.5, 27.0), (-40.5, 40.5), (241.0, 269.0))],
+    "torso_1": [((-25.0, 44.0), (-39.0, 39.0), (272.5, 341.0))],
+    "head_1": [((-13.0, 34.4), (-25.0, 25.0), (358.0, 395.0))],
+}
+SIDE_COLLIDERS = {
+    "thigh_1": [((-15.0, 19.0), (11.5, 46.5), (106.0, 209.0))],
+    "shin_1": [((-13.0, 20.0), (11.5, 46.5), (24.0, 126.0))],
+    "foot_1": [((21.5, 49.5), (40.0, 56.0), (5.0, 28.0))],
+    "upper_arm_1": [((-20.9, 26.9), (42.1, 66.9), (271.9, 339.4))],
+    "elbow_link_1": [((-2.5, 17.5), (69.9, 73.5), (221.0, 271.3))],
+    "forearm_1": [((-4.4, 34.4), (41.0, 69.8), (218.6, 243.4)), ((-5.7, 20.7), (46.7, 69.9), (148.0, 218.6))],
+}
+
+
+def add_collider(body, name, extent):
+    geom = body.add_geom()
+    geom.name = name
+    geom.type = mujoco.mjtGeom.mjGEOM_BOX
+    geom.pos = [(low + high) / 2000 for low, high in extent]
+    geom.size = [(high - low) / 2000 for low, high in extent]
+    geom.rgba = [0.2, 0.6, 0.9, 0.3]
+    geom.group = 3
+
+
 def foot_center_y(side):
     return side * (HIP_Y + FOOT_Y_OFFSET)
 
 
-def build_model(actuated=True):
-    """Devuelve el MjModel de simulación: el exportado más lo que no sale de Fusion."""
+def build_spec(actuated=True):
+    """Devuelve el MjSpec de simulación: el exportado más lo que no sale de Fusion."""
     spec = mujoco.MjSpec.from_file(str(MODEL))
     spec.body("base_link").add_freejoint(name="base")
     floor = spec.worldbody.add_geom()
@@ -65,6 +91,15 @@ def build_model(actuated=True):
     spec.body("base_link").add_site(name="pelvis_bottom", pos=[0, 0, 0.241])
     spec.body("base_link").add_site(name="pelvis_back", pos=[-0.0295, 0, 0.255])
 
+    for body_name, extents in BODY_COLLIDERS.items():
+        for index, extent in enumerate(extents):
+            add_collider(spec.body(body_name), f"{body_name}_box_{index}", extent)
+    for name, side in (("left", 1), ("right", -1)):
+        for link, extents in SIDE_COLLIDERS.items():
+            for index, (x, y, z) in enumerate(extents):
+                mirrored = y if side > 0 else (-y[1], -y[0])
+                add_collider(spec.body(f"{name}_{link}"), f"{name}_{link}_box_{index}", (x, mirrored, z))
+
     joints = [joint for joint in spec.joints if joint.type == mujoco.mjtJoint.mjJNT_HINGE]
     back_emf = SERVO["kt"] ** 2 / SERVO["R"]
     for joint in joints:
@@ -80,7 +115,11 @@ def build_model(actuated=True):
             limit = stall_torque(BATTERY_VOLTS[0])
             actuator.forcerange = [-limit, limit]
             actuator.forcelimited = 1
-    return spec.compile()
+    return spec
+
+
+def build_model(actuated=True):
+    return build_spec(actuated).compile()
 
 
 def stall_torque(volts):

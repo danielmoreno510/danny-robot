@@ -4,8 +4,8 @@ Punto de entrada para continuar **Robot Danny** en un chat nuevo o en otra compu
 
 **Fecha:** 31 de octubre de 2026. **Etapa actual:** 3, MuJoCo, con 2.2, 2.3 y 2.4 abiertas por lo físico. La etapa 1 está
 cerrada salvo la 1.2, que va en paralelo.
-**Siguiente paso:** añadir colisiones entre eslabones y preparar el entrenamiento: [resultados](documentation/simulation-results.md).
-El mayor riesgo es levantarse del suelo. El robot completo ya está en CAD:
+**Siguiente paso:** entrenar en la computadora de un amigo del usuario, que tiene la RTX 3080 Ti, con la
+[guía de entrenamiento](documentation/training-guide.md). Levantarse es posible en simulación, pero aún frágil. El robot completo ya está en CAD:
 [piernas](documentation/lower-body-design.md), [tronco](documentation/upper-body-design.md) y
 [paneles](documentation/panels-and-protection.md). El usuario aún no tiene
 impresora 3D, así que el encaje y el pesado quedan aplazados, y la 2.2 y la 2.3 siguen abiertas. No hace falta comprar un

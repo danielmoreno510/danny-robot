@@ -38,7 +38,7 @@ Fusion y MuJoCo trabajan en bucle: cada cambio del CAD actualiza masas e inercia
 | Paso | Trabajo | Estado |
 |---|---|---|
 | 3.1 | Modelo exportado del CAD, con el modelo BAM de `xgoduck_rl`, sin confirmar en nuestros servos | Hecho: [resultados](documentation/simulation-results.md) |
-| 3.2 | Pares y velocidades en cuclillas, apoyo a un pie, marcha y levantarse | Hecho, salvo pasar del suelo a cuclillas |
+| 3.2 | Pares y velocidades en cuclillas, apoyo a un pie, marcha y levantarse | Hecho; levantarse del suelo se probó por búsqueda, sin robustez |
 | 3.3 | Corregir el diseño y repetir hasta cumplir | En curso: pares dentro del límite; `hip_roll` ampliado; falta la curva a batería baja |
 
 **Puerta:** las trayectorias de medida de R1 y R2 son viables con los límites de ficha.
@@ -49,7 +49,7 @@ Sustituye a Isaac Lab por decisión del usuario.
 
 | Paso | Trabajo | Estado |
 |---|---|---|
-| 4.1 | Preparar la RTX 3080 Ti con mjlab | Pendiente |
+| 4.1 | Preparar la RTX 3080 Ti con mjlab | Listo para empezar: [guía](documentation/training-guide.md) |
 | 4.2 | Marcha con órdenes de velocidad | Pendiente |
 | 4.3 | Levantarse | Pendiente |
 | 4.4 | Imitación de movimiento humano y gestos | Pendiente |

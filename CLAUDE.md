@@ -40,6 +40,7 @@ animaciones a mano que se vayan a sustituir.
 
 ## Estado actual
 
-Etapa 2, diseño en Fusion. Lo anterior está en la etiqueta `archivo-danny-70cm`: es solo consulta.
+Etapas 2 y 3: CAD y simulación, a falta de pruebas físicas. El entrenamiento, etapa 4, se hace en otra computadora: ver
+`documentation/training-guide.md`. Lo anterior está en la etiqueta `archivo-danny-70cm`: es solo consulta.
 Decisiones en `documentation/research-and-requirements.md`, y piezas en
 `documentation/architecture-and-bom.md`. Altura aprobada: 40 cm.
