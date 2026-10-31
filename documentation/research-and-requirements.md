@@ -1,6 +1,6 @@
 # Investigación y requisitos
 
-**Etapa 1, en curso.** Nada está comprado ni diseñado. Las cifras de comparación salen de
+**Etapa 1, cerrada salvo la 1.2.** Las cifras de comparación salen de
 `analysis/compare_actuators.py` y `results/actuator_comparison.json`.
 
 **Etiquetas:** **V**, dato del fabricante o del proyecto. **S**, tienda. **E**, estimación. **?**,
@@ -113,7 +113,7 @@ habrá que rediseñar las piezas que sujetan el servo, y volver a entrenar.
 
 ## 5. Precios del banco de pruebas
 
-Consultados el 31 de octubre de 2026, solo como referencia. **Nada se compra por ahora.**
+Consultados el 31 de octubre de 2026, como referencia. El usuario ya compró 3 servos, FE-URT-2 y fuente.
 
 | Concepto | Vendedor | Precio | Disponibilidad |
 |---|---|---|---|
@@ -122,8 +122,10 @@ Consultados el 31 de octubre de 2026, solo como referencia. **Nada se compra por
 | 15 HD-1910 + FE-URT-2 | ArmDojo | 393,95 €, sin IVA ni aranceles | En stock, desde Singapur |
 | Fuente de 3-12 V, 5 A | ArmDojo | 17,95 €, enchufe de EE. UU. | No comprobada |
 
-**Total estimado: 100-120 € (E)**, con fuente y envío. Falta una carga conocida para identificar el servo:
-brazo y pesas, impresos o caseros. La fuente de laboratorio de 30 V y 5 A no hace falta. No pude leer RCDrone.
+**Total estimado: 100-120 € (E)**, con fuente y envío. Falta una carga conocida para identificar el servo: un
+brazo impreso y botellas de agua pesadas en la báscula. A 100 mm del eje, el bloqueo de 0,94 N·m equivale a unos
+0,96 kg. Falta también confirmar cómo entra la alimentación en la FE-URT-2: lo encontrado apunta a bornes de tornillo,
+sin manual oficial leído. No pude leer RCDrone.
 
 ## 6. Preguntas abiertas de la etapa 1
 

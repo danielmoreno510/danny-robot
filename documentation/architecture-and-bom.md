@@ -2,7 +2,9 @@
 
 **Etapa 1.3, aprobada por el usuario con 40 cm.** Las cifras salen de `analysis/estimate_robot_budget.py` y
 `analysis/compare_actuators.py`, y son previas al CAD: la masa medida en CAD es menor, 1,29 kg (E), en
-`results/robot_check.json`. Nada está comprado.
+`results/robot_check.json`. **Comprado por el usuario, sin recibir ni probar a 1 de noviembre de 2026:** 3 servos
+HD-1910, FE-URT-2, fuente de alimentación, calibrador digital, báscula de cocina, impresora 3D y filamentos. El
+resto de esta lista espera a pasar las etapas 5.1 y 5.2.
 
 **Base:** **V** fabricante, **S** tienda, **E** estimación. Precios en euros con IVA, consultados el 31 de
 octubre de 2026.

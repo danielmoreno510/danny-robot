@@ -237,7 +237,7 @@ Y arriba el modelo es correcto, pero se ve tumbado. Fíate de `camera_up` en `Re
 | Paso | Qué hacer | Terminado cuando |
 |---|---|---|
 | 2.1 | Hecho. Instalar ACDC4Robot 1.1.1. Modelar dos eslabones y una articulación, exportar a MJCF y abrirlo en MuJoCo | El modelo carga, la masa difiere menos de un 1 % y el eje menos de 1° del CAD |
-| 2.2 | Conseguir el plano del servo (sección 8 de la arquitectura) e imprimir la [maqueta](https://makerworld.com/en/models/3502393-feetech-1910-servo-mock-1-1-dummy) con material de prueba. Modelar cadera y pierna por script. El usuario aún no tiene impresora | Rangos de la sección 5 sin choques, encaje comprobado con la maqueta y pieza pesada |
+| 2.2 | Conseguir el plano del servo (sección 8 de la arquitectura) e imprimir la [maqueta](https://makerworld.com/en/models/3502393-feetech-1910-servo-mock-1-1-dummy) con material de prueba, o usar un servo real. Modelar cadera y pierna por script. La impresora y los servos del usuario vienen en camino | Rangos de la sección 5 sin choques, encaje comprobado con la maqueta y pieza pesada |
 | 2.3 | Torso, brazos, cabeza y cables. Empezar por la electrónica: el torso va sin holgura | Electrónica con IMU, regulador e interruptor, y servos, caben con espacio para manos y voz, y hay salida real para cada conector |
 | 2.4 | Primera iteración hecha: [paneles y protección](panels-and-protection.md). Afinar la forma con el dueño del proyecto | Robot completo sin interferencias, y R4 y R10 cumplidos en CAD |
 
@@ -354,8 +354,8 @@ aprobación, y **no se compra el robot entero hasta pasar 5.1 y 5.2**.
 
 | Paso | Compra | Qué hacer | Terminado cuando (provisional) |
 |---|---|---|---|
-| 5.1 | Banco: unos 100-120 € | Curva par-velocidad, holgura e identificación BAM con carga conocida | Modelo propio; 5 minutos a par de apoyo a un pie por debajo de 70 °C |
-| 5.2 | 6 servos y piezas de una pierna | Pierna sujeta, comparar con simulación | Respuesta real parecida a la simulada, criterio numérico por fijar antes |
+| 5.1 | Banco, ya comprado: 3 servos, FE-URT-2 y fuente. Falta brazo impreso y pesas caseras | Curva par-velocidad, holgura e identificación BAM con carga conocida | Modelo propio; 5 minutos a par de apoyo a un pie por debajo de 70 °C |
+| 5.2 | 3 servos más, hasta 6, y piezas de una pierna | Pierna sujeta, comparar con simulación | Respuesta real parecida a la simulada, criterio numérico por fijar antes |
 | 5.3 | Electrónica | Programa: bucle de 50 Hz, ONNX, paro de seguridad y corte por batería baja | Bucle estable 10 minutos sin retrasos |
 | 5.4 | Resto | Montaje, IDs y calibración | Todas las articulaciones responden |
 | 5.5 | - | Del robot colgado al libre: postura, marcha y levantarse | R1 y R2 |

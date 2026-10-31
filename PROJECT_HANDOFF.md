@@ -2,14 +2,18 @@
 
 Punto de entrada para continuar **Robot Danny** en un chat nuevo o en otra computadora.
 
-**Fecha:** 31 de octubre de 2026. **Etapa actual:** 3, MuJoCo, con 2.2, 2.3 y 2.4 abiertas por lo físico. La etapa 1 está
+**Fecha:** 1 de noviembre de 2026. **Etapa actual:** 3, MuJoCo, con 2.2, 2.3 y 2.4 abiertas por lo físico. La etapa 1 está
 cerrada salvo la 1.2, que va en paralelo.
-**Siguiente paso:** entrenar en la computadora de un amigo del usuario, que tiene la RTX 3080 Ti, con la
-[guía de entrenamiento](documentation/training-guide.md). Levantarse es posible en simulación, pero aún frágil. El robot completo ya está en CAD:
+**Siguiente paso:** el amigo del usuario, que tiene la RTX 3080 Ti, empieza a entrenar con la
+[guía de entrenamiento](documentation/training-guide.md). Para que pueda subir su rama, el usuario debe añadirlo como
+colaborador: el 1 de noviembre aún no lo era. Levantarse es posible en simulación, pero aún frágil. El robot completo ya está en CAD:
 [piernas](documentation/lower-body-design.md), [tronco](documentation/upper-body-design.md) y
-[paneles](documentation/panels-and-protection.md). El usuario aún no tiene
-impresora 3D, así que el encaje y el pesado quedan aplazados, y la 2.2 y la 2.3 siguen abiertas. No hace falta comprar un
-servo para seguir: conectores y tornillos salen de proyectos publicados, y solo quedan por medir sus cotas exactas. Claude modela en Fusion por scripts, con `DannyBridge`. No se compra nada todavía.
+[paneles](documentation/panels-and-protection.md).
+
+**Comprado, sin recibir:** 3 servos HD-1910, FE-URT-2, fuente de alimentación, calibrador digital, báscula de cocina,
+impresora 3D y filamentos. Al llegar: medir conectores, muesca y rosca del servo, comprobar encaje y pesar piezas (2.2 y
+2.3), y empezar el banco (5.1). Falta el brazo de carga, que se imprime, y los programas de medida. No se compra el resto
+hasta pasar 5.1 y 5.2. Claude modela en Fusion por scripts, con `DannyBridge`.
 
 ## Cómo empezar
 
@@ -57,8 +61,7 @@ entonces el diseño usa datos de ficha.
 ## Pendiente de decidir por el usuario
 
 - Licencia del repositorio, que es público.
-- Compra del banco de pruebas, cuando llegue la etapa 5.1. Precios de referencia en la investigación.
-- Cuándo comprar impresora.
+- Fuentes de movimiento humano (1.2): sin ellas no empieza la etapa 4.4.
 
 ## Última verificación
 
