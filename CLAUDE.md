@@ -1,11 +1,12 @@
 # Robot Danny — instrucciones para Claude
 
-Humanoide autónomo de 32-36 cm, inspirado en el XGO-Duck. El usuario escribe en español: responde en
-español. **Empieza por [PROJECT_HANDOFF.md](PROJECT_HANDOFF.md).** El plan y el estado están en
-[ROADMAP.md](ROADMAP.md): es la fuente de verdad y debe estar al día.
+Humanoide autónomo de 40 cm con aspecto de Tesla Optimus. El usuario escribe en español: responde en
+español. **Empieza por [PROJECT_HANDOFF.md](PROJECT_HANDOFF.md)** y sigue con el
+[handbook](documentation/HANDBOOK.md). El plan y el estado están en [ROADMAP.md](ROADMAP.md): es la fuente
+de verdad y debe estar al día.
 
-**El XGO-Duck es una referencia, no una plantilla.** Si algo necesita otra pieza, se cambia: decide con
-números para cada articulación y componente.
+**El XGO-Duck es una referencia, no una plantilla.** Se toman su servo y su método, no su forma. Si algo
+necesita otra pieza, se cambia: decide con números para cada articulación y componente.
 
 **Objetivo de movimiento:** Danny debe moverse de forma natural, con todo el cuerpo coordinado. No
 sacrifiques física, estabilidad ni viabilidad de motores para que se vea humano. No inviertas en
@@ -39,5 +40,6 @@ animaciones a mano que se vayan a sustituir.
 
 ## Estado actual
 
-Etapa 1. Lo anterior está en la etiqueta `archivo-danny-70cm`: es solo consulta.
-Decisiones en `documentation/research-and-requirements.md`.
+Etapa 2, diseño en Fusion. Lo anterior está en la etiqueta `archivo-danny-70cm`: es solo consulta.
+Decisiones en `documentation/research-and-requirements.md`, y piezas en
+`documentation/architecture-and-bom.md`. Altura aprobada: 40 cm.

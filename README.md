@@ -1,10 +1,10 @@
 # Robot Danny
 
-Humanoide pequeño, autónomo y económico, de 32-36 cm, inspirado en el XGO-Duck: impreso en 3D, con
-servos de bus y movimiento natural aprendido en simulación. El XGO-Duck es una referencia, no una
-plantilla.
+Humanoide de 40 cm, autónomo y con aspecto de Tesla Optimus, impreso en 3D, con servos de bus y movimiento
+natural aprendido en simulación. Toma del XGO-Duck el servo y el método de entrenamiento, no la forma.
 
-**Estado:** etapa 1, investigación y definición. Aún no hay diseño ni piezas.
+**Estado:** etapa 2, diseño en Fusion, sin empezar. Aún no hay CAD ni piezas. Para unirte al proyecto, empieza por
+[PROJECT_HANDOFF.md](PROJECT_HANDOFF.md) y sigue con el [handbook](documentation/HANDBOOK.md).
 
 ## Plan
 
@@ -15,7 +15,8 @@ plantilla.
 5. Robot físico.
 
 Detalle en [ROADMAP.md](ROADMAP.md). Requisitos y fuentes en
-[documentation/research-and-requirements.md](documentation/research-and-requirements.md).
+[documentation/research-and-requirements.md](documentation/research-and-requirements.md). Piezas, medidas
+y precios en [documentation/architecture-and-bom.md](documentation/architecture-and-bom.md).
 
 ## Puesta en marcha
 
@@ -23,6 +24,7 @@ Detalle en [ROADMAP.md](ROADMAP.md). Requisitos y fuentes en
 python3.12 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 .venv/bin/python analysis/compare_actuators.py
+.venv/bin/python analysis/estimate_robot_budget.py
 ```
 
 ## Proyecto anterior

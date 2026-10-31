@@ -44,8 +44,8 @@ STS3215_C018 = Servo("STS3215 C018 12 V", 2.94, 0.98, 4.71, 0.055)
 STS3215_C044 = Servo("STS3215 C044 7,4 V", 1.6, 0.88, 9.0, 0.055)
 
 LEG_SERVOS = 12
-HEIGHTS = (0.32, 0.34, 0.36)
-UPPER_SERVOS = {"22 GDL": 10, "26 GDL con muñeca y pinza": 14}
+HEIGHTS = (0.36, 0.40)
+UPPER_SERVOS = {"23 GDL": 11, "27 GDL con manos": 15}
 MIXES = {
     "todo HD-1910": (HD_1910, HD_1910),
     "piernas C044, arriba HD-1910": (STS3215_C044, HD_1910),
