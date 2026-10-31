@@ -4,7 +4,7 @@ Punto de entrada para continuar **Robot Danny** en un chat nuevo o en otra compu
 Se actualiza al terminar cada fase y cada vez que cambia el estado.
 
 **Fecha:** 30 de octubre de 2026. **Fase actual:** 5, diseño mecánico, antes que la fase 4.
-**Siguiente paso:** ejecutar el esqueleto en Fusion y revisar la etapa 5.1.
+**Siguiente paso:** revisar la propuesta de 40 cm de la etapa 5.2.
 
 ## Cómo empezar
 
@@ -13,11 +13,13 @@ Si eres Claude en un chat nuevo, lee en este orden:
 1. Este archivo.
 2. [CLAUDE.md](CLAUDE.md): reglas de trabajo del usuario.
 3. [ROADMAP.md](ROADMAP.md): plan y estado de cada etapa. Es la fuente de verdad.
-4. [documentation/phase-5.1-mechanical-architecture.md](documentation/phase-5.1-mechanical-architecture.md):
-   arquitectura mecánica, motores, coste y guía de Fusion.
-5. [documentation/phase-3.5-validation.md](documentation/phase-3.5-validation.md): resultado de
+4. [documentation/phase-5.2-compact-design.md](documentation/phase-5.2-compact-design.md): propuesta
+   actual de 40 cm, motores, lista de materiales y migración.
+5. [documentation/phase-5.1-mechanical-architecture.md](documentation/phase-5.1-mechanical-architecture.md):
+   arquitectura a 70 cm, superada en altura y motores, y guía de Fusion.
+6. [documentation/phase-3.5-validation.md](documentation/phase-3.5-validation.md): resultado de
    la fase, comparación con el bípedo y condiciones.
-6. [documentation/phase-4-readiness-audit.md](documentation/phase-4-readiness-audit.md): qué
+7. [documentation/phase-4-readiness-audit.md](documentation/phase-4-readiness-audit.md): qué
    falta para entrenar.
 
 Prepara el proyecto, con Python 3.12:
@@ -31,7 +33,7 @@ python3.12 -m venv .venv
 ```
 
 Debe terminar con `27 de 27 comprobaciones pasan`, en unos 3 minutos. La suite completa
-tarda unos 19:
+tarda entre 13 y 19:
 
 ```bash
 .venv/bin/python -m pytest tests
@@ -79,9 +81,14 @@ a E23.
 **Cambio de plan del usuario:** primero el robot real en Autodesk Fusion, después MuJoCo con esas
 medidas, y después Isaac Sim e Isaac Lab. **No empieces a entrenar.** No compres nada sin aprobación.
 
-**Etapa 5.1:** evaluación entregada y script en `cad/fusion/DannyMasterSkeleton`. **No se ha ejecutado
-en Fusion.** Falta que el usuario lo ejecute, comprobar el informe con
-`export_cad_parameters.py --check`, y su revisión. Después: diseño detallado de pelvis y piernas.
+**Etapa 5.2, en revisión:** Danny de 40 cm, 22 GDL y STS3215 de 12 V, unos 1 060 € sin Jetson. Sigue la
+línea de Open Duck Mini y Microduck: los 3 000 € son solo un tope. `danny_compact.xml` sale de
+`compact_spec.py`, y los modelos de 70 cm se conservan. Orden acordado: primero el ajuste y los
+cálculos, y el CAD después de aprobar la arquitectura.
+
+**Fusion:** instalado por el usuario, pero sin control desde el agente. El permiso automático bloqueó
+instalar `cad/fusion/DannyBridge`: solo el usuario puede activarlo. `DannyMasterSkeleton` sigue a 70 cm y
+**nunca se ha ejecutado en Fusion**.
 
 **Pendiente de decisión del usuario:** puntos de seguimiento e IMU de cabeza, y el `kv` de los
 brazos: con ζ 6,2 no oscilan libremente, y hay que decidirlo antes de buscar un balanceo natural.
@@ -123,8 +130,7 @@ de velocidad. Ver la [revisión](documentation/whole-body-motion-review.md).
 
 Del 30 de octubre de 2026, en macOS con Apple Silicon, Python 3.12 y MuJoCo 3.17:
 
-- `pytest tests`: **236 de 236** en la última ejecución completa (19 min 3 s), más las 19 de CAD, que
-  pasaron por separado.
+- `pytest tests`: **266 de 266** en la última ejecución completa (12 min 39 s).
 - `run_checks.py`: **27 de 27**.
 - Las cifras no cambian tras la auditoría, salvo el sobrepaso de tope, que ahora mide bien.
 - pyflakes sin avisos.

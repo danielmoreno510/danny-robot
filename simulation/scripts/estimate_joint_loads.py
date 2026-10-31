@@ -24,6 +24,7 @@ import mujoco
 import numpy as np
 
 from biped_control import Biped, Pose, center_com_over, pelvis_height
+from robot_loads import froude_scaled, support_torques
 from robot_spec import ARM_PARTS, HUMANOID, JOINT_PARTS, SHIN_LENGTH, THIGH_LENGTH
 
 
@@ -32,38 +33,8 @@ RESULTS = ROOT / "results" / "joint_load_estimates.json"
 
 FOOT_Y = 0.05  # m
 PAYLOAD = 0.3  # kg en cada mano, del presupuesto de masa
-HUMAN_LEG = 0.90  # m, cadera-suelo de una persona de 1,75 m
 MARGIN = 1.5  # sobre el mayor caso: equilibrio, tropiezos y error de modelo
 CONTINUOUS_RATIO = 0.5  # par eficaz / par de pico al andar, estimado
-
-# Marcha humana a unos 1,4 m/s: par de pico [N·m/kg] y velocidad de pico [rad/s].
-# Tobillo y rodilla, contrastados con la literatura en la evaluación de la fase 5.1: la
-# rodilla típica ronda 0,5 y se deja en 0,9 como margen. Cadera y ejes roll y yaw son
-# órdenes de magnitud sin verificar.
-HUMAN_GAIT = {
-    "hip_pitch": (1.0, 3.5),
-    "hip_roll": (0.9, 1.5),
-    "hip_yaw": (0.3, 1.5),
-    "knee": (0.9, 7.0),
-    "ankle_pitch": (1.6, 6.3),
-    "ankle_roll": (0.4, 1.5),
-}
-
-
-def support_torques(model, data, feet: tuple[str, ...]) -> tuple[dict, float]:
-    """Par en cada articulación para seguir quieto sobre 'feet', y fuerza vertical total."""
-    jacobians = []
-    for side in feet:
-        position, rotation = np.zeros((3, model.nv)), np.zeros((3, model.nv))
-        mujoco.mj_jacSite(model, data, position, rotation, model.site(f"{side}_sole_site").id)
-        jacobians.append(np.vstack([position, rotation]))
-    jacobian = np.vstack(jacobians)
-    wrench = np.linalg.lstsq(jacobian[:, :6].T, data.qfrc_bias[:6], rcond=None)[0]
-    generalized = data.qfrc_bias - jacobian.T @ wrench
-    torques = {model.joint(j).name.removesuffix("_joint"): float(generalized[model.jnt_dofadr[j]])
-               for j in range(1, model.njnt)}
-    return torques, float(wrench[2::6].sum())
-
 
 def stand_pose(knee_deg: float) -> Pose:
     return Pose(np.array([0.0, 0.0, pelvis_height(knee_deg)]),
@@ -121,14 +92,6 @@ def arm_cases(model) -> dict:
     return cases
 
 
-def froude_scaled(mass: float) -> dict:
-    """A igual número de Froude: par/kg ∝ longitud y velocidad angular ∝ 1/√longitud."""
-    ratio = (THIGH_LENGTH + SHIN_LENGTH + 0.04) / HUMAN_LEG
-    speed_scale = 1 / math.sqrt(ratio)
-    return {part: {"par_pico": torque * ratio * mass, "velocidad_pico": speed * speed_scale}
-            for part, (torque, speed) in HUMAN_GAIT.items()}
-
-
 def worst(cases: dict, part: str) -> float:
     return max((abs(v) for case in cases.values() for k, v in case["pares"].items()
                 if k == part or k == f"left_{part}"), default=0.0)
@@ -139,7 +102,7 @@ def main() -> int:
     data = mujoco.MjData(model)
     mass = float(model.body_subtreemass[1])
     legs, arms = leg_cases(model, data), arm_cases(model)
-    gait = froude_scaled(mass)
+    gait = froude_scaled(mass, THIGH_LENGTH + SHIN_LENGTH + 0.04)
 
     weight = mass * -model.opt.gravity[2]
     for name, case in legs.items():

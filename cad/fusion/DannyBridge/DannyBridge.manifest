@@ -1,0 +1,12 @@
+{
+  "autodeskProduct": "Fusion360",
+  "type": "addin",
+  "id": "5C1E7F52-2A0B-4C3D-9E11-7B6A4D2F8A10",
+  "author": "Robot Danny",
+  "description": {
+    "": "Ejecuta los scripts de cad/fusion del proyecto Danny a petición de un agente"
+  },
+  "version": "1.0.0",
+  "runOnStartup": true,
+  "supportedOS": "windows|mac"
+}

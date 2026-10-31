@@ -14,12 +14,14 @@ from pathlib import Path
 import mujoco
 import numpy as np
 
+import compact_spec
 import robot_spec as spec
 from biped_control import Biped, Pose, center_com_over, pelvis_height
 
 
 ROOT = Path(__file__).resolve().parents[1]
 MODELS = ROOT / "models"
+COMPACT_FILE = "danny_compact.xml"
 
 BLUE = (0.1, 0.4, 0.9, 1)
 GREY = (0.3, 0.3, 0.3, 1)
@@ -307,6 +309,8 @@ def main() -> None:
     for robot in spec.ROBOTS.values():
         model_path(robot).write_text(build_robot(robot).to_xml())
         print(f"Generado {robot.file}")
+    (MODELS / COMPACT_FILE).write_text(compact_spec.build(compact_spec.Design(0.40)).to_xml())
+    print(f"Generado {COMPACT_FILE}")
 
 
 if __name__ == "__main__":

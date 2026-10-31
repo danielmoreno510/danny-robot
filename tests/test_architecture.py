@@ -13,7 +13,7 @@ from conftest import ROOT, load_model, record
 from leg_control import leg_ik
 
 SCRIPTS = ROOT / "simulation" / "scripts"
-MODULES = {"leg_control", "biped_control", "robot_spec"}
+MODULES = {"leg_control", "biped_control", "robot_spec", "robot_loads", "compact_spec"}
 
 
 def test_scripts_only_import_modules():

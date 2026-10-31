@@ -1,6 +1,7 @@
 # Robot Danny — instrucciones para Claude
 
-Robot humanoide autónomo de unos 70 cm, hoy solo en simulación con MuJoCo. El
+Robot humanoide autónomo, hoy solo en simulación con MuJoCo. Modelos validados de 70 cm; la
+propuesta en revisión es de 40 cm con servos. El
 usuario escribe en español: responde en español. **Empieza por
 [PROJECT_HANDOFF.md](PROJECT_HANDOFF.md).** Lee [README.md](README.md) para
 la visión general y [ROADMAP.md](ROADMAP.md) para el plan y el estado de cada
@@ -76,8 +77,9 @@ ventana no se ha abierto.
 
 Fases 3 y 3.5 en **CONDITIONAL PASS**, revisadas y aceptadas por el usuario. Limitaciones en
 `documentation/known-limitations.md`. **Actual: fase 5, diseño mecánico, antes que la fase 4.**
-Etapa 5.1 entregada, en `documentation/phase-5.1-mechanical-architecture.md`; falta ejecutarla en
-Fusion y la revisión del usuario.
+Propuesta actual: **Danny de 40 cm, 22 GDL y STS3215 de 12 V**, en
+`documentation/phase-5.2-compact-design.md`, pendiente de revisión. Inspirado en Open Duck Mini y
+Microduck: los 3 000 € son solo un tope. El esqueleto de Fusion sigue a 70 cm hasta que se apruebe.
 La propuesta aprobada está en `documentation/phase-3.5-proposal.md`, y la revisión
 `documentation/whole-body-motion-review.md` la amplió a 31 GDL. Mide 70 cm. El
 objetivo de masa es 11 kg, con el reparto de `documentation/phase-3.5-mass-budget.md`.
@@ -91,7 +93,7 @@ cumplir la lista del roadmap. **No compres nada sin aprobación.** Di siempre qu
 no se ha ejecutado si no hay `skeleton_report.json`. No marques como implementados la compensación dinámica ni el
 equilibrio activo.
 
-Comprobaciones: `run_checks.py` (27, unos 3 minutos) y `python -m pytest tests` (255, unos
+Comprobaciones: `run_checks.py` (27, unos 3 minutos) y `python -m pytest tests` (266, de 13 a
 19 minutos).
 Las pruebas de realismo miden sin exigir: que pasen no significa que el robot aguante
 ese efecto. Mira `results/phase3_metrics.json`.
@@ -100,7 +102,9 @@ ese efecto. Mira `results/phase3_metrics.json`.
 
 - Licencia: el repositorio es público y no tiene.
 - Hardware de entrenamiento: la RTX 3080 Ti está por debajo del mínimo de Isaac Sim.
-- Prototipo de una articulación y presupuesto (opciones A, B y C).
+- Altura y GDL de la propuesta de 40 cm, y qué hacer con el Jetson.
+- Primera compra: un servo de prueba.
+- Usar Fusion desde aquí: el complemento `cad/fusion/DannyBridge` solo lo puede activar el usuario.
 
 **Decisiones ya tomadas:**
 

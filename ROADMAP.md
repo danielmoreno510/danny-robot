@@ -1,6 +1,6 @@
 # Robot Danny — Roadmap maestro
 
-**Objetivo:** construir Danny, un robot humanoide autónomo de unos 70 cm, capaz de
+**Objetivo:** construir Danny, un robot humanoide autónomo de unos 40 cm, propuesta en revisión, capaz de
 caminar, mantener el equilibrio, manipular objetos, interpretar instrucciones
 con inteligencia artificial y comunicarse a través de una aplicación móvil.
 
@@ -42,7 +42,7 @@ Así se evita descubrir errores estructurales cuando ya hay piezas fabricadas.
 | 2 | Cinemática y articulaciones | 6–11 | ✅ Completada |
 | 3 | Simulación física y control del bípedo | 12–20 | 🟡 CONDITIONAL PASS, ver [validación](documentation/phase-3-validation.md) |
 | 3.5 | Humanoide completo en simulación | 3.5.1–3.5.8 | 🟡 CONDITIONAL PASS, ver [validación](documentation/phase-3.5-validation.md) |
-| 5 | Diseño mecánico del humanoide (va antes que la 4) | 5.1, 29–35 | 🔄 Actual: 5.1 en revisión |
+| 5 | Diseño mecánico del humanoide (va antes que la 4) | 5.1, 5.2, 29–35 | 🔄 Actual: 5.2 en revisión |
 | 4 | Aprendizaje por refuerzo y locomoción, con Isaac Lab | 21–28 | ⏳ Pendiente, tras la fase 5 |
 | 6 | Fabricación de las piernas | 36–40 | ⏳ Pendiente |
 | 7 | Electrónica y control físico | 41–46 | ⏳ Pendiente |
@@ -237,7 +237,8 @@ compran los actuadores definitivos hasta comprobar que cumplen los requisitos.
 
 | Etapa | Actividad |
 |---|---|
-| 5.1 | Arquitectura mecánica y esqueleto maestro. 🔄 [Entregada](documentation/phase-5.1-mechanical-architecture.md); falta ejecutarla en Fusion y tu revisión |
+| 5.1 | Arquitectura mecánica a 70 cm. [Entregada](documentation/phase-5.1-mechanical-architecture.md), superada por la 5.2 en altura y motores |
+| 5.2 | Danny compacto de 40 cm con servos STS3215. 🔄 [Propuesta](documentation/phase-5.2-compact-design.md) en revisión |
 | 29 | Definir dimensiones y proporciones definitivas |
 | 30 | Calcular masas, cargas y torques articulares |
 | 31 | Seleccionar motores, reductores y encoders |

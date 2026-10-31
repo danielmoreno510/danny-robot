@@ -116,3 +116,9 @@ retardos, incumple.
 - Holgura mecánica: NOT TESTED.
 - Ventana del visor: no se ha abierto en ninguna auditoría.
 - Solo probado en macOS con Apple Silicon.
+
+## Danny compacto de 40 cm
+
+- Masa y reparto estimados, y parámetros del servo de 7,4 V sobre servos de 12 V.
+- Sin curva par-velocidad, sin controlador de marcha y sin colisiones reales.
+- `compact_spec.py` repite parte de `build_model.py` hasta decidir el robot principal.

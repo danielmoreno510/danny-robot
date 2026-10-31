@@ -1168,6 +1168,10 @@ con carga neta real de 2 veces el par. El «ruido de encoder» se suma al mando,
 de esa tabla son optimistas. Informe completo en
 [la validación](../documentation/phase-3.5-validation.md).
 
+**Etapa 5.2.** Danny compacto de 40 cm, en revisión. `compare_compact_sizes.py` compara 35, 40 y 45 cm
+con masas pieza a pieza y el modelo `danny_compact.xml`, de 22 GDL. Detalle en
+[la propuesta](../documentation/phase-5.2-compact-design.md).
+
 ---
 
 ## 3. La pierna de 2 GDL en detalle
