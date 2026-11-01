@@ -4,9 +4,11 @@ Punto de entrada para continuar **Robot Danny** en un chat nuevo o en otra compu
 
 **Fecha:** 1 de noviembre de 2026. **Etapa actual:** 3, MuJoCo, con 2.2, 2.3 y 2.4 abiertas por lo físico. La etapa 1 está
 cerrada salvo la 1.2, que va en paralelo.
-**Siguiente paso:** el amigo del usuario, que tiene la RTX 3080 Ti, empieza a entrenar con la
-[guía de entrenamiento](documentation/training-guide.md). Para que pueda subir su rama, el usuario debe añadirlo como
-colaborador: el 1 de noviembre aún no lo era. Levantarse es posible en simulación, pero aún frágil. El robot completo ya está en CAD:
+**Siguiente paso:** el amigo del usuario, que tiene la RTX 3080 Ti, repite la marcha con las escalas para Danny de la
+[guía de entrenamiento](documentation/training-guide.md). El primer intento no caminó: la configuración seguía a escala del G1.
+La causa se dedujo de su configuración y sus registros, pero la corrección aún no se ha entrenado, y `training/` sigue en su
+computadora, sin revisar. Para que pueda subir su rama, el usuario debe añadirlo como colaborador. Levantarse es posible en
+simulación, pero aún frágil. El robot completo ya está en CAD:
 [piernas](documentation/lower-body-design.md), [tronco](documentation/upper-body-design.md) y
 [paneles](documentation/panels-and-protection.md).
 

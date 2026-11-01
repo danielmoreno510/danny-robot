@@ -84,6 +84,32 @@ rozamiento y armadura del servo ±30 %, retardo de 10 a 30 ms, holgura de hasta 
 **Terminado cuando:** con aleatorización, camina a 0,25 m/s durante 5 minutos simulados sin caer en al menos el 95 % de las
 pruebas. Sin superar la curva del motor, y sin saturar ninguna articulación más del 5 % del tiempo.
 
+**Primer intento, 1 de noviembre de 2026: no camina.** Los valores por defecto de mjlab están pensados para un G1 de 1,3 m. Con
+ellos, quedarse quieto da el 91 % de la recompensa de velocidad, frente al 36 % en `xgoduck_rl`, que camina con este mismo
+servo (`results/walk_incentive.json`). Además, el 96 % de los episodios acabó en caída, a los 5 s de media.
+
+| Término | Primer intento | `xgoduck_rl` | Punto de partida para Danny (E, sin entrenar) |
+|---|---|---|---|
+| `track_linear_velocity` | std 0,5; peso 4 | std 0,25; peso 3 | std 0,125; peso 3 |
+| `air_time` | peso 0 | peso 3, de 0,125 a 0,3 s, umbral 0,01 | peso 3, de 0,125 a 0,35 s, umbral 0,01 |
+| `target_height` de los pies | 0,1 m | 0,02 m | 0,025 m |
+| `foot_swing_height` | -0,25 | -5 | -5 |
+| Empujones | ±0,5 m/s, con giro y vertical, cada 1-3 s | ±0,2 m/s en XY, cada 3-6 s | ±0,12 m/s en XY, cada 3-6 s |
+| `base_lin_vel` | En el actor, con ruido de ±0,5 m/s | Solo en el crítico | Solo en el crítico: el robot real no la mide |
+| Ruido del actor | Velocidad angular ±0,2; gravedad ±0,05; velocidad de articulación ±1,5 | ±0,06; ±0,03; ±0,25 | Como `xgoduck_rl` |
+| Escala de acción | 0,5 | 1,0 | 1,0 |
+| Peso de `pose` | 0,5 | 1,3 | 1,0 |
+| Iteraciones | 300 | Hasta 50 000 | 3 000, unas 3 h |
+
+**El error de posición no indica un fallo.** El servo funciona como un muelle blando: a 7,4 V da 1,03 N·m/rad y satura con
+0,88 rad (`results/walk_incentive.json`). Así que el par sale de ese error, y 0,8 N·m exigen unos 0,8 rad.
+
+**Comprobación a las 1 000 iteraciones:** media de episodio por encima de 600 pasos, `peak_height_mean` de 15 mm o más y
+`air_time` distinto de cero. Si no se cumple, para y revisa antes de seguir.
+
+**Criterio a las 3 000:** sin empujones, el error de velocidad baja de 0,155 m/s, que es estar quieto, a 0,08 m/s o menos, y se
+ve un paso alterno. Si se cumple, añade la aleatorización que falta, armadura y holgura, y los empujones hasta donde aguante.
+
 ### 4.3 Levantarse
 
 Desde boca abajo y boca arriba, con la misma aleatorización.
