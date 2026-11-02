@@ -55,8 +55,8 @@ eslabones cortos no existen. Si la política se aprovecha de eso, añade colisio
 | Control | 50 Hz |
 | Articulaciones | 23, en el orden de la sección 4 del handbook. Solo se añadirán 4 de manos, más adelante |
 | Altura del centro de masas de pie | 0,212 m |
-| Par de bloqueo | 0,94 N·m a 7,4 V y 0,76 N·m a 6 V según el modelo; 1,47 N·m según ficha. Usa el modelo |
-| Velocidad en vacío | 11,9 rad/s a 7,4 V |
+| Par de bloqueo | 0,912 N·m a 7,4 V y 0,739 N·m a 6 V según el modelo; 1,47 N·m según ficha. Usa el modelo |
+| Velocidad en vacío | 11,5 rad/s a 7,4 V |
 | Batería | 2S: de 8,4 V a unos 6 V |
 | Sensores en el robot real | IMU BNO085 en el torso, y posición y velocidad de cada servo. La política no puede usar nada más |
 
@@ -106,6 +106,14 @@ sale así del CAD. `track_linear_velocity` y `evaluate_walk.py` leen `root_link_
 los tobillos casi no cuenta como moverse, y cada balanceo del cuerpo añade un error falso de 0,23 m/s por rad/s. Usa
 `root_com_lin_vel_b`, que mide en el centro de masas de `base_link`. Es una hipótesis sin entrenar, aunque la corrección es barata.
 
+**El modelo cambió el 2 de noviembre:** tobillo a -45°, brazos en reposo a 8° con el codo a -17°, y sitio `imu` en `torso_1`, donde va la
+BNO085. Vuelve a generar `training/` con `danny_training.xml` y reinicia: una política anterior no sirve. Con -30°, `stand` quedaba a 0,04° del
+límite blando de -26,5°, así que apoyarse sobre el pie adelantado se penalizaba.
+
+**Si con eso no levanta el pie, prueba `kp_fw` 10.** Sin política, ganancia 5 cae a un pie y ganancia 10 se sostiene a 7,4 V
+(`results/standing_check.json`). El robot real ajusta esa ganancia por firmware, pero su valor se confirma en la 5.1: entrena a 10 solo como
+diagnóstico, y dilo en el informe.
+
 **El error de posición no indica un fallo.** El servo funciona como un muelle blando: a 7,4 V da 1,03 N·m/rad y satura con
 0,88 rad (`results/walk_incentive.json`). Así que el par sale de ese error, y 0,8 N·m exigen unos 0,8 rad.
 
@@ -126,7 +134,7 @@ Desde boca abajo y boca arriba, con la misma aleatorización.
 - Boca abajo, las manos deben estar delante de la cabeza. Si empujan junto a la cadera, se voltea.
 - El hombro no pasa por detrás: los brazos barren por el costado.
 - Boca arriba, conviene darse la vuelta primero.
-- La cadera llega a -100° y el tobillo a -30°, y no se puede ampliar sin rediseñar. Están medidos en el CAD.
+- La cadera llega a -100°, y no se puede ampliar sin rediseñar. El tobillo llega a -45°.
 
 Las secuencias están en `results/get_up_prone.json` y `results/roll_over.json`, y se ven con `analysis/view_simulation.py`.
 Pueden servir de referencia, pero no son el objetivo: tienen un aspecto poco natural.

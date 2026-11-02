@@ -28,8 +28,9 @@ en paralelo y no frena el diseño.
 | 2.2 | Plano del servo, maqueta impresa, cadera y pierna | En curso: tercera iteración en CAD, decisiones aprobadas. Encaje y pesado, cuando lleguen impresora y servos: [diseño](documentation/lower-body-design.md) |
 | 2.3 | Torso, electrónica, brazos, cabeza y recorrido de cables | En curso: robot completo en CAD; faltan conectores reales y carga radial: [diseño](documentation/upper-body-design.md) |
 | 2.4 | Protección contra caídas y reserva para muñeca, pinza, cámara y voz | En curso: primera iteración de [paneles y protección](documentation/panels-and-protection.md) |
+| 2.5 | Corregir los bloqueos de la [auditoría](documentation/design-audit.md) y añadir comprobaciones de montaje | En curso: 6 bloqueos corregidos y comprobados con `check_assembly.py`; faltan los puntos importantes |
 
-**Puerta:** robot completo sin interferencias, y R4 y R10 cumplidos en CAD.
+**Puerta:** robot completo sin interferencias, montable, y R4 y R10 cumplidos en CAD.
 
 ## Etapa 3: modelo en MuJoCo
 
@@ -39,7 +40,7 @@ Fusion y MuJoCo trabajan en bucle: cada cambio del CAD actualiza masas e inercia
 |---|---|---|
 | 3.1 | Modelo exportado del CAD, con el modelo BAM de `xgoduck_rl`, sin confirmar en nuestros servos | Hecho: [resultados](documentation/simulation-results.md) |
 | 3.2 | Pares y velocidades en cuclillas, apoyo a un pie, marcha y levantarse | Hecho; levantarse del suelo se probó por búsqueda, sin robustez |
-| 3.3 | Corregir el diseño y repetir hasta cumplir | En curso: pares dentro del límite; `hip_roll` ampliado; falta la curva a batería baja |
+| 3.3 | Corregir el diseño y repetir hasta cumplir | En curso: pruebas repetidas con BAM; de pie cumple, y las tareas sin política dependen de la ganancia del firmware |
 
 **Puerta:** las trayectorias de medida de R1 y R2 son viables con los límites de ficha.
 

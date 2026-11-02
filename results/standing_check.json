@@ -1,7 +1,67 @@
 {
  "seconds": 3.0,
- "worst_tilt_deg": 0.13667723856703157,
- "center_of_mass_drop_mm": 0.21554443263216427,
- "final_peak_torque_nm": 0.012636028907454416,
- "failures": []
+ "volts": {
+  "8.4": {
+   "stiffness_nm_per_rad": 1.1706386339272674,
+   "worst_tilt_deg": 0.07964089510908608,
+   "center_of_mass_drop_mm": -0.2808230411725232,
+   "final_peak_torque_nm": 0.20258739604626994
+  },
+  "7.4": {
+   "stiffness_nm_per_rad": 1.031276891793069,
+   "worst_tilt_deg": 0.08002305031796014,
+   "center_of_mass_drop_mm": -0.2817272008337479,
+   "final_peak_torque_nm": 0.2034415636661752
+  },
+  "6.0": {
+   "stiffness_nm_per_rad": 0.8361704528051911,
+   "worst_tilt_deg": 0.08056148985471331,
+   "center_of_mass_drop_mm": -0.28300365173977715,
+   "final_peak_torque_nm": 0.20465235452466765
+  }
+ },
+ "tasks": {
+  "squat": {
+   "5.0": {
+    "7.4": 93.43968933737077,
+    "6.0": 90.257521544879
+   },
+   "10.0": {
+    "7.4": 22.222018471861116,
+    "6.0": 98.0398663661802
+   }
+  },
+  "single_support": {
+   "5.0": {
+    "7.4": 102.87200183839599,
+    "6.0": 102.92505664891384
+   },
+   "10.0": {
+    "7.4": 6.0581728825991625,
+    "6.0": 104.24242577131781
+   }
+  },
+  "rise_from_crouch": {
+   "5.0": {
+    "7.4": 109.85945175911635,
+    "6.0": 106.24067690253905
+   },
+   "10.0": {
+    "7.4": 96.0161244236702,
+    "6.0": 99.66652669055517
+   }
+  }
+ },
+ "failures": [
+  "squat, ganancia 5.0 a 7.4 V: inclinación de 93.4°",
+  "squat, ganancia 5.0 a 6.0 V: inclinación de 90.3°",
+  "squat, ganancia 10.0 a 6.0 V: inclinación de 98.0°",
+  "single_support, ganancia 5.0 a 7.4 V: inclinación de 102.9°",
+  "single_support, ganancia 5.0 a 6.0 V: inclinación de 102.9°",
+  "single_support, ganancia 10.0 a 6.0 V: inclinación de 104.2°",
+  "rise_from_crouch, ganancia 5.0 a 7.4 V: inclinación de 109.9°",
+  "rise_from_crouch, ganancia 5.0 a 6.0 V: inclinación de 106.2°",
+  "rise_from_crouch, ganancia 10.0 a 7.4 V: inclinación de 96.0°",
+  "rise_from_crouch, ganancia 10.0 a 6.0 V: inclinación de 99.7°"
+ ]
 }

@@ -16,13 +16,13 @@ import mujoco
 import numpy as np
 
 import danny_motion
+import danny_servo
 import danny_sim
 
 OUTPUT = danny_sim.ROOT / "results" / "joint_loads.json"
 RATE_HZ = danny_motion.RATE_HZ
-# Criterio de la etapa 3.3, en N·m: bloqueo de ficha entre 1,5, provisional
-TORQUE_LIMIT_NM = {7.4: 0.98, 6.0: 0.78}
-FRICTION_NM = danny_sim.SERVO["friction_base"] + danny_sim.SERVO["friction_stribeck"]
+# Criterio de la etapa 3.3, en N·m: bloqueo del modelo BAM entre 1,5, provisional
+TORQUE_LIMIT_NM = {7.4: 0.61, 6.0: 0.49}
 MAXIMUM_IK_ERROR_MM = 5.0
 FOOT_MARGIN_MM = 0.0
 
@@ -112,7 +112,7 @@ def measure_task(model, solver, generator, seconds, start_pitch=None):
 
 def minimum_volts(torques, speeds):
     """Tensión más baja a la que la curva del modelo da todo lo que pide la tarea."""
-    torque = np.abs(torques) + FRICTION_NM
+    torque = danny_servo.required_motor_torque(torques, speeds)
     for volts in np.arange(4.0, 8.41, 0.1):
         if (torque <= danny_sim.available_torque(float(volts), speeds)).all():
             return round(float(volts), 1)
@@ -132,8 +132,8 @@ def main():
             model, solver, generator, seconds, danny_motion.START_PITCH.get(task))
         joints = {}
         for index, name in enumerate(names):
-            torque = np.abs(torques[:, index]) + FRICTION_NM
             speed = speeds[:, index]
+            torque = danny_servo.required_motor_torque(torques[:, index], speed)
             usage = {
                 str(volts): float((torque / np.maximum(danny_sim.available_torque(volts, speed), 1e-3)).max())
                 for volts in danny_sim.BATTERY_VOLTS

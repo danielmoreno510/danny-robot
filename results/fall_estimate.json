@@ -1,30 +1,30 @@
 {
- "mass_kg": 1.289790199847468,
+ "mass_kg": 1.2900309482252788,
  "center_of_mass_height_m": 0.22369999999999998,
- "energy_j": 2.8304407241946685,
+ "energy_j": 2.8309690457875294,
  "scenarios": {
   "panel_rigid": {
    "stopping_mm": 1.0,
-   "peak_force_n": 5660.881448389337,
-   "peak_acceleration_g": 447.3999999999999,
+   "peak_force_n": 5661.938091575059,
+   "peak_acceleration_g": 447.4,
    "panel_screws_hold": false
   },
   "pad_and_panel": {
    "stopping_mm": 3.0,
-   "peak_force_n": 1886.9604827964456,
+   "peak_force_n": 1887.3126971916863,
    "peak_acceleration_g": 149.13333333333333,
    "panel_screws_hold": false
   },
   "arm_folds_first": {
    "stopping_mm": 15.0,
-   "peak_force_n": 377.39209655928914,
+   "peak_force_n": 377.4625394383373,
    "peak_acceleration_g": 29.826666666666664,
    "panel_screws_hold": true
   },
   "servos_give_way": {
    "stopping_mm": 40.0,
-   "peak_force_n": 141.52203620973341,
-   "peak_acceleration_g": 11.184999999999999,
+   "peak_force_n": 141.54845228937646,
+   "peak_acceleration_g": 11.184999999999997,
    "panel_screws_hold": true
   }
  }

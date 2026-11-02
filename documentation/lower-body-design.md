@@ -66,6 +66,7 @@ Con Fusion abierto y `DannyBridge` activo:
 .venv/bin/python analysis/run_fusion_script.py SweepJointRanges --timeout 1500
 .venv/bin/python analysis/run_fusion_script.py ExportModel
 .venv/bin/python analysis/check_robot.py
+.venv/bin/python analysis/check_assembly.py
 .venv/bin/python analysis/estimate_fall_energy.py
 ```
 
