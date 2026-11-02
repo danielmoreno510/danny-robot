@@ -1,0 +1,21 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-02_18-29-59_fase1b_separacion_500\\model_1498.pt",
+  "task": "Mjlab-Velocity-Flat-Danny",
+  "num_envs": 256,
+  "seconds_simulated": 20.0,
+  "vin_v": 7.4,
+  "nominal_mass": false,
+  "dropped_link_contacts": null,
+  "forward_command_m_s": 0.25,
+  "turn_command_rad_s": 0.0,
+  "fraction_envs_not_fallen": 1.0,
+  "mean_forward_velocity_m_s": 0.2634,
+  "mean_xy_velocity_error_m_s": 0.0316,
+  "mean_yaw_rate_rad_s": 0.0251,
+  "mean_yaw_rate_error_rad_s": 0.0688,
+  "fraction_time_single_support": 0.9274,
+  "touchdowns_per_foot_per_s": 1.2526,
+  "fraction_alternating_touchdowns": 0.9928,
+  "fraction_touchdowns_left": 0.4887,
+  "note": "Sin empujones. Orden fija de avance. Se descartan los primeros 2.0 s. Solo entornos que no caen. Velocidad del centro de masas de base_link."
+}

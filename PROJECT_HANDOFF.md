@@ -4,8 +4,8 @@ Punto de entrada para continuar **Robot Danny** en un chat nuevo o en otra compu
 
 **Fecha:** 2 de noviembre de 2026. **Etapa actual:** 3, MuJoCo, con 2.2, 2.3 y 2.4 abiertas por lo físico. La etapa 1 está
 cerrada salvo la 1.2, que va en paralelo.
-**Siguiente paso:** seguir el [plan de la etapa 4](#plan-de-la-etapa-4-fases) por fases. La fase 0 está hecha y la fase 1
-(`fase1_marcha_1000`, marcha con el modelo final) no aprobó: ver el resultado en el plan. `marcha_reloj_1000` ya caminó hacia delante y giró con el modelo
+**Siguiente paso:** seguir el [plan de la etapa 4](#plan-de-la-etapa-4-fases) por fases. Las fases 0 y 1 están hechas: la marcha
+con el modelo final aprobó con `fase1b_separacion_500` (ver el plan). Sigue la fase 2, movimiento completo. `marcha_reloj_1000` ya caminó hacia delante y giró con el modelo
 anterior (ver [Entrenamiento en simulación](#entrenamiento-en-simulación-etapa-4-sin-terminar)). El código de `training/` está en la
 rama `entrenamiento-danny`, que se actualiza con `origin/main` antes de cada fase. `main` está protegida: los colaboradores entran por pull
 request aprobado por el usuario, que es quien cambia el diseño. Levantarse es posible en simulación, pero aún frágil. El robot completo ya está en CAD:
@@ -182,7 +182,7 @@ parámetros son de otro robot: lo aprendido no se instala directo en el robot f�
 | Fase | Trabajo | Estado |
 |---|---|---|
 | 0 | Preparar: main fusionado, modelo comprobado, colisiones, masa, centro de masas y bloqueo de par | Hecho el 2 de noviembre (abajo) |
-| 1 | Validar la marcha con el modelo final: 1 000 iteraciones desde cero | No aprobó el 2 de noviembre (abajo); parada a la espera de decisión |
+| 1 | Validar la marcha con el modelo final | Aprobada el 2 de noviembre con la fase 1b (abajo): desde cero no aprendió, y reentrenando desde la política antigua con penalización de choques sí |
 | 2 | Movimiento completo (avanzar, retroceder, lateral, girar, quieto) con armadura, holgura y empujones: 10 000 iteraciones | Pendiente |
 | 3 | Agacharse: orden de altura del cuerpo, hasta 3 000 iteraciones | Pendiente |
 | 4 | Levantarse (4.3): política propia, 10 000 iteraciones; primero boca abajo, luego boca arriba | Pendiente |
@@ -258,6 +258,33 @@ con una política que choca miles de veces), por eso el recuento lee los contact
 reparto de aterrizajes entre 0,4 y 0,6 y un recuento de choques entre eslabones cercano a 0. Se mide también a 6 y 8,4 V, con el pico de par.
 Si no aprueba, se para, se escribe lo visto y se pide decidir un cambio de diseño (separar los pies o estrechar las suelas, sin tocar `cad/`
 desde aquí). No se alarga la corrida.
+
+**Fase 1b, resultado: aprueba.** Corrida `fase1b_separacion_500` (500 iteraciones desde `marcha_reloj_1000/model_999.pt`, de la 1 000 a la
+1 499), punto de control aprobado `model_1498.pt`, guardado fuera del repositorio en `D:\Claude\puntos_de_control\fase1b_separacion_500_model_1498.pt`
+(5 MB, no va a git). Orden de 0,25 m/s, 256 robots, 20 s, sin empujones (`results/training_gait_fase1b_separacion_500_*V.json`):
+
+| Tensión | Sin caer | Avance | Error de velocidad | Apoyos alternos | Aterrizajes del pie izquierdo |
+|---|---|---|---|---|---|
+| 7,4 V | 100 % | 0,263 m/s | 0,032 m/s | 0,993 | 48,9 % |
+| 6 V | 100 % | 0,244 m/s | 0,031 m/s | 0,997 | 48,9 % |
+| 8,4 V | 100 % | 0,266 m/s | 0,034 m/s | 0,993 | 49,2 % |
+
+Cumple todo el criterio a las tres tensiones: alternancia de 0,9 o más, error de 0,08 m/s o menos, 95 % o más sin caer, y reparto entre pies de
+0,4 a 0,6. Choques entre eslabones: 0,000 por paso con la política determinista (recuento propio) y `feet_lateral_clearance` de -0,04 por paso
+(antes -4,2). En el log, al final: episodio de 987 pasos, recompensa de velocidad 2,12, `peak_height_mean` de 17,8 mm y el 1,3 % de los
+entornos con algún choque (con aleatorización y empujones). Altura máxima de suela de 40 mm (`results/training_peak_height_fase1b_separacion_500.json`).
+
+Pico de par (`results/training_torque_fase1b_separacion_500_*V.json`, bloqueo de 0,739 N·m a 6 V, 0,912 a 7,4 V y 1,036 a 8,4 V): los picos llegan
+al bloqueo en las rodillas y los tobillos de cabeceo (0,76 / 0,94 / 1,07 N·m, hasta un 3 % por encima de la cifra de bloqueo). Por encima del 5 % del
+tiempo sobre el 90 % del bloqueo: a 7,4 V y a 8,4 V, el tobillo de cabeceo derecho (9,9 % y 9,1 %; el izquierdo, 3,1 % y 2,3 %); a 6 V, las dos rodillas
+(7,9 % y 7,5 %) y ese tobillo (8,1 %). La guía pide no saturar ninguna articulación más del 5 % del tiempo: **no se cumple todavía**, y es parte del criterio
+de cierre de la fase 2, no de esta.
+
+**Lo que no se comprobó de la fase 1b:** solo se probó hacia delante a 0,25 m/s (ni giro, ni lateral, ni marcha atrás, ni con empujones); el
+recuento de choques se validó con la política antigua y contra un recuento independiente, pero `Metrics/link_contact_fraction` salió `nan` en mi prueba;
+no se probó otra semilla; no hay vídeo (la grabación automática con `play --video` no terminó en 9 minutos). La política aprobada parte de
+una antigua: la que se entrenó desde cero con el modelo final no aprendió a andar (`fase1_marcha_1000`), así que el entrenamiento desde cero
+necesita estas penalizaciones desde el principio o un arranque como este.
 
 ## Lo que no se debe afirmar
 
