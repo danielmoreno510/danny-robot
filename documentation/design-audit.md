@@ -79,3 +79,65 @@ R6 no se cumple con reserva o con manos: 1 546 € y 1 533 €. R10 mide 133,8 m
 ## Sin comprobar
 
 Plano real del servo, tolerancias, entradas con giro, calor, longitud de cables, rosca real, mjlab en esta auditoría y `roll_over` con BAM.
+
+## Segunda auditoría, 2 de noviembre de 2026
+
+Dos revisores independientes sobre el commit `aa7dd8c`: uno recorrió cada acción con las mallas, tornillos y servo BAM, y otro comparó la versión
+final con el plano del servo. Nada se imprimió. **Conclusión: todavía no conviene imprimir piezas definitivas.** Se confirmó la caída hacia atrás
+con su simulación, y en el código que ninguna cara de bocina tiene alivio central. El resto sale de las medidas de cada revisor.
+
+### Prioridad
+
+| # | Fallo | Medida | Arreglo |
+|---|---|---|---|
+| 1 | En una caída hacia atrás, el cráneo golpea primero | 1,24 J y 423 N, unos 14 N·m sobre `neck_yaw` (E), con un bloqueo de 0,9 N·m | Hecho: joroba de TPU hasta x = -29, de unos 6 g (E). Sin volver a simular la caída |
+| 2 | Las 38 caras de bocina atornilladas no tienen alivio para el tornillo central | Sólido a 14,5-14,7 mm del eje, y la cabeza llegaría a unos 15,2 mm según el plano | Cajera de ⌀7 × 1 mm, tras medir C1 y C2 |
+| 3 | Longitud de tornillos | 28 tornillos de bocina necesitan M2 × 4: uno más largo toca la caja | Tabla de totales, abajo |
+| 4 | Ventanas de conector | La muesca va solo en una cara, de h = 3,8 a 11,5, y la ventana de -6 a +6 | Ventana de h = 3 a 13, tras medir C7 y C8 |
+| 5 | La simulación y el entrenamiento no ven ciertos choques | `roll_over` mete `hip_roll_link` 13,6 mm en el suelo. Sin caja: `hip_yaw`, `hip_roll`, tobillo, hombro y cuello | Hecho: todas las piezas con colisión y 13 pares entre eslabones. Hay que reentrenar |
+| 6 | Pared de 0,30 mm en la chapa de `hip_roll`, y de 0,45 mm en la cintura | Agujeros y asiento demasiado justos | Hecho, y con reborde de 0,4 mm bajo el rodamiento |
+| 7 | Cables | Cintura y hombro apenas tienen margen, y `hip_pitch` 0,7 mm | Chaflán hecho, y ranuras del suelo reducidas. El bucle de 40 mm queda para el montaje |
+
+También hechos: masa del modelo a 1,30 kg, nervio del talón, panel de tibia, cajeras delanteras de `hip_roll` y agujeros de orejas. Siguen abiertos los puntos 2 y 4, que
+dependen del servo real, además de rejillas traseras, BMS y `arm_yaw` con rodamiento.
+
+### Límites por acción
+
+- **Posible:** de pie, cuclillas, brazos arriba, adelante y a los lados, bracear, mirar y saludar a 1,5 Hz.
+- **Con límite:** caminar con paso de hasta 140 mm, girar 20° por paso, paso lateral, a un pie, sentarse con los pies bajo el asiento, sentarse sobre los talones, tocar
+  el suelo con la mano y llevar las manos a cabeza y cintura.
+- **Imposible hoy:** arrodillarse erguido y llevar la mano al hombro contrario.
+- **Sin demostrar:** sobrevivir a caídas, darse la vuelta y levantarse con servo BAM.
+- **Límites nuevos para la política:** cintura de 44° con los brazos colgando. Con brazo a 8°, `hip_roll` llega a -20,9° antes de chocar. Las caderas chocan
+  al abrir ambas 14°. Unos 5 min a un pie llevarían `hip_roll` al corte de temperatura (E).
+
+### Tornillería prevista
+
+Sale de medir agarre y rosca en cada unión, y se revisará tras C1 a C5: 327 M2 (64 × 4, 205 × 5, 28 × 6, 12 × 8, 18 × 10) y 31 M1,6 (2 × 3, 4 × 4, 4 × 5, 9 × 6, 8 × 8, 2 × 16, 2 × 18).
+Unos 70 g (E). No hay ningún inserto ni M2 × 12. Un autorroscante de cabeza alomada, de 1,4-1,6 mm (E), no entraría en cajeras de 1,2 mm.
+
+### Medidas con el servo real
+
+| # | Cota | Plano | Decide |
+|---|---|---|---|
+| C1 | Sobre cabezas centrales, cara a cara | Unos 30,3 mm | Cajera |
+| C2 | Alto y ⌀ de cada cabeza; si la de la cara libre se quita sin soltar nada | 0,6-0,7 y ⌀5 | Alivio |
+| C3 | Disco de bocina y hueco a la caja, por cara | 2,6 y 0,4 | Longitud máxima |
+| C4 | ⌀ de bocina | 16 ± 0,2 | Rodamiento |
+| C5 | Fondo de agujeros de bocina y fijación, y si son pasantes | Sin dato | Rosca útil |
+| C6 | Cuerpo y fijación 30 × 16, en los 3 servos | ± 0,2 | Hueco |
+| C7 | Muesca: 4,6-12,7 a lo largo, 4,6-10 de ancho, 7,7 de fondo | Leído | Ventanas |
+| C8 | Clavija: sección, largo y radio del cable | Sin dato | Ventanas |
+| C9 | Qué cara es motriz, y si giran juntas | Sin dato | Uniones de una bocina |
+| C10 | Masa y longitud de cable | 21-22,5 g y 15 cm | Masas |
+
+**Antes de medir C1 a C5, no metas ningún tornillo en bocina ni servo.**
+
+### Primera tanda de prueba en PLA
+
+Sin rodamiento ni electrónica: `left_hip_roll_link_structure`, `cover` y `plate`; `left_shoulder_link_structure`; `left_upper_arm_plate`, `structure` y `cover`; y `torso_tray_plate`.
+Prueba la entrada del servo de `hip_roll`, inclinado 7° y sin margen, el asiento en bocina, el acceso de herramienta y las paredes finas.
+
+### Cifras por corregir en otros documentos
+
+Masa de pierna y pelvis, centro de masas, tornillos de chapa, pared del tornillo del servo, tornillos superiores de cintura, reserva de manos y paso de 68 mm entre carriles.

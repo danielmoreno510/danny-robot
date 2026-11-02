@@ -1,15 +1,15 @@
 {
  "bodies": 24,
  "joints": 23,
- "modeled_mass_kg": 1.1900309482252787,
- "panel_mass_kg": 0.02252187620901368,
+ "modeled_mass_kg": 1.200584926848697,
+ "panel_mass_kg": 0.028571813676741466,
  "unmodeled_mass_kg": {
   "cables": 0.04,
   "screws": 0.06
  },
- "estimated_mass_kg": 1.2900309482252788,
- "mass_margin_g": 509.96905177472127,
- "mass_error_percent": 4.248177950936688e-05,
+ "estimated_mass_kg": 1.300584926848697,
+ "mass_margin_g": 499.415073151303,
+ "mass_error_percent": 4.2108334889504004e-05,
  "worst_axis_error_deg": 4.7536104815230715e-06,
  "height_mm": 395.0000005713369,
  "leg_mm": 199.9999999999996,
@@ -18,9 +18,9 @@
  "shoulder_percent": 33.87341867917222,
  "widest_mm": 147.00000139322978,
  "center_of_mass_mm": [
-  4.0,
+  3.8,
   -0.0,
-  223.7
+  223.5
  ],
  "failures": []
 }

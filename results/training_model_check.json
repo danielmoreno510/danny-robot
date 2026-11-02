@@ -1,0 +1,11 @@
+{
+ "mass_kg": 1.30058497,
+ "link_contacts": 13,
+ "smallest_rest_margin_deg": 10.698296598572488,
+ "tightest_joint": "left_elbow",
+ "sole_contacts_at_rest": 8,
+ "deepest_contact_mm": 0.30934338668099054,
+ "worst_uncovered_mesh_mm": 10.992706892177159,
+ "worst_uncovered_body": "neck_link_1",
+ "failures": []
+}

@@ -81,7 +81,7 @@ WAIST_BOSS_BOTTOM = 269.5  # apoya en la bocina
 WAIST_BOSS_RADIUS = 8.9  # deja sitio a las cabezas de la pelvis
 WAIST_BEARING = (8.0, 11.0, 4.0)  # 16 × 22 × 4 alrededor de la bocina: radios y ancho
 WAIST_SEAT_RADIUS = 11.15  # con holgura: el aro se pega con el torso ya atornillado
-WAIST_BEARING_Z = HIP_YAW_Z + 11.7
+WAIST_BEARING_Z = HIP_YAW_Z + 12.1  # deja un reborde de 0,4 mm sobre el servo, donde apoya el aro
 WAIST_SPIGOT_RADIUS = 7.9
 SHOULDER_Z = 325.4
 NECK_YAW_Z = 326.9
@@ -324,7 +324,7 @@ def pelvis_frame():
         box(PELVIS_REAR, PELVIS_FRONT, -10, 10, PELVIS_BOTTOM, PELVIS_TOP),
         box(18, PELVIS_FRONT, -PELVIS_Y, PELVIS_Y, PELVIS_BOTTOM + 2, PELVIS_TOP - 2),
         box(PELVIS_REAR, -18, -PELVIS_Y, PELVIS_Y, PELVIS_BOTTOM, PELVIS_TOP),
-        cylinder((WAIST_X, 0, HIP_YAW_Z), (WAIST_X, 0, PELVIS_TOP), 11.6),  # asiento del rodamiento
+        cylinder((WAIST_X, 0, HIP_YAW_Z), (WAIST_X, 0, PELVIS_TOP), 12.3),  # asiento del rodamiento
     ]
     for side in (-1, 1):
         hip = side * HIP_Y
@@ -392,7 +392,7 @@ def yaw_link_bodies(side):
     roll_x_rear, roll_x_front = -27.5, 12.5
     lower = HIP_YAW_Z - SERVO_THICKNESS / 2 - HORN_LENGTH
     upper = HIP_YAW_Z + SERVO_THICKNESS / 2 + HORN_LENGTH
-    web = (hip - side * 17.3, hip - side * 14.3)
+    web = (hip - side * 16.3, hip - side * 13.3)
     tenon = (-5, 5, web[0], web[1], upper, upper + TENON)
     boss_rear = HIP_ROLL_X - SERVO_THICKNESS / 2 - HORN_LENGTH - FORK_GAP
     boss_front = HIP_ROLL_X + SERVO_THICKNESS / 2 + HORN_LENGTH + FORK_GAP
@@ -411,6 +411,8 @@ def yaw_link_bodies(side):
         cylinder((0, hip, upper), (0, hip, upper + ARM), 10),
     ])
     cuts = servos["yaw"].horn_bolts() + servos["roll"].horn_bolts(SERVO_THICKNESS / 2 + 12)
+    # Delante van rehundidas: a -100° de `hip_pitch` pisarían el panel del muslo
+    cuts += servos["roll"].horn_recesses(roll_x_front + ARM - HIP_ROLL_X)
     cap_cuts = servos["yaw"].horn_bolts() + servos["yaw"].horn_recesses(upper + ARM - HIP_YAW_Z)
     cap_cuts.append(box(-5.1, 5.1, web[0], web[1], upper, upper + TENON + 0.1))
     return {"structure": [carved(body, cuts)], "cover": [carved(cap, cap_cuts)]}
@@ -429,7 +431,7 @@ def roll_link_bodies(side):
     shell = box(x0, x1, hip - side * SHELL_Y, hip + side * COVER_Y, 188, 211.8)
     plate = merged([
         box(x0, x1, hip + side * COVER_Y, hip + side * SHELL_Y, 188, 211.8),
-        box(-25.4, -21, hip + side * COVER_Y, hip + side * SHELL_Y, 211.8, lug_top),
+        box(-25.4, -21, hip + side * COVER_Y, hip + side * 15.4, 211.8, lug_top),
     ])
     body = merged([
         shell,
@@ -439,14 +441,14 @@ def roll_link_bodies(side):
     # La chapa trasera se atornilla al final: entre dos chapas fijas el servo no entra
     rear_plate = merged([
         box(-21, -19.2, inner, outer, 211.8, 232.5),
-        box(-25.4, -19.2, hip + side * 9.5, hip + side * 14.4, lug_top, lug_top + 2),
+        box(-25.4, -19.2, hip + side * 9.5, hip + side * 15.4, lug_top, lug_top + 2),
         box(-25.4, -19.2, hip - side * 9.5, hip - side * 14.4, lug_top, lug_top + 2),
-        box(-21, -19.2, hip + side * 11, hip + side * 14.4, lug_top, lug_top + 2),
+        box(-21, -19.2, hip + side * 11, hip + side * 15.4, lug_top, lug_top + 2),
     ])
     # Cortos y por fuera de la bocina de roll: debajo está el agujero M2 del servo
-    flange_rows = (hip + side * 13, hip - side * 13)
-    flange_screws = [cylinder((-23.2, y, lug_top - 1), (-23.2, y, lug_top + 3), SCREW_RADIUS) for y in flange_rows]
-    flange_pilots = [cylinder((-23.2, y, 210.4), (-23.2, y, lug_top + 1), PILOT_RADIUS) for y in flange_rows]
+    flange_rows = (hip + side * 13.4, hip - side * 12.5)
+    flange_screws = [cylinder((-23.2, y, lug_top - 1), (-23.2, y, lug_top + 3), 0.9) for y in flange_rows]
+    flange_pilots = [cylinder((-23.2, y, 211.0), (-23.2, y, lug_top + 1), PILOT_RADIUS) for y in flange_rows]
     return {
         "structure": [carved(body, cuts + flange_pilots)],
         "cover": [carved(plate, cuts + flange_pilots)],
@@ -477,6 +479,8 @@ def thigh_bodies(side):
         main,
     ])
     window = box(-20, 20, hip - 15.5, hip + 15.5, 152, 177)
+    # Chaflán trasero: da paso al cable de `hip_pitch` con la pierna atrás
+    cable_chamfer = box(-15.1, -10, hip - 17.6, hip + 17.6, 178, 181.1)
     bounds = ((15.0, 19.0), (hip - 14.0, hip + 14.0), (150.0, 181.0))
     facets = [
         ((19.0, hip + 9, 0), (16.0, hip + 14, 0), 2, (40.0, hip + 30, 0)),
@@ -489,7 +493,7 @@ def thigh_bodies(side):
     # Por fuera pasa el antebrazo: las cabezas de `hip_pitch` van rehundidas
     fork_cuts = servos["pitch"].horn_bolts() + servos["pitch"].horn_recesses(FORK_OUTER, side)
     return {
-        "structure": [carved(body, fork_cuts + [window] + pilots)],
+        "structure": [carved(body, fork_cuts + [window, cable_chamfer] + pilots)],
         "cover": [cover],
         "panel": [panel],
         "servo": [servos["knee"].solid()],
@@ -507,13 +511,15 @@ def shin_bodies(side):
         box(-13, 13, hip - SHELL_Y, hip + SHELL_Y, 60, 80),
         main,
     ])
-    window = box(-20, 20, hip - 11.5, hip + 11.5, 62, 80)
+    window = box(-20, 20, hip - 11.5, hip + 11.5, 62, 78)
     bounds = ((13.0, 17.0), (hip - 14.4, hip + 14.4), (60.0, 83.0))
     facets = [
         ((17.0, hip + 10, 0), (14.5, hip + 14.4, 0), 2, (40.0, hip + 30, 0)),
         ((17.0, hip - 10, 0), (14.5, hip - 14.4, 0), 2, (40.0, hip - 30, 0)),
     ]
-    panel, pilots = panel_shell(bounds, facets, [(hip - 12.9, 70.0), (hip + 12.9, 70.0)])
+    panel, pilots = panel_shell(bounds, facets, [(hip - 9, 80.5), (hip + 9, 80.5)])
+    # Lengüeta dentro de la ventana: sitúa el borde inferior, que no lleva tornillos
+    panel = merged([panel, box(11.0, 13.1, hip - 8, hip + 8, 62.4, 65.0)])
     knee_pad = box(17.0, 17.0 + PAD_THICKNESS, hip - 8, hip + 8, 64, 78)
     return {
         "structure": [carved(body, servos["knee"].horn_bolts() + [window] + pilots)],
@@ -563,6 +569,8 @@ def foot_bodies(side):
     body = merged([
         box(-30, 55, center - 24, center + 24, 2, 5),
         box(ANKLE_ROLL_X - 14, ANKLE_ROLL_X + 14, y0, y1, 5, 28.2),
+        box(-30, 16, center - 2, center + 2, 5, 10),  # nervio del talón: baja antes del eslabón del tobillo
+        box(16, ANKLE_ROLL_X - 14, center - 2, center + 2, 5, 6.5),
     ])
     return {
         "structure": [carved(body, servos["ankle_roll"].pocket(columns=(1,)))],
@@ -631,7 +639,7 @@ def torso_bodies():
     ]
     for side in (-1, 1):
         # Cables: a las piernas por delante de la pelvis, y a los brazos fuera del barrido del hombro
-        openings.append(box(29.2, 32.2, side * 4, side * 16, FLOOR_Z[0] - 1, FLOOR_Z[1] + 1))
+        openings.append(box(29.2, 32.2, side * 4, side * 10, FLOOR_Z[0] - 1, FLOOR_Z[1] + 1))
         openings.append(box(32.0, TORSO_X[1] + 1, side * 30, side * TORSO_INNER_Y, 320.0, 330.0))
     for y in (6.0, 26.0):
         openings.append(cylinder((31.5, y, 326.0), (TORSO_X[1] - 0.8, y, 326.0), PILOT_RADIUS))  # IMU
@@ -649,7 +657,7 @@ def torso_bodies():
     carved(top, top_cuts)
 
     tray_slots = [
-        box(29.0, 32.2, side * 4, side * 16, FLOOR_Z[0], 283) for side in (-1, 1)
+        box(29.0, 32.2, side * 4, side * 10, FLOOR_Z[0], 283) for side in (-1, 1)
     ]
     tray = merged([
         box(4.5, 30.5, -33.5, 33.5, FLOOR_Z[1], 276.5),
@@ -666,7 +674,7 @@ def torso_bodies():
         box(-0.5, 4.6, 7, 32, FLOOR_Z[1], 279),
         box(-0.5, 4.6, -32, -7, FLOOR_Z[1], 279),
     ])
-    tray_screws = [cylinder((1.0, side * 34.4, FLOOR_Z[1] - 3), (1.0, side * 34.4, 277.5), SCREW_RADIUS) for side in (-1, 1)]
+    tray_screws = [cylinder((1.0, side * 34.4, FLOOR_Z[1] - 3), (1.0, side * 34.4, 277.5), 0.9) for side in (-1, 1)]
     # Ranuras a todo lo largo: el carro entra recto sobre las cabezas de los tornillos de cintura
     tray_screws += [box(0.0, 31.0, side * 2.0, side * 6.5, FLOOR_Z[1] - 1, 276.6) for side in (-1, 1)]
     carved(tray, tray_slots + tray_screws)
@@ -700,6 +708,19 @@ def torso_bodies():
     carved(structure, chest_pilots)
     chest_pad = box(41.0, 41.0 + PAD_THICKNESS, -12.0, 12.0, 304.0, 317.0)
     back_pads = [box(-22.0 - PAD_THICKNESS, -22.0, side * 25, side * 35, 284.0, 304.0) for side in (-1, 1)]
+    # Joroba de TPU: en una caída hacia atrás toca antes que la cabeza, y evita el golpe en el cuello
+    hump_x = (-29.0, TORSO_X[0])
+    hump_studs = [cylinder((hump_x[0], side * 15, 330.5), (hump_x[1], side * 15, 330.5), 3.0) for side in (-1, 1)]
+    back_hump = merged([
+        carved(box(hump_x[0], hump_x[1], -28.0, 28.0, 320.0, 341.0), [box(hump_x[0] + 2, hump_x[1] + 1, -26.0, 26.0, 322.0, 339.0)]),
+    ] + hump_studs)
+    for side in (-1, 1):
+        carved(back_hump, [
+            cylinder((hump_x[0] - 1, side * 15, 330.5), (hump_x[1] + 1, side * 15, 330.5), SCREW_RADIUS),
+            cylinder((hump_x[0] - 1, side * 15, 330.5), (hump_x[0] + 1.7, side * 15, 330.5), 2.25),  # cabeza a salvo del golpe
+        ])
+    carved(structure, [cylinder((hump_x[1] - 0.1, side * 15, 330.5), (TORSO_INNER_X[0] - 0.1, side * 15, 330.5), M2_PILOT_RADIUS)
+                       for side in (-1, 1)])
 
     bodies = {
         "structure": [structure],
@@ -709,6 +730,7 @@ def torso_bodies():
         "chest_pad": [chest_pad],
         "left_back_pad": [back_pads[1]],
         "right_back_pad": [back_pads[0]],
+        "back_hump_pad": [back_hump],
         "tray_plate": [tray],
         **covers,
         "servo": [neck.solid(), servos[1].solid(), servos[-1].solid()],

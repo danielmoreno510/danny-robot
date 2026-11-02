@@ -27,6 +27,7 @@ COMPUTER = (6.0, 14.0, -32.5, 32.5, 277.0, 307.0)
 POWER_BOARD = (17.0, 29.0, -30.0, 30.0, 277.0, 307.0)
 ARM_ROLL_SCREWS_Y = (48.5, 64.5)
 ARM_REST_DEG = 8.0
+FLANGE_ROWS = (-12.5, 13.4)
 HIP_ROLL_IN_REST_DEG = 10.0
 FOREARM_MARGIN_MM = 0.4
 THIGH_FORK_TOP_Z = 215.0  # por encima, el antebrazo se ensancha y no pasa junto al muslo
@@ -88,7 +89,7 @@ def main():
     checks["llave_de_los_tornillos_de_roll_del_brazo"] = max(
         overlap(cylinder((22.0, y, 302.9), (55.0, y, 302.9), 1.0), arm_parts) for y in ARM_ROLL_SCREWS_Y)
 
-    flange_heads = [cylinder((-23.2, HIP_Y + row, 216.8), (-23.2, HIP_Y + row, 218.0), 1.5) for row in (-13, 13)]
+    flange_heads = [cylinder((-23.2, HIP_Y + row, 216.8), (-23.2, HIP_Y + row, 218.0), 1.5) for row in FLANGE_ROWS]
     yaw_parts = [part("left_hip_yaw_link_structure"), cylinder((-30, HIP_Y, 222), (-22.2, HIP_Y, 222), 8.5)]
     checks["cabezas_de_la_chapa_de_roll_en_todo_el_rango"] = max(
         overlap(rotated_about_x(head, HIP_Y, 222.0, angle), yaw_parts)
@@ -99,7 +100,7 @@ def main():
         for mesh in roll_parts[:1] for angle in range(-15, 36, 10))
     screw_hole = cylinder((-22.5, HIP_Y - 15, 208.0), (-22.5, HIP_Y + 15, 208.0), 2.0)
     checks["piloto_de_la_chapa_contra_el_agujero_del_servo"] = overlap(
-        screw_hole, [cylinder((-23.2, HIP_Y + row, 210.4), (-23.2, HIP_Y + row, 216.0), 0.7) for row in (-13, 13)])
+        screw_hole, [cylinder((-23.2, HIP_Y + row, 211.0), (-23.2, HIP_Y + row, 216.0), 0.7) for row in FLANGE_ROWS])
     forearm_at_rest = rotated_about_x(part("left_forearm_structure"), 56.5, 325.4, ARM_REST_DEG)
     thigh_abducted = rotated_about_x(part("left_thigh_structure"), HIP_Y, 222.0, HIP_ROLL_IN_REST_DEG)
     checks["antebrazo_en_reposo_con_la_cadera_abierta"] = overlap(forearm_at_rest, [thigh_abducted])

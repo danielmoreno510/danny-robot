@@ -235,6 +235,28 @@ START_PITCH = {
 }
 
 
+def contact_forces(model, data, contacts, demand):
+    """Reparte la demanda: cumple la base y minimiza el par. contacts: [(site, con_momento)]."""
+    rows = []
+    for name, with_moment in contacts:
+        site = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SITE, name)
+        jacp, jacr = np.zeros((3, model.nv)), np.zeros((3, model.nv))
+        mujoco.mj_jacSite(model, data, jacp, jacr, site)
+        rows.append(jacp)
+        if with_moment:
+            rows.append(jacr)
+    jacobian = np.vstack(rows)
+    base, joints = jacobian[:, :6].T, jacobian[:, 6:].T
+    count = jacobian.shape[0]
+    system = np.zeros((count + 6, count + 6))
+    system[:count, :count] = joints.T @ joints + 1e-8 * np.eye(count)
+    system[:count, count:] = base.T
+    system[count:, :count] = base
+    right = np.concatenate([joints.T @ demand[6:], demand[:6]])
+    forces = np.linalg.lstsq(system, right, rcond=None)[0][:count]
+    return forces, demand[6:] - joints @ forces
+
+
 def stand_pose(model):
     """Devuelve el qpos de `stand`: de pie, con las rodillas dobladas y el peso sobre los pies."""
     return Solver(model).solve(*TASKS["squat"][0](0.0)[:3], iterations=600)[0]

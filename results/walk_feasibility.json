@@ -1,0 +1,18 @@
+{
+ "firmware_gain": 5.0,
+ "volts": 7.4,
+ "gains": [
+  -7.554,
+  0.202,
+  -4.758,
+  0.563,
+  -3.777,
+  1.051
+ ],
+ "seconds": 1.83,
+ "forward_m": 0.4557821138283823,
+ "alternating_steps": 4,
+ "mean_stride_m": 0.09755992573663835,
+ "worst_slip_m": 0.015152314332354144,
+ "passed": true
+}

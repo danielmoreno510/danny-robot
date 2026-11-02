@@ -27,28 +27,6 @@ MAXIMUM_IK_ERROR_MM = 5.0
 FOOT_MARGIN_MM = 0.0
 
 
-def contact_forces(model, data, contacts, demand):
-    """Reparte la demanda: cumple la base y minimiza el par. contacts: [(site, con_momento)]."""
-    rows = []
-    for name, with_moment in contacts:
-        site = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SITE, name)
-        jacp, jacr = np.zeros((3, model.nv)), np.zeros((3, model.nv))
-        mujoco.mj_jacSite(model, data, jacp, jacr, site)
-        rows.append(jacp)
-        if with_moment:
-            rows.append(jacr)
-    jacobian = np.vstack(rows)
-    base, joints = jacobian[:, :6].T, jacobian[:, 6:].T
-    count = jacobian.shape[0]
-    system = np.zeros((count + 6, count + 6))
-    system[:count, :count] = joints.T @ joints + 1e-8 * np.eye(count)
-    system[:count, count:] = base.T
-    system[count:, :count] = base
-    right = np.concatenate([joints.T @ demand[6:], demand[:6]])
-    forces = np.linalg.lstsq(system, right, rcond=None)[0][:count]
-    return forces, demand[6:] - joints @ forces
-
-
 def foot_margin(force, moment):
     """Distancia del centro de presiones al borde del pie, en mm. Negativa: fuera."""
     if force[2] <= 0:
@@ -90,7 +68,7 @@ def measure_task(model, solver, generator, seconds, start_pitch=None):
         inertial = np.zeros(model.nv)
         mujoco.mj_mulM(model, data, inertial, accelerations[index])
         demand = inertial + data.qfrc_bias
-        forces, torque = contact_forces(model, data, contact_sets[index], demand)
+        forces, torque = danny_motion.contact_forces(model, data, contact_sets[index], demand)
         torques.append(torque)
         cursor = 0
         step_margin, step_normal = [], []
