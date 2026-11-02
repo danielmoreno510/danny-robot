@@ -100,14 +100,16 @@ DANNY_STAND_FRAME = EntityCfg.InitialStateCfg(
     joint_vel={".*": 0.0},
 )
 
-# Contactos: solo la suela y las cajas de colisión de cada eslabón tocan el suelo. Los eslabones no
-# colisionan entre sí (conaffinity=0), igual que en los Walk de xgoduck_rl.
+# Contactos: la suela y las cajas de colisión de cada eslabón tocan el suelo. Los eslabones no chocan entre sí por
+# contype/conaffinity (conaffinity=0), pero los 13 `<pair>` del MJCF sí (pie con pie, brazo con pierna). Las cajas usan
+# condim=3 y priority=1 como la suela: con prioridad 0 el suelo les pondría su fricción de 1,0 en lugar de la 0,35 del MJCF
+# (guía 4.2).
 DANNY_COLLISION = CollisionCfg(
     geom_names_expr=(r".*_box_\d+", r"^(left|right)_sole$"),
     contype=1,
     conaffinity=0,
-    condim={r"^(left|right)_sole$": 3, r".*_box_\d+": 1},
-    priority={r"^(left|right)_sole$": 1},
+    condim=3,
+    priority=1,
     friction={r"^(left|right)_sole$": (1.0,)},
 )
 

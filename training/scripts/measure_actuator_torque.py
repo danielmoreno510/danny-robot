@@ -1,7 +1,7 @@
 """Mide el par que aplican los actuadores HD-1910 (modelo BAM) durante la marcha y guarda el resultado en results/.
 
 Corre un checkpoint en simulación sin empujones, con las órdenes del entrenamiento o con una orden fija de avance, y registra, por articulación, el par aplicado
-(`data.actuator_force`) frente al par de parada a 6 V (0,762 N·m, de la guía y params/hd1910_m6.json).
+(`data.actuator_force`) frente al par de bloqueo a la tensión de la prueba (0,739 N·m a 6 V y 0,912 a 7,4 V).
 Sirve para saber si los servos se quedan sin par cuando la política pide movimiento.
 
 Uso (desde training/):
@@ -16,9 +16,8 @@ from pathlib import Path
 
 import torch
 
-from danny_training.evaluation import RESULTS, TASK, eval_env_cfg, fix_command, load_policy
+from danny_training.evaluation import RESULTS, TASK, eval_env_cfg, fix_command, load_policy, stall_torque_nm
 
-STALL_6V_NM = 0.762
 
 
 def main() -> None:
@@ -26,11 +25,12 @@ def main() -> None:
   parser.add_argument("--checkpoint", required=True, type=Path)
   parser.add_argument("--forward-speed", type=float, default=None, help="Orden fija de avance en m/s; sin ella, las del entrenamiento")
   parser.add_argument("--name", required=True, help="Nombre del resultado en results/")
+  parser.add_argument("--vin", type=float, default=None, help="Tensión fija de los servos en V; sin ella, la del entrenamiento (6 a 8,4)")
   parser.add_argument("--num-envs", type=int, default=64)
   parser.add_argument("--seconds", type=float, default=20.0)
   args = parser.parse_args()
 
-  env_cfg = eval_env_cfg(args.num_envs, args.seconds)
+  env_cfg = eval_env_cfg(args.num_envs, args.seconds, args.vin)
   if args.forward_speed is not None:
     fix_command(env_cfg, args.forward_speed)
   env, policy = load_policy(env_cfg, args.checkpoint)
@@ -39,6 +39,8 @@ def main() -> None:
   u = env.unwrapped
   robot = u.scene["robot"]
   joint_names = list(robot.joint_names)
+  # Con tensión sorteada se compara con el bloqueo a 6 V, el peor caso.
+  stall_nm = stall_torque_nm(args.vin if args.vin is not None else 6.0)
   steps = int(args.seconds / u.step_dt)
   settle = int(1.0 / u.step_dt)
   obs = env.get_observations()
@@ -55,7 +57,7 @@ def main() -> None:
       tau = robot.data.actuator_force.abs()
       tau_max = tau if tau_max is None else torch.maximum(tau_max, tau)
       tau_sum += tau.mean(dim=0)
-      over_sum += (tau > 0.9 * STALL_6V_NM).float().mean(dim=0)
+      over_sum += (tau > 0.9 * stall_nm).float().mean(dim=0)
       count += 1
 
   mx = tau_max.amax(dim=0)
@@ -65,7 +67,8 @@ def main() -> None:
     "forward_command_m_s": args.forward_speed,
     "num_envs": args.num_envs,
     "seconds_simulated": args.seconds,
-    "stall_torque_6v_nm": STALL_6V_NM,
+    "vin_v": args.vin,
+    "stall_torque_nm": round(stall_nm, 4),
     "joints": {
       name: {
         "max_abs_nm": round(mx[i].item(), 4),

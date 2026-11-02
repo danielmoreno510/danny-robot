@@ -23,11 +23,12 @@ def main() -> None:
   parser = argparse.ArgumentParser()
   parser.add_argument("--checkpoint", required=True, type=Path)
   parser.add_argument("--name", required=True, help="Nombre del resultado en results/")
+  parser.add_argument("--vin", type=float, default=None, help="Tensión fija de los servos en V; sin ella, la del entrenamiento (6 a 8,4)")
   parser.add_argument("--num-envs", type=int, default=256)
   parser.add_argument("--seconds", type=float, default=20.0)
   args = parser.parse_args()
 
-  env, policy = load_policy(eval_env_cfg(args.num_envs, args.seconds), args.checkpoint)
+  env, policy = load_policy(eval_env_cfg(args.num_envs, args.seconds, args.vin), args.checkpoint)
   device = env.unwrapped.device
 
   steps = int(args.seconds / env.unwrapped.step_dt)
@@ -54,6 +55,7 @@ def main() -> None:
     "task": TASK,
     "num_envs": args.num_envs,
     "seconds_simulated": args.seconds,
+    "vin_v": args.vin,
     "fraction_standing_full_episode": float(alive.float().mean()),
     "survival_s": {
       "mean": float(survival_s.mean()),

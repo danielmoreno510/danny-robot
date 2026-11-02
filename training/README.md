@@ -26,6 +26,12 @@ Medir un punto de control, sin empujones. Cada script escribe su JSON en `result
 - `measure_foot_peak_height.py`: altura máxima de suela en el episodio (no por paso).
 - `measure_actuator_torque.py`: par de cada actuador frente al de parada a 6 V, con orden fija si se pasa `--forward-speed`.
 
+Comprobar el modelo y la aleatorización (masa, centro de masas, colisiones; sale con código 1 si falla):
+
+    uv run python scripts/check_training_setup.py
+
+Los scripts de medida aceptan `--vin 7.4` para fijar la tensión de los servos (sin ella se sortea entre 6 y 8,4 V).
+
 Comprobar el reloj de marcha y su recompensa sin simular (sale con código 1 si falla):
 
     uv run python scripts/check_gait_clock.py

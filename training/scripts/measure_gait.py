@@ -33,11 +33,12 @@ def main() -> None:
   parser.add_argument("--name", required=True, help="Nombre del resultado en results/")
   parser.add_argument("--forward", type=float, default=FORWARD_CMD, help="Orden de avance en m/s")
   parser.add_argument("--turn", type=float, default=0.0, help="Orden de giro en rad/s, positivo a la izquierda")
+  parser.add_argument("--vin", type=float, default=None, help="Tensión fija de los servos en V; sin ella, la del entrenamiento (6 a 8,4)")
   parser.add_argument("--num-envs", type=int, default=256)
   parser.add_argument("--seconds", type=float, default=20.0)
   args = parser.parse_args()
 
-  env_cfg = eval_env_cfg(args.num_envs, args.seconds)
+  env_cfg = eval_env_cfg(args.num_envs, args.seconds, args.vin)
   fix_command(env_cfg, args.forward, args.turn)
   env, policy = load_policy(env_cfg, args.checkpoint)
 
@@ -98,6 +99,7 @@ def main() -> None:
     "task": TASK,
     "num_envs": n,
     "seconds_simulated": args.seconds,
+    "vin_v": args.vin,
     "forward_command_m_s": args.forward,
     "turn_command_rad_s": args.turn,
     "fraction_envs_not_fallen": round(float(ok.float().mean()), 4),

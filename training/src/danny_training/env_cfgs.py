@@ -121,11 +121,14 @@ def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
         )
 
     # Aleatorización de la guía: suelo 0,4 a 1,2; masa ±10 %; centro de masas ±10 mm; servo ±30 %.
+    # Masa y centro de masas con `shared_random`: todos los cuerpos comparten la muestra, así que la masa total varía ±10 % y
+    # el centro de masas del robot entero ±10 mm. Con una muestra por cuerpo los errores se compensarían entre sí.
     cfg.events["foot_friction"].params["asset_cfg"].geom_names = FOOT_GEOMS
     cfg.events["foot_friction"].params["ranges"] = (0.4, 1.2)
-    cfg.events["base_com"].params["asset_cfg"].body_names = (TRUNK_BODY,)
+    cfg.events["base_com"].params["asset_cfg"].body_names = (r".*",)
     cfg.events["base_com"].params["ranges"] = (-0.01, 0.01)  # ±10 mm en x, y y z.
     cfg.events["base_com"].params["axes"] = [0, 1, 2]
+    cfg.events["base_com"].params["shared_random"] = True
     cfg.events["encoder_bias"].params["bias_range"] = (-math.radians(0.5), math.radians(0.5))
     cfg.events["randomize_body_mass"] = EventTermCfg(
         func=dr.body_mass,
@@ -134,6 +137,7 @@ def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
             "asset_cfg": SceneEntityCfg("robot", body_names=(r".*",)),
             "ranges": (0.9, 1.1),
             "operation": "scale",
+            "shared_random": True,
         },
     )
     # Empujones de la guía: solo en XY, ±0,12 m/s, cada 3 a 6 s.

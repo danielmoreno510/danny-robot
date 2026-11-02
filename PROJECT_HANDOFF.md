@@ -4,12 +4,11 @@ Punto de entrada para continuar **Robot Danny** en un chat nuevo o en otra compu
 
 **Fecha:** 2 de noviembre de 2026. **Etapa actual:** 3, MuJoCo, con 2.2, 2.3 y 2.4 abiertas por lo físico. La etapa 1 está
 cerrada salvo la 1.2, que va en paralelo.
-**Siguiente paso:** ampliar la marcha en simulación con el reloj (`marcha_reloj_1000`, etapa 4.2): ya camina hacia delante a
-0,25 m/s y gira, con paso alterno (ver [Entrenamiento en simulación](#entrenamiento-en-simulación-etapa-4-sin-terminar)). Faltan
-marcha lateral, empujones, la aleatorización de armadura y holgura, y decidir cómo obtiene el robot real la fase del reloj.
-El código de `training/` está en la rama `entrenamiento-danny`. `main` está protegida: los colaboradores entran por pull
-request aprobado por el usuario, que es quien cambia el diseño. Levantarse es posible en simulación, pero aún frágil. El
-robot completo ya está en CAD:
+**Siguiente paso:** seguir el [plan de la etapa 4](#plan-de-la-etapa-4-fases) por fases. La fase 0 está hecha y la fase 1
+(`fase1_marcha_1000`, marcha con el modelo final) está en curso. `marcha_reloj_1000` ya caminó hacia delante y giró con el modelo
+anterior (ver [Entrenamiento en simulación](#entrenamiento-en-simulación-etapa-4-sin-terminar)). El código de `training/` está en la
+rama `entrenamiento-danny`, que se actualiza con `origin/main` antes de cada fase. `main` está protegida: los colaboradores entran por pull
+request aprobado por el usuario, que es quien cambia el diseño. Levantarse es posible en simulación, pero aún frágil. El robot completo ya está en CAD:
 [piernas](documentation/lower-body-design.md), [tronco](documentation/upper-body-design.md) y
 [paneles](documentation/panels-and-protection.md).
 
@@ -171,6 +170,40 @@ Lo que no se ha comprobado: si el modelo BAM sigue la consigna en un banco sin e
 (cajas de 8,5 × 4,8 cm, fricción 0,8, pies a 6,4 cm entre centros) limita el paso, y si más iteraciones cambian algo.
 Las conclusiones dependen del modelo de actuador (`params/hd1910_m6.json`, de xgoduck_rl) y no están confirmadas
 en servos reales.
+
+## Plan de la etapa 4 (fases)
+
+Orden fijo, sin saltarse pruebas. El criterio se escribe antes de cada corrida larga. Si una fase falla, se para, se escribe lo
+que se vio y se avisa; no se alargan las corridas para ver si se arreglan solas. Cada fase tiene una corrida nueva con nombre
+claro y se conserva el punto de control que aprobó. Todo se reentrenará después de medir los servos reales, porque los
+parámetros son de otro robot: lo aprendido no se instala directo en el robot físico. La fase del reloj irá en el programa de
+50 Hz de la Radxa.
+
+| Fase | Trabajo | Estado |
+|---|---|---|
+| 0 | Preparar: main fusionado, modelo comprobado, colisiones, masa, centro de masas y bloqueo de par | Hecho el 2 de noviembre (abajo) |
+| 1 | Validar la marcha con el modelo final: 1 000 iteraciones desde cero | En curso: `fase1_marcha_1000` |
+| 2 | Movimiento completo (avanzar, retroceder, lateral, girar, quieto) con armadura, holgura y empujones: 10 000 iteraciones | Pendiente |
+| 3 | Agacharse: orden de altura del cuerpo, hasta 3 000 iteraciones | Pendiente |
+| 4 | Levantarse (4.3): política propia, 10 000 iteraciones; primero boca abajo, luego boca arriba | Pendiente |
+| 5 | Sentarse y tumbarse: política propia, hasta 5 000 iteraciones por acción; solo si la fase 4 aprueba | Pendiente |
+| 6 | Movimiento natural (4.4): espera a que el usuario elija las fuentes de movimiento humano y sus licencias | Bloqueada por el usuario |
+
+Fuera del plan, salvo que el usuario lo pida: correr, saltar y tomar objetos.
+
+**Fase 0, hecha** (`scripts/check_training_setup.py` lo comprueba): `danny_training.xml` con 1,3006 kg, 13 `<pair>`, tobillo de -45° a 40° y
+sitio `imu`; las 31 cajas de colisión con `condim` 3 y prioridad 1 (antes 1 y 0, y el suelo les ponía su fricción de 1,0); masa
+total de 0,90 a 1,10 veces la nominal y centro de masas de hasta unos 12,6 mm por eje, con `shared_random=True` en todos los cuerpos.
+El centro de masas pasa de 10 mm porque el desplazamiento se aplica en el marco de cada cuerpo y el 24 % de la masa está en eslabones
+con el marco girado. La inercia no escala con la masa (`dr.body_mass`). Par de bloqueo medido: 0,739 N·m a 6 V y 0,912 N·m a 7,4 V
+(a 8,4 V, 1,036 N·m por extrapolación, sin medir). Los scripts de medida aceptan `--vin` para fijar la tensión sin caída de carga.
+
+**Fase 1, criterio (escrito antes de entrenar):** corrida `fase1_marcha_1000`, 1 000 iteraciones desde cero, 4096 entornos, `KP_FW` 5,
+reloj de 0,8 s, `std` de velocidad 0,125 y la configuración actual de `env_cfgs.py`. Se evalúa `model_999.pt` con
+`measure_gait.py --vin 7.4` (orden de 0,25 m/s, 256 robots, 20 s, sin empujones). Aprueba si, a 7,4 V: apoyos alternos de 0,9 o más,
+error de velocidad de 0,08 m/s o menos y 95 % o más de los 256 robots sin caer. Se mide también a 6 y 8,4 V, con el pico de par por
+articulación (`measure_actuator_torque.py --vin ...`). Si no aprueba, se compara con `marcha_reloj_1000` (modelo anterior, 1,29 kg,
+sin autocolisiones ni cajas de condim 3) para decir si dependía de pesar menos o de atravesar piezas.
 
 ## Lo que no se debe afirmar
 
