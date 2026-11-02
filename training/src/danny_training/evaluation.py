@@ -24,12 +24,13 @@ def eval_env_cfg(num_envs: int, seconds: float) -> ManagerBasedRlEnvCfg:
   return env_cfg
 
 
-def fix_forward_command(env_cfg: ManagerBasedRlEnvCfg, speed: float) -> None:
-  """Fija la orden de velocidad en `speed` m/s hacia delante, sin lateral, sin giro y sin entornos parados."""
+def fix_command(env_cfg: ManagerBasedRlEnvCfg, forward: float, turn: float = 0.0) -> None:
+  """Fija la orden en `forward` m/s hacia delante y `turn` rad/s de giro (positivo a la izquierda), sin lateral, sin entornos parados y sin entornos de solo avance."""
   twist = env_cfg.commands["twist"]
-  twist.ranges = replace(twist.ranges, lin_vel_x=(speed, speed), lin_vel_y=(0.0, 0.0), ang_vel_z=(0.0, 0.0), heading=None)
+  twist.ranges = replace(twist.ranges, lin_vel_x=(forward, forward), lin_vel_y=(0.0, 0.0), ang_vel_z=(turn, turn), heading=None)
   twist.heading_command = False
   twist.rel_standing_envs = 0.0
+  twist.rel_forward_envs = 0.0  # mjlab fuerza el 20 % de los entornos a (0,3; 0; 0), sin giro.
 
 
 def load_policy(env_cfg: ManagerBasedRlEnvCfg, checkpoint: Path):

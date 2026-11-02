@@ -16,7 +16,7 @@ from pathlib import Path
 
 import torch
 
-from danny_training.evaluation import RESULTS, TASK, eval_env_cfg, fix_forward_command, load_policy
+from danny_training.evaluation import RESULTS, TASK, eval_env_cfg, fix_command, load_policy
 
 STALL_6V_NM = 0.762
 
@@ -32,7 +32,7 @@ def main() -> None:
 
   env_cfg = eval_env_cfg(args.num_envs, args.seconds)
   if args.forward_speed is not None:
-    fix_forward_command(env_cfg, args.forward_speed)
+    fix_command(env_cfg, args.forward_speed)
   env, policy = load_policy(env_cfg, args.checkpoint)
   device = env.unwrapped.device
 

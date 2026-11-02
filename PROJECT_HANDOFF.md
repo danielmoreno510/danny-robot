@@ -5,7 +5,7 @@ Punto de entrada para continuar **Robot Danny** en un chat nuevo o en otra compu
 **Fecha:** 2 de noviembre de 2026. **Etapa actual:** 3, MuJoCo, con 2.2, 2.3 y 2.4 abiertas por lo físico. La etapa 1 está
 cerrada salvo la 1.2, que va en paralelo.
 **Siguiente paso:** ampliar la marcha en simulación con el reloj (`marcha_reloj_1000`, etapa 4.2): ya camina hacia delante a
-0,25 m/s con paso alterno (ver [Entrenamiento en simulación](#entrenamiento-en-simulación-etapa-4-sin-terminar)). Faltan giro,
+0,25 m/s y gira, con paso alterno (ver [Entrenamiento en simulación](#entrenamiento-en-simulación-etapa-4-sin-terminar)). Faltan
 marcha lateral, empujones, la aleatorización de armadura y holgura, y decidir cómo obtiene el robot real la fase del reloj.
 El código de `training/` está en la rama `entrenamiento-danny`. `main` está protegida: los colaboradores entran por pull
 request aprobado por el usuario, que es quien cambia el diseño. Levantarse es posible en simulación, pero aún frágil. El
@@ -128,18 +128,28 @@ Código en `training/`, rama `entrenamiento-danny`. Tarea `Mjlab-Velocity-Flat-D
   (el historial está en git). Lo comprueba `scripts/check_gait_clock.py`.
 - **`marcha_reloj_1000`: camina.** Desde cero, 1000 iteraciones, `model_999.pt`, con el modelo de la auditoría, `KP_FW` 5 y
   la velocidad en el centro de masas. Con orden fija de 0,25 m/s, sin empujones, 256 entornos y 20 s
-  (`results/training_gait_marcha_reloj_1000.json`): sin caer el 100 %, avance 0,257 m/s, error 0,020 m/s, apoyos alternos
+  (`results/training_gait_marcha_reloj_1000.json`): sin caer el 100 %, avance 0,248 m/s, error 0,020 m/s, apoyos alternos
   99,9 %, pie izquierdo el 48,9 % de los apoyos. Con órdenes aleatorias (`results/training_walk_marcha_reloj_1000.json`):
   de pie 99,2 % de los entornos, error 0,028 m/s. Altura máxima de suela 43 mm
   (`results/training_peak_height_marcha_reloj_1000.json`). Log de entrenamiento: episodio de 996 pasos y
   `peak_height_mean` de 19,7 mm. Con el punto de control de la iteración 350 ya caminaba igual (error 0,023 m/s). El usuario
   lo vio caminar hacia delante en el visor.
+- **Giro de `marcha_reloj_1000`** (`results/training_gait_reloj_1000_*.json`, 256 entornos, 20 s, sin empujones, giro de ±0,5 rad/s,
+  el máximo del entrenamiento): en el sitio gira a +0,40 y -0,40 rad/s y avanza 0,002 m/s; andando a 0,25 m/s gira a +0,42 y
+  -0,37 rad/s y avanza 0,249 y 0,249 m/s. Error de giro de 0,12 a 0,14 rad/s, o sea que llega al 75-85 % de la orden. En los cuatro
+  casos el 100 % no cae y el 99,8 % de los apoyos alternan. Avance con giro: sin caer y sin perder la marcha.
 - **Pares de `marcha_reloj_1000`** (`results/training_torque_marcha_reloj_1000.json`, orden de 0,25 m/s): tobillo de cabeceo
-  derecho 1,07 N·m, izquierdo 1,02, rodilla derecha 0,94, izquierda 0,90, cadera de balanceo izquierda 0,74; el resto, por
-  debajo de 0,55. El 90 % del par de parada a 6 V (0,762 N·m) se supera el 8,1 % del tiempo en el tobillo de cabeceo derecho
-  y el 4,4 % en el izquierdo. La guía pide no saturar ninguna articulación más del 5 %: el derecho no lo cumple a 6 V, aunque
+  derecho 1,02 N·m, izquierdo 0,92, rodilla izquierda 0,90, derecha 0,88, cadera de balanceo izquierda 0,70; el resto, por
+  debajo de 0,5. El 90 % del par de parada a 6 V (0,762 N·m) se supera el 7,5 % del tiempo en el tobillo de cabeceo derecho
+  y el 3,5 % en el izquierdo. La guía pide no saturar ninguna articulación más del 5 %: el derecho no lo cumple a 6 V, aunque
   ese umbral se mide con el par de parada a 6 V y la aleatorización llega a 8,4 V (1,067 N·m). Sin revisar por tensión.
-- **Sin comprobar de `marcha_reloj_1000`:** solo se probó hacia delante a 0,25 m/s, sin giro, sin marcha lateral y sin empujones;
+- **Aviso sobre las medidas de órdenes fijas anteriores:** `rel_forward_envs` de mjlab vale 0,2, así que el 20 % de los entornos
+  recibe siempre (0,3; 0; 0), sin giro, y `measure_gait.py` y `measure_actuator_torque.py` no lo quitaban. Los JSON
+  `training_gait_*` y `training_torque_*` anteriores al 2 de noviembre por la tarde (`aterrizaje_300`, `pasos_alternos_300`,
+  `penalizacion_accion_005_300`, `marcha_aterrizaje_1000`, `marcha_com_1000`, `marcha_pies_kp5_1000`) llevan esa mezcla: su
+  conclusión (no avanza, un solo pie) no cambia, pero las cifras de orden y de par no son de una orden de 0,25 m/s limpia. Las
+  de `marcha_reloj_1000` se repitieron ya sin esos entornos.
+- **Sin comprobar de `marcha_reloj_1000`:** no se probó marcha lateral ni los empujones;
   tampoco con armadura y holgura aleatorias. El 94 % del tiempo hay un solo pie apoyado, así que casi no hay fase con los
   dos pies en el suelo. Falta saber si el criterio de la guía (5 minutos simulados sin caer en el 95 % de las pruebas, con
   aleatorización completa) se cumple. La política necesita la fase del reloj como entrada: el robot real tendrá que generarla

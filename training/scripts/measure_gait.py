@@ -1,13 +1,16 @@
 """Mide si Danny camina con paso alterno a una orden fija de avance, y guarda el resultado en results/.
 
-Orden fija: 0,25 m/s hacia delante, sin lateral ni giro. Descarta los primeros 2 s. Para cada entorno que no se cae mide:
+Orden fija: por defecto 0,25 m/s hacia delante, sin lateral ni giro; con `--turn` se añade un giro. Descarta los primeros 2 s.
+Para cada entorno que no se cae mide:
 - error de velocidad respecto a la orden y velocidad media de avance, en el centro de masas de `base_link`;
+- velocidad de giro media y su error respecto a la orden;
 - fracción del tiempo con un solo pie apoyado;
 - apoyos por pie y segundo, y fracción de apoyos que siguen a un apoyo del otro pie (1,0 es paso alterno perfecto);
 - fracción de los apoyos que hace el pie izquierdo (0,5 es reparto igual).
 
 Uso (desde training/):
     uv run python scripts/measure_gait.py --checkpoint logs/rsl_rl/danny_walk/<run>/model_XXXX.pt --name marcha_3000
+    uv run python scripts/measure_gait.py --checkpoint ... --forward 0.0 --turn 0.5 --name giro_en_sitio
 """
 
 from __future__ import annotations
@@ -18,7 +21,7 @@ from pathlib import Path
 
 import torch
 
-from danny_training.evaluation import RESULTS, TASK, eval_env_cfg, fix_forward_command, load_policy
+from danny_training.evaluation import RESULTS, TASK, eval_env_cfg, fix_command, load_policy
 
 FORWARD_CMD = 0.25  # m/s, la velocidad de la guía 4.2.
 WARMUP_S = 2.0
@@ -28,12 +31,14 @@ def main() -> None:
   parser = argparse.ArgumentParser()
   parser.add_argument("--checkpoint", required=True, type=Path)
   parser.add_argument("--name", required=True, help="Nombre del resultado en results/")
+  parser.add_argument("--forward", type=float, default=FORWARD_CMD, help="Orden de avance en m/s")
+  parser.add_argument("--turn", type=float, default=0.0, help="Orden de giro en rad/s, positivo a la izquierda")
   parser.add_argument("--num-envs", type=int, default=256)
   parser.add_argument("--seconds", type=float, default=20.0)
   args = parser.parse_args()
 
   env_cfg = eval_env_cfg(args.num_envs, args.seconds)
-  fix_forward_command(env_cfg, FORWARD_CMD)
+  fix_command(env_cfg, args.forward, args.turn)
   env, policy = load_policy(env_cfg, args.checkpoint)
 
   u = env.unwrapped
@@ -52,6 +57,8 @@ def main() -> None:
   single = torch.zeros(n, device=device)
   vx_sum = torch.zeros(n, device=device)
   err_sum = torch.zeros(n, device=device)
+  yaw_sum = torch.zeros(n, device=device)
+  yaw_err_sum = torch.zeros(n, device=device)
   counted = 0
 
   obs = env.get_observations()
@@ -66,6 +73,9 @@ def main() -> None:
         vel = robot.data.root_com_lin_vel_b[:, :2]
         vx_sum += vel[:, 0]
         err_sum += (vel - cmd[:, :2]).norm(dim=1)
+        yaw = robot.data.root_link_ang_vel_b[:, 2]
+        yaw_sum += yaw
+        yaw_err_sum += (yaw - cmd[:, 2]).abs()
         single += (found.sum(dim=1) == 1).float()
         if prev is not None:
           for foot in (0, 1):
@@ -88,10 +98,13 @@ def main() -> None:
     "task": TASK,
     "num_envs": n,
     "seconds_simulated": args.seconds,
-    "forward_command_m_s": FORWARD_CMD,
+    "forward_command_m_s": args.forward,
+    "turn_command_rad_s": args.turn,
     "fraction_envs_not_fallen": round(float(ok.float().mean()), 4),
     "mean_forward_velocity_m_s": mean(vx_sum / counted),
     "mean_xy_velocity_error_m_s": mean(err_sum / counted),
+    "mean_yaw_rate_rad_s": mean(yaw_sum / counted),
+    "mean_yaw_rate_error_rad_s": mean(yaw_err_sum / counted),
     "fraction_time_single_support": mean(single / counted),
     "touchdowns_per_foot_per_s": mean(total_td / 2 / seconds_counted),
     "fraction_alternating_touchdowns": mean(alt_frac),

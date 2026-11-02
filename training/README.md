@@ -22,7 +22,7 @@ Medir un punto de control, sin empujones. Cada script escribe su JSON en `result
     uv run python scripts/measure_actuator_torque.py --checkpoint logs/rsl_rl/danny_walk/<run>/model_XXXX.pt --forward-speed 0.25 --name <nombre>
 
 - `evaluate_walk.py`: supervivencia y error de velocidad con órdenes aleatorias, medida en el centro de masas de `base_link`.
-- `measure_gait.py`: orden fija de 0,25 m/s; avance, apoyo a un pie, apoyos por segundo, si alternan y reparto entre pies.
+- `measure_gait.py`: orden fija de 0,25 m/s, o la de `--forward` y `--turn`; avance, giro, apoyo a un pie, apoyos por segundo, si alternan y reparto entre pies.
 - `measure_foot_peak_height.py`: altura máxima de suela en el episodio (no por paso).
 - `measure_actuator_torque.py`: par de cada actuador frente al de parada a 6 V, con orden fija si se pasa `--forward-speed`.
 

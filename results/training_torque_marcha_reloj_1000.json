@@ -7,117 +7,117 @@
   "stall_torque_6v_nm": 0.762,
   "joints": {
     "left_hip_yaw": {
-      "max_abs_nm": 0.1464,
-      "mean_abs_nm": 0.0284,
+      "max_abs_nm": 0.1535,
+      "mean_abs_nm": 0.0303,
       "frac_time_above_90pct_stall": 0.0
     },
     "left_hip_roll": {
-      "max_abs_nm": 0.742,
-      "mean_abs_nm": 0.2104,
-      "frac_time_above_90pct_stall": 0.0001
+      "max_abs_nm": 0.7013,
+      "mean_abs_nm": 0.2135,
+      "frac_time_above_90pct_stall": 0.0
     },
     "left_hip_pitch": {
-      "max_abs_nm": 0.5045,
-      "mean_abs_nm": 0.0743,
+      "max_abs_nm": 0.4849,
+      "mean_abs_nm": 0.0741,
       "frac_time_above_90pct_stall": 0.0
     },
     "left_knee": {
-      "max_abs_nm": 0.9007,
-      "mean_abs_nm": 0.226,
-      "frac_time_above_90pct_stall": 0.0023
+      "max_abs_nm": 0.8955,
+      "mean_abs_nm": 0.2349,
+      "frac_time_above_90pct_stall": 0.0027
     },
     "left_ankle_pitch": {
-      "max_abs_nm": 1.0176,
-      "mean_abs_nm": 0.2904,
-      "frac_time_above_90pct_stall": 0.0441
+      "max_abs_nm": 0.9172,
+      "mean_abs_nm": 0.2825,
+      "frac_time_above_90pct_stall": 0.0346
     },
     "left_ankle_roll": {
-      "max_abs_nm": 0.4317,
-      "mean_abs_nm": 0.0561,
+      "max_abs_nm": 0.4179,
+      "mean_abs_nm": 0.0574,
       "frac_time_above_90pct_stall": 0.0
     },
     "right_hip_yaw": {
-      "max_abs_nm": 0.1327,
-      "mean_abs_nm": 0.0217,
+      "max_abs_nm": 0.1308,
+      "mean_abs_nm": 0.0226,
       "frac_time_above_90pct_stall": 0.0
     },
     "right_hip_roll": {
-      "max_abs_nm": 0.5437,
-      "mean_abs_nm": 0.1526,
+      "max_abs_nm": 0.4981,
+      "mean_abs_nm": 0.1538,
       "frac_time_above_90pct_stall": 0.0
     },
     "right_hip_pitch": {
-      "max_abs_nm": 0.5277,
-      "mean_abs_nm": 0.0823,
+      "max_abs_nm": 0.4835,
+      "mean_abs_nm": 0.0821,
       "frac_time_above_90pct_stall": 0.0
     },
     "right_knee": {
-      "max_abs_nm": 0.9351,
-      "mean_abs_nm": 0.2629,
-      "frac_time_above_90pct_stall": 0.0041
+      "max_abs_nm": 0.882,
+      "mean_abs_nm": 0.2689,
+      "frac_time_above_90pct_stall": 0.0052
     },
     "right_ankle_pitch": {
-      "max_abs_nm": 1.0671,
-      "mean_abs_nm": 0.3344,
-      "frac_time_above_90pct_stall": 0.0805
+      "max_abs_nm": 1.0244,
+      "mean_abs_nm": 0.3349,
+      "frac_time_above_90pct_stall": 0.0752
     },
     "right_ankle_roll": {
-      "max_abs_nm": 0.4726,
-      "mean_abs_nm": 0.0548,
+      "max_abs_nm": 0.485,
+      "mean_abs_nm": 0.0564,
       "frac_time_above_90pct_stall": 0.0
     },
     "waist_yaw": {
-      "max_abs_nm": 0.1747,
-      "mean_abs_nm": 0.0333,
+      "max_abs_nm": 0.161,
+      "mean_abs_nm": 0.0348,
       "frac_time_above_90pct_stall": 0.0
     },
     "left_shoulder_pitch": {
-      "max_abs_nm": 0.1779,
-      "mean_abs_nm": 0.0296,
+      "max_abs_nm": 0.2412,
+      "mean_abs_nm": 0.0305,
       "frac_time_above_90pct_stall": 0.0
     },
     "left_shoulder_roll": {
-      "max_abs_nm": 0.2556,
-      "mean_abs_nm": 0.0355,
+      "max_abs_nm": 0.2074,
+      "mean_abs_nm": 0.0367,
       "frac_time_above_90pct_stall": 0.0
     },
     "left_shoulder_yaw": {
-      "max_abs_nm": 0.282,
-      "mean_abs_nm": 0.0265,
+      "max_abs_nm": 0.2677,
+      "mean_abs_nm": 0.027,
       "frac_time_above_90pct_stall": 0.0
     },
     "left_elbow": {
-      "max_abs_nm": 0.3508,
-      "mean_abs_nm": 0.026,
+      "max_abs_nm": 0.3501,
+      "mean_abs_nm": 0.028,
       "frac_time_above_90pct_stall": 0.0
     },
     "right_shoulder_pitch": {
-      "max_abs_nm": 0.24,
-      "mean_abs_nm": 0.0294,
+      "max_abs_nm": 0.2183,
+      "mean_abs_nm": 0.0298,
       "frac_time_above_90pct_stall": 0.0
     },
     "right_shoulder_roll": {
-      "max_abs_nm": 0.2947,
+      "max_abs_nm": 0.3142,
       "mean_abs_nm": 0.0384,
       "frac_time_above_90pct_stall": 0.0
     },
     "right_shoulder_yaw": {
-      "max_abs_nm": 0.1752,
-      "mean_abs_nm": 0.0249,
+      "max_abs_nm": 0.1652,
+      "mean_abs_nm": 0.026,
       "frac_time_above_90pct_stall": 0.0
     },
     "right_elbow": {
-      "max_abs_nm": 0.3508,
-      "mean_abs_nm": 0.0309,
+      "max_abs_nm": 0.3501,
+      "mean_abs_nm": 0.0313,
       "frac_time_above_90pct_stall": 0.0
     },
     "neck_yaw": {
-      "max_abs_nm": 0.1504,
-      "mean_abs_nm": 0.0226,
+      "max_abs_nm": 0.1476,
+      "mean_abs_nm": 0.0237,
       "frac_time_above_90pct_stall": 0.0
     },
     "neck_pitch": {
-      "max_abs_nm": 0.2148,
+      "max_abs_nm": 0.2259,
       "mean_abs_nm": 0.0314,
       "frac_time_above_90pct_stall": 0.0
     }

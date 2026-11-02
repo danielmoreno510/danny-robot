@@ -114,7 +114,7 @@ límite blando de -26,5°, así que apoyarse sobre el pie adelantado se penaliza
 (`results/standing_check.json`). El robot real ajusta esa ganancia por firmware, pero su valor se confirma en la 5.1: entrena a 10 solo como
 diagnóstico, y dilo en el informe.
 
-**Resultado del 2 de noviembre: con un reloj de marcha camina.** Con las escalas de arriba y `kp_fw` 5, Danny seguía apoyado en un pie y sin avanzar, con `air_time` y con una penalización de aterrizaje repetido. Con un reloj de marcha (fase de 0,8 s que solo avanza con orden de movimiento, seno y coseno en la observación, y una recompensa de contacto en contrafase de peso 1,5) caminó hacia delante a 0,257 m/s en 1000 iteraciones, con error de 0,020 m/s y apoyos alternos al 99,9 % (`results/training_gait_marcha_reloj_1000.json`). Solo se probó hacia delante, sin empujones. Detalles en `PROJECT_HANDOFF.md`.
+**Resultado del 2 de noviembre: con un reloj de marcha camina.** Con las escalas de arriba y `kp_fw` 5, Danny seguía apoyado en un pie y sin avanzar, con `air_time` y con una penalización de aterrizaje repetido. Con un reloj de marcha (fase de 0,8 s que solo avanza con orden de movimiento, seno y coseno en la observación, y una recompensa de contacto en contrafase de peso 1,5) caminó hacia delante a 0,248 m/s en 1000 iteraciones, y gira hasta 0,4 rad/s, con error de 0,020 m/s y apoyos alternos al 99,9 % (`results/training_gait_marcha_reloj_1000.json`). Se probó hacia delante y con giro, sin empujones ni marcha lateral. Detalles en `PROJECT_HANDOFF.md`.
 
 **El error de posición no indica un fallo.** El servo funciona como un muelle blando: a 7,4 V da 1,03 N·m/rad y satura con
 0,88 rad (`results/walk_incentive.json`). Así que el par sale de ese error, y 0,8 N·m exigen unos 0,8 rad.
