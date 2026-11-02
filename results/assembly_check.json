@@ -1,0 +1,14 @@
+{
+ "overlaps_mm3": {
+  "carro_sale_por_la_trampilla": 0.0,
+  "bateria_sale_por_la_trampilla": 0.0,
+  "clavija_del_cuello_baja_ante_la_bateria": 0.0,
+  "llave_de_los_tornillos_de_roll_del_brazo": 0.0,
+  "cabezas_de_la_chapa_de_roll_en_todo_el_rango": 0.0,
+  "chapa_de_roll_contra_el_eslabon_yaw": 0.0,
+  "piloto_de_la_chapa_contra_el_agujero_del_servo": 0.0,
+  "antebrazo_en_reposo_con_la_cadera_abierta": 0.0
+ },
+ "thigh_to_forearm_gap_mm": 0.5,
+ "failures": []
+}

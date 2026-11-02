@@ -36,7 +36,7 @@ START_POSES = {
 }
 # Poses combinadas. Las articulaciones que no aparecen quedan a cero.
 POSES = {
-    "deep_squat": {**ARMS_OPEN, "hip_pitch": -100, "knee": 130, "ankle_pitch": -30},
+    "deep_squat": {**ARMS_OPEN, "hip_pitch": -100, "knee": 130, "ankle_pitch": -45},
     "knee_to_chest": {**ARMS_OPEN, "hip_pitch": -100, "knee": 130},
     "leg_back_knee_bent": {**ARMS_OPEN, "hip_pitch": 20, "knee": 130},
     "hip_out_and_forward": {**ARMS_OPEN, "hip_roll": 35, "hip_pitch": -100},

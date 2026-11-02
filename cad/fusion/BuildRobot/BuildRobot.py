@@ -96,12 +96,13 @@ ARM_SHELF_Z = (297.5, 300.7)
 ARM_CUP_BOTTOM = 271.9
 ARM_CUP_X = (-20.9, 20.9)
 ARM_SHELF_X = (-20.9, 26.9)
+ARM_FOOT_SCREW_Y = (54.0, 59.0)  # entre los tornillos del servo de roll, que pasan por el pie de la tapa
 ROLL_WALL_Y = (44.5, 66.7)
 ELBOW_Y = 55.4
 ELBOW_Z = 231.0
 ELBOW_PLATE_Y = (69.9, 73.5)
 ELBOW_TOP_Z = (265.1, 271.3)
-FOREARM_Y = (46.7, 69.9)
+FOREARM_Y = (47.0, 69.9)
 FOREARM_END_Z = 148.0
 FOREARM_HALF_X = 13.2
 FOREARM_WALL = 1.4
@@ -123,7 +124,7 @@ PAD_THICKNESS = 3.0
 
 # Electrónica: (mínimo, máximo) en X, Y, Z y masa en g. Ver documentation/architecture-and-bom.md
 ELECTRONICS = {
-    "battery": ((-16.7, 2.3), (-32.5, 32.5), (275.2, 312.2), 104.0),
+    "battery": ((-19.6, -0.6), (-32.5, 32.5), (275.2, 312.2), 104.0),
     "computer": ((6.0, 14.0), (-32.5, 32.5), (277.0, 307.0), 15.0),
     "power_board": ((17.0, 29.0), (-30.0, 30.0), (277.0, 307.0), 15.0),
     "regulator": ((17.5, 26.5), (4.0, 22.0), (316.0, 336.0), 3.0),
@@ -423,23 +424,32 @@ def roll_link_bodies(side):
     cuts = servos["pitch"].pocket() + servos["pitch"].head_recesses(SHELL_Y) + servos["roll"].pocket()
     cuts += servos["pitch"].connector_slots(sides=(-1,))
     x0, x1 = -26.5, 11.5
+    # Salientes para la chapa trasera: el techo de la caja es fino, y debajo pasa un tornillo del servo
+    lug_top = 214.8
     shell = box(x0, x1, hip - side * SHELL_Y, hip + side * COVER_Y, 188, 211.8)
-    plate = box(x0, x1, hip + side * COVER_Y, hip + side * SHELL_Y, 188, 211.8)
+    plate = merged([
+        box(x0, x1, hip + side * COVER_Y, hip + side * SHELL_Y, 188, 211.8),
+        box(-25.4, -21, hip + side * COVER_Y, hip + side * SHELL_Y, 211.8, lug_top),
+    ])
     body = merged([
         shell,
+        box(-25.4, -21, hip - side * SHELL_Y, hip - side * 9.5, 211.8, lug_top),
         box(4.2, 6, inner, outer, 211, 232.5),
     ])
     # La chapa trasera se atornilla al final: entre dos chapas fijas el servo no entra
     rear_plate = merged([
         box(-21, -19.2, inner, outer, 211.8, 232.5),
-        box(-24, -19.2, hip - side * 13, hip + side * 4, 211.8, 213.8),
+        box(-25.4, -19.2, hip + side * 9.5, hip + side * 14.4, lug_top, lug_top + 2),
+        box(-25.4, -19.2, hip - side * 9.5, hip - side * 14.4, lug_top, lug_top + 2),
+        box(-21, -19.2, hip + side * 11, hip + side * 14.4, lug_top, lug_top + 2),
     ])
-    flange_rows = (hip + side * 1, hip - side * 10)
-    flange_screws = [cylinder((-22.2, y, 205), (-22.2, y, 215), SCREW_RADIUS) for y in flange_rows]
-    flange_pilots = [cylinder((-22.2, y, 205), (-22.2, y, 215), PILOT_RADIUS) for y in flange_rows]
+    # Cortos y por fuera de la bocina de roll: debajo está el agujero M2 del servo
+    flange_rows = (hip + side * 13, hip - side * 13)
+    flange_screws = [cylinder((-23.2, y, lug_top - 1), (-23.2, y, lug_top + 3), SCREW_RADIUS) for y in flange_rows]
+    flange_pilots = [cylinder((-23.2, y, 210.4), (-23.2, y, lug_top + 1), PILOT_RADIUS) for y in flange_rows]
     return {
         "structure": [carved(body, cuts + flange_pilots)],
-        "cover": [carved(plate, cuts)],
+        "cover": [carved(plate, cuts + flange_pilots)],
         "plate": [carved(rear_plate, cuts + flange_screws)],
         "servo": [servos["roll"].solid(), servos["pitch"].solid()],
     }
@@ -475,9 +485,11 @@ def thigh_bodies(side):
     ]
     panel, pilots = panel_shell(bounds, facets, [(hip - 9, 179.0), (hip + 9, 179.0)])
     # Lengüeta dentro de la ventana: sitúa el borde inferior, que no lleva tornillos
-    panel = merged([panel, box(13.0, 15.1, hip - 10, hip + 10, 152.4, 155.0)])
+    panel = merged([panel, box(13.0, 17.0, hip - 10, hip + 10, 152.4, 155.0)])
+    # Por fuera pasa el antebrazo: las cabezas de `hip_pitch` van rehundidas
+    fork_cuts = servos["pitch"].horn_bolts() + servos["pitch"].horn_recesses(FORK_OUTER, side)
     return {
-        "structure": [carved(body, servos["pitch"].horn_bolts() + [window] + pilots)],
+        "structure": [carved(body, fork_cuts + [window] + pilots)],
         "cover": [cover],
         "panel": [panel],
         "servo": [servos["knee"].solid()],
@@ -586,14 +598,14 @@ def torso_bodies():
         cylinder((AXIS_X, 0, WAIST_BEARING_Z + WAIST_BEARING[2] + 0.2), (AXIS_X, 0, FLOOR_Z[0] + 0.1), WAIST_BOSS_RADIUS),
     ]
     for side in (-1, 1):
-        solids.append(box(2.8, 4.3, side * 7, side * 32, FLOOR_Z[1], 281))  # tope de la batería
         solids.append(box(AXIS_X - 24.7, AXIS_X + 9.7, side * 10.2, side * 13.1, SHELF_Z[1], TOP_PLATE_Z[0]))
         solids.append(box(TORSO_INNER_X[0], -13, side * 34, side * TORSO_INNER_Y, FLOOR_Z[1], SHELF_Z[0]))
         solids.append(box(28.2, TORSO_INNER_X[1], side * 32.5, side * TORSO_INNER_Y, 332, TOP_PLATE_Z[0]))
     structure = merged(solids)
 
     cuts = neck.pocket() + waist.horn_bolts() + neck.head_recesses(TOP_PLATE_Z[1] - NECK_YAW_Z)
-    cuts += [box(AXIS_X - 17, AXIS_X - 5, side * 6, side * 10.2, SHELF_Z[0] - 1, SHELF_Z[1] + 1) for side in (-1, 1)]
+    # Ventana del conector del cuello: la clavija baja por delante de la batería
+    cuts += [box(AXIS_X - 17, AXIS_X - 4, side * 6, side * 10.2, SHELF_Z[0] - 1, SHELF_Z[1] + 1) for side in (-1, 1)]
     windows = {}
     for side, servo in servos.items():
         cuts += servo.pocket() + servo.head_recesses(14.2)
@@ -604,10 +616,12 @@ def torso_bodies():
 
     # Trampilla trasera: la batería se cambia sin desmontar nada más
     carved(structure, [box(-20.0, -17.0, -34.0, 34.0, FLOOR_Z[1], SHELF_Z[0])])
+    # Paso de las orejas del carro junto al suelo: los carriles dejan 68 mm, y el carro mide 72,8
+    carved(structure, [box(-20.0, -12.9, side * 33.9, side * 36.6, FLOOR_Z[1], 277.2) for side in (-1, 1)])
     rear = box(-22.0, TORSO_X[0], -37.0, 37.0, FLOOR_Z[1], SHELF_Z[0])
     carved(rear, [box(-23.0, -19.0, y - 2, y + 2, 284.0, 304.0) for y in (-20.0, -10.0, 0.0, 10.0, 20.0)])
     for y in (-35.3, 35.3):
-        for z in (278.0, 310.0):
+        for z in (279.0, 310.0):
             carved(structure, [cylinder((-21, y, z), (-14, y, z), PILOT_RADIUS)])
             carved(rear, [cylinder((-23, y, z), (-19, y, z), 0.9)])
 
@@ -635,25 +649,28 @@ def torso_bodies():
     carved(top, top_cuts)
 
     tray_slots = [
-        box(29.2, 32.2, side * 4, side * 16, FLOOR_Z[0], 283) for side in (-1, 1)
+        box(29.0, 32.2, side * 4, side * 16, FLOOR_Z[0], 283) for side in (-1, 1)
     ]
     tray = merged([
         box(4.5, 30.5, -33.5, 33.5, FLOOR_Z[1], 276.5),
         box(4.5, 5.9, -33, 33, FLOOR_Z[1], 284),
         box(14.1, 16.9, -33, 33, FLOOR_Z[1], 284),
         box(29.1, 30.5, -31, 31, FLOOR_Z[1], 284),
-        box(7, 13, -36.4, -32.7, FLOOR_Z[1], 277),
-        box(7, 13, 32.7, 36.4, FLOOR_Z[1], 277),
+        # Orejas retrasadas: con la batería fuera, sus tornillos se alcanzan desde la trampilla
+        box(-1.5, 13, -36.0, -32.7, FLOOR_Z[1], 277),
+        box(-1.5, 13, 32.7, 36.0, FLOOR_Z[1], 277),
+        # Tope delantero: deja los agujeros de las orejas alineados con el torso
+        box(30.4, 32.0, 18, 28, FLOOR_Z[1], 279),
+        box(30.4, 32.0, -28, -18, FLOOR_Z[1], 279),
+        # Tope de la batería, en el carro: fijo al torso cerraría el paso
+        box(-0.5, 4.6, 7, 32, FLOOR_Z[1], 279),
+        box(-0.5, 4.6, -32, -7, FLOOR_Z[1], 279),
     ])
-    tray_screws = [cylinder((10, side * 34.5, FLOOR_Z[1] - 3), (10, side * 34.5, 277.5), 0.9) for side in (-1, 1)]
-    # Las cabezas de los tornillos de cintura quedan debajo del carro
-    diagonal = HORN_BOLT_RADIUS / math.sqrt(2)
-    tray_screws += [
-        cylinder((AXIS_X + x, y, FLOOR_Z[1] - 1), (AXIS_X + x, y, 285), HEAD_RADIUS + 0.2)
-        for x in (-diagonal, diagonal) for y in (-diagonal, diagonal)
-    ]
+    tray_screws = [cylinder((1.0, side * 34.4, FLOOR_Z[1] - 3), (1.0, side * 34.4, 277.5), SCREW_RADIUS) for side in (-1, 1)]
+    # Ranuras a todo lo largo: el carro entra recto sobre las cabezas de los tornillos de cintura
+    tray_screws += [box(0.0, 31.0, side * 2.0, side * 6.5, FLOOR_Z[1] - 1, 276.6) for side in (-1, 1)]
     carved(tray, tray_slots + tray_screws)
-    carved(structure, [cylinder((10, side * 34.5, FLOOR_Z[0] + 0.5), (10, side * 34.5, FLOOR_Z[1] + 1), PILOT_RADIUS)
+    carved(structure, [cylinder((1.0, side * 34.4, FLOOR_Z[0] + 0.5), (1.0, side * 34.4, FLOOR_Z[1] + 1), PILOT_RADIUS)
                        for side in (-1, 1)])
 
     covers = {}
@@ -792,15 +809,18 @@ def upper_arm_bodies(side):
     cup_pilots = [cylinder((x, side * y, ARM_SHELF_Z[0] - 8), (x, side * y, ARM_SHELF_Z[0] + 1), PILOT_RADIUS)
                   for x, y in corners]
     foot_holes = [cylinder((24.5, side * y, foot_z[1] + 1), (24.5, side * y, ARM_SHELF_Z[0] - 5), PILOT_RADIUS)
-                  for y in (48.0, 62.0)]
-    cover_holes = [cylinder((24.5, side * y, foot_z[0] - 1), (24.5, side * y, foot_z[1] + 1), 0.9) for y in (48.0, 62.0)]
+                  for y in ARM_FOOT_SCREW_Y]
+    cover_holes = [cylinder((24.5, side * y, foot_z[0] - 1), (24.5, side * y, foot_z[1] + 1), 0.9) for y in ARM_FOOT_SCREW_Y]
+    # Paso de la herramienta hasta los dos tornillos del servo de roll que quedan tras el pie
+    cover_holes += [box(AXIS_X + SHELL_Y - 0.1, AXIS_X + 21, side * near, side * far, foot_z[0] - 1, roll.at(22.5, 0, 0)[2] + 2.2)
+                    for near, far in ((44.0, 50.7), (62.3, 67.0))]
     shaft_hole = yaw.shaft(HORN_CLEARANCE_RADIUS, 16)
     return {
         "structure": [carved(structure, roll_cuts + shelf_holes + foot_holes + [shaft_hole])],
         "cover": [carved(cover, roll_cuts + cover_holes)],
         "plate": [carved(cup, yaw_cuts + head_cuts + cup_pilots + [
             cylinder((24.5, side * y, ARM_SHELF_Z[0] - 5), (24.5, side * y, ARM_SHELF_Z[0] + 1), PILOT_RADIUS)
-            for y in (48.0, 62.0)
+            for y in ARM_FOOT_SCREW_Y
         ])],
         "servo": [roll.solid(), yaw.solid()],
     }
@@ -1029,7 +1049,7 @@ def add_side(design, materials, sketch, pelvis, side):
          directions.YAxisJointDirection, (-100, 20)),
         ("knee", "shin", occurrences["thigh"], (0, hip, KNEE_Z), directions.YAxisJointDirection, (0, 130)),
         ("ankle_pitch", "ankle_link", occurrences["shin"], (0, hip, ANKLE_PITCH_Z),
-         directions.YAxisJointDirection, (-30, 40)),
+         directions.YAxisJointDirection, (-45, 40)),
         ("ankle_roll", "foot", occurrences["ankle_link"], (ANKLE_ROLL_X, hip, ANKLE_ROLL_Z),
          directions.XAxisJointDirection, (-20, 20)),
     ]

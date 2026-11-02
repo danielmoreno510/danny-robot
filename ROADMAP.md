@@ -28,8 +28,9 @@ en paralelo y no frena el diseño.
 | 2.2 | Plano del servo, maqueta impresa, cadera y pierna | En curso: tercera iteración en CAD, decisiones aprobadas. Encaje y pesado, cuando lleguen impresora y servos: [diseño](documentation/lower-body-design.md) |
 | 2.3 | Torso, electrónica, brazos, cabeza y recorrido de cables | En curso: robot completo en CAD; faltan conectores reales y carga radial: [diseño](documentation/upper-body-design.md) |
 | 2.4 | Protección contra caídas y reserva para muñeca, pinza, cámara y voz | En curso: primera iteración de [paneles y protección](documentation/panels-and-protection.md) |
+| 2.5 | Corregir los bloqueos de la [auditoría](documentation/design-audit.md) y añadir comprobaciones de montaje | En curso: 6 bloqueos corregidos y comprobados con `check_assembly.py`; faltan los puntos importantes |
 
-**Puerta:** robot completo sin interferencias, y R4 y R10 cumplidos en CAD.
+**Puerta:** robot completo sin interferencias, montable, y R4 y R10 cumplidos en CAD.
 
 ## Etapa 3: modelo en MuJoCo
 
@@ -39,7 +40,7 @@ Fusion y MuJoCo trabajan en bucle: cada cambio del CAD actualiza masas e inercia
 |---|---|---|
 | 3.1 | Modelo exportado del CAD, con el modelo BAM de `xgoduck_rl`, sin confirmar en nuestros servos | Hecho: [resultados](documentation/simulation-results.md) |
 | 3.2 | Pares y velocidades en cuclillas, apoyo a un pie, marcha y levantarse | Hecho; levantarse del suelo se probó por búsqueda, sin robustez |
-| 3.3 | Corregir el diseño y repetir hasta cumplir | En curso: pares dentro del límite; `hip_roll` ampliado; falta la curva a batería baja |
+| 3.3 | Corregir el diseño y repetir hasta cumplir | En curso: pruebas repetidas con BAM; de pie cumple, y las tareas sin política dependen de la ganancia del firmware |
 
 **Puerta:** las trayectorias de medida de R1 y R2 son viables con los límites de ficha.
 
@@ -50,7 +51,7 @@ Sustituye a Isaac Lab por decisión del usuario.
 | Paso | Trabajo | Estado |
 |---|---|---|
 | 4.1 | Preparar la RTX 3080 Ti con mjlab | Empieza el amigo del usuario: [guía](documentation/training-guide.md) |
-| 4.2 | Marcha con órdenes de velocidad | En curso, sin marcha: se mantiene de pie 20 s, pero no avanza (0,155 m/s de error). Escalas de la guía, velocidad en el centro de masas, penalización de acción y `air_time` pagado al aterrizar: 3000 iteraciones en curso (`marcha_com_3000`). Ver [PROJECT_HANDOFF.md](PROJECT_HANDOFF.md) |
+| 4.2 | Marcha con órdenes de velocidad | En curso, sin marcha: se mantiene de pie 20 s, pero no avanza (0,155 m/s de error). Escalas de la guía, velocidad en el centro de masas, penalización de acción y `air_time` pagado al aterrizar: no avanza (`marcha_com_3000`, parada en 1402). Reentrenando con el modelo de la auditoría. Ver [PROJECT_HANDOFF.md](PROJECT_HANDOFF.md) |
 | 4.3 | Levantarse | Pendiente |
 | 4.4 | Imitación de movimiento humano y gestos | Pendiente |
 | 4.5 | Si el hardware lo permite: trote y salto | Pendiente |

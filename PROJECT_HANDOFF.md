@@ -4,13 +4,19 @@ Punto de entrada para continuar **Robot Danny** en un chat nuevo o en otra compu
 
 **Fecha:** 2 de noviembre de 2026. **Etapa actual:** 3, MuJoCo, con 2.2, 2.3 y 2.4 abiertas por lo físico. La etapa 1 está
 cerrada salvo la 1.2, que va en paralelo.
-**Siguiente paso:** terminar la corrida `marcha_com_3000` en la RTX 3080 Ti, con las escalas de la
-[guía de entrenamiento](documentation/training-guide.md) y la velocidad en el centro de masas, más tres cambios propios (ver
-[Entrenamiento en simulación](#entrenamiento-en-simulación-etapa-4-sin-terminar)). Danny aún no camina en simulación. El
-código de `training/` está en la rama `entrenamiento-danny`. Levantarse es posible en simulación, pero aún frágil. El robot
-completo ya está en CAD:
+**Siguiente paso:** reentrenar la marcha en la RTX 3080 Ti con el modelo de la auditoría, las escalas para Danny de la
+[guía de entrenamiento](documentation/training-guide.md) y la velocidad en el centro de masas, más cambios propios (ver
+[Entrenamiento en simulación](#entrenamiento-en-simulación-etapa-4-sin-terminar)). Danny aún no camina en simulación: el
+primer intento seguía a escala del G1, y con las escalas de la guía se queda sobre un pie. El código de `training/` está en
+la rama `entrenamiento-danny`. `main` está protegida: los colaboradores entran por pull request aprobado por el usuario, que es
+quien cambia el diseño. Levantarse es posible en simulación, pero aún frágil. El robot completo ya está en CAD:
 [piernas](documentation/lower-body-design.md), [tronco](documentation/upper-body-design.md) y
 [paneles](documentation/panels-and-protection.md).
+
+**Auditoría del 2 de noviembre:** [design-audit.md](documentation/design-audit.md). Corregidos los 6 bloqueos de montaje, el tobillo a -45°,
+la pose de reposo y la simulación con BAM. Quedan puntos importantes: no imprimas piezas definitivas ni compres rodamientos de 10 × 15 × 3.
+El modelo cambió, así que hay que reentrenar. Los pasos de verificación están en `check_assembly.py` y `check_standing.py`, y este último sale con
+código 1 porque, sin política, las tareas fallan con ganancia 5.
 
 **Comprado, sin recibir:** 3 servos HD-1910, FE-URT-2, fuente de alimentación, calibrador digital, báscula de cocina,
 impresora 3D y filamentos. Al llegar: medir conectores, muesca y rosca del servo, comprobar encaje y pesar piezas (2.2 y

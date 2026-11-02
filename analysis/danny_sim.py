@@ -22,6 +22,8 @@ BATTERY_VOLTS = (7.4, 6.0)
 POSITION_GAIN = 8.0  # N·m/rad (E): rigidez de postura, sin identificar
 POSITION_DAMPING = 0.3
 
+IMU_POSITION = [0.0295, 0.016, 0.326]  # centro de la BNO085 en el torso, en m
+
 HIP_Y = 0.029
 FOOT_CENTER_X = 0.0125
 FOOT_Y_OFFSET = 0.003
@@ -81,6 +83,7 @@ def build_spec(actuated=True):
         sole.pos = center
         sole.size = [FOOT_HALF[0], FOOT_HALF[1], SOLE_HEIGHT / 2]
         sole.friction = [0.8, 0.01, 0.001]
+        sole.priority = 1  # manda sobre el suelo: si no, MuJoCo toma el mayor rozamiento de los dos
         foot.add_site(name=f"{name}_sole", pos=[center[0], center[1], 0])
         foot.add_site(name=f"{name}_toe", pos=[0.055, center[1], 0])
         foot.add_site(name=f"{name}_heel", pos=[-0.03, center[1], 0])
@@ -88,6 +91,7 @@ def build_spec(actuated=True):
         spec.body(f"{name}_shin_1").add_site(name=f"{name}_knee", pos=[0.02, side * HIP_Y, 0.117])
 
     spec.body("torso_1").add_site(name="torso", pos=[0.0075, 0, 0.3])
+    spec.body("torso_1").add_site(name="imu", pos=IMU_POSITION)
     spec.body("base_link").add_site(name="pelvis_bottom", pos=[0, 0, 0.241])
     spec.body("base_link").add_site(name="pelvis_back", pos=[-0.0295, 0, 0.255])
 
@@ -123,16 +127,16 @@ def build_model(actuated=True):
 
 
 def stall_torque(volts):
-    return SERVO["kt"] * volts / SERVO["R"]
+    return SERVO["max_pwm"] * SERVO["kt"] * volts / SERVO["R"]
 
 
 def no_load_speed(volts):
-    return volts / SERVO["kt"]
+    return SERVO["max_pwm"] * volts / SERVO["kt"]
 
 
 def available_torque(volts, speed):
     """Par máximo del modelo eléctrico a esa velocidad, sin rozamiento."""
-    return np.maximum(0.0, SERVO["kt"] * (volts - SERVO["kt"] * np.abs(speed)) / SERVO["R"])
+    return np.maximum(0.0, SERVO["kt"] * (SERVO["max_pwm"] * volts - SERVO["kt"] * np.abs(speed)) / SERVO["R"])
 
 
 def hinge_names(model):

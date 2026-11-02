@@ -150,7 +150,7 @@ positivo lleva pierna y brazo atrás, y roll positivo lleva el lado izquierdo af
 | `left_hip_yaw` | +Z | -15° | 30° | Positivo: punta afuera. El otro pie limita hacia dentro |
 | `right_hip_yaw` | +Z | -30° | 15° | Negativo: punta afuera |
 | `knee` | +Y | 0° | 130° | Positivo: dobla |
-| `ankle_pitch` | +Y | -30° | 40° | Positivo: punta abajo |
+| `ankle_pitch` | +Y | -45° | 40° | Positivo: punta abajo |
 | `ankle_roll` | +X | -20° | 20° | |
 | `waist_yaw` | +Z | -60° | 60° | |
 | `shoulder_pitch` | +Y | -170° | 45° | Negativo: brazo adelante |
@@ -244,7 +244,7 @@ Y arriba el modelo es correcto, pero se ve tumbado. Fíate de `camera_up` en `Re
 Para comprobar el modelo exportado sin ventana, con la masa total del CAD en kg, y para verlo:
 
 ```bash
-.venv/bin/python analysis/inspect_model.py cad/export/danny/danny.xml --expected-mass 1.1898
+.venv/bin/python analysis/inspect_model.py cad/export/danny/danny.xml --expected-mass 1.1900
 ```
 
 ```bash
@@ -277,10 +277,10 @@ los ajustes de simulación van en un script o archivo aparte, para que sobreviva
 |---|---|---|
 | 3.1 | Importar el MJCF y añadir actuadores con el modelo BAM del HD-1910 de `xgoduck_rl`, marcado como no confirmado | Se sostiene de pie con una postura estable 3 s |
 | 3.2 | Medir par y velocidad en cuclillas, apoyo a un pie, marcha y levantarse | Tabla por articulación en `results/` |
-| 3.3 | Corregir el diseño y repetir | Picos de 0,98 N·m o menos a 7,4 V y 0,78 N·m a 6 V, y velocidades por debajo de las de vacío |
+| 3.3 | Corregir el diseño y repetir | Picos de 0,61 N·m o menos a 7,4 V y 0,49 N·m a 6 V, y velocidades por debajo de las de vacío |
 
-Ambos pares son el bloqueo de ficha entre el margen de 1,5, y son provisionales hasta medir el servo. Revisa también la
-curva par-velocidad: el modelo de `xgoduck_rl` da 0,94 N·m de bloqueo a 7,4 V.
+Ambos pares son el bloqueo del modelo BAM entre el margen de 1,5, y son provisionales hasta medir el servo. Revisa también la
+curva par-velocidad, y usa `analysis/danny_servo.py`: los actuadores rígidos dieron por buenas pruebas que el servo no sostiene.
 
 **Estado y comandos:** [simulation-results.md](simulation-results.md). Scripts: `analysis/danny_sim.py`, `check_standing.py` y
 `measure_joint_loads.py`.

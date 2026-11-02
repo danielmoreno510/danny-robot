@@ -1,5 +1,5 @@
 {
- "source_hash": "e63d28d9ea3d63e99129034831b211473c25ade14049c0974cd58b9c865a72cf",
+ "source_hash": "e5f728ddd4cb6fec47782a1f187fda4da7bb4a18313b8924258aff06ebf055a6",
  "zero_pose": [],
  "joints": {
   "left_hip_yaw": [
@@ -156,35 +156,35 @@
   ],
   "left_ankle_pitch": [
    {
-    "degrees": -30.0,
+    "degrees": -45.0,
     "interference": []
    },
    {
-    "degrees": -21.2,
+    "degrees": -34.4,
     "interference": []
    },
    {
-    "degrees": -12.5,
+    "degrees": -23.8,
     "interference": []
    },
    {
-    "degrees": -3.7,
+    "degrees": -13.1,
     "interference": []
    },
    {
-    "degrees": 5.0,
+    "degrees": -2.5,
     "interference": []
    },
    {
-    "degrees": 13.8,
+    "degrees": 8.1,
     "interference": []
    },
    {
-    "degrees": 22.5,
+    "degrees": 18.8,
     "interference": []
    },
    {
-    "degrees": 31.2,
+    "degrees": 29.4,
     "interference": []
    },
    {
@@ -384,35 +384,35 @@
   ],
   "right_ankle_pitch": [
    {
-    "degrees": -30.0,
+    "degrees": -45.0,
     "interference": []
    },
    {
-    "degrees": -21.2,
+    "degrees": -34.4,
     "interference": []
    },
    {
-    "degrees": -12.5,
+    "degrees": -23.8,
     "interference": []
    },
    {
-    "degrees": -3.7,
+    "degrees": -13.1,
     "interference": []
    },
    {
-    "degrees": 5.0,
+    "degrees": -2.5,
     "interference": []
    },
    {
-    "degrees": 13.8,
+    "degrees": 8.1,
     "interference": []
    },
    {
-    "degrees": 22.5,
+    "degrees": 18.8,
     "interference": []
    },
    {
-    "degrees": 31.2,
+    "degrees": 29.4,
     "interference": []
    },
    {

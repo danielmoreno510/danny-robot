@@ -1,5 +1,5 @@
 """
-Danny - Abre el visor con el modelo de simulación: suelo, gravedad y motores con par limitado.
+Danny - Abre el visor con el modelo de simulación: suelo, gravedad y servos BAM a 7,4 V.
 
 Sin argumentos, el robot arranca de pie y se sostiene solo: empújalo con doble clic en una
 pieza y Ctrl + arrastrar. Con una tarea, la repite en bucle siguiendo sus posturas, sin
@@ -19,16 +19,12 @@ import mujoco.viewer
 import numpy as np
 
 import danny_motion
+import danny_servo
 import danny_sim
 
 HOLD_SECONDS = 2.0
+VOLTS = 7.4
 SEARCHED_MOTIONS = ("get_up_prone", "roll_over")
-
-
-def set_gains(model, gain, damping):
-    model.actuator_gainprm[:, 0] = gain
-    model.actuator_biasprm[:, 1] = -gain
-    model.actuator_biasprm[:, 2] = -damping
 
 
 def play_recording(model, task):
@@ -47,15 +43,27 @@ def play_recording(model, task):
 
 
 def follow_task(model, task):
-    set_gains(model, 20.0, 0.5)
-    trajectory = danny_motion.task_trajectory(model, task)
-    controls, rate = trajectory[:, 7:], danny_motion.RATE_HZ
-    duration = len(controls) / rate + HOLD_SECONDS
+    trajectory = danny_motion.task_trajectory(danny_sim.build_model(actuated=False), task)
+    servos = danny_servo.Servos(model, VOLTS)
+    targets = danny_servo.trajectory_targets(model, mujoco.MjData(model), trajectory, servos)
+    rate = danny_motion.RATE_HZ
+    duration = len(targets) / rate + HOLD_SECONDS
 
     def follow(_, step_data):
-        step_data.ctrl[:] = controls[min(int((step_data.time % duration) * rate), len(controls) - 1)]
+        servos.control(step_data, targets[min(int((step_data.time % duration) * rate), len(targets) - 1)])
 
     return trajectory[0], follow
+
+
+def stand_still(model):
+    pose = danny_motion.stand_pose(danny_sim.build_model(actuated=False))
+    servos = danny_servo.Servos(model, VOLTS)
+    target = danny_servo.gravity_targets(model, mujoco.MjData(model), pose, servos)
+
+    def follow(_, step_data):
+        servos.control(step_data, target)
+
+    return pose, follow
 
 
 def main():
@@ -65,12 +73,15 @@ def main():
 
     model = danny_sim.build_model()
     data = mujoco.MjData(model)
-    if args.task:
-        loader = play_recording if args.task in SEARCHED_MOTIONS else follow_task
-        start, follow = loader(model, args.task)
-        model.qpos0[:] = start  # el botón Reset del visor vuelve aquí
-        data.qpos[:] = start
-        mujoco.set_mjcb_control(follow)
+    if args.task in SEARCHED_MOTIONS:
+        start, follow = play_recording(model, args.task)
+    elif args.task:
+        start, follow = follow_task(model, args.task)
+    else:
+        start, follow = stand_still(model)
+    model.qpos0[:] = start  # el botón Reset del visor vuelve aquí
+    data.qpos[:] = start
+    mujoco.set_mjcb_control(follow)
     mujoco.viewer.launch(model, data)
 
 

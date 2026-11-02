@@ -13,7 +13,7 @@ import danny_sim
 RATE_HZ = 200.0
 
 UPRIGHT = np.eye(3)
-ARMS_DOWN = {"left_shoulder_roll": 0.05, "right_shoulder_roll": -0.05}
+ARMS_DOWN = {"left_shoulder_roll": 0.14, "right_shoulder_roll": -0.14, "left_elbow": -0.3, "right_elbow": -0.3}
 BENT_LEGS = {
     f"{side}_{joint}": angle
     for side in ("left", "right")
@@ -21,7 +21,7 @@ BENT_LEGS = {
 }
 STAND_DROP = 0.015
 WALK_SPEED = 0.25
-STEP_PERIOD = 0.30
+STEP_PERIOD = 0.40  # con 100 mm de paso: más lento pide menos de la rodilla a batería baja
 STEP_HEIGHT = 0.02
 SWING_TOE_DOWN = 0.25  # rad: el pie en el aire no va plano, y evita el tope del tobillo
 SQUAT_LEAN = 0.35
@@ -233,6 +233,11 @@ TASKS = {
 START_PITCH = {
     "sit_up_from_back": -1.5,
 }
+
+
+def stand_pose(model):
+    """Devuelve el qpos de `stand`: de pie, con las rodillas dobladas y el peso sobre los pies."""
+    return Solver(model).solve(*TASKS["squat"][0](0.0)[:3], iterations=600)[0]
 
 
 def task_trajectory(model, task, solver=None):

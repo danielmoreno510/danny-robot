@@ -12,7 +12,7 @@ Fijados antes de modelar, salvo los dos cambios indicados debajo. `analysis/chec
 |---|---|---|
 | Electrónica, IMU, regulador, interruptor, cámara y servos caben | Menos de 0,01 mm³ en común dentro del tronco, y cámara dentro de la cabeza | Cumple, sin conectores reales |
 | Reserva de voz | Hueco libre de 25 × 64 × 4,7 mm | Cumple |
-| Reserva de manos | Dos servos en cada antebrazo | Cumple por cálculo: hueco de 23,6 × 20,4 mm y 67 mm de largo |
+| Reserva de manos | Dos servos en cada antebrazo | Cumple por cálculo: hueco de 23,6 × 20,1 mm y 67 mm de largo |
 | Rango de cada articulación | Menos de 1 mm³ en 9 ángulos, desde su pose de partida | Cumple |
 | Pose cero y 25 muestras de poses combinadas | Sin interferencias | Cumple |
 | Modelo exportado | Carga, 24 cuerpos, 23 articulaciones | Cumple |
@@ -44,7 +44,7 @@ Cifras en `results/robot_check.json`, `results/robot_cad.json` y `results/robot_
 | Cintura, hombros y cuello en x = 7,5 mm, con el tronco centrado ahí | El tronco gira sobre sí mismo, y el centro de masas se acerca al del pie |
 | Tronco de 78 × 54,4 × 68,5 mm, en dos pisos | Abajo, batería y placas de pie. Arriba, servos de hombro y cuello. Sigue los 340 mm previstos de cuello |
 | Batería de pie detrás, con trampilla | 37 mm de alto caben en los 38 mm del piso, y se cambia sin desmontar nada más |
-| Ordenador y placa de energía sobre un carro | Sale por la trampilla, una vez quitada la batería |
+| Ordenador y placa de energía sobre un carro | Sale recto por la trampilla, una vez quitada la batería: sus orejas pasan por muescas junto al suelo, y lleva el tope de la batería. Se comprueba con `analysis/check_assembly.py` |
 | Brazo con un servo de roll en el propio brazo | Hombro compacto: el eslabón del hombro es solo una horquilla |
 | Servo de codo en el antebrazo, con el extremo largo adelante | Hacia atrás, al doblar, bajaría contra muslo y cadera |
 | Yaw de brazo, codo y `shoulder_pitch` sobre una sola bocina | No hay sitio para una horquilla sin superar R10. Sin comprobar: ver Pendiente |
@@ -64,7 +64,7 @@ en el servo (E), con paredes de 2,5 a 3 mm. La profundidad exacta sigue sin publ
 Revisado sobre los STL con rayos, sin montar nada real. Pelvis y piernas, en [lower-body-design.md](lower-body-design.md).
 
 1. Torso sobre la cintura: 4 tornillos en el suelo, con llave recta por el agujero del estante, antes del servo de cuello.
-2. Carro con ordenador y placa de energía, por la trampilla. Batería y trampilla, con espuma de 3 mm detrás de la batería.
+2. Carro con ordenador y placa de energía, por la trampilla. Se fija con dos M1,6 × 4 de cabeza hexagonal desde la trampilla, con una llave de bola en L. Batería y trampilla, sin espuma: la batería se apoya en la tapa, y deja delante el paso del cable del cuello.
 3. Servos de hombro: entran por la ventana lateral. Los tornillos interiores se ponen con llave en L por el hueco del
    cuello. Después, su tapa.
 4. Servo de cuello: baja desde arriba, entre los tabiques. Regulador, IMU e interruptor. Tapa superior.

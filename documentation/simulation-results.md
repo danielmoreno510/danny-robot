@@ -1,5 +1,8 @@
 # Simulación en MuJoCo
 
+Tras la [auditoría](design-audit.md) del 2 de noviembre de 2026, las pruebas de pie, tareas y visor usan el servo BAM de
+`analysis/danny_servo.py`. Las búsquedas de levantarse aún no se han repetido con él.
+
 Etapa 3, en curso. El MJCF exportado no se edita: `analysis/danny_sim.py` le añade suelo, base libre, suelas, actuadores y
 los parámetros del servo. Cifras en `results/standing_check.json` y `results/joint_loads.json`.
 
@@ -52,52 +55,56 @@ Si el CAD cambia, antes hay que exportarlo con los comandos de [lower-body-desig
 
 | Paso | Criterio | Estado |
 |---|---|---|
-| 3.1 | De pie 3 s, 2° o menos de inclinación y 5 mm o menos de caída del centro de masas | **Cumple:** 0,14° y 0,2 mm |
+| 3.1 | De pie 3 s, 2° o menos de inclinación y 5 mm o menos de caída del centro de masas | **Cumple desde `stand`:** 0,08° de 8,4 a 6 V, sin bajar. Falla la tarea en simulación directa: ver abajo |
 | 3.2 | Tabla por articulación en `results/` | **Hecho.** El paso del suelo a de pie se probó aparte, por búsqueda |
-| 3.3 | Picos de 0,98 N·m a 7,4 V y 0,78 N·m a 6 V, y velocidades por debajo de las de vacío | **Cumple en lo medido.** Ver el aviso de la curva del motor |
+| 3.3 | Picos de 0,61 N·m a 7,4 V y 0,49 N·m a 6 V, y velocidades por debajo de las de vacío | **Falla por poco:** marcha, 0,62 N·m en `ankle_pitch`. Criterio cambiado el 2 de noviembre: es el bloqueo de BAM, 0,912 y 0,739 N·m, entre 1,5, porque el anterior superaba el bloqueo |
 
 ## Pico por tarea
 
-Par con 0,025 N·m de rozamiento añadido. La marcha va a 0,25 m/s, con pasos de 0,30 s y 12 % de doble apoyo a cada lado.
+Par con el rozamiento del modelo BAM bajo esa carga, en cálculo cuasiestático. La marcha va a 0,25 m/s, con pasos de 100 mm cada 0,40 s y 12 % de doble apoyo a cada lado.
 
 | Tarea | Par pico | Articulación | Velocidad pico | Tensión mínima |
 |---|---:|---|---:|---:|
-| Marcha | 0,75 N·m | `ankle_pitch` | 8,2 rad/s, rodilla | 6,9 V |
-| Apoyo a un pie | 0,42 N·m | `hip_roll` | 2,2 rad/s | Sin límite útil |
-| Levantarse desde cuclillas, sin manos | 0,23 N·m | `hip_pitch` | 0,9 rad/s | Sin límite útil |
-| Cuclillas, bajando 60 mm | 0,21 N·m | `knee` | 1,0 rad/s | Sin límite útil |
-| Boca abajo, elevar el tronco con las manos | 0,15 N·m | `elbow` | 0,8 rad/s | Sin límite útil |
+| Marcha | 0,62 N·m | `ankle_pitch` | 7,6 rad/s, rodilla | 5,8 V |
+| Apoyo a un pie | 0,47 N·m | `hip_roll` | 2,2 rad/s | Sin límite útil |
+| Levantarse desde cuclillas, sin manos | 0,26 N·m | `hip_pitch` | 0,9 rad/s | Sin límite útil |
+| Cuclillas, bajando 60 mm | 0,24 N·m | `knee` | 1,0 rad/s | Sin límite útil |
+| Boca abajo, elevar el tronco con las manos | 0,17 N·m | `elbow` | 0,8 rad/s | Sin límite útil |
 | Boca arriba, sentarse | 0,10 N·m | `knee` | 0,8 rad/s | Sin límite útil |
 
-**Lectura:** los pares son bajos porque Danny pesa 1,29 kg (E), y hay margen en todo menos en la marcha. Los picos de la
-marcha salen de una trayectoria de medida, no optimizada, y una política los cambiará.
+**Lectura:** el modelo aún usa 1,19 kg, sin los 100 g de tornillos y cables, que subirían los pares de gravedad un 8 %. Los picos de la
+marcha salen de una trayectoria de medida, no optimizada, y una política los cambiará. Las dos filas tumbadas son solo orientativas:
+sus trayectorias meten el cuerpo en el suelo.
 
 ## Lo que hay que saber
 
-- **Curva del motor.** Con los datos de `xgoduck_rl`, el modelo da 0,94 N·m de bloqueo a 7,4 V, frente a 1,47 N·m de ficha. Con
-  esa curva, la marcha de 0,25 m/s usa el 92 % a 7,4 V, y pide el 118 % a 6 V: necesita unos 6,9 V. Es decir, a batería
-  baja habría que andar más despacio o cortar antes. El criterio de 3.3 no ve esto porque mira par y velocidad por separado.
+- **Curva del motor.** Con los datos de `xgoduck_rl` y el `max_pwm` de 0,97, el modelo da 0,912 N·m de bloqueo a 7,4 V y 0,739 a 6 V,
+  frente a 1,47 N·m de ficha. La marcha necesita 5,8 V, por debajo del corte de 6,4 V, con poco margen. El pico anterior de 0,75 N·m
+  y 6,9 V era un artefacto del tope de tobillo.
+- **El servo es blando.** Con la ganancia de firmware 5 del XGO-Duck da 1,03 N·m/rad a 7,4 V. Se aguanta de pie gracias al rozamiento bajo
+  carga, pero no sigue las tareas: cuclillas y apoyo a un pie caen. Con ganancia 10, unos 2,06 N·m/rad, ambas se sostienen a 7,4 V, y
+  fallan a 6 V. `rise_from_crouch` falla siempre (`results/standing_check.json`). La ganancia real se fija en la 5.1.
 - **Tope de `hip_roll` cambiado.** Pasó de -3° a -15° hacia dentro, porque llevar el peso sobre un pie pide unos 11°. Los -3°
   venían del choque entre pies, que no ocurre con el otro pie apartado. Ahora se barre con la otra pierna abierta, y los
   pies deben protegerse con colisiones.
 - **Tope de `hip_pitch` confirmado.** Se probaron -130° y -105°: el muslo toca el eslabón yaw y el servo de roll. Sigue en -100°.
-- **Tobillo.** Con el pie plano, -30° limita la cuclilla a unos 60 mm de bajada, con el tronco inclinado 20°.
-- **La mecánica permite levantarse.** En simulación directa, con 0,94 N·m por motor y colisiones simples, una búsqueda de
+- **Tobillo ampliado a -45°.** Con -30°, `stand` quedaba a 3,5° del tope, y la marcha pasaba el 38 % del tiempo en él. El barrido del CAD sale limpio.
+- **Levantarse, pendiente de repetir.** Con motores más rígidos y 0,94 N·m, antes del tobillo a -45°, una búsqueda de
   entropía cruzada encontró cómo pasar de boca abajo a de pie en 9 s, y otra cómo darse la vuelta desde boca arriba.
   Con los brazos a los lados el robot se voltea sobre la cabeza: las manos deben ir delante de la cabeza, barriendo por el
   costado porque el hombro no pasa por detrás. Luego empujan, y las rodillas se recogen.
-- **Pero esa secuencia es frágil.** Sin realimentación solo funciona en las condiciones exactas de la búsqueda: falla a 6 V, con
+- **Esa secuencia no vale con BAM.** Con el servo blando no se levanta, según la auditoría. Sin realimentación solo funcionaba en las condiciones exactas de la búsqueda: falla a 6 V, con
   otro rozamiento y con la masa a ±10 %, e incluso al repetirla con los objetivos redondeados. Una búsqueda que puntuaba varias
   condiciones no lo mejoró. Demuestra que es posible,
   no que sea fiable, y además satura varios motores durante 1 a 2,6 s. Una política con realimentación debe lograrlo en la etapa 4.
   La cadera no se rediseña por ahora.
-- **En simulación directa** se sostienen `squat`, `single_support` y `rise_from_crouch`. `walk` cae sin realimentación.
+- **En simulación directa**, sin política, ninguna tarea se sostiene con ganancia 5 ni a 6 V. `walk` cae sin realimentación.
 
 ## Qué no se ha comprobado
 
 - Par y curva del servo real: los parámetros son de otro robot con este servo, sin confirmar en los nuestros.
 - Reparto entre dos pies: es el de menor par, con contactos sin imponer, y solo se valida el centro de presiones en apoyo simple.
-- Fricción dependiente de la carga, holgura de 0,5° y flexión de las piezas.
+- La ganancia real del firmware, holgura de 0,5° y flexión de las piezas.
 - Marcha en bucle cerrado: esta se calcula con dinámica inversa, sin caminar de verdad en simulación.
 - Colisiones entre eslabones: ya hay cajas simples por eslabón en `analysis/danny_sim.py`, sin colisionador en los eslabones
   cortos de cadera, tobillo, cuello y hombro. Son aproximadas: la mecánica fina sale del barrido de Fusion.
