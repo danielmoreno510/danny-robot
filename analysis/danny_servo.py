@@ -51,6 +51,11 @@ class Servos:
         model.dof_solref[6:] = STIFF_SOLREF
         model.dof_solimp[6:] = STIFF_SOLIMP
 
+    def reset(self, data):
+        """Vuelve al inicio: mj_resetData no deshace el rozamiento que `control` escribe en el modelo."""
+        mujoco.mj_resetData(self.model, data)
+        self.model.dof_frictionloss[6:] = SERVO["friction_base"]
+
     def stiffness(self):
         """Par por radián de error, sin contar el rozamiento."""
         return self.gain * self.volts * SERVO["kt"] / SERVO["R"]

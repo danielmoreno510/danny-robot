@@ -582,7 +582,7 @@
       "visible_unknown_brep_count": 0
     },
     {
-      "body_count": 19,
+      "body_count": 20,
       "child_occurrence_count": 0,
       "component_name": "torso",
       "export_name": "torso_1",
@@ -607,7 +607,7 @@
         1.0
       ],
       "visible_mesh_body_count": 0,
-      "visible_solid_brep_count": 19,
+      "visible_solid_brep_count": 20,
       "visible_surface_brep_count": 0,
       "visible_unknown_brep_count": 0
     },

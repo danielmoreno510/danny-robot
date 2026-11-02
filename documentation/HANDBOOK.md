@@ -244,7 +244,7 @@ Y arriba el modelo es correcto, pero se ve tumbado. Fíate de `camera_up` en `Re
 Para comprobar el modelo exportado sin ventana, con la masa total del CAD en kg, y para verlo:
 
 ```bash
-.venv/bin/python analysis/inspect_model.py cad/export/danny/danny.xml --expected-mass 1.1900
+.venv/bin/python analysis/inspect_model.py cad/export/danny/danny.xml --expected-mass 1.2006
 ```
 
 ```bash

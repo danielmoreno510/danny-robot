@@ -2,7 +2,7 @@
 
 Para quien entrena a Danny en una computadora con GPU NVIDIA, y para su Claude. Con este documento y el repositorio basta.
 
-**Danny:** humanoide de 40 cm y 1,29 kg (E), con 23 motores HD-1910. Todavía **no existe físicamente**: solo el CAD y la
+**Danny:** humanoide de 40 cm y 1,30 kg (E), con 23 motores HD-1910. Todavía **no existe físicamente**: solo el CAD y la
 simulación. Entrenarlo aquí es lo que dirá si puede caminar y levantarse.
 
 ## Lo que tiene que hacer la persona
@@ -110,9 +110,11 @@ los tobillos casi no cuenta como moverse, y cada balanceo del cuerpo añade un e
 BNO085. Vuelve a generar `training/` con `danny_training.xml` y reinicia: una política anterior no sirve. Con -30°, `stand` quedaba a 0,04° del
 límite blando de -26,5°, así que apoyarse sobre el pie adelantado se penalizaba.
 
-**Si con eso no levanta el pie, prueba `kp_fw` 10.** Sin política, ganancia 5 cae a un pie y ganancia 10 se sostiene a 7,4 V
-(`results/standing_check.json`). El robot real ajusta esa ganancia por firmware, pero su valor se confirma en la 5.1: entrena a 10 solo como
-diagnóstico, y dilo en el informe.
+**Antes de cada corrida:** `analysis/check_training_model.py` comprueba el modelo, y `analysis/check_walk_feasibility.py` muestra que con ganancia 5 y la
+física del entrenamiento da pasos alternos con zancada de 98 mm. Si Danny no camina, mira primero el aprendizaje. Mantén `kp_fw` 5.
+
+**Cajas de colisión:** el modelo trae fricción 0,35, prioridad 1 y 13 contactos entre eslabones. En `DANNY_COLLISION`, usa `condim=3` y `priority=1` también para
+`.*_box_\d+`, o el suelo les pondrá 1,0. Aleatoriza la masa en todos los cuerpos con `shared_random=True`, para que sea ±10 % de verdad.
 
 **Resultado del 2 de noviembre: con un reloj de marcha camina.** Con las escalas de arriba y `kp_fw` 5, Danny seguía apoyado en un pie y sin avanzar, con `air_time` y con una penalización de aterrizaje repetido. Con un reloj de marcha (fase de 0,8 s que solo avanza con orden de movimiento, seno y coseno en la observación, y una recompensa de contacto en contrafase de peso 1,5) caminó hacia delante a 0,248 m/s en 1000 iteraciones, y gira hasta 0,4 rad/s, con error de 0,020 m/s y apoyos alternos al 99,9 % (`results/training_gait_marcha_reloj_1000.json`). Se probó hacia delante y con giro, sin empujones ni marcha lateral. Detalles en `PROJECT_HANDOFF.md`.
 

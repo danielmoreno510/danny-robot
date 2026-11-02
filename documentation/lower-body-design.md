@@ -67,6 +67,9 @@ Con Fusion abierto y `DannyBridge` activo:
 .venv/bin/python analysis/run_fusion_script.py ExportModel
 .venv/bin/python analysis/check_robot.py
 .venv/bin/python analysis/check_assembly.py
+.venv/bin/python analysis/export_training_model.py
+.venv/bin/python analysis/check_training_model.py
+.venv/bin/python analysis/check_walk_feasibility.py
 .venv/bin/python analysis/estimate_fall_energy.py
 ```
 

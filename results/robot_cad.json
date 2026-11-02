@@ -1,20 +1,20 @@
 {
- "source_hash": "e5f728ddd4cb6fec47782a1f187fda4da7bb4a18313b8924258aff06ebf055a6",
+ "source_hash": "a6f5157030666224bd4320ccf013b975a4ee8c848e2eab53f5f31eaebf4de71c",
  "masses_kg": {
-  "base_link": 0.12338421209751087,
-  "left_hip_yaw_link": 0.010742371970041697,
-  "left_hip_roll_link": 0.05434727277059337,
-  "left_thigh": 0.053010609212580884,
-  "left_shin": 0.04513787258314392,
+  "base_link": 0.12376822426056484,
+  "left_hip_yaw_link": 0.010607281709020606,
+  "left_hip_roll_link": 0.05438786502650094,
+  "left_thigh": 0.05235435921258089,
+  "left_shin": 0.046787111053579654,
   "left_ankle_link": 0.007639546536559855,
-  "left_foot": 0.05086549473822536,
-  "right_hip_yaw_link": 0.010742371970041723,
-  "right_hip_roll_link": 0.05434727277059362,
-  "right_thigh": 0.05301060921258087,
-  "right_shin": 0.04513787258314391,
+  "left_foot": 0.05205674473822536,
+  "right_hip_yaw_link": 0.010607281709020632,
+  "right_hip_roll_link": 0.054387865026501184,
+  "right_thigh": 0.05235435921258087,
+  "right_shin": 0.04678711105357965,
   "right_ankle_link": 0.0076395465365598535,
-  "right_foot": 0.05086549473822536,
-  "torso": 0.31122546675395546,
+  "right_foot": 0.05205674473822536,
+  "torso": 0.31721595228367544,
   "neck_link": 0.0046506667516912036,
   "head": 0.060628579088162445,
   "left_shoulder_link": 0.00462436542458027,
@@ -26,7 +26,7 @@
   "right_elbow_link": 0.008356710471892393,
   "right_forearm": 0.04480024634551361
  },
- "total_mass_kg": 1.19003044267917,
+ "total_mass_kg": 1.2005844213025882,
  "axes": {
   "left_hip_yaw": [
    0.0,
@@ -144,6 +144,6 @@
    0.0
   ]
  },
- "panel_mass_kg": 0.02252187620901368,
+ "panel_mass_kg": 0.028571813676741466,
  "fit_overlaps_mm3": {}
 }

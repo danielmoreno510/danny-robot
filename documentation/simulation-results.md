@@ -57,7 +57,7 @@ Si el CAD cambia, antes hay que exportarlo con los comandos de [lower-body-desig
 |---|---|---|
 | 3.1 | De pie 3 s, 2° o menos de inclinación y 5 mm o menos de caída del centro de masas | **Cumple desde `stand`:** 0,08° de 8,4 a 6 V, sin bajar. Falla la tarea en simulación directa: ver abajo |
 | 3.2 | Tabla por articulación en `results/` | **Hecho.** El paso del suelo a de pie se probó aparte, por búsqueda |
-| 3.3 | Picos de 0,61 N·m a 7,4 V y 0,49 N·m a 6 V, y velocidades por debajo de las de vacío | **Falla por poco:** marcha, 0,62 N·m en `ankle_pitch`. Criterio cambiado el 2 de noviembre: es el bloqueo de BAM, 0,912 y 0,739 N·m, entre 1,5, porque el anterior superaba el bloqueo |
+| 3.3 | Picos de 0,61 N·m a 7,4 V y 0,49 N·m a 6 V, y velocidades por debajo de las de vacío | **Falla por margen:** marcha, 0,68 N·m en `ankle_pitch`, y a un pie, 0,51 N·m a 6 V. Criterio cambiado el 2 de noviembre: es el bloqueo de BAM, 0,912 y 0,739 N·m, entre 1,5, porque el anterior superaba el bloqueo |
 
 ## Pico por tarea
 
@@ -65,25 +65,28 @@ Par con el rozamiento del modelo BAM bajo esa carga, en cálculo cuasiestático.
 
 | Tarea | Par pico | Articulación | Velocidad pico | Tensión mínima |
 |---|---:|---|---:|---:|
-| Marcha | 0,62 N·m | `ankle_pitch` | 7,6 rad/s, rodilla | 5,8 V |
-| Apoyo a un pie | 0,47 N·m | `hip_roll` | 2,2 rad/s | Sin límite útil |
-| Levantarse desde cuclillas, sin manos | 0,26 N·m | `hip_pitch` | 0,9 rad/s | Sin límite útil |
-| Cuclillas, bajando 60 mm | 0,24 N·m | `knee` | 1,0 rad/s | Sin límite útil |
-| Boca abajo, elevar el tronco con las manos | 0,17 N·m | `elbow` | 0,8 rad/s | Sin límite útil |
-| Boca arriba, sentarse | 0,10 N·m | `knee` | 0,8 rad/s | Sin límite útil |
+| Marcha | 0,68 N·m | `ankle_pitch` | 7,6 rad/s, rodilla | 5,9 V |
+| Apoyo a un pie | 0,51 N·m | `hip_roll` | 2,2 rad/s | Sin límite útil |
+| Levantarse desde cuclillas, sin manos | 0,28 N·m | `hip_pitch` | 0,9 rad/s | Sin límite útil |
+| Cuclillas, bajando 60 mm | 0,26 N·m | `knee` | 1,0 rad/s | Sin límite útil |
+| Boca abajo, elevar el tronco con las manos | 0,18 N·m | `elbow` | 0,8 rad/s | Sin límite útil |
+| Boca arriba, sentarse | 0,11 N·m | `knee` | 0,8 rad/s | Sin límite útil |
 
-**Lectura:** el modelo aún usa 1,19 kg, sin los 100 g de tornillos y cables, que subirían los pares de gravedad un 8 %. Los picos de la
+**Lectura:** el modelo reparte los 100 g de tornillos y cables, y pesa 1,30 kg. Los picos de la
 marcha salen de una trayectoria de medida, no optimizada, y una política los cambiará. Las dos filas tumbadas son solo orientativas:
 sus trayectorias meten el cuerpo en el suelo.
 
 ## Lo que hay que saber
 
 - **Curva del motor.** Con los datos de `xgoduck_rl` y el `max_pwm` de 0,97, el modelo da 0,912 N·m de bloqueo a 7,4 V y 0,739 a 6 V,
-  frente a 1,47 N·m de ficha. La marcha necesita 5,8 V, por debajo del corte de 6,4 V, con poco margen. El pico anterior de 0,75 N·m
+  frente a 1,47 N·m de ficha. La marcha necesita 5,9 V, por debajo del corte de 6,4 V, con poco margen. El pico anterior de 0,75 N·m
   y 6,9 V era un artefacto del tope de tobillo.
 - **El servo es blando.** Con la ganancia de firmware 5 del XGO-Duck da 1,03 N·m/rad a 7,4 V. Se aguanta de pie gracias al rozamiento bajo
-  carga, pero no sigue las tareas: cuclillas y apoyo a un pie caen. Con ganancia 10, unos 2,06 N·m/rad, ambas se sostienen a 7,4 V, y
-  fallan a 6 V. `rise_from_crouch` falla siempre (`results/standing_check.json`). La ganancia real se fija en la 5.1.
+  carga, pero no sigue las tareas: cuclillas y apoyo a un pie caen. Con 1,30 kg, tampoco con ganancia 10 (`results/standing_check.json`). Sin realimentación, estas tareas no
+  dicen si el robot puede: la prueba válida es la siguiente. La ganancia real se fija en la 5.1.
+- **Puede dar pasos.** `analysis/check_walk_feasibility.py`, con ganancia 5, la física del entrenamiento y 20 ms de retardo, da 4 apoyos alternos, zancada
+  media de 98 mm, 15 mm de deslizamiento como máximo y 0,46 m de avance antes de caer a 1,8 s (`results/walk_feasibility.json`). Es una prueba de
+  existencia con realimentación mínima: no demuestra una marcha sostenida, ni aleatorización, ni a 6 V.
 - **Tope de `hip_roll` cambiado.** Pasó de -3° a -15° hacia dentro, porque llevar el peso sobre un pie pide unos 11°. Los -3°
   venían del choque entre pies, que no ocurre con el otro pie apartado. Ahora se barre con la otra pierna abierta, y los
   pies deben protegerse con colisiones.
@@ -98,7 +101,7 @@ sus trayectorias meten el cuerpo en el suelo.
   condiciones no lo mejoró. Demuestra que es posible,
   no que sea fiable, y además satura varios motores durante 1 a 2,6 s. Una política con realimentación debe lograrlo en la etapa 4.
   La cadera no se rediseña por ahora.
-- **En simulación directa**, sin política, ninguna tarea se sostiene con ganancia 5 ni a 6 V. `walk` cae sin realimentación.
+- **En simulación directa**, sin realimentación, ninguna tarea se sostiene con el servo BAM.
 
 ## Qué no se ha comprobado
 
