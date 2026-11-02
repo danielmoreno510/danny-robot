@@ -8,6 +8,7 @@ como primer intento.
 from __future__ import annotations
 
 import math
+import os
 from copy import deepcopy
 from dataclasses import replace
 
@@ -41,6 +42,17 @@ TRUNK_BODY = "base_link"
 # Escala de la acción sobre la pose por defecto (rad por unidad de acción). Igual que xgoduck_rl (guía 4.2).
 # Con 0,25 y 0,5 no hubo marcha.
 ACTION_SCALE = 1.0
+
+# Aleatorización que se añade poco a poco en la fase 2: armadura de los servos (±), holgura mecánica máxima y empujones (± m/s en XY).
+# La etapa se elige con DANNY_DR_STAGE al entrenar; sin ella, y al evaluar, vale la 3, la completa de la guía (armadura ±30 %, holgura
+# de hasta 0,5°). Los empujones llegan a ±0,2 m/s, como en xgoduck_rl.
+DR_STAGES = {
+    1: {"armature": 0.10, "backlash_deg": 0.15, "push": 0.12},
+    2: {"armature": 0.20, "backlash_deg": 0.30, "push": 0.16},
+    3: {"armature": 0.30, "backlash_deg": 0.50, "push": 0.20},
+}
+DR_STAGE = int(os.environ.get("DANNY_DR_STAGE", "3"))
+assert DR_STAGE in DR_STAGES, f"DANNY_DR_STAGE debe ser 1, 2 o 3, no {DR_STAGE}"
 
 
 def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
@@ -117,6 +129,10 @@ def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
         ang_vel_z=(-0.5, 0.5),
     )
     twist_cmd.viz.z_offset = 0.5
+    # Fase 2: avanzar, retroceder, paso lateral, girar y parar. El 20 % de los entornos recibe orden cero; mjlab fuerza por defecto otro
+    # 20 % a avanzar a 0,3 m/s sin girar, y aquí se quita para no sesgar las órdenes.
+    twist_cmd.rel_standing_envs = 0.2
+    twist_cmd.rel_forward_envs = 0.0
 
     # Reloj de marcha: fase de 0,8 s que solo avanza con orden de movimiento. La política ve su seno y su coseno.
     cfg.commands["gait"] = GaitClockCommandCfg(period_s=0.8, velocity_command_name="twist")
@@ -147,7 +163,19 @@ def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     )
     # Empujones de la guía: solo en XY, ±0,12 m/s, cada 3 a 6 s.
     cfg.events["push_robot"].interval_range_s = (3.0, 6.0)
-    cfg.events["push_robot"].params["velocity_range"] = {"x": (-0.12, 0.12), "y": (-0.12, 0.12)}
+    stage = DR_STAGES[DR_STAGE]
+    push = stage["push"]
+    cfg.events["push_robot"].params["velocity_range"] = {"x": (-push, push), "y": (-push, push)}
+    cfg.events["randomize_servo_armature"] = EventTermCfg(
+        func=dr.joint_armature,
+        mode="startup",
+        params={
+            "asset_cfg": SceneEntityCfg("robot", joint_names=(r".*",)),
+            "ranges": (1.0 - stage["armature"], 1.0 + stage["armature"]),
+            "operation": "scale",
+        },
+    )
+    cfg.scene.entities["robot"].articulation.actuators[0].backlash_max_rad = math.radians(stage["backlash_deg"])
     cfg.events["randomize_servo_friction"] = EventTermCfg(
         func=danny_mdp.randomize_bam_friction,
         mode="reset",

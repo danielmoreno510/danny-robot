@@ -24,16 +24,17 @@ def stall_torque_nm(vin: float) -> float:
   return STALL_TORQUE_6V_NM + (vin - 6.0) * (STALL_TORQUE_7P4V_NM - STALL_TORQUE_6V_NM) / (7.4 - 6.0)
 
 
-def eval_env_cfg(num_envs: int, seconds: float, vin: float | None = None) -> ManagerBasedRlEnvCfg:
+def eval_env_cfg(num_envs: int, seconds: float, vin: float | None = None, pushes: bool = False) -> ManagerBasedRlEnvCfg:
   """Configuración de entrenamiento sin empujones: se mide la marcha, no la recuperación.
 
   Con `vin`, todos los servos trabajan a esa tensión fija (V), sin caída de tensión por la carga. Sin ella, la tensión se
-  sortea entre 6 y 8,4 V como en el entrenamiento.
+  sortea entre 6 y 8,4 V como en el entrenamiento. Con `pushes`, se mantienen los empujones del entrenamiento.
   """
   env_cfg = load_env_cfg(TASK)
   env_cfg.scene.num_envs = num_envs
   env_cfg.episode_length_s = seconds
-  env_cfg.events.pop("push_robot", None)
+  if not pushes:
+    env_cfg.events.pop("push_robot", None)
   if vin is not None:
     actuator = env_cfg.scene.entities["robot"].articulation.actuators[0]
     actuator.vin_range = (vin, vin)
@@ -41,10 +42,13 @@ def eval_env_cfg(num_envs: int, seconds: float, vin: float | None = None) -> Man
   return env_cfg
 
 
-def fix_command(env_cfg: ManagerBasedRlEnvCfg, forward: float, turn: float = 0.0) -> None:
-  """Fija la orden en `forward` m/s hacia delante y `turn` rad/s de giro (positivo a la izquierda), sin lateral, sin entornos parados y sin entornos de solo avance."""
+def fix_command(env_cfg: ManagerBasedRlEnvCfg, forward: float, turn: float = 0.0, lateral: float = 0.0) -> None:
+  """Fija la orden en `forward` m/s hacia delante, `lateral` m/s hacia la izquierda y `turn` rad/s de giro (positivo a la izquierda).
+
+  Sin entornos parados ni entornos de solo avance. Con las tres a 0, todos los entornos reciben orden cero.
+  """
   twist = env_cfg.commands["twist"]
-  twist.ranges = replace(twist.ranges, lin_vel_x=(forward, forward), lin_vel_y=(0.0, 0.0), ang_vel_z=(turn, turn), heading=None)
+  twist.ranges = replace(twist.ranges, lin_vel_x=(forward, forward), lin_vel_y=(lateral, lateral), ang_vel_z=(turn, turn), heading=None)
   twist.heading_command = False
   twist.rel_standing_envs = 0.0
   twist.rel_forward_envs = 0.0  # mjlab fuerza el 20 % de los entornos a (0,3; 0; 0), sin giro.

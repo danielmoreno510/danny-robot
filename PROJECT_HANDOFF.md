@@ -286,6 +286,28 @@ no se probó otra semilla; no hay vídeo (la grabación automática con `play --
 una antigua: la que se entrenó desde cero con el modelo final no aprendió a andar (`fase1_marcha_1000`), así que el entrenamiento desde cero
 necesita estas penalizaciones desde el principio o un arranque como este.
 
+**Fase 2, criterio (escrito antes de entrenar):** una sola política con avanzar, retroceder, paso lateral, girar y parar con orden cero. Parte de
+`fase1b_separacion_500/model_1498.pt` y entrena 10 000 iteraciones en tres corridas seguidas, cada una reanudada de la anterior, con más
+aleatorización en cada una (`DANNY_DR_STAGE` en `env_cfgs.py`; sin la variable y al evaluar vale la 3, la completa):
+
+| Corrida | Iteraciones | Etapa | Armadura de los servos | Holgura máxima | Empujones (XY) |
+|---|---|---|---|---|---|
+| `fase2_a` | 3 000 | 1 | ±10 % | 0,15° | ±0,12 m/s |
+| `fase2_b` | 3 000 | 2 | ±20 % | 0,30° | ±0,16 m/s |
+| `fase2_c` | 4 000 | 3 | ±30 % | 0,50° | ±0,20 m/s |
+
+La holgura es un juego mecánico sobre la posición objetivo (`actuator.apply_backlash`, comprobado con `scripts/check_backlash.py`): una aproximación,
+no el modelo de un servo real. Órdenes: avance de -0,25 a 0,25 m/s, lateral de -0,1 a 0,1 m/s y giro de -0,5 a 0,5 rad/s (11° por paso de 0,4 s, por
+debajo de los 20° por paso del límite real), con el 20 % de los entornos a orden cero y sin los entornos forzados a avanzar de mjlab. Controles al final de
+cada corrida (3 000, 6 000 y 10 000 iteraciones) con `scripts/evaluate_movements.py` a 7,4 V, aleatorización completa y sin empujones: cada uno de
+los siete movimientos (adelante, atrás, lateral a cada lado, giro a cada lado, quieto) cumple si el 95 % o más de 256 robots no cae en 20 s y el error
+de velocidad es de 0,08 m/s o menos y el de giro de 0,15 rad/s o menos; quieto, además, con velocidad media de 0,03 m/s o menos y giro medio de
+0,10 rad/s o menos. Los controles intermedios informan y no frenan la corrida, salvo que la política colapse (menos del 50 % sin caer en adelante).
+La fase se aprueba con la corrida `fase2_c` si cumplen los siete movimientos y además la prueba de la guía: 0,25 m/s durante 300 s simulados
+(`measure_gait.py --pushes --seconds 300`, sin fijar la tensión) sin caer en el 95 % de los robots, y sin saturar ninguna articulación más del 5 %
+del tiempo (`measure_actuator_torque.py --pushes --seconds 300`, contra el bloqueo a 6 V). Si no aprueba, se para y se explica; no se alarga.
+Si aprueba: ONNX, vídeos si caben, un PR a `main` y aviso al dueño.
+
 ## Lo que no se debe afirmar
 
 - Que el HD-1910 sirva para este robot: nadie lo ha probado en un humanoide, según lo encontrado.
