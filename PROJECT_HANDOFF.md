@@ -54,6 +54,29 @@ permite. Entrenamiento con mjlab en la RTX 3080 Ti.
 nominal. El usuario decidió diseñar antes de comprar, así que el calor se medirá en la etapa 5.1, y hasta
 entonces el diseño usa datos de ficha.
 
+## Entrenamiento en simulación (etapa 4, sin terminar)
+
+Código en `training/`. Tarea `Mjlab-Velocity-Flat-Danny`, PPO de RSL-RL. Corridas con 4096 entornos.
+
+- **Lo que funciona:** Danny se mantiene de pie 20 s sin caerse (`results/training_walk_*.json`). La prueba de pie
+  sin acción da centro de masas a 0,227 m (`results/training_stand_measurement.json`).
+- **Lo que no funciona:** no camina. El error de velocidad es 0,155 m/s en `rewardw_300` (escala de acción 0,25) y
+  0,155 m/s en `actionscale_300` (escala 0,5), frente a 0,16 m/s de quedarse quieto. Mejorar la escala de acción no ayudó.
+- **Pares** (`results/training_torque_*.json`): en ambos casos la mayoría de articulaciones usa menos de 0,4 N·m. Los
+  tobillos de cabeceo llegan a 0,94–0,98 N·m con escala 0,5 (el límite a 6 V es 0,762 N·m y a 8,4 V es 1,067 N·m).
+  Solo pasan el 90 % del límite entre el 4 % y el 10 % del tiempo. La saturación de par no explica el fallo.
+- **Seguimiento de consigna:** el error RMS de las articulaciones es 0,047 rad en `rewardw_300` y 0,096 rad en
+  `actionscale_300`. Los tobillos de cabeceo son lo peor (0,35–0,43 rad con escala 0,5).
+- **Prueba aislada del tobillo** (escalón de 0,3 rad, sin política, `scratch/diag_ankle_step.py`): el tobillo sube
+  hacia la consigna pero se queda corto y oscila. No separa el actuador de la caída del cuerpo.
+- **Pies:** las suelas se despegan entre 1 y 2 cm en el entorno 0, y hasta 5 cm en algún entorno de los 64.
+  No hay marcha sostenida.
+
+Lo que no se ha comprobado: si el modelo BAM sigue la consigna en un banco sin el cuerpo, si el contacto del pie
+(cajas de 8,5 × 4,8 cm, fricción 0,8, pies a 6,4 cm entre centros) limita el paso, y si más iteraciones cambian algo.
+Las conclusiones dependen del modelo de actuador (`params/hd1910_m6.json`, de xgoduck_rl) y no están confirmadas
+en servos reales.
+
 ## Lo que no se debe afirmar
 
 - Que el HD-1910 sirva para este robot: nadie lo ha probado en un humanoide, según lo encontrado.

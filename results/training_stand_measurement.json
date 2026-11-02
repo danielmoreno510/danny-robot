@@ -1,0 +1,28 @@
+{
+  "task": "Mjlab-Velocity-Flat-Danny",
+  "device": "cuda:0",
+  "control_hz": 50.0,
+  "seconds_measured": 2.0,
+  "action": "cero, pose por defecto (stand)",
+  "root_link_height_m": {
+    "mean": -0.017435021698474884,
+    "max": -0.017428074032068253,
+    "min": -0.017439642921090126
+  },
+  "com_height_m": {
+    "mean": 0.226756289601326,
+    "max": 0.226885586977005,
+    "min": 0.22662487626075745
+  },
+  "root_lin_speed_m_s": {
+    "mean": 0.0003605159872677177,
+    "max": 0.0003706603602040559,
+    "min": 0.00035333214327692986
+  },
+  "max_abs_joint_speed_rad_s": {
+    "mean": 0.0021857486572116613,
+    "max": 0.0022435018327087164,
+    "min": 0.0021394037175923586
+  },
+  "note": "Medido en simulaci\u00f3n con actuadores HD-1910 de xgoduck_rl, sin confirmar en servos reales."
+}
