@@ -191,6 +191,19 @@ def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     for reward_name in ("foot_clearance", "foot_swing_height"):
         cfg.rewards[reward_name].params["target_height"] = 0.025
     cfg.rewards["foot_swing_height"].weight = -5.0
+    # Contactos entre eslabones y separación entre suelas. Con el modelo final, la política que caminaba sin ellos cae casi siempre:
+    # los pies chocan entre sí (16 mm de holgura de pie, ver PROJECT_HANDOFF.md).
+    cfg.rewards["link_pair_contacts"] = RewardTermCfg(func=danny_mdp.link_pair_contacts, weight=-1.0)
+    cfg.rewards["feet_lateral_clearance"] = RewardTermCfg(
+        func=danny_mdp.feet_lateral_clearance,
+        weight=-2.0,
+        params={
+            "min_clearance": 0.010,
+            "sole_width": 0.048,
+            "sole_length": 0.085,
+            "asset_cfg": SceneEntityCfg("robot", site_names=FOOT_SITES),
+        },
+    )
     # Contacto en contrafase según el reloj de marcha, solo con orden de movimiento (ver gait_clock y mdp).
     cfg.rewards["gait_contact_phase"] = RewardTermCfg(
         func=danny_mdp.gait_contact_phase, weight=1.5, params={"sensor_name": "feet_ground_contact"}

@@ -247,11 +247,17 @@ porque no existía ese contacto, y la nueva no lo descubrió en 1 000 iteracione
 **Lo que no se comprobó de la fase 1:** si más iteraciones, otra semilla o una recompensa de separación entre pies lo resuelven (hay una sola
 corrida con el modelo final); qué par de contacto concreto roza en cada paso; y si la causa del error de CUDA fue el cierre forzado.
 
-**Siguiente paso propuesto (a decidir por el usuario):** reentrenar partiendo de `marcha_reloj_1000/model_999.pt` en el modelo nuevo, con
-una recompensa que mantenga las suelas separadas (por ejemplo, penalizar la distancia lateral entre suelas por debajo de 25 mm y
-cualquier contacto entre pies), unas 500 iteraciones. Si tampoco aprende, haría falta cambiar el diseño: separar los pies o estrechar las
-suelas, lo que decide el dueño, sin tocar `cad/` desde aquí.
-
+**Fase 1b, criterio (escrito antes de entrenar; el usuario aprobó el intento):** corrida `fase1b_separacion_500`, 500 iteraciones
+partiendo de `marcha_reloj_1000/model_999.pt` (la política que caminaba sin contactos), en el modelo final y con la aleatorización de la fase 0.
+Dos términos nuevos en `env_cfgs.py`: `link_pair_contacts` (peso -1, un punto por cada contacto activo de los 13 `<pair>`; con la política
+antigua da -0,59 por paso, y coincide con el recuento independiente de unos 0,57) y `feet_lateral_clearance` (peso -2, separación lateral
+entre suelas por debajo de 10 mm; con la política antigua da -4,2 por paso; de pie hay 16 mm). Se prueba con
+`scripts/check_feet_lateral_clearance.py`. El sensor de contactos de mjlab no detecta los choques entre eslabones con sub-árboles (mide 0
+con una política que choca miles de veces), por eso el recuento lee los contactos de la simulación. Se evalúa el último punto de control con
+`measure_gait.py --vin 7.4` y el mismo criterio de la fase 1: alternancia de 0,9 o más, error de 0,08 m/s o menos y 95 % o más sin caer, y además
+reparto de aterrizajes entre 0,4 y 0,6 y un recuento de choques entre eslabones cercano a 0. Se mide también a 6 y 8,4 V, con el pico de par.
+Si no aprueba, se para, se escribe lo visto y se pide decidir un cambio de diseño (separar los pies o estrechar las suelas, sin tocar `cad/`
+desde aquí). No se alarga la corrida.
 
 ## Lo que no se debe afirmar
 
