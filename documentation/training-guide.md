@@ -101,6 +101,11 @@ servo (`results/walk_incentive.json`). Además, el 96 % de los episodios acabó 
 | Peso de `pose` | 0,5 | 1,3 | 1,0 |
 | Iteraciones | 300 | Hasta 50 000 | 3 000, unas 3 h |
 
+**La velocidad debe medirse en el tronco.** El origen de `base_link` está en el suelo, a unos 23 cm del centro de masas, porque
+sale así del CAD. `track_linear_velocity` y `evaluate_walk.py` leen `root_link_lin_vel_b` justo ahí, así que inclinarse sobre
+los tobillos casi no cuenta como moverse, y cada balanceo del cuerpo añade un error falso de 0,23 m/s por rad/s. Usa
+`root_com_lin_vel_b`, que mide en el centro de masas de `base_link`. Es una hipótesis sin entrenar, aunque la corrección es barata.
+
 **El error de posición no indica un fallo.** El servo funciona como un muelle blando: a 7,4 V da 1,03 N·m/rad y satura con
 0,88 rad (`results/walk_incentive.json`). Así que el par sale de ese error, y 0,8 N·m exigen unos 0,8 rad.
 
