@@ -5,7 +5,7 @@ Punto de entrada para continuar **Robot Danny** en un chat nuevo o en otra compu
 **Fecha:** 2 de noviembre de 2026. **Etapa actual:** 3, MuJoCo, con 2.2, 2.3 y 2.4 abiertas por lo físico. La etapa 1 está
 cerrada salvo la 1.2, que va en paralelo.
 **Siguiente paso:** seguir el [plan de la etapa 4](#plan-de-la-etapa-4-fases) por fases. La fase 0 está hecha y la fase 1
-(`fase1_marcha_1000`, marcha con el modelo final) está en curso. `marcha_reloj_1000` ya caminó hacia delante y giró con el modelo
+(`fase1_marcha_1000`, marcha con el modelo final) no aprobó: ver el resultado en el plan. `marcha_reloj_1000` ya caminó hacia delante y giró con el modelo
 anterior (ver [Entrenamiento en simulación](#entrenamiento-en-simulación-etapa-4-sin-terminar)). El código de `training/` está en la
 rama `entrenamiento-danny`, que se actualiza con `origin/main` antes de cada fase. `main` está protegida: los colaboradores entran por pull
 request aprobado por el usuario, que es quien cambia el diseño. Levantarse es posible en simulación, pero aún frágil. El robot completo ya está en CAD:
@@ -182,7 +182,7 @@ parámetros son de otro robot: lo aprendido no se instala directo en el robot f�
 | Fase | Trabajo | Estado |
 |---|---|---|
 | 0 | Preparar: main fusionado, modelo comprobado, colisiones, masa, centro de masas y bloqueo de par | Hecho el 2 de noviembre (abajo) |
-| 1 | Validar la marcha con el modelo final: 1 000 iteraciones desde cero | En curso: `fase1_marcha_1000` |
+| 1 | Validar la marcha con el modelo final: 1 000 iteraciones desde cero | No aprobó el 2 de noviembre (abajo); parada a la espera de decisión |
 | 2 | Movimiento completo (avanzar, retroceder, lateral, girar, quieto) con armadura, holgura y empujones: 10 000 iteraciones | Pendiente |
 | 3 | Agacharse: orden de altura del cuerpo, hasta 3 000 iteraciones | Pendiente |
 | 4 | Levantarse (4.3): política propia, 10 000 iteraciones; primero boca abajo, luego boca arriba | Pendiente |
@@ -198,12 +198,60 @@ El centro de masas pasa de 10 mm porque el desplazamiento se aplica en el marco 
 con el marco girado. La inercia no escala con la masa (`dr.body_mass`). Par de bloqueo medido: 0,739 N·m a 6 V y 0,912 N·m a 7,4 V
 (a 8,4 V, 1,036 N·m por extrapolación, sin medir). Los scripts de medida aceptan `--vin` para fijar la tensión sin caída de carga.
 
-**Fase 1, criterio (escrito antes de entrenar):** corrida `fase1_marcha_1000`, 1 000 iteraciones desde cero, 4096 entornos, `KP_FW` 5,
-reloj de 0,8 s, `std` de velocidad 0,125 y la configuración actual de `env_cfgs.py`. Se evalúa `model_999.pt` con
-`measure_gait.py --vin 7.4` (orden de 0,25 m/s, 256 robots, 20 s, sin empujones). Aprueba si, a 7,4 V: apoyos alternos de 0,9 o más,
-error de velocidad de 0,08 m/s o menos y 95 % o más de los 256 robots sin caer. Se mide también a 6 y 8,4 V, con el pico de par por
-articulación (`measure_actuator_torque.py --vin ...`). Si no aprueba, se compara con `marcha_reloj_1000` (modelo anterior, 1,29 kg,
+**Fase 1, criterio (escrito antes de entrenar):** corrida `fase1_marcha_1000`, 1 000 iteraciones desde cero, 4096 entornos, `KP_FW` 5,
+reloj de 0,8 s, `std` de velocidad 0,125 y la configuración actual de `env_cfgs.py`. Se evalúa `model_999.pt` con
+`measure_gait.py --vin 7.4` (orden de 0,25 m/s, 256 robots, 20 s, sin empujones). Aprueba si, a 7,4 V: apoyos alternos de 0,9 o más,
+error de velocidad de 0,08 m/s o menos y 95 % o más de los 256 robots sin caer. Se mide también a 6 y 8,4 V, con el pico de par por
+articulación (`measure_actuator_torque.py --vin ...`). Si no aprueba, se compara con `marcha_reloj_1000` (modelo anterior, 1,29 kg,
 sin autocolisiones ni cajas de condim 3) para decir si dependía de pesar menos o de atravesar piezas.
+
+**Fase 1, resultado: no aprueba.** Corrida `fase1_marcha_1000` (el modelo final, desde cero, 4096 entornos). Se cayó con un error de
+CUDA en la iteración 701 (`Warp CUDA error 700`, coincidió con un cierre forzado de visores; el controlador de NVIDIA registró
+tres eventos 153; la causa no está probada) y se reanudó desde `model_700.pt` con 300 iteraciones más (`fase1_marcha_1000_reanudada`,
+hasta la 1 000). Se evalúa `model_999.pt`, orden de 0,25 m/s, 256 robots, 20 s, sin empujones
+(`results/training_gait_fase1_marcha_1000_*V.json`):
+
+| Tensión | Sin caer | Avance | Error de velocidad | Apoyos alternos | Aterrizajes del pie izquierdo |
+|---|---|---|---|---|---|
+| 7,4 V | 100 % | 0,001 m/s | 0,250 m/s | 0,008 | 99,5 % |
+| 6 V | 100 % | 0,000 m/s | 0,250 m/s | 0,003 | 99,8 % |
+| 8,4 V | 100 % | 0,001 m/s | 0,250 m/s | 0,030 | 98,1 % |
+
+Criterio: alternancia de 0,9 o más, error de 0,08 m/s o menos y 95 % sin caer. Solo cumple lo último. Danny se queda quieto y mueve
+el pie izquierdo sin avanzar, como las corridas sin reloj. Log: recompensa de velocidad 0,93 desde la iteración 100 (con `marcha_reloj_1000`
+llegaba a 2,2 hacia la 300) y `peak_height_mean` de 9 a 10 mm; la altura máxima de suela fue de 25 mm
+(`results/training_peak_height_fase1_marcha_1000.json`). Pico de par a 7,4 V (`results/training_torque_fase1_marcha_1000_*V.json`):
+hombro de balanceo 0,94 N·m, cadera de guiñada izquierda 0,93; a 6 V el pico es 0,76 y a 8,4 V, 1,06, es decir, el bloqueo en cada tensión.
+
+**Por qué: comparación con `marcha_reloj_1000`, sin entrenar.** La política antigua (`model_999`, que caminaba con el modelo anterior) se
+prueba en el modelo nuevo a 7,4 V con orden de 0,25 m/s (`results/training_gait_antigua_en_modelo_nuevo_*.json`, `measure_gait.py` con
+`--nominal-mass` y `--drop-link-contacts`):
+
+| Variante en el modelo nuevo | Sin caer |
+|---|---|
+| Completo (masa y centro de masas aleatorios, 13 contactos entre eslabones) | 1,6 % |
+| Masa nominal, con los 13 contactos | 0 % |
+| Masa nominal, sin los contactos de brazo | 0 % |
+| Masa nominal, sin los de pie (3 pares) | 63 % |
+| Masa nominal, sin los de brazo ni los de pie | 64 % |
+| Masa nominal, sin ningún contacto | 100 % (error 0,019 m/s) |
+| Masa aleatoria, sin ningún contacto | 65 % |
+
+Conclusión: no dependía de pesar menos (con 1,30 kg y sin contactos camina igual); dependía de **atravesar piezas**. Los contactos del pie
+izquierdo con el derecho tumban casi todo (de 0 % a 63 % al quitarlos), los del muslo, la tibia y la cadera entre sí aportan el resto,
+y los de brazo no influyen por sí solos. La aleatorización nueva de masa y centro de masas cuesta otro 35 % (de 100 % a 65 %). Holguras en
+la pose de pie (`mj_geomDistance`): suela con suela 16 mm (suelas de 85 × 48 mm con 64 mm entre centros), cadera con cadera 8,6 mm, muslo con
+muslo 23 mm, tibia con tibia 23 mm. Con tan poco margen, cualquier balanceo lateral hace chocar los pies. La política antigua nunca aprendió a evitarlo
+porque no existía ese contacto, y la nueva no lo descubrió en 1 000 iteraciones.
+
+**Lo que no se comprobó de la fase 1:** si más iteraciones, otra semilla o una recompensa de separación entre pies lo resuelven (hay una sola
+corrida con el modelo final); qué par de contacto concreto roza en cada paso; y si la causa del error de CUDA fue el cierre forzado.
+
+**Siguiente paso propuesto (a decidir por el usuario):** reentrenar partiendo de `marcha_reloj_1000/model_999.pt` en el modelo nuevo, con
+una recompensa que mantenga las suelas separadas (por ejemplo, penalizar la distancia lateral entre suelas por debajo de 25 mm y
+cualquier contacto entre pies), unas 500 iteraciones. Si tampoco aprende, haría falta cambiar el diseño: separar los pies o estrechar las
+suelas, lo que decide el dueño, sin tocar `cad/` desde aquí.
+
 
 ## Lo que no se debe afirmar
 

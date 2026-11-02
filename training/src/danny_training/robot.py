@@ -6,6 +6,7 @@ los sensores de la IMU, que el robot real llevará en el torso (BNO085).
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import mujoco
@@ -26,6 +27,16 @@ assert HD1910_JSON.exists(), f"No existen los parámetros HD-1910: {HD1910_JSON}
 IMU_SITE = "imu"
 TRUNK_BODY = "base_link"
 
+# Colores de las mallas visuales (grupo 2) para el visor; no cambian la física. Del primero que encaje: cabeza y tronco plateados,
+# extremidades claras, pies negros y el resto (articulaciones, pelvis, cuello) en grafito.
+VISUAL_GEOM_GROUP = 2
+VISUAL_COLORS = (
+    (r"^(head|torso)_1_geom$", (0.86, 0.87, 0.90, 1.0)),
+    (r"(thigh|shin|upper_arm|forearm)_1_geom$", (0.70, 0.72, 0.76, 1.0)),
+    (r"foot_1_geom$", (0.10, 0.10, 0.11, 1.0)),
+    (r".*", (0.22, 0.23, 0.26, 1.0)),
+)
+
 # Altura de los pies sobre el suelo al empezar, en metros.
 SOLE_CLEARANCE = 0.001
 
@@ -33,6 +44,9 @@ SOLE_CLEARANCE = 0.001
 def get_danny_spec() -> mujoco.MjSpec:
     """MJCF de Danny con sensores de IMU (velocidad lineal, velocidad angular, aceleración, orientación) y momento angular."""
     spec = mujoco.MjSpec.from_file(str(DANNY_XML))
+    for geom in spec.geoms:
+        if geom.group == VISUAL_GEOM_GROUP:
+            geom.rgba[:] = next(color for pattern, color in VISUAL_COLORS if re.search(pattern, geom.name))
     spec.add_sensor(
         name="imu_lin_vel",
         type=mujoco.mjtSensor.mjSENS_VELOCIMETER,

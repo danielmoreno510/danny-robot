@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 import torch
@@ -34,12 +35,29 @@ def main() -> None:
   parser.add_argument("--forward", type=float, default=FORWARD_CMD, help="Orden de avance en m/s")
   parser.add_argument("--turn", type=float, default=0.0, help="Orden de giro en rad/s, positivo a la izquierda")
   parser.add_argument("--vin", type=float, default=None, help="Tensión fija de los servos en V; sin ella, la del entrenamiento (6 a 8,4)")
+  parser.add_argument("--nominal-mass", action="store_true", help="Sin aleatorización de masa ni de centro de masas (diagnóstico)")
+  parser.add_argument("--drop-link-contacts", default=None, metavar="REGEX", help="Quita los <pair> de contacto entre eslabones cuyo nombre de geometría encaje (\".\" los quita todos; diagnóstico)")
   parser.add_argument("--num-envs", type=int, default=256)
   parser.add_argument("--seconds", type=float, default=20.0)
   args = parser.parse_args()
 
   env_cfg = eval_env_cfg(args.num_envs, args.seconds, args.vin)
   fix_command(env_cfg, args.forward, args.turn)
+  if args.nominal_mass:
+    for event in ("randomize_body_mass", "base_com"):
+      env_cfg.events.pop(event)
+  if args.drop_link_contacts is not None:
+    robot_cfg = env_cfg.scene.entities["robot"]
+    base_spec_fn = robot_cfg.spec_fn
+
+    def spec_without_link_contacts():
+      spec = base_spec_fn()
+      for pair in list(spec.pairs):
+        if re.search(args.drop_link_contacts, pair.geomname1) or re.search(args.drop_link_contacts, pair.geomname2):
+          spec.delete(pair)
+      return spec
+
+    robot_cfg.spec_fn = spec_without_link_contacts
   env, policy = load_policy(env_cfg, args.checkpoint)
 
   u = env.unwrapped
@@ -100,6 +118,8 @@ def main() -> None:
     "num_envs": n,
     "seconds_simulated": args.seconds,
     "vin_v": args.vin,
+    "nominal_mass": args.nominal_mass,
+    "dropped_link_contacts": args.drop_link_contacts,
     "forward_command_m_s": args.forward,
     "turn_command_rad_s": args.turn,
     "fraction_envs_not_fallen": round(float(ok.float().mean()), 4),

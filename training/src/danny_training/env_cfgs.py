@@ -96,6 +96,11 @@ def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     joint_pos_action.actuator_names = (".*",)
 
     cfg.viewer.body_name = TRUNK_BODY
+    # Cámara para un robot de 40 cm (la de mjlab es para uno de 1,3 m): cerca, a media altura del cuerpo y de tres cuartos.
+    cfg.viewer.distance = 0.9
+    cfg.viewer.lookat = (0.0, 0.0, 0.2)
+    cfg.viewer.elevation = -10.0
+    cfg.viewer.azimuth = 135.0
 
     # El currículo de velocidad de mjlab fija los rangos en ±1 m/s desde el paso 0 y luego los amplía a 3 m/s,
     # lo que pisaba los rangos de abajo. Para Danny se quita: las órdenes se quedan en los de la guía.
