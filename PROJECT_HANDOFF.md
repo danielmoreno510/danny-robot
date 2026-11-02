@@ -7,8 +7,8 @@ cerrada salvo la 1.2, que va en paralelo.
 **Siguiente paso:** el amigo del usuario, que tiene la RTX 3080 Ti, repite la marcha con las escalas para Danny de la
 [guía de entrenamiento](documentation/training-guide.md). El primer intento no caminó: la configuración seguía a escala del G1.
 La causa se dedujo de su configuración y sus registros, pero la corrección aún no se ha entrenado, y `training/` sigue en su
-computadora, sin revisar. Para que pueda subir su rama, el usuario debe añadirlo como colaborador. Levantarse es posible en
-simulación, pero aún frágil. El robot completo ya está en CAD:
+rama `entrenamiento-danny`, y aún le faltaban esas escalas al revisarla. `main` está protegida: los colaboradores entran por pull
+request aprobado por el usuario, que es quien cambia el diseño. Levantarse es posible en simulación, pero aún frágil. El robot completo ya está en CAD:
 [piernas](documentation/lower-body-design.md), [tronco](documentation/upper-body-design.md) y
 [paneles](documentation/panels-and-protection.md).
 

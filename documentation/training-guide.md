@@ -154,7 +154,8 @@ Son las de [CLAUDE.md](../CLAUDE.md). Las más importantes para ti:
 **Sí, por GitHub.** Hay que dar permiso primero: el dueño añade a la persona como colaborador en *Settings > Collaborators*. Si
 no, se trabaja en un fork y se abre un pull request.
 
-Trabaja en una rama `entrenamiento-danny`, nunca en `main`. Sube:
+Trabaja en una rama `entrenamiento-danny`, nunca en `main`: está protegida, y solo entra por pull request aprobado por el dueño.
+El diseño, en `cad/` y `analysis/`, lo cambia el dueño: si el entrenamiento necesita algo, pídeselo. Sube:
 
 | Qué | Dónde |
 |---|---|
