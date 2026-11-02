@@ -19,12 +19,18 @@ Medir un punto de control, sin empujones. Cada script escribe su JSON en `result
     uv run python scripts/evaluate_walk.py --checkpoint logs/rsl_rl/danny_walk/<run>/model_XXXX.pt --name <nombre>
     uv run python scripts/measure_gait.py --checkpoint logs/rsl_rl/danny_walk/<run>/model_XXXX.pt --name <nombre>
     uv run python scripts/measure_foot_peak_height.py --checkpoint logs/rsl_rl/danny_walk/<run>/model_XXXX.pt --name <nombre>
-    uv run python scripts/measure_actuator_torque.py --checkpoint logs/rsl_rl/danny_walk/<run>/model_XXXX.pt --action-scale 1.0 --name <nombre>
+    uv run python scripts/measure_actuator_torque.py --checkpoint logs/rsl_rl/danny_walk/<run>/model_XXXX.pt --forward-speed 0.25 --name <nombre>
 
-- `evaluate_walk.py`: supervivencia y error de velocidad con órdenes aleatorias.
-- `measure_gait.py`: orden fija de 0,25 m/s; avance, apoyo a un pie, apoyos por segundo y si alternan.
+- `evaluate_walk.py`: supervivencia y error de velocidad con órdenes aleatorias, medida en el centro de masas de `base_link`.
+- `measure_gait.py`: orden fija de 0,25 m/s; avance, apoyo a un pie, apoyos por segundo, si alternan y reparto entre pies.
 - `measure_foot_peak_height.py`: altura máxima de suela en el episodio (no por paso).
-- `measure_actuator_torque.py`: par de cada actuador frente al de parada a 6 V.
+- `measure_actuator_torque.py`: par de cada actuador frente al de parada a 6 V, con orden fija si se pasa `--forward-speed`.
+
+Comprobar el reloj de marcha y su recompensa sin simular (sale con código 1 si falla):
+
+    uv run python scripts/check_gait_clock.py
+
+La ganancia del firmware del servo es `KP_FW` en `src/danny_training/robot.py`.
 
 Verlo en el navegador (http://localhost:8080):
 

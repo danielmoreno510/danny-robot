@@ -4,12 +4,12 @@ Punto de entrada para continuar **Robot Danny** en un chat nuevo o en otra compu
 
 **Fecha:** 2 de noviembre de 2026. **Etapa actual:** 3, MuJoCo, con 2.2, 2.3 y 2.4 abiertas por lo físico. La etapa 1 está
 cerrada salvo la 1.2, que va en paralelo.
-**Siguiente paso:** reentrenar la marcha en la RTX 3080 Ti con el modelo de la auditoría, las escalas para Danny de la
-[guía de entrenamiento](documentation/training-guide.md) y la velocidad en el centro de masas, más cambios propios (ver
-[Entrenamiento en simulación](#entrenamiento-en-simulación-etapa-4-sin-terminar)). Danny aún no camina en simulación: el
-primer intento seguía a escala del G1, y con las escalas de la guía se queda sobre un pie. El código de `training/` está en
-la rama `entrenamiento-danny`. `main` está protegida: los colaboradores entran por pull request aprobado por el usuario, que es
-quien cambia el diseño. Levantarse es posible en simulación, pero aún frágil. El robot completo ya está en CAD:
+**Siguiente paso:** ampliar la marcha en simulación con el reloj (`marcha_reloj_1000`, etapa 4.2): ya camina hacia delante a
+0,25 m/s con paso alterno (ver [Entrenamiento en simulación](#entrenamiento-en-simulación-etapa-4-sin-terminar)). Faltan giro,
+marcha lateral, empujones, la aleatorización de armadura y holgura, y decidir cómo obtiene el robot real la fase del reloj.
+El código de `training/` está en la rama `entrenamiento-danny`. `main` está protegida: los colaboradores entran por pull
+request aprobado por el usuario, que es quien cambia el diseño. Levantarse es posible en simulación, pero aún frágil. El
+robot completo ya está en CAD:
 [piernas](documentation/lower-body-design.md), [tronco](documentation/upper-body-design.md) y
 [paneles](documentation/panels-and-protection.md).
 
@@ -67,7 +67,7 @@ Código en `training/`, rama `entrenamiento-danny`. Tarea `Mjlab-Velocity-Flat-D
 
 - **Lo que funciona:** Danny se mantiene de pie 20 s sin caerse (`results/training_walk_*.json`). La prueba de pie
   sin acción da centro de masas a 0,227 m (`results/training_stand_measurement.json`).
-- **Lo que no funciona:** no camina. El error de velocidad es 0,155 m/s en `rewardw_300` (escala de acción 0,25) y
+- **Lo que no funcionó, sin reloj de marcha:** no caminaba. El error de velocidad es 0,155 m/s en `rewardw_300` (escala de acción 0,25) y
   0,155 m/s en `actionscale_300` (escala 0,5), frente a 0,16 m/s de quedarse quieto. Mejorar la escala de acción no ayudó.
   Esas corridas usan las recompensas de mjlab, con las que quedarse quieto da el 91 % de la recompensa de velocidad.
 - **Escalas de la guía** (`marcha_guia_3000`, parada en la iteración 1000): cae en 0,40 s, error 0,54 m/s
@@ -111,6 +111,39 @@ Código en `training/`, rama `entrenamiento-danny`. Tarea `Mjlab-Velocity-Flat-D
   0,155 m/s (`results/training_walk_marcha_com_1000.json`); con orden fija de 0,25 m/s avanza 0,0003 m/s, con un solo pie
   apoyado el 89 % del tiempo y 0,2 % de apoyos alternos (`results/training_gait_marcha_com_1000.json`). En `model_800` se
   apoya en el izquierdo y sube y baja el derecho unas 3 veces por segundo (medida aparte, sin script en el repositorio).
+- **Modelo de la auditoría (2 de noviembre):** `danny_training.xml` nuevo, tobillo de -45° a 40° (`stand` a -26,5°, 14,3° del
+  límite blando de -40,75°), brazos en reposo a 8° de hombro y -17,2° de codo, e IMU en el sitio `imu` de `torso_1`. Los puntos de
+  control anteriores no valen para este modelo.
+- **Aterrizaje repetido:** se probó una penalización de -2 (`mdp.repeated_foot_landing`, ya quitada) contra el atajo de
+  subir y bajar un solo pie. No lo arregló (ver `marcha_pies_kp5`).
+- **`marcha_pies_kp5`** (modelo de la auditoría, `KP_FW` 5, aterrizaje repetido -2, parada a las 1000): no aprueba
+  (`results/training_gait_marcha_pies_kp5_1000.json`). De pie el 100 %, pero avanza 0,001 m/s, solo el 3,6 % de los apoyos
+  alternan y el pie izquierdo hace el 2 % de los apoyos. La penalización de aterrizaje repetido no cambió el atajo. Pico de par
+  (`results/training_torque_marcha_pies_kp5_1000.json`): rodilla izquierda 0,97 N·m, rodilla derecha 0,85, tobillo de balanceo
+  derecho 0,83, tobillo de cabeceo derecho 0,77; ninguna pasa el 90 % del par de parada a 6 V más del 0,2 % del tiempo.
+  Con acción cero, 7 de 64 entornos caen en 5 s con este modelo (antes ninguno): `stand` ya no es estable sin política.
+- **Reloj de marcha** (`gait_clock.py`, `mdp.gait_contact_phase`): fase de 0,8 s que solo avanza con orden de movimiento;
+  seno y coseno en actor y crítico; recompensa de contacto en contrafase, peso 1,5, y con orden cero premia los dos pies
+  apoyados. Sustituye a `air_time`, a la penalización de acción y a la de aterrizaje repetido, que se quitaron del código
+  (el historial está en git). Lo comprueba `scripts/check_gait_clock.py`.
+- **`marcha_reloj_1000`: camina.** Desde cero, 1000 iteraciones, `model_999.pt`, con el modelo de la auditoría, `KP_FW` 5 y
+  la velocidad en el centro de masas. Con orden fija de 0,25 m/s, sin empujones, 256 entornos y 20 s
+  (`results/training_gait_marcha_reloj_1000.json`): sin caer el 100 %, avance 0,257 m/s, error 0,020 m/s, apoyos alternos
+  99,9 %, pie izquierdo el 48,9 % de los apoyos. Con órdenes aleatorias (`results/training_walk_marcha_reloj_1000.json`):
+  de pie 99,2 % de los entornos, error 0,028 m/s. Altura máxima de suela 43 mm
+  (`results/training_peak_height_marcha_reloj_1000.json`). Log de entrenamiento: episodio de 996 pasos y
+  `peak_height_mean` de 19,7 mm. Con el punto de control de la iteración 350 ya caminaba igual (error 0,023 m/s). El usuario
+  lo vio caminar hacia delante en el visor.
+- **Pares de `marcha_reloj_1000`** (`results/training_torque_marcha_reloj_1000.json`, orden de 0,25 m/s): tobillo de cabeceo
+  derecho 1,07 N·m, izquierdo 1,02, rodilla derecha 0,94, izquierda 0,90, cadera de balanceo izquierda 0,74; el resto, por
+  debajo de 0,55. El 90 % del par de parada a 6 V (0,762 N·m) se supera el 8,1 % del tiempo en el tobillo de cabeceo derecho
+  y el 4,4 % en el izquierdo. La guía pide no saturar ninguna articulación más del 5 %: el derecho no lo cumple a 6 V, aunque
+  ese umbral se mide con el par de parada a 6 V y la aleatorización llega a 8,4 V (1,067 N·m). Sin revisar por tensión.
+- **Sin comprobar de `marcha_reloj_1000`:** solo se probó hacia delante a 0,25 m/s, sin giro, sin marcha lateral y sin empujones;
+  tampoco con armadura y holgura aleatorias. El 94 % del tiempo hay un solo pie apoyado, así que casi no hay fase con los
+  dos pies en el suelo. Falta saber si el criterio de la guía (5 minutos simulados sin caer en el 95 % de las pruebas, con
+  aleatorización completa) se cumple. La política necesita la fase del reloj como entrada: el robot real tendrá que generarla
+  por firmware. Los puntos de control anteriores no cargan con la observación nueva.
 - **Pares** (`results/training_torque_*.json`): en ambos casos la mayoría de articulaciones usa menos de 0,4 N·m. Los
   tobillos de cabeceo llegan a 0,94–0,98 N·m con escala 0,5 (el límite a 6 V es 0,762 N·m y a 8,4 V es 1,067 N·m).
   Solo pasan el 90 % del límite entre el 4 % y el 10 % del tiempo. La saturación de par no explica el fallo.

@@ -1,11 +1,11 @@
 """Mide el par que aplican los actuadores HD-1910 (modelo BAM) durante la marcha y guarda el resultado en results/.
 
-Corre un checkpoint en simulación sin empujones y registra, por articulación, el par aplicado
+Corre un checkpoint en simulación sin empujones, con las órdenes del entrenamiento o con una orden fija de avance, y registra, por articulación, el par aplicado
 (`data.actuator_force`) frente al par de parada a 6 V (0,762 N·m, de la guía y params/hd1910_m6.json).
 Sirve para saber si los servos se quedan sin par cuando la política pide movimiento.
 
 Uso (desde training/):
-    uv run python scripts/measure_actuator_torque.py --checkpoint logs/rsl_rl/danny_walk/<run>/model_XXXX.pt --action-scale 0.25 --name rewardw_300
+    uv run python scripts/measure_actuator_torque.py --checkpoint logs/rsl_rl/danny_walk/<run>/model_XXXX.pt --forward-speed 0.25 --name marcha_1000
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ from pathlib import Path
 
 import torch
 
-from danny_training.evaluation import RESULTS, TASK, eval_env_cfg, load_policy
+from danny_training.evaluation import RESULTS, TASK, eval_env_cfg, fix_forward_command, load_policy
 
 STALL_6V_NM = 0.762
 
@@ -24,14 +24,15 @@ STALL_6V_NM = 0.762
 def main() -> None:
   parser = argparse.ArgumentParser()
   parser.add_argument("--checkpoint", required=True, type=Path)
-  parser.add_argument("--action-scale", required=True, type=float, help="Escala de acción con la que se entrenó")
+  parser.add_argument("--forward-speed", type=float, default=None, help="Orden fija de avance en m/s; sin ella, las del entrenamiento")
   parser.add_argument("--name", required=True, help="Nombre del resultado en results/")
   parser.add_argument("--num-envs", type=int, default=64)
   parser.add_argument("--seconds", type=float, default=20.0)
   args = parser.parse_args()
 
   env_cfg = eval_env_cfg(args.num_envs, args.seconds)
-  env_cfg.actions["joint_pos"].scale = args.action_scale
+  if args.forward_speed is not None:
+    fix_forward_command(env_cfg, args.forward_speed)
   env, policy = load_policy(env_cfg, args.checkpoint)
   device = env.unwrapped.device
 
@@ -61,7 +62,7 @@ def main() -> None:
   result = {
     "checkpoint": str(args.checkpoint),
     "task": TASK,
-    "action_scale": args.action_scale,
+    "forward_command_m_s": args.forward_speed,
     "num_envs": args.num_envs,
     "seconds_simulated": args.seconds,
     "stall_torque_6v_nm": STALL_6V_NM,
@@ -73,7 +74,7 @@ def main() -> None:
       }
       for i, name in enumerate(joint_names)
     },
-    "note": "Sin empujones. Perturbaciones de entrenamiento activas. Actuadores HD-1910 sin confirmar.",
+    "note": "Sin empujones. Resto de la aleatorización activa. Actuadores HD-1910 sin confirmar.",
   }
   RESULTS.mkdir(parents=True, exist_ok=True)
   out = RESULTS / f"training_torque_{args.name}.json"

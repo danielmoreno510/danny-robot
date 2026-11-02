@@ -3,7 +3,8 @@
 Orden fija: 0,25 m/s hacia delante, sin lateral ni giro. Descarta los primeros 2 s. Para cada entorno que no se cae mide:
 - error de velocidad respecto a la orden y velocidad media de avance, en el centro de masas de `base_link`;
 - fracción del tiempo con un solo pie apoyado;
-- apoyos por pie y segundo, y fracción de apoyos que siguen a un apoyo del otro pie (1,0 es paso alterno perfecto).
+- apoyos por pie y segundo, y fracción de apoyos que siguen a un apoyo del otro pie (1,0 es paso alterno perfecto);
+- fracción de los apoyos que hace el pie izquierdo (0,5 es reparto igual).
 
 Uso (desde training/):
     uv run python scripts/measure_gait.py --checkpoint logs/rsl_rl/danny_walk/<run>/model_XXXX.pt --name marcha_3000
@@ -13,12 +14,11 @@ from __future__ import annotations
 
 import argparse
 import json
-from dataclasses import replace
 from pathlib import Path
 
 import torch
 
-from danny_training.evaluation import RESULTS, TASK, eval_env_cfg, load_policy
+from danny_training.evaluation import RESULTS, TASK, eval_env_cfg, fix_forward_command, load_policy
 
 FORWARD_CMD = 0.25  # m/s, la velocidad de la guía 4.2.
 WARMUP_S = 2.0
@@ -33,10 +33,7 @@ def main() -> None:
   args = parser.parse_args()
 
   env_cfg = eval_env_cfg(args.num_envs, args.seconds)
-  twist = env_cfg.commands["twist"]
-  twist.ranges = replace(twist.ranges, lin_vel_x=(FORWARD_CMD, FORWARD_CMD), lin_vel_y=(0.0, 0.0), ang_vel_z=(0.0, 0.0), heading=None)
-  twist.heading_command = False
-  twist.rel_standing_envs = 0.0
+  fix_forward_command(env_cfg, FORWARD_CMD)
   env, policy = load_policy(env_cfg, args.checkpoint)
 
   u = env.unwrapped
@@ -98,6 +95,7 @@ def main() -> None:
     "fraction_time_single_support": mean(single / counted),
     "touchdowns_per_foot_per_s": mean(total_td / 2 / seconds_counted),
     "fraction_alternating_touchdowns": mean(alt_frac),
+    "fraction_touchdowns_left": round(float(touchdowns[ok, 0].sum() / touchdowns[ok].sum().clamp(min=1)), 4) if ok.any() else None,
     "note": f"Sin empujones. Orden fija de avance. Se descartan los primeros {WARMUP_S} s. Solo entornos que no caen. Velocidad del centro de masas de base_link.",
   }
   RESULTS.mkdir(parents=True, exist_ok=True)

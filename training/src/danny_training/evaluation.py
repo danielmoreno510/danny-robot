@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from pathlib import Path
 
 import torch
@@ -22,6 +22,14 @@ def eval_env_cfg(num_envs: int, seconds: float) -> ManagerBasedRlEnvCfg:
   env_cfg.episode_length_s = seconds
   env_cfg.events.pop("push_robot", None)
   return env_cfg
+
+
+def fix_forward_command(env_cfg: ManagerBasedRlEnvCfg, speed: float) -> None:
+  """Fija la orden de velocidad en `speed` m/s hacia delante, sin lateral, sin giro y sin entornos parados."""
+  twist = env_cfg.commands["twist"]
+  twist.ranges = replace(twist.ranges, lin_vel_x=(speed, speed), lin_vel_y=(0.0, 0.0), ang_vel_z=(0.0, 0.0), heading=None)
+  twist.heading_command = False
+  twist.rel_standing_envs = 0.0
 
 
 def load_policy(env_cfg: ManagerBasedRlEnvCfg, checkpoint: Path):

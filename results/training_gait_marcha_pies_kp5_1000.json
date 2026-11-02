@@ -1,0 +1,15 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-02_13-52-27_marcha_pies_kp5\\model_1000.pt",
+  "task": "Mjlab-Velocity-Flat-Danny",
+  "num_envs": 256,
+  "seconds_simulated": 20.0,
+  "forward_command_m_s": 0.25,
+  "fraction_envs_not_fallen": 1.0,
+  "mean_forward_velocity_m_s": 0.0011,
+  "mean_xy_velocity_error_m_s": 0.2597,
+  "fraction_time_single_support": 0.8914,
+  "touchdowns_per_foot_per_s": 1.477,
+  "fraction_alternating_touchdowns": 0.0355,
+  "fraction_touchdowns_left": 0.0207,
+  "note": "Sin empujones. Orden fija de avance. Se descartan los primeros 2.0 s. Solo entornos que no caen. Velocidad del centro de masas de base_link."
+}

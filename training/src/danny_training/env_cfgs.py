@@ -12,9 +12,10 @@ from copy import deepcopy
 from dataclasses import replace
 
 from mjlab.envs import ManagerBasedRlEnvCfg
-from mjlab.envs.mdp import dr
+from mjlab.envs.mdp import dr, generated_commands
 from mjlab.envs.mdp.actions import JointPositionActionCfg
 from mjlab.managers.event_manager import EventTermCfg
+from mjlab.managers.observation_manager import ObservationTermCfg
 from mjlab.managers.reward_manager import RewardTermCfg
 from mjlab.managers.scene_entity_config import SceneEntityCfg
 from mjlab.sensor import (
@@ -29,6 +30,7 @@ from mjlab.tasks.velocity.velocity_env_cfg import make_velocity_env_cfg
 from mjlab.utils.noise import UniformNoiseCfg as Unoise
 
 from danny_training import mdp as danny_mdp
+from danny_training.gait_clock import GaitClockCommandCfg
 from danny_training.robot import DANNY_ROBOT_CFG
 
 FEET_BODIES = r"^(left_foot_1|right_foot_1)$"
@@ -111,6 +113,13 @@ def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     )
     twist_cmd.viz.z_offset = 0.5
 
+    # Reloj de marcha: fase de 0,8 s que solo avanza con orden de movimiento. La política ve su seno y su coseno.
+    cfg.commands["gait"] = GaitClockCommandCfg(period_s=0.8, velocity_command_name="twist")
+    for group in ("actor", "critic"):
+        cfg.observations[group].terms["gait_clock"] = ObservationTermCfg(
+            func=generated_commands, params={"command_name": "gait"}
+        )
+
     # Aleatorización de la guía: suelo 0,4 a 1,2; masa ±10 %; centro de masas ±10 mm; servo ±30 %.
     cfg.events["foot_friction"].params["asset_cfg"].geom_names = FOOT_GEOMS
     cfg.events["foot_friction"].params["ranges"] = (0.4, 1.2)
@@ -168,15 +177,15 @@ def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     cfg.rewards["pose"].weight = 1.0
     cfg.rewards["body_ang_vel"].weight = -0.05
     cfg.rewards["angular_momentum"].weight = -0.02
-    cfg.rewards["air_time"].weight = 3.0
-    # Mismo premio que la guía, pagado al aterrizar: con el de mjlab Danny se quedaba sobre un pie (ver mdp).
-    cfg.rewards["air_time"].func = danny_mdp.feet_air_time_at_landing
-    cfg.rewards["air_time"].params.update(threshold_min=0.125, threshold_max=0.35, command_threshold=0.01)
+    # El reloj de marcha sustituye a air_time: con air_time Danny se quedaba sobre un pie y subía y bajaba el otro.
+    del cfg.rewards["air_time"]
     for reward_name in ("foot_clearance", "foot_swing_height"):
         cfg.rewards[reward_name].params["target_height"] = 0.025
     cfg.rewards["foot_swing_height"].weight = -5.0
-    # Magnitud de la acción: primer intento para frenar las acciones grandes (ver mdp.action_l2).
-    cfg.rewards["action_l2"] = RewardTermCfg(func=danny_mdp.action_l2, weight=-0.05)
+    # Contacto en contrafase según el reloj de marcha, solo con orden de movimiento (ver gait_clock y mdp).
+    cfg.rewards["gait_contact_phase"] = RewardTermCfg(
+        func=danny_mdp.gait_contact_phase, weight=1.5, params={"sensor_name": "feet_ground_contact"}
+    )
 
     if play:
         cfg.episode_length_s = int(1e9)

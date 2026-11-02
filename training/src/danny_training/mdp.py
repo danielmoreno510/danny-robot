@@ -39,36 +39,6 @@ def randomize_bam_friction(
       actuator.set_friction_scale(env_ids, samples)
 
 
-def action_l2(env: ManagerBasedRlEnv) -> torch.Tensor:
-  """Penaliza la magnitud de la acción cruda de la política (suma de cuadrados por entorno).
-
-  Limita las acciones grandes que tumbaban a Danny: sin esto, la acción media subía de 0,05 a 0,63 en 1 000 iteraciones.
-  """
-  return torch.sum(torch.square(env.action_manager.action), dim=1)
-
-
-def feet_air_time_at_landing(
-  env: ManagerBasedRlEnv,
-  sensor_name: str,
-  threshold_min: float,
-  threshold_max: float,
-  command_name: str,
-  command_threshold: float,
-) -> torch.Tensor:
-  """Premia el tiempo en el aire de cada pie, pero lo paga al aterrizar.
-
-  Paga lo mismo que `feet_air_time` de mjlab en un paso completo: un punto por paso de control entre `threshold_min` y
-  `threshold_max`. La de mjlab lo paga mientras el pie está en el aire, y con la penalización de aterrizaje de la guía
-  Danny aprendió a levantar un pie y no volver a apoyarlo. Aquí un pie que no aterriza no cobra.
-  """
-  sensor = env.scene[sensor_name]
-  first_contact = sensor.compute_first_contact(dt=env.step_dt)
-  paid = (sensor.data.last_air_time.clamp(max=threshold_max) - threshold_min).clamp(min=0.0) / env.step_dt
-  reward = torch.sum(paid * first_contact.float(), dim=1)
-  command = env.command_manager.get_command(command_name)
-  total_command = torch.norm(command[:, :2], dim=1) + torch.abs(command[:, 2])
-  return reward * (total_command > command_threshold).float()
-
 def track_com_linear_velocity(
   env: ManagerBasedRlEnv,
   std: float,
@@ -87,3 +57,17 @@ def track_com_linear_velocity(
   xy_error = torch.sum(torch.square(command[:, :2] - actual[:, :2]), dim=1)
   z_error = torch.square(actual[:, 2])
   return torch.exp(-(xy_error + z_error) / std**2)
+
+def gait_contact_phase(env: ManagerBasedRlEnv, sensor_name: str, clock_name: str = "gait") -> torch.Tensor:
+  """Premia el contacto de los pies que marca el reloj de marcha (`gait_clock`). Vale de 0 a 1.
+
+  Con orden de movimiento: en la primera mitad del ciclo apoya el izquierdo y el derecho va en el aire, y en la segunda al
+  revés. Cada pie que cumple suma 0,5. Con orden cero la fase está congelada y se premia que apoyen los dos pies.
+  El primer pie del sensor es el izquierdo.
+  """
+  clock = env.command_manager.get_term(clock_name)
+  found = env.scene[sensor_name].data.found.reshape(env.num_envs, -1)[:, :2] > 0
+  left_stance = clock.phase < 0.5
+  in_phase = 0.5 * ((found[:, 0] == left_stance).float() + (found[:, 1] == ~left_stance).float())
+  both_down = found.float().mean(dim=1)
+  return torch.where(clock.moving, in_phase, both_down)

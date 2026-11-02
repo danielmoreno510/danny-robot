@@ -51,7 +51,7 @@ Sustituye a Isaac Lab por decisión del usuario.
 | Paso | Trabajo | Estado |
 |---|---|---|
 | 4.1 | Preparar la RTX 3080 Ti con mjlab | Empieza el amigo del usuario: [guía](documentation/training-guide.md) |
-| 4.2 | Marcha con órdenes de velocidad | En curso, sin marcha: se mantiene de pie 20 s, pero no avanza (0,155 m/s de error). Escalas de la guía, velocidad en el centro de masas, penalización de acción y `air_time` pagado al aterrizar: no avanza (`marcha_com_3000`, parada en 1402). Reentrenando con el modelo de la auditoría. Ver [PROJECT_HANDOFF.md](PROJECT_HANDOFF.md) |
+| 4.2 | Marcha con órdenes de velocidad | En curso: camina hacia delante a 0,25 m/s con paso alterno en simulación (`marcha_reloj_1000`, error 0,020 m/s), gracias a un reloj de marcha. Faltan giro, marcha lateral, empujones, armadura y holgura aleatorias, y la fase del reloj en el robot real. Ver [PROJECT_HANDOFF.md](PROJECT_HANDOFF.md) |
 | 4.3 | Levantarse | Pendiente |
 | 4.4 | Imitación de movimiento humano y gestos | Pendiente |
 | 4.5 | Si el hardware lo permite: trote y salto | Pendiente |

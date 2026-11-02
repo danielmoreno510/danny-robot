@@ -22,8 +22,8 @@ HD1910_JSON: Path = Path(__file__).resolve().parents[2] / "params" / "hd1910_m6.
 assert DANNY_XML.exists(), f"No existe el MJCF de entrenamiento: {DANNY_XML}"
 assert HD1910_JSON.exists(), f"No existen los parámetros HD-1910: {HD1910_JSON}"
 
-# Sitio de la IMU: el torso, donde irá el BNO085.
-IMU_SITE = "torso"
+# Sitio de la IMU del MJCF, en torso_1, donde irá el BNO085 (auditoría del 2 de noviembre).
+IMU_SITE = "imu"
 TRUNK_BODY = "base_link"
 
 # Altura de los pies sobre el suelo al empezar, en metros.
@@ -111,13 +111,17 @@ DANNY_COLLISION = CollisionCfg(
     friction={r"^(left|right)_sole$": (1.0,)},
 )
 
+# Ganancia del firmware del servo. 5 es el valor de xgoduck_rl; sin política, con 5 Danny cae a un pie y con 10 aguanta a 7,4 V
+# (results/standing_check.json). El valor real se mide en el banco (5.1).
+KP_FW = 5.0
+
 # Actuadores HD-1910 con el modelo BAM de xgoduck_rl (sin confirmar en los servos reales).
 # Rangos de la guía de entrenamiento: tensión 6 a 8,4 V, retardo de 10 a 30 ms. Con paso de física
 # de 5 ms, eso son 2 a 6 pasos.
 DANNY_ACTUATORS = FrictionDRBamActuatorCfg(
     json_path=str(HD1910_JSON),
     target_names_expr=(r".*",),
-    kp_fw=5.0,
+    kp_fw=KP_FW,
     vin_range=(6.0, 8.4),
     vin_drop_gain_range=(0.0, 0.2),
     vin_min=6.0,
