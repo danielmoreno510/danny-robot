@@ -1,0 +1,9 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-02_09-07-01_penalizacion_accion_005_300\\model_299.pt",
+  "task": "Mjlab-Velocity-Flat-Danny",
+  "num_envs": 256,
+  "seconds_simulated": 20.0,
+  "peak_height_mean_mm": 40.07,
+  "peak_height_median_mm": 39.91,
+  "note": "Sin empujones. Altura de la suela sobre el suelo, m\u00e1ximo por entorno, promedio de entornos."
+}

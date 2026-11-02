@@ -12,18 +12,13 @@ from __future__ import annotations
 
 import argparse
 import json
-from dataclasses import asdict
 from pathlib import Path
 
 import torch
 
-from mjlab.envs import ManagerBasedRlEnv
-from mjlab.rl import RslRlVecEnvWrapper
-from mjlab.tasks.registry import load_env_cfg, load_rl_cfg, load_runner_cls
+from danny_training.evaluation import RESULTS, TASK, eval_env_cfg, load_policy
 
-TASK = "Mjlab-Velocity-Flat-Danny"
 STALL_6V_NM = 0.762
-RESULTS = Path(__file__).resolve().parents[2] / "results"
 
 
 def main() -> None:
@@ -35,19 +30,10 @@ def main() -> None:
   parser.add_argument("--seconds", type=float, default=20.0)
   args = parser.parse_args()
 
-  env_cfg = load_env_cfg(TASK)
-  env_cfg.scene.num_envs = args.num_envs
-  env_cfg.episode_length_s = args.seconds
-  env_cfg.events.pop("push_robot", None)  # Sin empujones: se mide la marcha.
+  env_cfg = eval_env_cfg(args.num_envs, args.seconds)
   env_cfg.actions["joint_pos"].scale = args.action_scale
-
-  device = "cuda:0" if torch.cuda.is_available() else "cpu"
-  agent_cfg = load_rl_cfg(TASK)
-  env = ManagerBasedRlEnv(cfg=env_cfg, device=device)
-  env = RslRlVecEnvWrapper(env, clip_actions=agent_cfg.clip_actions)
-  runner = load_runner_cls(TASK)(env, asdict(agent_cfg), device=device)
-  runner.load(str(args.checkpoint), load_cfg={"actor": True}, strict=True, map_location=device)
-  policy = runner.get_inference_policy(device=device)
+  env, policy = load_policy(env_cfg, args.checkpoint)
+  device = env.unwrapped.device
 
   u = env.unwrapped
   robot = u.scene["robot"]

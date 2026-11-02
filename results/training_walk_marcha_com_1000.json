@@ -1,0 +1,14 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-02_12-23-07_marcha_com_3000\\model_1000.pt",
+  "task": "Mjlab-Velocity-Flat-Danny",
+  "num_envs": 256,
+  "seconds_simulated": 20.0,
+  "fraction_standing_full_episode": 1.0,
+  "survival_s": {
+    "mean": 20.0,
+    "min": 20.0,
+    "median": 20.0
+  },
+  "mean_xy_velocity_error_m_s": 0.15508422255516052,
+  "note": "Sin empujones. Resto de la aleatorizaci\u00f3n activa. Velocidad del centro de masas de base_link. Actuadores HD-1910 sin confirmar."
+}

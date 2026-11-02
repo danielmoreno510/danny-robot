@@ -1,7 +1,8 @@
 """Evalúa un checkpoint de marcha de Danny sin interfaz y guarda el resultado en results/.
 
 Mide cuánto aguanta cada entorno sin caerse (en segundos simulados) y el error de seguimiento de la
-velocidad. Corre con las mismas perturbaciones del entrenamiento.
+velocidad, medida en el centro de masas de `base_link` (guía 4.2). Corre con la aleatorización del entrenamiento, sin
+empujones.
 
 Uso (desde training/):
     uv run python scripts/evaluate_walk.py --checkpoint logs/rsl_rl/danny_walk/<run>/model_XXXX.pt --name smoke_30
@@ -11,17 +12,11 @@ from __future__ import annotations
 
 import argparse
 import json
-from dataclasses import asdict
 from pathlib import Path
 
 import torch
 
-from mjlab.envs import ManagerBasedRlEnv
-from mjlab.rl import MjlabOnPolicyRunner, RslRlVecEnvWrapper
-from mjlab.tasks.registry import load_env_cfg, load_rl_cfg, load_runner_cls
-
-TASK = "Mjlab-Velocity-Flat-Danny"
-RESULTS = Path(__file__).resolve().parents[2] / "results"
+from danny_training.evaluation import RESULTS, TASK, eval_env_cfg, load_policy
 
 
 def main() -> None:
@@ -32,20 +27,8 @@ def main() -> None:
   parser.add_argument("--seconds", type=float, default=20.0)
   args = parser.parse_args()
 
-  env_cfg = load_env_cfg(TASK)
-  env_cfg.scene.num_envs = args.num_envs
-  env_cfg.episode_length_s = args.seconds
-  env_cfg.events.pop("push_robot", None)  # Sin empujones: se mide la marcha, no la recuperación.
-
-  device = "cuda:0" if torch.cuda.is_available() else "cpu"
-  agent_cfg = load_rl_cfg(TASK)
-  env = ManagerBasedRlEnv(cfg=env_cfg, device=device)
-  env = RslRlVecEnvWrapper(env, clip_actions=agent_cfg.clip_actions)
-
-  runner_cls = load_runner_cls(TASK) or MjlabOnPolicyRunner
-  runner = runner_cls(env, asdict(agent_cfg), device=device)
-  runner.load(str(args.checkpoint), load_cfg={"actor": True}, strict=True, map_location=device)
-  policy = runner.get_inference_policy(device=device)
+  env, policy = load_policy(eval_env_cfg(args.num_envs, args.seconds), args.checkpoint)
+  device = env.unwrapped.device
 
   steps = int(args.seconds / env.unwrapped.step_dt)
   alive = torch.ones(args.num_envs, dtype=torch.bool, device=device)
@@ -59,7 +42,7 @@ def main() -> None:
       obs, _, dones, _ = env.step(actions)
       twist = env.unwrapped.command_manager.get_command("twist")
       robot = env.unwrapped.scene["robot"]
-      vel_err = (robot.data.root_link_lin_vel_b[:, :2] - twist[:, :2]).norm(dim=1)
+      vel_err = (robot.data.root_com_lin_vel_b[:, :2] - twist[:, :2]).norm(dim=1)
       track_err.append(vel_err[alive].mean().item() if alive.any() else float("nan"))
       survival_steps += alive.float()
       # Solo cuenta como caída la terminación, no el fin de episodio por tiempo.
@@ -78,7 +61,7 @@ def main() -> None:
       "median": float(survival_s.median()),
     },
     "mean_xy_velocity_error_m_s": float(torch.tensor([e for e in track_err if e == e]).mean()),
-    "note": "Sin empujones. Perturbaciones de entrenamiento activas. Actuadores HD-1910 sin confirmar.",
+    "note": "Sin empujones. Resto de la aleatorización activa. Velocidad del centro de masas de base_link. Actuadores HD-1910 sin confirmar.",
   }
   RESULTS.mkdir(parents=True, exist_ok=True)
   out = RESULTS / f"training_walk_{args.name}.json"

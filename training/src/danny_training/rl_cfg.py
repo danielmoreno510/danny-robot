@@ -14,7 +14,7 @@ def danny_flat_ppo_runner_cfg() -> RslRlOnPolicyRunnerCfg:
       obs_normalization=True,
       distribution_cfg={
         "class_name": "GaussianDistribution",
-        "init_std": 1.0,
+        "init_std": 0.5,  # Primer intento: 1,0 hacía caer a Danny por el ruido de exploración.
         "std_type": "scalar",
       },
     ),

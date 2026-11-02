@@ -15,6 +15,7 @@ from mjlab.envs import ManagerBasedRlEnvCfg
 from mjlab.envs.mdp import dr
 from mjlab.envs.mdp.actions import JointPositionActionCfg
 from mjlab.managers.event_manager import EventTermCfg
+from mjlab.managers.reward_manager import RewardTermCfg
 from mjlab.managers.scene_entity_config import SceneEntityCfg
 from mjlab.sensor import (
     ContactMatch,
@@ -25,6 +26,7 @@ from mjlab.sensor import (
 )
 from mjlab.tasks.velocity.mdp import UniformVelocityCommandCfg
 from mjlab.tasks.velocity.velocity_env_cfg import make_velocity_env_cfg
+from mjlab.utils.noise import UniformNoiseCfg as Unoise
 
 from danny_training import mdp as danny_mdp
 from danny_training.robot import DANNY_ROBOT_CFG
@@ -34,9 +36,9 @@ FOOT_SITES = ("left_sole", "right_sole")
 FOOT_GEOMS = ("left_sole", "right_sole")
 TRUNK_BODY = "base_link"
 
-# Escala de la acción sobre la pose por defecto (rad por unidad de acción). Primer intento: la
-# referencia usa 0,5, pero Danny tiene un par máximo de 0,94 N·m y no se ha calculado a partir de él.
-ACTION_SCALE = 0.5
+# Escala de la acción sobre la pose por defecto (rad por unidad de acción). Igual que xgoduck_rl (guía 4.2).
+# Con 0,25 y 0,5 no hubo marcha.
+ACTION_SCALE = 1.0
 
 
 def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
@@ -64,6 +66,13 @@ def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
             sensor.pattern = RingPatternCfg.single_ring(radius=0.03, num_samples=6)
     del cfg.observations["actor"].terms["height_scan"]
     del cfg.observations["critic"].terms["height_scan"]
+
+    # El actor no ve la velocidad lineal de la base: el robot real no la mide. Ruido de xgoduck_rl.
+    actor_terms = cfg.observations["actor"].terms
+    del actor_terms["base_lin_vel"]
+    actor_terms["base_ang_vel"].noise = Unoise(n_min=-0.06, n_max=0.06)
+    actor_terms["projected_gravity"].noise = Unoise(n_min=-0.03, n_max=0.03)
+    actor_terms["joint_vel"].noise = Unoise(n_min=-0.25, n_max=0.25)
     cfg.terminations.pop("out_of_terrain_bounds", None)
     cfg.curriculum.pop("terrain_levels", None)
 
@@ -118,6 +127,9 @@ def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
             "operation": "scale",
         },
     )
+    # Empujones de la guía: solo en XY, ±0,12 m/s, cada 3 a 6 s.
+    cfg.events["push_robot"].interval_range_s = (3.0, 6.0)
+    cfg.events["push_robot"].params["velocity_range"] = {"x": (-0.12, 0.12), "y": (-0.12, 0.12)}
     cfg.events["randomize_servo_friction"] = EventTermCfg(
         func=danny_mdp.randomize_bam_friction,
         mode="reset",
@@ -147,12 +159,24 @@ def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     for reward_name in ("foot_clearance", "foot_slip"):
         cfg.rewards[reward_name].params["asset_cfg"].site_names = FOOT_SITES
 
-    # Más peso al seguimiento y menos a la postura: con los pesos de la referencia, el robot aprendía a quedarse quieto.
-    cfg.rewards["track_linear_velocity"].weight = 4.0
-    cfg.rewards["pose"].weight = 0.5
+    # Valores de la guía (training-guide.md, 4.2). Con los de mjlab por defecto, quedarse quieto daba el 91 % de la
+    # recompensa de velocidad (results/walk_incentive.json).
+    # Velocidad medida en el centro de masas de base_link, no en su origen, que está en el suelo (ver mdp).
+    cfg.rewards["track_linear_velocity"].func = danny_mdp.track_com_linear_velocity
+    cfg.rewards["track_linear_velocity"].weight = 3.0
+    cfg.rewards["track_linear_velocity"].params["std"] = 0.125
+    cfg.rewards["pose"].weight = 1.0
     cfg.rewards["body_ang_vel"].weight = -0.05
     cfg.rewards["angular_momentum"].weight = -0.02
-    cfg.rewards["air_time"].weight = 0.0
+    cfg.rewards["air_time"].weight = 3.0
+    # Mismo premio que la guía, pagado al aterrizar: con el de mjlab Danny se quedaba sobre un pie (ver mdp).
+    cfg.rewards["air_time"].func = danny_mdp.feet_air_time_at_landing
+    cfg.rewards["air_time"].params.update(threshold_min=0.125, threshold_max=0.35, command_threshold=0.01)
+    for reward_name in ("foot_clearance", "foot_swing_height"):
+        cfg.rewards[reward_name].params["target_height"] = 0.025
+    cfg.rewards["foot_swing_height"].weight = -5.0
+    # Magnitud de la acción: primer intento para frenar las acciones grandes (ver mdp.action_l2).
+    cfg.rewards["action_l2"] = RewardTermCfg(func=danny_mdp.action_l2, weight=-0.05)
 
     if play:
         cfg.episode_length_s = int(1e9)
