@@ -369,3 +369,16 @@ Corridas: `fase2_a` (etapa 1, 1498 a 4497), `fase2_b` (etapa 2, hasta 7496), `fa
 #### Segundo intento, control 1 (fase2_d, etapa 2, model_7496)
 
 `results/training_movements_fase2_d_7496.json` (7,4 V, aleatorización completa, sin empujones): sin caer 1,000 en todo; cumplen adelante, lateral izquierda y quieto; **no cumplen atrás (error de giro 0,522 rad/s), lateral derecha (0,165) ni los dos giros (0,199 y 0,202)**. Peor que el primer intento en atrás y lateral (control 2 anterior: atrás 0,078). El giro medio sí mejoró (0,40 y -0,34 rad/s con orden de 0,5, frente a 0,36 y -0,31), pero el error de giro por paso sigue alto porque la velocidad de giro oscila durante la marcha: en atrás la media es 0,026 y la media del valor absoluto 0,522. Es decir, el criterio mide sobre todo la oscilación del paso, no el seguimiento medio. No se ha medido de dónde sale esa oscilación. Se lanza `fase2_e` (etapa 3) según el plan; el control es informativo.
+
+#### Segundo intento: `fase2_e` parada y análisis del giro (GPU libre)
+
+`fase2_e` (etapa 3) se paró por orden del dueño en la iteración ~8200 de 11 496 (último punto `model_8200.pt`, sin evaluar; no cuenta como resultado). Se cerró a la fuerza porque `train.exe` tenía procesos hijos y no respondía a un cierre normal.
+
+**Medidas** (`results/training_yaw_oscillation_fase2.json`, `scripts/measure_yaw_oscillation.py`, 64 robots, 12 s, 7,4 V, sin empujones):
+- La oscilación de la velocidad de giro es el ritmo del paso: frecuencias dominantes 2,5 y 1,25 Hz (ciclo de 0,8 s). Quieto no oscila (0,002).
+- Adelante y atrás: casi todo el error por paso es esa oscilación (`fase2_a` adelante: 0,060 por paso, 0,019 promediado a 0,8 s).
+- **El giro de `fase2_c` falla por giro medio corto, no por oscilación:** error por paso 0,220, promediado 0,217; giro medio 0,283 de 0,5 rad/s. Corrige la lectura anterior de este documento (control 1 del segundo intento), que atribuía el criterio sobre todo a la oscilación: eso vale para adelante y atrás, no para el giro de `fase2_c`.
+- `fase2_d` (recompensa de giro más exigente) **duplicó la oscilación** (RMS adelante 0,11 a 0,28 rad/s; atrás 0,14 a 1,05) y subió el giro medio (0,405), pero el error por paso no baja del criterio.
+- **El entorno duro no explica el giro corto:** evaluada con aleatorización de etapa 1 o de etapa 3, `fase2_a` da 0,388 y 0,389 rad/s, y `fase2_c` 0,282 y 0,281. Es lo que aprendió la política.
+- `fase2_c` gira poco a todas las órdenes, no solo a la máxima (orden 0,2: 0,066; 0,3: 0,135; 0,4: 0,205; 0,5: 0,281 rad/s).
+- **No medido:** por qué la política entrenada con etapas 2 y 3 aprende a girar menos que `fase2_a`. Candidatas sin probar: los empujones durante el entrenamiento, el peso de la penalización de oscilación angular o la combinación de ambos.
