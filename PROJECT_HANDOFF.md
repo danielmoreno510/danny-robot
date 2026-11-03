@@ -357,3 +357,11 @@ Corridas: `fase2_a` (etapa 1, 1498 a 4497), `fase2_b` (etapa 2, hasta 7496), `fa
 - **Par** (`results/training_torque_fase2_c_prueba_guia.json`, 64 robots, 300 s, empujones): **rodilla izquierda satura (más del 90 % del bloqueo) el 6,35 % del tiempo**, por encima del 5 % exigido; rodilla derecha 3,5 %, cadera roll izquierda 0,7 %, tobillo izquierdo 0,6 %. Par máximo 1,067 N·m (bloqueo a 8,4 V: 1,036 extrapolado).
 - **No comprobado:** por qué cae el 11,7 % en 5 min (si es por empujones, por una tensión baja o por deriva con el tiempo; no se separó). No se probó si el giro mejora con una orden menor ni con más peso de seguimiento de giro. No hay vídeo ni ONNX ni PR a main: la fase no pasó.
 - **Siguiente paso, decide el dueño:** (a) endurecer la recompensa de giro y reentrenar desde `fase2_a` (que cumplía los siete movimientos sin empujones), (b) bajar la orden de giro por debajo de 0,5 rad/s si 20° por paso lo permite, (c) revisar el par de rodilla, que es de diseño del robot (no se modifica `cad/`).
+
+### Fase 2, segundo intento (opción 1 del dueño: recompensa de giro más exigente, desde fase2_a)
+
+**Cambio:** `track_angular_velocity` pasa de peso 2 y std 0,71 rad/s a peso 3 y std 0,25 (`env_cfgs.py`). **Motivo medido:** con el valor por defecto un error de giro de 0,22 rad/s aún da el 91 % de la recompensa, y el giro quedó en 0,28 de 0,5 rad/s. Es una hipótesis: no se probó que sea la causa.
+
+**Plan antes de ejecutar:** `fase2_d` (etapa 2, 3000 iteraciones, desde `fase2_a` model_4497), control; `fase2_e` (etapa 3, 4000 iteraciones), control y prueba final. Mismo criterio de la fase 2 que arriba. Los controles informan y no paran la corrida salvo colapso (menos del 50 % sin caer en avance).
+
+**Lo que este cambio no aborda:** el 88,3 % sin caer en 5 min con empujones y la rodilla izquierda saturada el 6,35 % del tiempo. Si el giro se arregla y esos dos siguen fallando, la fase 2 seguirá sin cumplir y lo diré.

@@ -211,6 +211,10 @@ def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     cfg.rewards["track_linear_velocity"].func = danny_mdp.track_com_linear_velocity
     cfg.rewards["track_linear_velocity"].weight = 3.0
     cfg.rewards["track_linear_velocity"].params["std"] = 0.125
+    # Con el valor por defecto (std 0,71 rad/s, peso 2) un error de giro de 0,22 rad/s aún da el 91 % de la recompensa y el giro
+    # quedaba en 0,28 de 0,5 rad/s (results/training_movements_fase2_c_11495.json). Mismo cociente que el lineal: criterio / std = 0,6.
+    cfg.rewards["track_angular_velocity"].weight = 3.0
+    cfg.rewards["track_angular_velocity"].params["std"] = 0.25
     cfg.rewards["pose"].weight = 1.0
     cfg.rewards["body_ang_vel"].weight = -0.05
     cfg.rewards["angular_momentum"].weight = -0.02
