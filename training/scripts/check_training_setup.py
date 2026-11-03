@@ -6,7 +6,7 @@ Aleatorización de la fase 2 (etapa 3: armadura ±30 %, holgura de hasta 0,5°, 
 quietos y ninguno forzado a avanzar.
 Aleatorización en 256 entornos: la masa total varía ±10 % y el centro de masas del robot entero unos ±10 mm por eje. Pasa de 10 mm
 porque el desplazamiento se aplica en el marco de cada cuerpo, y el 24 % de la masa (muslos, tibias, brazos) tiene el marco girado:
-el máximo medido es de unos 13 mm por eje.
+el máximo medido es de unos 13 mm por eje, bajo la cota exacta que calcula la comprobación.
 
 Uso (desde training/):
     uv run python scripts/check_training_setup.py
@@ -32,7 +32,6 @@ NOMINAL_MASS_KG = 1.30
 MASS_TOLERANCE_KG = 0.01
 MASS_RANGE = 0.10
 COM_RANGE_M = 0.01
-COM_RANGE_ROTATED_FRAMES_M = 0.0135  # Cota por el marco girado de muslos y tibias.
 
 
 def main() -> None:
@@ -81,9 +80,18 @@ def main() -> None:
   shift = com(mass_e, m.body_ipos) - com(default_mass, default_ipos)
   # Se resta el efecto de la masa para ver solo el desplazamiento del centro de masas.
   shift = shift - (com(mass_e, default_ipos) - com(default_mass, default_ipos))
+  # Cota exacta por entorno y eje: cada cuerpo desplaza su centro ±10 mm en su marco, y el marco girado (también el del robot entero,
+  # que sale con rumbo aleatorio) reparte ese desplazamiento entre los ejes del mundo.
+  mass_share = default_mass / default_mass.sum(dim=1, keepdim=True)
+  frame_spread = d.xmat.reshape(NUM_ENVS, -1, 3, 3).abs().sum(dim=3)  # (entornos, cuerpos, ejes del mundo)
+  bound = COM_RANGE_M * (mass_share.unsqueeze(-1) * frame_spread).sum(dim=1)  # (entornos, ejes)
   for axis, name in enumerate("xyz"):
     top = float(shift[:, axis].abs().max())
-    check(0.8 * COM_RANGE_M <= top <= COM_RANGE_ROTATED_FRAMES_M, f"desplazamiento del centro de masas en {name}: máximo {top * 1000:.2f} mm (esperado de 8 a 13,5 mm)")
+    worst_excess = float((shift[:, axis].abs() - bound[:, axis]).max())
+    check(
+      top >= 0.8 * COM_RANGE_M and worst_excess <= 1e-6,
+      f"desplazamiento del centro de masas en {name}: máximo {top * 1000:.2f} mm, siempre bajo la cota de cada entorno (exceso máximo {worst_excess * 1000:.3f} mm)",
+    )
 
   stage = DR_STAGES[DR_STAGE]
   default_armature = env.sim.get_default_field("dof_armature")

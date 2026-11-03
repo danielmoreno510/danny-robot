@@ -63,7 +63,7 @@ def main() -> None:
     results[name] = r
     print(
       f"{name:18s} sin caer {r['fraction_envs_not_fallen']:.3f}  error lineal {r['mean_xy_velocity_error_m_s']}  error de giro {r['mean_yaw_rate_error_rad_s']}"
-      f"  alterno {r['fraction_alternating_touchdowns']}  -> {'CUMPLE' if r['passes'] else 'NO CUMPLE'}"
+      f"  giro medio {r['mean_yaw_rate_rad_s']}  giro |medio| {r['mean_abs_yaw_rate_rad_s']}  alterno {r['fraction_alternating_touchdowns']}  -> {'CUMPLE' if r['passes'] else 'NO CUMPLE'}"
     )
 
   summary = {

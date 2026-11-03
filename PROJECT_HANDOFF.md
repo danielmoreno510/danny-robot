@@ -382,3 +382,13 @@ Corridas: `fase2_a` (etapa 1, 1498 a 4497), `fase2_b` (etapa 2, hasta 7496), `fa
 - **El entorno duro no explica el giro corto:** evaluada con aleatorización de etapa 1 o de etapa 3, `fase2_a` da 0,388 y 0,389 rad/s, y `fase2_c` 0,282 y 0,281. Es lo que aprendió la política.
 - `fase2_c` gira poco a todas las órdenes, no solo a la máxima (orden 0,2: 0,066; 0,3: 0,135; 0,4: 0,205; 0,5: 0,281 rad/s).
 - **No medido:** por qué la política entrenada con etapas 2 y 3 aprende a girar menos que `fase2_a`. Candidatas sin probar: los empujones durante el entrenamiento, el peso de la penalización de oscilación angular o la combinación de ambos.
+
+#### Medidas previas al tercer intento (sobre fase2_c, model_11495)
+
+**Recompensa doble** (propuesta del dueño tras revisar b0dcf8e): se vuelve a `track_angular_velocity` por defecto (peso 2, std 0,71 rad/s) y se añade `track_angular_velocity_fine` (peso 1, std 0,25). **El cambio a std 0,25 con peso 3 solo empeoró atrás (0,078 a 0,522 rad/s) y el lateral derecho**, sin llevar el giro por paso al criterio. Ambos términos incluyen la velocidad angular en x e y (balanceo del tronco), como la función de mjlab: con std 0,25 eso penaliza mucho el balanceo. Es una lectura del código, no está medida como causa.
+
+**Par por tensión** (`results/training_torque_fase2_c_{6.0,7.4,8.4}V.json`, 300 s, empujones, 64 robots, bloqueo de su propia tensión): la rodilla izquierda supera el 90 % del bloqueo el **5,7 % del tiempo a 6 V** (derecha 2,5 %), el 1,4 % a 7,4 V y nada a 8,4 V. El 6,35 % medido antes comparaba a todos con el bloqueo a 6 V y sobrestimaba. El criterio de saturación (menos del 5 %) falla solo a 6 V. Valores de simulación; el HD-1910 no está confirmado.
+
+**Caídas en 5 minutos** (`results/training_gait_fase2_c_5min_*.json`, 256 robots, 0,25 m/s): sin empujones a 7,4 V, **100 % sin caer**; con empujones a 7,4 V, **91,8 %**; con empujones a 6 V, **85,2 %**. Las caídas vienen de los empujones, y la tensión baja las empeora. La prueba de la guía (empujones y tensión de 6 a 8,4 V) dio 88,3 %, entre esos dos casos.
+
+Cambios de herramientas: `check_training_setup.py` usa ahora la cota exacta del centro de masas por entorno (el límite fijo de 13,5 mm fallaba al azar entre 12,1 y 13,6 mm); `evaluate_movements.py` imprime el giro medio y la media de su valor absoluto; la nota de `measure_actuator_torque.py` indica contra qué bloqueo compara.

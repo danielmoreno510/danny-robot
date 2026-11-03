@@ -211,10 +211,14 @@ def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     cfg.rewards["track_linear_velocity"].func = danny_mdp.track_com_linear_velocity
     cfg.rewards["track_linear_velocity"].weight = 3.0
     cfg.rewards["track_linear_velocity"].params["std"] = 0.125
-    # Con el valor por defecto (std 0,71 rad/s, peso 2) un error de giro de 0,22 rad/s aún da el 91 % de la recompensa y el giro
-    # quedaba en 0,28 de 0,5 rad/s (results/training_movements_fase2_c_11495.json). Mismo cociente que el lineal: criterio / std = 0,6.
-    cfg.rewards["track_angular_velocity"].weight = 3.0
-    cfg.rewards["track_angular_velocity"].params["std"] = 0.25
+    # Recompensa de giro doble: la de mjlab (peso 2, std 0,71 rad/s) guía con errores grandes y un segundo término igual con std 0,25 y
+    # peso 1 premia la precisión cerca de la orden. Cambiar la primera a std 0,25 y peso 3 solo empeoró atrás y el lateral derecho
+    # (results/training_movements_fase2_d_7496.json). Ambos incluyen también la velocidad angular en x e y, como la función de mjlab.
+    cfg.rewards["track_angular_velocity_fine"] = RewardTermCfg(
+        func=cfg.rewards["track_angular_velocity"].func,
+        weight=1.0,
+        params={"command_name": "twist", "std": 0.25},
+    )
     cfg.rewards["pose"].weight = 1.0
     cfg.rewards["body_ang_vel"].weight = -0.05
     cfg.rewards["angular_momentum"].weight = -0.02

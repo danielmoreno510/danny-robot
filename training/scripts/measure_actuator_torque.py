@@ -40,7 +40,8 @@ def main() -> None:
   u = env.unwrapped
   robot = u.scene["robot"]
   joint_names = list(robot.joint_names)
-  # Con tensión sorteada se compara con el bloqueo a 6 V, el peor caso.
+  # Con tensión sorteada se compara con el bloqueo a 6 V, el peor caso: sobrestima la saturación de los robots con más tensión. Para
+  # saber si un servo satura de verdad, medir aparte con --vin 6.0, 7.4 y 8.4.
   stall_nm = stall_torque_nm(args.vin if args.vin is not None else 6.0)
   steps = int(args.seconds / u.step_dt)
   settle = int(1.0 / u.step_dt)
@@ -79,7 +80,7 @@ def main() -> None:
       }
       for i, name in enumerate(joint_names)
     },
-    "note": f"{'Con' if args.pushes else 'Sin'} empujones. Resto de la aleatorización activa. Actuadores HD-1910 sin confirmar.",
+    "note": f"{'Con' if args.pushes else 'Sin'} empujones. Resto de la aleatorización activa. Bloqueo a {'la tensión fija' if args.vin is not None else '6 V (peor caso; la tensión se sortea de 6 a 8,4 V)'}. Actuadores HD-1910 sin confirmar.",
   }
   RESULTS.mkdir(parents=True, exist_ok=True)
   out = RESULTS / f"training_torque_{args.name}.json"
