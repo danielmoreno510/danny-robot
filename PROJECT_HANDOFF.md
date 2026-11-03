@@ -343,3 +343,7 @@ impreso ni montado. Lee las limitaciones de esos dos documentos antes de seguir.
 ### Fase 2, control 1 (fase2_a, etapa 1, 3000 iteraciones, model_4497)
 
 Medido a 7,4 V con la aleatorización completa (etapa 3) y sin empujones (`results/training_movements_fase2_a_4497.json`): los siete movimientos cumplen (sin caer 1,000; error lineal 0,026-0,065 m/s; error de giro 0,035-0,132 rad/s; quieto 0,0013). Giro en el sitio queda cerca del límite (0,132 y 0,118 frente a 0,15). No se ha medido aún con empujones, durante 5 min ni la saturación de par: eso es la prueba final. Sigue `fase2_b` (etapa 2, 3000 iteraciones).
+
+### Fase 2, control 2 (fase2_b, etapa 2, 3000 iteraciones más, model_7496)
+
+Mismas condiciones que el control 1 (`results/training_movements_fase2_b_7496.json`): seis de siete movimientos cumplen; **giro a la derecha no cumple** (error de giro 0,196 rad/s, límite 0,15) y giro a la izquierda queda justo en el límite (0,150). Sin caer 1,000 en todos; adelante, atrás, laterales y quieto cumplen. El control es informativo y no detiene la corrida; empeora el giro respecto al control 1 (0,132 y 0,118), probablemente por la aleatorización más dura de la etapa 2 (causa no medida). Sigue `fase2_c` (etapa 3, 4000 iteraciones, desde model_7496).
