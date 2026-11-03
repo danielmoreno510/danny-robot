@@ -365,3 +365,7 @@ Corridas: `fase2_a` (etapa 1, 1498 a 4497), `fase2_b` (etapa 2, hasta 7496), `fa
 **Plan antes de ejecutar:** `fase2_d` (etapa 2, 3000 iteraciones, desde `fase2_a` model_4497), control; `fase2_e` (etapa 3, 4000 iteraciones), control y prueba final. Mismo criterio de la fase 2 que arriba. Los controles informan y no paran la corrida salvo colapso (menos del 50 % sin caer en avance).
 
 **Lo que este cambio no aborda:** el 88,3 % sin caer en 5 min con empujones y la rodilla izquierda saturada el 6,35 % del tiempo. Si el giro se arregla y esos dos siguen fallando, la fase 2 seguirá sin cumplir y lo diré.
+
+#### Segundo intento, control 1 (fase2_d, etapa 2, model_7496)
+
+`results/training_movements_fase2_d_7496.json` (7,4 V, aleatorización completa, sin empujones): sin caer 1,000 en todo; cumplen adelante, lateral izquierda y quieto; **no cumplen atrás (error de giro 0,522 rad/s), lateral derecha (0,165) ni los dos giros (0,199 y 0,202)**. Peor que el primer intento en atrás y lateral (control 2 anterior: atrás 0,078). El giro medio sí mejoró (0,40 y -0,34 rad/s con orden de 0,5, frente a 0,36 y -0,31), pero el error de giro por paso sigue alto porque la velocidad de giro oscila durante la marcha: en atrás la media es 0,026 y la media del valor absoluto 0,522. Es decir, el criterio mide sobre todo la oscilación del paso, no el seguimiento medio. No se ha medido de dónde sale esa oscilación. Se lanza `fase2_e` (etapa 3) según el plan; el control es informativo.
