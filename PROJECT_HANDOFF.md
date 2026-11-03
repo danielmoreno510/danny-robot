@@ -347,3 +347,13 @@ Medido a 7,4 V con la aleatorización completa (etapa 3) y sin empujones (`resul
 ### Fase 2, control 2 (fase2_b, etapa 2, 3000 iteraciones más, model_7496)
 
 Mismas condiciones que el control 1 (`results/training_movements_fase2_b_7496.json`): seis de siete movimientos cumplen; **giro a la derecha no cumple** (error de giro 0,196 rad/s, límite 0,15) y giro a la izquierda queda justo en el límite (0,150). Sin caer 1,000 en todos; adelante, atrás, laterales y quieto cumplen. El control es informativo y no detiene la corrida; empeora el giro respecto al control 1 (0,132 y 0,118), probablemente por la aleatorización más dura de la etapa 2 (causa no medida). Sigue `fase2_c` (etapa 3, 4000 iteraciones, desde model_7496).
+
+### Fase 2, resultado final (fase2_c, etapa 3, 4000 iteraciones más, model_11495): NO CUMPLE
+
+Corridas: `fase2_a` (etapa 1, 1498 a 4497), `fase2_b` (etapa 2, hasta 7496), `fase2_c` (etapa 3, hasta 11495). Puntos de control en `D:\Claude\puntos_de_control\` (fuera de git). Se paró aquí, sin alargar la corrida, como pide el plan.
+
+- **Movimientos** (`results/training_movements_fase2_c_11495.json`, 7,4 V, aleatorización completa, sin empujones): adelante, atrás, laterales y quieto cumplen. **Giro a ambos lados no cumple**: error de giro 0,219 y 0,232 rad/s (límite 0,15). Causa medida: la velocidad de giro lograda es 0,28 y 0,27 rad/s con orden de 0,5, y baja con cada etapa (control 1: 0,39 y 0,42; control 2: 0,36 y 0,31; control 3: 0,28 y 0,27). El giro queda corto, no inestable (sin caer 1,000).
+- **Prueba de la guía** (0,25 m/s, 300 s, 256 robots, empujones, aleatorización completa; `results/training_gait_fase2_c_prueba_guia.json`): **sin caer 0,883, por debajo del 0,95 exigido**. Entre los que no caen: velocidad 0,249 m/s, error 0,037, paso alterno 0,994.
+- **Par** (`results/training_torque_fase2_c_prueba_guia.json`, 64 robots, 300 s, empujones): **rodilla izquierda satura (más del 90 % del bloqueo) el 6,35 % del tiempo**, por encima del 5 % exigido; rodilla derecha 3,5 %, cadera roll izquierda 0,7 %, tobillo izquierdo 0,6 %. Par máximo 1,067 N·m (bloqueo a 8,4 V: 1,036 extrapolado).
+- **No comprobado:** por qué cae el 11,7 % en 5 min (si es por empujones, por una tensión baja o por deriva con el tiempo; no se separó). No se probó si el giro mejora con una orden menor ni con más peso de seguimiento de giro. No hay vídeo ni ONNX ni PR a main: la fase no pasó.
+- **Siguiente paso, decide el dueño:** (a) endurecer la recompensa de giro y reentrenar desde `fase2_a` (que cumplía los siete movimientos sin empujones), (b) bajar la orden de giro por debajo de 0,5 rad/s si 20° por paso lo permite, (c) revisar el par de rodilla, que es de diseño del robot (no se modifica `cad/`).
