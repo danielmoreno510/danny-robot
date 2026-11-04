@@ -35,16 +35,20 @@ def eval_env_cfg(num_envs: int, seconds: float, vin: float | None = None, pushes
   return env_cfg
 
 
-def fix_command(env_cfg: ManagerBasedRlEnvCfg, forward: float, turn: float = 0.0, lateral: float = 0.0) -> None:
+def fix_command(env_cfg: ManagerBasedRlEnvCfg, forward: float, turn: float = 0.0, lateral: float = 0.0, height: float | None = 0.0) -> None:
   """Fija la orden en `forward` m/s hacia delante, `lateral` m/s hacia la izquierda y `turn` rad/s de giro (positivo a la izquierda).
 
-  Sin entornos parados ni entornos de solo avance. Con las tres a 0, todos los entornos reciben orden cero.
+  Sin entornos parados ni entornos de solo avance. Con las tres a 0, todos los entornos reciben orden cero. `height` es la bajada de la
+  pelvis en m (≤ 0), igual en todos los entornos; con `None` se dejan las órdenes de altura del entrenamiento (de 0 a -0,05 m).
   """
   twist = env_cfg.commands["twist"]
   twist.ranges = replace(twist.ranges, lin_vel_x=(forward, forward), lin_vel_y=(lateral, lateral), ang_vel_z=(turn, turn), heading=None)
   twist.heading_command = False
   twist.rel_standing_envs = 0.0
   twist.rel_forward_envs = 0.0  # mjlab fuerza el 20 % de los entornos a (0,3; 0; 0), sin giro.
+  if height is not None:
+    env_cfg.commands["height"].range_m = (height, height)
+    env_cfg.commands["height"].zero_fraction = 0.0
 
 
 def load_policy(env_cfg: ManagerBasedRlEnvCfg, checkpoint: Path, render_mode: str | None = None):

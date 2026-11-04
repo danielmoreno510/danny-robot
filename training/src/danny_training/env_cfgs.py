@@ -30,7 +30,7 @@ from mjlab.tasks.velocity.mdp import UniformVelocityCommandCfg
 from mjlab.tasks.velocity.velocity_env_cfg import make_velocity_env_cfg
 from mjlab.utils.noise import UniformNoiseCfg as Unoise
 
-from danny_training import mdp as danny_mdp
+from danny_training import crouch, mdp as danny_mdp
 from danny_training.gait_clock import GaitClockCommandCfg
 from danny_training.robot import DANNY_ROBOT_CFG
 
@@ -143,6 +143,13 @@ def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
             func=generated_commands, params={"command_name": "gait"}
         )
 
+    # Fase 3, agacharse: orden de bajada de la pelvis, de 0 a -0,05 m, que la política ve como una observación más (la última).
+    cfg.commands["height"] = crouch.HeightCommandCfg()
+    for group in ("actor", "critic"):
+        cfg.observations[group].terms["height"] = ObservationTermCfg(
+            func=generated_commands, params={"command_name": "height"}
+        )
+
     # Aleatorización de la guía: suelo 0,4 a 1,2; masa ±10 %; centro de masas ±10 mm; servo ±30 %.
     # Masa y centro de masas con `shared_random`: todos los cuerpos comparten la muestra, así que la masa total varía ±10 % y
     # el centro de masas del robot entero ±10 mm. Con una muestra por cuerpo los errores se compensarían entre sí.
@@ -203,6 +210,16 @@ def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     cfg.rewards["pose"].params["std_running"] = dict(cfg.rewards["pose"].params["std_walking"])
 
     cfg.rewards["upright"].params["asset_cfg"].body_names = (TRUNK_BODY,)
+    # Agacharse: el tronco se inclina hacia delante en proporción a la bajada pedida, y la pose de referencia baja con ella.
+    cfg.rewards["upright"].func = danny_mdp.crouch_upright
+    cfg.rewards["upright"].params = {"std": cfg.rewards["upright"].params["std"], "command_name": "height", "asset_cfg": SceneEntityCfg("robot", body_names=(TRUNK_BODY,))}
+    cfg.rewards["pose"].func = danny_mdp.crouch_posture
+    cfg.rewards["pose"].params["crouch_command_name"] = "height"
+    cfg.rewards["track_pelvis_height"] = RewardTermCfg(
+        func=danny_mdp.track_pelvis_height,
+        weight=3.0,
+        params={"std": 0.006, "command_name": "height", "twist_name": "twist", "asset_cfg": SceneEntityCfg("robot", site_names=("pelvis_bottom",))},
+    )
     cfg.rewards["body_ang_vel"].params["asset_cfg"].body_names = (TRUNK_BODY,)
     for reward_name in ("foot_clearance", "foot_slip"):
         cfg.rewards[reward_name].params["asset_cfg"].site_names = FOOT_SITES

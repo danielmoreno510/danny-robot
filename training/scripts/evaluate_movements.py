@@ -51,6 +51,7 @@ def main() -> None:
   parser = argparse.ArgumentParser()
   parser.add_argument("--checkpoint", required=True, type=Path)
   parser.add_argument("--name", required=True, help="Nombre del resultado en results/")
+  parser.add_argument("--height", type=float, default=0.0, help="Bajada de la pelvis en m (≤ 0)")
   parser.add_argument("--vin", type=float, default=7.4, help="Tensión fija de los servos en V")
   parser.add_argument("--num-envs", type=int, default=256)
   parser.add_argument("--seconds", type=float, default=20.0)
@@ -58,7 +59,7 @@ def main() -> None:
 
   results = {}
   for name, forward, lateral, turn in MOVEMENTS:
-    r = measure_gait(args.checkpoint, forward=forward, lateral=lateral, turn=turn, vin=args.vin, num_envs=args.num_envs, seconds=args.seconds)
+    r = measure_gait(args.checkpoint, forward=forward, lateral=lateral, turn=turn, height=args.height, vin=args.vin, num_envs=args.num_envs, seconds=args.seconds)
     r["passes"] = passes(name, r)
     results[name] = r
     print(
@@ -69,6 +70,7 @@ def main() -> None:
   summary = {
     "checkpoint": str(args.checkpoint),
     "vin_v": args.vin,
+    "height_command_m": args.height,
     "criteria": {
       "fraction_not_fallen_min": NOT_FALLEN_MIN,
       "xy_velocity_error_max_m_s": XY_ERROR_MAX_M_S,

@@ -491,7 +491,7 @@ A -0,05 m el tobillo queda dentro de su rango (5,7° de margen), la cadera (lím
 **Corrida.** `fase3_agacharse`, hasta 3 000 iteraciones desde `fase2_f_rodilla/model_8995.pt`, ampliando la primera capa del actor y del crítico con una columna a cero (y su normalizador) para la entrada nueva, de modo que empieza caminando como en la fase 2; etapa 2 de aleatorización y empujones de ±0,12 m/s; se mantiene el castigo de par (-317). Se para, sin alargar, si el 50 % o más de los robots cae hacia delante.
 
 **Aprueba** (256 robots, 20 s, 6,6 V fijos, sin empujones, salvo la última prueba) si:
-1. Quieto (orden de velocidad cero) con altura 0, -0,025 y -0,05 m: 95 % o más sin caer, error medio de altura de la pelvis de 6 mm o menos (con la aleatorización de masa y centro de masas, 4 mm no es realista: se mide la dispersión entre robots), y velocidad media de 0,03 m/s o menos.
+1. Quieto (orden de velocidad cero) con altura 0, -0,025 y -0,05 m: 95 % o más sin caer, error medio de altura de la pelvis de 5 mm o menos y velocidad media de 0,03 m/s o menos.
 2. Caminando a 0,25 m/s con altura -0,025 m: 95 % o más sin caer, error de velocidad de 0,08 m/s o menos y pelvis al menos 15 mm más baja que caminando con altura 0.
 3. Los siete movimientos de la fase 2 con altura 0 siguen cumpliéndose (no se pierde lo aprendido).
 4. Rodilla y tobillo por encima del 90 % del bloqueo menos del 5 % del tiempo a 6,6 V, en el agachado quieto a -0,05 m y en la marcha agachada a -0,025 m.
