@@ -1,0 +1,129 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-03_21-50-56_fase2_d_doble\\model_7496.pt",
+  "task": "Mjlab-Velocity-Flat-Danny",
+  "forward_command_m_s": null,
+  "num_envs": 64,
+  "seconds_simulated": 300.0,
+  "vin_v": 7.4,
+  "pushes": true,
+  "push_speed_m_s": 0.12,
+  "stall_torque_nm": 0.912,
+  "joints": {
+    "left_hip_yaw": {
+      "max_abs_nm": 0.5386,
+      "mean_abs_nm": 0.0366,
+      "frac_time_above_90pct_stall": 0.0
+    },
+    "left_hip_roll": {
+      "max_abs_nm": 0.9118,
+      "mean_abs_nm": 0.1769,
+      "frac_time_above_90pct_stall": 0.0024
+    },
+    "left_hip_pitch": {
+      "max_abs_nm": 0.8731,
+      "mean_abs_nm": 0.0955,
+      "frac_time_above_90pct_stall": 0.0
+    },
+    "left_knee": {
+      "max_abs_nm": 0.9401,
+      "mean_abs_nm": 0.2965,
+      "frac_time_above_90pct_stall": 0.0487
+    },
+    "left_ankle_pitch": {
+      "max_abs_nm": 0.9401,
+      "mean_abs_nm": 0.1223,
+      "frac_time_above_90pct_stall": 0.0013
+    },
+    "left_ankle_roll": {
+      "max_abs_nm": 0.8621,
+      "mean_abs_nm": 0.1133,
+      "frac_time_above_90pct_stall": 0.0
+    },
+    "right_hip_yaw": {
+      "max_abs_nm": 0.4457,
+      "mean_abs_nm": 0.0351,
+      "frac_time_above_90pct_stall": 0.0
+    },
+    "right_hip_roll": {
+      "max_abs_nm": 0.9117,
+      "mean_abs_nm": 0.1753,
+      "frac_time_above_90pct_stall": 0.0013
+    },
+    "right_hip_pitch": {
+      "max_abs_nm": 0.7947,
+      "mean_abs_nm": 0.0991,
+      "frac_time_above_90pct_stall": 0.0
+    },
+    "right_knee": {
+      "max_abs_nm": 0.9401,
+      "mean_abs_nm": 0.2823,
+      "frac_time_above_90pct_stall": 0.0383
+    },
+    "right_ankle_pitch": {
+      "max_abs_nm": 0.9401,
+      "mean_abs_nm": 0.1331,
+      "frac_time_above_90pct_stall": 0.0015
+    },
+    "right_ankle_roll": {
+      "max_abs_nm": 0.8328,
+      "mean_abs_nm": 0.1134,
+      "frac_time_above_90pct_stall": 0.0
+    },
+    "waist_yaw": {
+      "max_abs_nm": 0.4736,
+      "mean_abs_nm": 0.0366,
+      "frac_time_above_90pct_stall": 0.0
+    },
+    "left_shoulder_pitch": {
+      "max_abs_nm": 0.882,
+      "mean_abs_nm": 0.0538,
+      "frac_time_above_90pct_stall": 0.0
+    },
+    "left_shoulder_roll": {
+      "max_abs_nm": 0.8415,
+      "mean_abs_nm": 0.0547,
+      "frac_time_above_90pct_stall": 0.0
+    },
+    "left_shoulder_yaw": {
+      "max_abs_nm": 0.468,
+      "mean_abs_nm": 0.0279,
+      "frac_time_above_90pct_stall": 0.0
+    },
+    "left_elbow": {
+      "max_abs_nm": 0.5547,
+      "mean_abs_nm": 0.0345,
+      "frac_time_above_90pct_stall": 0.0
+    },
+    "right_shoulder_pitch": {
+      "max_abs_nm": 0.7974,
+      "mean_abs_nm": 0.0503,
+      "frac_time_above_90pct_stall": 0.0
+    },
+    "right_shoulder_roll": {
+      "max_abs_nm": 0.7117,
+      "mean_abs_nm": 0.0508,
+      "frac_time_above_90pct_stall": 0.0
+    },
+    "right_shoulder_yaw": {
+      "max_abs_nm": 0.4344,
+      "mean_abs_nm": 0.0291,
+      "frac_time_above_90pct_stall": 0.0
+    },
+    "right_elbow": {
+      "max_abs_nm": 0.4424,
+      "mean_abs_nm": 0.0305,
+      "frac_time_above_90pct_stall": 0.0
+    },
+    "neck_yaw": {
+      "max_abs_nm": 0.4645,
+      "mean_abs_nm": 0.0309,
+      "frac_time_above_90pct_stall": 0.0
+    },
+    "neck_pitch": {
+      "max_abs_nm": 0.4834,
+      "mean_abs_nm": 0.0329,
+      "frac_time_above_90pct_stall": 0.0
+    }
+  },
+  "note": "Con empujones. Resto de la aleatorizaci\u00f3n activa. Bloqueo a la tensi\u00f3n fija. Actuadores HD-1910 sin confirmar."
+}

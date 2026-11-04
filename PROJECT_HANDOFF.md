@@ -420,3 +420,21 @@ Cambios de herramientas: `check_training_setup.py` usa ahora la cota exacta del 
 **No comprobado:** la causa de que la etapa 3 empeore las caídas (hipótesis sin medir: empujones de entrenamiento demasiado fuertes para la rodilla a baja tensión); si fase2_d_doble pasa la prueba de la guía (no se midió con empujones ni a 6 V); parámetros reales del HD-1910 (todo se reentrena tras medirlos); el reloj de marcha lo tendría que generar el firmware en la Radxa a 50 Hz. Con orden cero y acción cero (`stand`) caen 7 de 64 robots con el modelo anterior.
 
 **Siguiente paso a decidir por el dueño:** (a) medir `fase2_d_doble` con la prueba de la guía y el par, para ver si la etapa 2 basta; (b) repetir la etapa 3 con empujones de 0,16 m/s; (c) pedir el criterio de saturación solo a 7,4 V, donde cumple, si el robot no va a funcionar a 6 V. Ninguno se lanza sin su decisión.
+
+#### Medidas con los empujones de la guía y a 6,6 V (fase2_d_doble model_7496 y fase2_e_doble model_11495)
+
+Tras la decisión del 4 de noviembre (tensión mínima de marcha 6,6 V, empujones de la guía de ±0,12 m/s), se repitió todo con la opción nueva `--push 0.12` de `measure_gait.py` y `measure_actuator_torque.py`. **La etapa 3 entrenaba y se medía con empujones de ±0,20 m/s, más fuertes que los de la guía; por eso el 82 % anterior no era la prueba de la guía.** Resultados en `results/training_*_push012_*.json` y `training_movements_*_6.6V.json`.
+
+| | fase2_d_doble (etapa 2) | fase2_e_doble (etapa 3) |
+|---|---|---|
+| Prueba de la guía (5 min, 6 a 8,4 V, 256 robots) | 99,6 % sin caer | 100 % |
+| 5 min a 6,6 V | 99,2 % | 100 % |
+| 5 min a 7,4 V | 100 % | 100 % |
+| Rodilla izq./der. sobre el 90 % del bloqueo a 6,6 V | **8,2 % / 7,5 %** | **8,4 % / 6,5 %** (tobillo der. 2,2 %) |
+| Ídem a 7,4 V | 4,9 % / 3,8 % | 3,7 % / 2,8 % |
+| Ídem a 8,4 V | 2,2 % / 1,8 % | 1,8 % / 1,8 % |
+| Siete movimientos a 6,6 V, sin empujones | **cumplen los siete** (giro izq. 0,137, giro der. 0,121 rad/s) | cumplen seis; **giro der. 0,163, no cumple** (giro izq. 0,149) |
+
+**Conclusión: ninguno cumple todo.** Los dos pasan la prueba de caídas con holgura. Los dos fallan la saturación de la rodilla a 6,6 V (más del 5 %); a 7,4 y 8,4 V cumplen. fase2_e_doble además falla el giro a la derecha. El par máximo supera el bloqueo en las tres tensiones (0,838 frente a 0,813 N·m a 6,6 V; 0,940 frente a 0,912 a 7,4 V; 1,067 frente a 1,036 a 8,4 V) en los dos modelos; el bloqueo a 8,4 V es extrapolado. Candidato más cercano a cerrar la fase 2: fase2_d_doble, que solo falla la rodilla a 6,6 V. No se ha reentrenado nada; la decisión es del dueño.
+
+No comprobado: si una corrida corta más con penalización de par en la rodilla baja la saturación a 6,6 V sin perder el giro; los siete movimientos con empujones; el HD-1910 real. Los movimientos se midieron sin empujones, como en los controles anteriores.

@@ -31,11 +31,12 @@ def measure_gait(
   nominal_mass: bool = False,
   drop_link_contacts: str | None = None,
   pushes: bool = False,
+  push_speed: float | None = None,
   num_envs: int = 256,
   seconds: float = 20.0,
 ) -> dict:
   """Corre `checkpoint` con una orden fija y devuelve las medidas. Las opciones de diagnóstico quitan partes del modelo."""
-  env_cfg = eval_env_cfg(num_envs, seconds, vin, pushes)
+  env_cfg = eval_env_cfg(num_envs, seconds, vin, pushes, push_speed)
   fix_command(env_cfg, forward, turn, lateral)
   if nominal_mass:
     for event in ("randomize_body_mass", "base_com"):
@@ -116,7 +117,8 @@ def measure_gait(
     "num_envs": n,
     "seconds_simulated": seconds,
     "vin_v": vin,
-    "pushes": pushes,
+    "pushes": pushes or push_speed is not None,
+    "push_speed_m_s": push_speed if push_speed is not None else (0.2 if pushes else None),
     "nominal_mass": nominal_mass,
     "dropped_link_contacts": drop_link_contacts,
     "forward_command_m_s": forward,
@@ -133,7 +135,7 @@ def measure_gait(
     "touchdowns_per_foot_per_s": mean(total_td / 2 / seconds_counted),
     "fraction_alternating_touchdowns": mean(alt_frac),
     "fraction_touchdowns_left": round(float(touchdowns[ok, 0].sum() / touchdowns[ok].sum().clamp(min=1)), 4) if ok.any() else None,
-    "note": f"{'Con' if pushes else 'Sin'} empujones. Orden fija. Se descartan los primeros {WARMUP_S} s. Solo entornos que no caen. Velocidad del centro de masas de base_link.",
+    "note": f"{'Con' if pushes or push_speed is not None else 'Sin'} empujones. Orden fija. Se descartan los primeros {WARMUP_S} s. Solo entornos que no caen. Velocidad del centro de masas de base_link.",
   }
   env.close()
   return result

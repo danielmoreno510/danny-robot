@@ -26,12 +26,13 @@ def main() -> None:
   parser.add_argument("--forward-speed", type=float, default=None, help="Orden fija de avance en m/s; sin ella, las del entrenamiento")
   parser.add_argument("--name", required=True, help="Nombre del resultado en results/")
   parser.add_argument("--vin", type=float, default=None, help="Tensión fija de los servos en V; sin ella, la del entrenamiento (6 a 8,4)")
-  parser.add_argument("--pushes", action="store_true", help="Mantiene los empujones del entrenamiento")
+  parser.add_argument("--pushes", action="store_true", help="Mantiene los empujones del entrenamiento (±0,20 m/s)")
+  parser.add_argument("--push", type=float, default=None, metavar="M_S", help="Empujones de ±M_S m/s en XY cada 3 a 6 s (la guía usa 0,12)")
   parser.add_argument("--num-envs", type=int, default=64)
   parser.add_argument("--seconds", type=float, default=20.0)
   args = parser.parse_args()
 
-  env_cfg = eval_env_cfg(args.num_envs, args.seconds, args.vin, args.pushes)
+  env_cfg = eval_env_cfg(args.num_envs, args.seconds, args.vin, args.pushes, args.push)
   if args.forward_speed is not None:
     fix_command(env_cfg, args.forward_speed)
   env, policy = load_policy(env_cfg, args.checkpoint)
@@ -70,7 +71,8 @@ def main() -> None:
     "num_envs": args.num_envs,
     "seconds_simulated": args.seconds,
     "vin_v": args.vin,
-    "pushes": args.pushes,
+    "pushes": args.pushes or args.push is not None,
+    "push_speed_m_s": args.push if args.push is not None else (0.2 if args.pushes else None),
     "stall_torque_nm": round(stall_nm, 4),
     "joints": {
       name: {
@@ -80,7 +82,7 @@ def main() -> None:
       }
       for i, name in enumerate(joint_names)
     },
-    "note": f"{'Con' if args.pushes else 'Sin'} empujones. Resto de la aleatorización activa. Bloqueo a {'la tensión fija' if args.vin is not None else '6 V (peor caso; la tensión se sortea de 6 a 8,4 V)'}. Actuadores HD-1910 sin confirmar.",
+    "note": f"{'Con' if args.pushes or args.push is not None else 'Sin'} empujones. Resto de la aleatorización activa. Bloqueo a {'la tensión fija' if args.vin is not None else '6 V (peor caso; la tensión se sortea de 6 a 8,4 V)'}. Actuadores HD-1910 sin confirmar.",
   }
   RESULTS.mkdir(parents=True, exist_ok=True)
   out = RESULTS / f"training_torque_{args.name}.json"

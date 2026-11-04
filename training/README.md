@@ -39,6 +39,8 @@ Comprobar el reloj de marcha y su recompensa sin simular (sale con código 1 si 
 
 La ganancia del firmware del servo es `KP_FW` en `src/danny_training/robot.py`.
 
+Empujones en `measure_gait.py` y `measure_actuator_torque.py`: `--pushes` los deja como en la etapa 3 (±0,20 m/s) y `--push M_S` fija su fuerza (±M_S m/s en XY cada 3 a 6 s; la guía usa `--push 0.12`).
+
 Diagnóstico con `measure_gait.py`: `--nominal-mass` quita la aleatorización de masa y centro de masas, y `--drop-link-contacts REGEX` quita los contactos entre eslabones cuyo nombre encaje (`.` los quita todos).
 
 Ver las curvas del entrenamiento en directo (solo CPU; http://localhost:6006, filtra las corridas por nombre):

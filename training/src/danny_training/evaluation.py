@@ -24,17 +24,20 @@ def stall_torque_nm(vin: float) -> float:
   return STALL_TORQUE_6V_NM + (vin - 6.0) * (STALL_TORQUE_7P4V_NM - STALL_TORQUE_6V_NM) / (7.4 - 6.0)
 
 
-def eval_env_cfg(num_envs: int, seconds: float, vin: float | None = None, pushes: bool = False) -> ManagerBasedRlEnvCfg:
+def eval_env_cfg(num_envs: int, seconds: float, vin: float | None = None, pushes: bool = False, push_speed: float | None = None) -> ManagerBasedRlEnvCfg:
   """Configuración de entrenamiento sin empujones: se mide la marcha, no la recuperación.
 
   Con `vin`, todos los servos trabajan a esa tensión fija (V), sin caída de tensión por la carga. Sin ella, la tensión se
-  sortea entre 6 y 8,4 V como en el entrenamiento. Con `pushes`, se mantienen los empujones del entrenamiento.
+  sortea entre 6 y 8,4 V como en el entrenamiento. Con `pushes`, se mantienen los empujones del entrenamiento (±0,20 m/s, la etapa 3).
+  Con `push_speed` (m/s), hay empujones de esa fuerza en XY, ±`push_speed`, cada 3 a 6 s; la guía usa 0,12.
   """
   env_cfg = load_env_cfg(TASK)
   env_cfg.scene.num_envs = num_envs
   env_cfg.episode_length_s = seconds
-  if not pushes:
+  if not pushes and push_speed is None:
     env_cfg.events.pop("push_robot", None)
+  elif push_speed is not None:
+    env_cfg.events["push_robot"].params["velocity_range"] = {"x": (-push_speed, push_speed), "y": (-push_speed, push_speed)}
   if vin is not None:
     actuator = env_cfg.scene.entities["robot"].articulation.actuators[0]
     actuator.vin_range = (vin, vin)
