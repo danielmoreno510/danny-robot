@@ -3,7 +3,7 @@
 Punto de entrada para continuar **Robot Danny** en un chat nuevo o en otra computadora.
 
 **Fecha:** 4 de noviembre de 2026. **Etapa actual:** 3, MuJoCo, con 2.2, 2.3 y 2.4 abiertas por lo físico. La etapa 1 está
-cerrada salvo la 1.2, que va en paralelo.
+cerrada.
 **Siguiente paso:** el amigo del usuario, que tiene la RTX 3080 Ti, repite la marcha con las escalas para Danny de la
 [guía de entrenamiento](documentation/training-guide.md). El primer intento no caminó: la configuración seguía a escala del G1.
 La causa se dedujo de su configuración y sus registros, pero la corrección aún no se ha entrenado, y `training/` sigue en su
@@ -11,6 +11,9 @@ rama `entrenamiento-danny`, y aún le faltaban esas escalas al revisarla. `main`
 request aprobado por el usuario, que es quien cambia el diseño. Levantarse es posible en simulación, pero aún frágil. El robot completo ya está en CAD:
 [piernas](documentation/lower-body-design.md), [tronco](documentation/upper-body-design.md) y
 [paneles](documentation/panels-and-protection.md).
+
+**Decisión del 4 de noviembre, fuentes de movimiento humano (1.2):** CMU y 100STYLE, que permiten publicar lo derivado
+([sección 6](documentation/research-and-requirements.md)). La etapa 1 queda cerrada. LAFAN1 solo en local si hiciera falta.
 
 **Decisión del 4 de noviembre, tensión mínima:** Danny deja de caminar a 6,6 V (3,3 V por celda) y el programa corta a 6,4 V. Se sigue
 entrenando de 6 a 8,4 V, pero la saturación de la Fase 2 se mide a 6,6, 7,4 y 8,4 V fijos ([guía](documentation/training-guide.md), 4.2).
@@ -77,7 +80,6 @@ entonces el diseño usa datos de ficha.
 ## Pendiente de decidir por el usuario
 
 - Licencia del repositorio, que es público.
-- Fuentes de movimiento humano (1.2): sin ellas no empieza la etapa 4.4.
 
 ## Última verificación
 

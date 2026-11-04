@@ -10,15 +10,15 @@ Requisitos y criterios: [documentation/research-and-requirements.md](documentati
 | Paso | Trabajo | Estado |
 |---|---|---|
 | 1.1 | Referencias, requisitos y primera comparación de actuadores | Hecho |
-| 1.2 | Fuentes de movimiento humano y sus licencias | Pendiente |
+| 1.2 | Fuentes de movimiento humano y sus licencias | Hecho: CMU y 100STYLE, elegidas por el usuario ([fuentes](documentation/research-and-requirements.md)) |
 | 1.3 | Arquitectura y desglose de piezas: [40 cm](documentation/architecture-and-bom.md) | Hecho y aprobado |
 | 1.4 | [Handbook](documentation/HANDBOOK.md) completo | Hecho |
 
 **Criterio del handbook:** otra persona, con su Claude y solo esa documentación, puede seguir el proyecto.
 Se comprueba con un agente sin contexto previo, que debe decir qué hacer a continuación y por qué.
 
-**Puerta, pasada:** altura y arquitectura aprobadas con datos de ficha, y handbook probado. La etapa 1.2 sigue
-en paralelo y no frena el diseño.
+**Puerta, pasada:** altura y arquitectura aprobadas con datos de ficha, y handbook probado. La etapa 1.2 se cerró
+el 4 de noviembre de 2026.
 
 ## Etapa 2: diseño en Autodesk Fusion (actual)
 

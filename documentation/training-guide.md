@@ -148,7 +148,8 @@ el dueño del proyecto.
 
 ### 4.4 Movimiento natural
 
-**Espera a que estén elegidas las fuentes de movimiento humano** de la etapa 1.2. Aquí es donde deja de moverse raro.
+**Fuentes elegidas en la etapa 1.2: CMU y 100STYLE** (sección 6 de `research-and-requirements.md`), retargeteadas con GMR. LAFAN1 y
+AMASS no se publican. Aquí es donde deja de moverse raro.
 
 ## Reglas
 

@@ -163,12 +163,12 @@ positivo lleva pierna y brazo atrás, y roll positivo lleva el lado izquierdo af
 
 ## 6. Etapa 1: investigación y definición
 
-Terminada salvo la 1.2, que va en paralelo y no frena la etapa 2. Para esa etapa:
+Terminada. La 1.2 se cerró el 4 de noviembre de 2026:
 
 **Objetivo:** elegir fuentes de movimiento humano para imitar.
 
 **Entrega:** sección en `research-and-requirements.md` con las fuentes, su licencia y si permiten un repositorio
-público. Candidatas sin revisar: AMASS y LAFAN1.
+público. Elegidas el 4 de noviembre de 2026: CMU y 100STYLE, en la sección 6 de ese documento.
 
 **Terminada cuando:** hay al menos una fuente con licencia compatible. Se investiga en paralelo: no frena el
 diseño.
