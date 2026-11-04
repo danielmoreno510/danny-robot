@@ -1,0 +1,10 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-02_18-29-59_fase1b_separacion_500\\model_1498.pt",
+  "task": "Mjlab-Velocity-Flat-Danny",
+  "num_envs": 256,
+  "seconds_simulated": 20.0,
+  "vin_v": 7.4,
+  "peak_height_mean_mm": 39.55,
+  "peak_height_median_mm": 38.14,
+  "note": "Sin empujones. Altura de la suela sobre el suelo, m\u00e1ximo por entorno, promedio de entornos."
+}

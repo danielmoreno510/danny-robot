@@ -1,0 +1,14 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-01_22-42-01_marcha_guia_3000\\model_1000.pt",
+  "task": "Mjlab-Velocity-Flat-Danny",
+  "num_envs": 256,
+  "seconds_simulated": 20.0,
+  "fraction_standing_full_episode": 0.0,
+  "survival_s": {
+    "mean": 0.4032030701637268,
+    "min": 0.35999998450279236,
+    "median": 0.3999999761581421
+  },
+  "mean_xy_velocity_error_m_s": 0.5394777059555054,
+  "note": "Sin empujones. Perturbaciones de entrenamiento activas. Actuadores HD-1910 sin confirmar."
+}

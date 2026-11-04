@@ -118,6 +118,8 @@ física del entrenamiento da pasos alternos con zancada de 98 mm. Si Danny no ca
 **Cajas de colisión:** el modelo trae fricción 0,35, prioridad 1 y 13 contactos entre eslabones. En `DANNY_COLLISION`, usa `condim=3` y `priority=1` también para
 `.*_box_\d+`, o el suelo les pondrá 1,0. Aleatoriza la masa en todos los cuerpos con `shared_random=True`, para que sea ±10 % de verdad.
 
+**Resultado del 2 de noviembre: con un reloj de marcha camina.** Con las escalas de arriba y `kp_fw` 5, Danny seguía apoyado en un pie y sin avanzar, con `air_time` y con una penalización de aterrizaje repetido. Con un reloj de marcha (fase de 0,8 s que solo avanza con orden de movimiento, seno y coseno en la observación, y una recompensa de contacto en contrafase de peso 1,5) caminó hacia delante a 0,248 m/s en 1000 iteraciones, y gira hasta 0,4 rad/s, con error de 0,020 m/s y apoyos alternos al 99,9 % (`results/training_gait_marcha_reloj_1000.json`). Se probó hacia delante y con giro, sin empujones ni marcha lateral. Detalles en `PROJECT_HANDOFF.md`.
+
 **El error de posición no indica un fallo.** El servo funciona como un muelle blando: a 7,4 V da 1,03 N·m/rad y satura con
 0,88 rad (`results/walk_incentive.json`). Así que el par sale de ese error, y 0,8 N·m exigen unos 0,8 rad.
 
