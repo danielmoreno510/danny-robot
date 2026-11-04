@@ -16,7 +16,8 @@ from pathlib import Path
 
 import torch
 
-from danny_training.evaluation import RESULTS, TASK, eval_env_cfg, fix_command, load_policy, stall_torque_nm
+from danny_training.evaluation import RESULTS, TASK, eval_env_cfg, fix_command, load_policy
+from danny_training.actuator import stall_torque_nm
 
 
 

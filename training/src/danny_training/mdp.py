@@ -9,7 +9,7 @@ from mjlab.managers.event_manager import requires_model_fields
 from mjlab.managers.reward_manager import RewardTermCfg
 from mjlab.managers.scene_entity_config import SceneEntityCfg
 
-from danny_training.actuator import FrictionDRBamActuator
+from danny_training.actuator import FrictionDRBamActuator, stall_torque_nm
 
 _DEFAULT_ASSET_CFG = SceneEntityCfg("robot")
 
@@ -58,6 +58,30 @@ def track_com_linear_velocity(
   xy_error = torch.sum(torch.square(command[:, :2] - actual[:, :2]), dim=1)
   z_error = torch.square(actual[:, 2])
   return torch.exp(-(xy_error + z_error) / std**2)
+
+def torque_excess_penalty(torque: torch.Tensor, vin: torch.Tensor, threshold: float) -> torch.Tensor:
+  """Suma, por entorno, del cuadrado del par que pasa de `threshold` veces el bloqueo a la tensión de cada entorno.
+
+  `torque` tiene forma (entornos, articulaciones) y `vin` (entornos, 1). Vale 0 mientras ningún par pase del umbral.
+  """
+  excess = (torque.abs() - threshold * stall_torque_nm(vin)).clamp(min=0.0)
+  return excess.square().sum(dim=1)
+
+
+def servo_torque_excess(
+  env: ManagerBasedRlEnv,
+  threshold: float,
+  asset_cfg: SceneEntityCfg = _DEFAULT_ASSET_CFG,
+) -> torch.Tensor:
+  """Penaliza solo el par de las articulaciones de `asset_cfg` por encima de `threshold` veces el bloqueo de la tensión de su entorno.
+
+  No castiga el par en general: la rodilla satura a 6,6 V (guía 4.2) y esto empuja a quedarse por debajo del 90 % del bloqueo sin
+  gastar recompensa en el par normal. Usa la tensión sorteada de cada entorno, sin la caída por la carga (hasta unos 0,15 V).
+  """
+  asset: Entity = env.scene[asset_cfg.name]
+  vin = next(a for a in asset.actuators if isinstance(a, FrictionDRBamActuator)).vin_tensor
+  return torque_excess_penalty(asset.data.actuator_force[:, asset_cfg.joint_ids], vin, threshold)
+
 
 def gait_contact_phase(env: ManagerBasedRlEnv, sensor_name: str, clock_name: str = "gait") -> torch.Tensor:
   """Premia el contacto de los pies que marca el reloj de marcha (`gait_clock`). Vale de 0 a 1.

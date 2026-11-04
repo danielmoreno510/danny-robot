@@ -75,6 +75,9 @@ def measure_gait(
   yaw_sum = torch.zeros(n, device=device)
   yaw_err_sum = torch.zeros(n, device=device)
   yaw_abs_sum = torch.zeros(n, device=device)
+  knee_ids = robot.find_joints(["left_knee", "right_knee"], preserve_order=True)[0]
+  knee_stance_sum = torch.zeros(n, 2, device=device)
+  knee_stance_steps = torch.zeros(n, 2, device=device)
   counted = 0
 
   obs = env.get_observations()
@@ -95,6 +98,8 @@ def measure_gait(
         yaw_err_sum += (yaw - cmd[:, 2]).abs()
         yaw_abs_sum += yaw.abs()
         single += (found.sum(dim=1) == 1).float()
+        knee_stance_sum += robot.data.joint_pos[:, knee_ids] * found.float()
+        knee_stance_steps += found.float()
         if prev is not None:
           for foot in (0, 1):
             down = found[:, foot] & ~prev[:, foot]
@@ -134,6 +139,7 @@ def measure_gait(
     "fraction_time_single_support": mean(single / counted),
     "touchdowns_per_foot_per_s": mean(total_td / 2 / seconds_counted),
     "fraction_alternating_touchdowns": mean(alt_frac),
+    "mean_knee_angle_stance_deg": mean(torch.rad2deg(knee_stance_sum.sum(dim=1) / knee_stance_steps.sum(dim=1).clamp(min=1))),
     "fraction_touchdowns_left": round(float(touchdowns[ok, 0].sum() / touchdowns[ok].sum().clamp(min=1)), 4) if ok.any() else None,
     "note": f"{'Con' if pushes or push_speed is not None else 'Sin'} empujones. Orden fija. Se descartan los primeros {WARMUP_S} s. Solo entornos que no caen. Velocidad del centro de masas de base_link.",
   }

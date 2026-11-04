@@ -23,7 +23,9 @@ import torch
 from mjlab.envs import ManagerBasedRlEnv
 from mjlab.tasks.registry import load_env_cfg
 
-from danny_training.env_cfgs import DR_STAGE, DR_STAGES
+from danny_training.actuator import stall_torque_nm
+from danny_training.env_cfgs import DR_STAGE, DR_STAGES, PUSH_OVERRIDE_M_S
+from danny_training.mdp import torque_excess_penalty
 from danny_training.evaluation import TASK
 from danny_training.robot import DANNY_XML
 
@@ -106,9 +108,26 @@ def main() -> None:
   top, limit = float(half_width.max()), math.radians(stage["backlash_deg"]) / 2
   check(half_width is not None and 0.6 * limit <= top <= limit + 1e-6, f"semiancho de holgura máximo {math.degrees(top):.3f}° (etapa {DR_STAGE}: hasta {stage['backlash_deg'] / 2:.3f}°)")
   push = env.event_manager.get_term_cfg("push_robot").params["velocity_range"]["x"]
-  check(abs(push[1] - stage["push"]) < 1e-9, f"empujones de ±{push[1]} m/s (etapa {DR_STAGE}: ±{stage['push']})")
+  expected_push = PUSH_OVERRIDE_M_S if PUSH_OVERRIDE_M_S is not None else stage["push"]
+  check(abs(push[1] - expected_push) < 1e-9, f"empujones de ±{push[1]} m/s (esperado ±{expected_push})")
   twist = env.command_manager.get_term_cfg("twist")
   check(twist.rel_standing_envs == 0.2 and twist.rel_forward_envs == 0.0, f"órdenes: {twist.rel_standing_envs:.0%} quietos y {twist.rel_forward_envs:.0%} forzados a avanzar")
+
+  # Castigo de par: 0 bajo el 80 % del bloqueo de la tensión de cada entorno, y creciente por encima.
+  vin = torch.tensor([[6.0], [7.4], [8.4]], device=env.device)
+  stall = stall_torque_nm(vin)
+  levels = [0.5, 0.8, 0.9, 1.0, 1.2]
+  values = [torque_excess_penalty((level * stall).expand(-1, 2), vin, 0.8) for level in levels]
+  check(
+    bool((values[0] == 0).all() and (values[1] < 1e-9).all() and all(bool((b > a).all()) for a, b in zip(values[1:], values[2:]))),
+    "castigo de par: 0 hasta el 80 % del bloqueo (a 6, 7,4 y 8,4 V) y creciente por encima",
+  )
+  term = env.reward_manager.get_term_cfg("servo_torque_excess")
+  env.reset()
+  for _ in range(100):
+    env.step(torch.zeros(env.num_envs, env.action_manager.total_action_dim, device=env.device))
+  standing = term.func(env, **term.params)
+  check(float(standing.max()) == 0.0, f"castigo de par de pie, con acción cero: máximo {float(standing.max()):.6f} (esperado 0)")
 
   env.close()
   if failures:

@@ -14,16 +14,6 @@ from mjlab.tasks.registry import load_env_cfg, load_rl_cfg, load_runner_cls
 TASK = "Mjlab-Velocity-Flat-Danny"
 RESULTS = Path(__file__).resolve().parents[3] / "results"
 
-# Par de bloqueo del servo con el límite de PWM de 0,97, medido por tensión (N·m): 0,739 a 6 V y 0,912 a 7,4 V. Crece con la tensión.
-STALL_TORQUE_6V_NM = 0.739
-STALL_TORQUE_7P4V_NM = 0.912
-
-
-def stall_torque_nm(vin: float) -> float:
-  """Par de bloqueo a `vin` voltios, por la recta de los dos puntos medidos (a 8,4 V es una extrapolación)."""
-  return STALL_TORQUE_6V_NM + (vin - 6.0) * (STALL_TORQUE_7P4V_NM - STALL_TORQUE_6V_NM) / (7.4 - 6.0)
-
-
 def eval_env_cfg(num_envs: int, seconds: float, vin: float | None = None, pushes: bool = False, push_speed: float | None = None) -> ManagerBasedRlEnvCfg:
   """Configuración de entrenamiento sin empujones: se mide la marcha, no la recuperación.
 

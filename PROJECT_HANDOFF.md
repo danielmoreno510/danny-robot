@@ -438,3 +438,24 @@ Tras la decisión del 4 de noviembre (tensión mínima de marcha 6,6 V, empujone
 **Conclusión: ninguno cumple todo.** Los dos pasan la prueba de caídas con holgura. Los dos fallan la saturación de la rodilla a 6,6 V (más del 5 %); a 7,4 y 8,4 V cumplen. fase2_e_doble además falla el giro a la derecha. El par máximo supera el bloqueo en las tres tensiones (0,838 frente a 0,813 N·m a 6,6 V; 0,940 frente a 0,912 a 7,4 V; 1,067 frente a 1,036 a 8,4 V) en los dos modelos; el bloqueo a 8,4 V es extrapolado. Candidato más cercano a cerrar la fase 2: fase2_d_doble, que solo falla la rodilla a 6,6 V. No se ha reentrenado nada; la decisión es del dueño.
 
 No comprobado: si una corrida corta más con penalización de par en la rodilla baja la saturación a 6,6 V sin perder el giro; los siete movimientos con empujones; el HD-1910 real. Los movimientos se midieron sin empujones, como en los controles anteriores.
+
+#### Cuarto intento: `fase2_f_rodilla` (castigo de par en rodillas y tobillos), resultado final: CUMPLE
+
+**Criterio escrito antes de lanzar (plan del dueño tras 2f36307):** desde `fase2_d_doble/model_7496`, ~1500 iteraciones con etapa 2 de aleatorización y empujones de ±0,12 m/s. Nuevo castigo `servo_torque_excess` = -peso · Σ max(0, |τ| − 0,8·τ_bloqueo(vin del entorno))², solo en rodillas y cabeceo de tobillos (no castiga el par normal, solo el exceso). Peso **−317**, elegido para que valga ≈7,5 % de la recompensa por paso al principio (0,00184 de castigo crudo con `model_7496`; 5 %, 7,5 % y 10 % darían 211, 317 y 422). `check_training_setup.py` comprueba que vale 0 hasta el 80 % del bloqueo a 6, 7,4 y 8,4 V, crece por encima y vale 0 de pie con acción cero. Para cumplir: los 7 movimientos a 6,6 V, la prueba de la guía (≥95 %), 5 min a 6,6 V, rodilla sobre el 90 % del bloqueo por debajo del 5 % a 6,6, 7,4 y 8,4 V, y la flexión de rodilla en apoyo comparada con fase2_d_doble.
+
+**Corrida:** `fase2_f_rodilla`, 1500 iteraciones (7496 → 8995), `model_8995.pt`, sin caídas durante el entrenamiento (episodio de 1000 pasos); el castigo bajó de −0,277 a −0,030 por episodio. Opciones nuevas: `DANNY_PUSH_M_S` (fuerza del empujón en entrenamiento) y métrica `mean_knee_angle_stance_deg` en `measure_gait.py`.
+
+| Medida (empujones ±0,12 m/s) | fase2_d_doble (7496) | fase2_f_rodilla (8995) |
+|---|---|---|
+| Prueba de la guía (5 min, 6 a 8,4 V) | 99,6 % sin caer | 100 % |
+| 5 min a 6,6 V | 99,2 % | 100 % |
+| Rodilla izq./der. sobre el 90 % del bloqueo a 6,6 V | 8,2 % / 7,5 % | **0,01 % / 0,04 %** |
+| Ídem a 7,4 V | 4,9 % / 3,8 % | 0,01 % / 0,02 % |
+| Ídem a 8,4 V | 2,2 % / 1,8 % | 0,01 % / 0,01 % |
+| Peor articulación (cualquiera) a 6,6 / 7,4 / 8,4 V | rodilla izq. 8,2 / 4,9 / 2,2 % | cadera roll der. 0,67 / 0,27 / 0,04 % |
+| Flexión de rodilla en apoyo a 6,6 V | 60,6° | 61,3° (sin enderezar la pierna) |
+| Siete movimientos a 6,6 V, sin empujones | cumplen los siete | **cumplen los siete**: giro izq. 0,124, giro der. 0,135 rad/s (límite 0,15); adelante/atrás 0,036; lateral 0,067; quieto 0,0006 |
+
+Resultados en `results/training_*_fase2_f_rodilla_*.json`. **Fase 2 cumple todos los criterios con `fase2_f_rodilla/model_8995.pt`.** Copia del punto de control en `D:\Claude\puntos_de_controlase2_f_rodilla_model_8995.pt` (fuera del repositorio).
+
+**No comprobado / límites:** el par máximo sigue 3 % por encima del bloqueo lineal en las tres tensiones (0,838 frente a 0,813 N·m a 6,6 V; 0,940 frente a 0,912 a 7,4 V; 1,067 frente a 1,036 a 8,4 V), igual que en fase2_d_doble: es un pico puntual del modelo BAM, no saturación sostenida; el bloqueo a 8,4 V es extrapolado. Los movimientos se miden sin empujones. La caída de tensión bajo carga (≤0,15 V) no entra en el castigo. El reloj de marcha exige firmware a 50 Hz en la Radxa. Los parámetros reales del HD-1910 no están confirmados: todo se reentrena tras medir el servo real. Error de importación circular en `measure_actuator_torque.py` (importar `actuator` antes que `evaluation`) corregido con el orden de imports; las tres pruebas de par se repitieron.

@@ -53,6 +53,8 @@ DR_STAGES = {
 }
 DR_STAGE = int(os.environ.get("DANNY_DR_STAGE", "3"))
 assert DR_STAGE in DR_STAGES, f"DANNY_DR_STAGE debe ser 1, 2 o 3, no {DR_STAGE}"
+# DANNY_PUSH_M_S fija la fuerza de los empujones al entrenar, sea cual sea la etapa (la guía usa 0,12).
+PUSH_OVERRIDE_M_S = float(os.environ["DANNY_PUSH_M_S"]) if "DANNY_PUSH_M_S" in os.environ else None
 
 
 def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
@@ -164,7 +166,7 @@ def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     # Empujones de la guía: solo en XY, ±0,12 m/s, cada 3 a 6 s.
     cfg.events["push_robot"].interval_range_s = (3.0, 6.0)
     stage = DR_STAGES[DR_STAGE]
-    push = stage["push"]
+    push = PUSH_OVERRIDE_M_S if PUSH_OVERRIDE_M_S is not None else stage["push"]
     cfg.events["push_robot"].params["velocity_range"] = {"x": (-push, push), "y": (-push, push)}
     cfg.events["randomize_servo_armature"] = EventTermCfg(
         func=dr.joint_armature,
@@ -239,6 +241,14 @@ def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
             "sole_length": 0.085,
             "asset_cfg": SceneEntityCfg("robot", site_names=FOOT_SITES),
         },
+    )
+    # Par de rodillas y tobillos (cabeceo) por encima del 80 % del bloqueo de la tensión de cada entorno: a 6,6 V la rodilla pasaba del
+    # 90 % más del 5 % del tiempo (guía 4.2, results/training_torque_fase2_d_doble_push012_6.6V.json). Solo castiga el exceso.
+    # Peso medido con fase2_d_doble model_7496 (etapa 2, empujones de 0,12): el castigo vale el 7,5 % de la recompensa por paso.
+    cfg.rewards["servo_torque_excess"] = RewardTermCfg(
+        func=danny_mdp.servo_torque_excess,
+        weight=-317.0,
+        params={"threshold": 0.8, "asset_cfg": SceneEntityCfg("robot", joint_names=(r".*knee.*", r".*ankle_pitch.*"))},
     )
     # Contacto en contrafase según el reloj de marcha, solo con orden de movimiento (ver gait_clock y mdp).
     cfg.rewards["gait_contact_phase"] = RewardTermCfg(

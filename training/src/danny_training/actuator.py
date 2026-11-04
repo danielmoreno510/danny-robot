@@ -16,6 +16,16 @@ import torch
 from bam.mjlab import BamActuator, BamActuatorCfg
 
 
+# Par de bloqueo del servo con el límite de PWM de 0,97, medido por tensión (N·m): 0,739 a 6 V y 0,912 a 7,4 V. Crece con la tensión.
+STALL_TORQUE_6V_NM = 0.739
+STALL_TORQUE_7P4V_NM = 0.912
+
+
+def stall_torque_nm(vin):
+  """Par de bloqueo a `vin` voltios (número o tensor), por la recta de los dos puntos medidos (a 8,4 V es una extrapolación)."""
+  return STALL_TORQUE_6V_NM + (vin - 6.0) * (STALL_TORQUE_7P4V_NM - STALL_TORQUE_6V_NM) / (7.4 - 6.0)
+
+
 def apply_backlash(target: torch.Tensor, output: torch.Tensor, half_width: torch.Tensor) -> torch.Tensor:
   """Juego mecánico sobre la posición objetivo: la salida sigue al objetivo con un retraso de hasta `half_width`.
 
