@@ -396,3 +396,21 @@ Cambios de herramientas: `check_training_setup.py` usa ahora la cota exacta del 
 #### Tercer intento, control 1 (fase2_d_doble, etapa 2, model_7496, 3000 iteraciones desde fase2_a model_4497)
 
 `results/training_movements_fase2_d_doble_7496.json` (7,4 V, aleatorización completa de la etapa 3 de evaluación, sin empujones): **cumplen los siete movimientos**, sin caer 1,000 en todos. Error de giro por paso: adelante 0,070, atrás 0,073, lateral izquierda 0,030, lateral derecha 0,034, giro izquierda 0,125 (media 0,424), giro derecha 0,114 (media -0,421), quieto 0,001. Error lineal máximo 0,070 m/s (laterales). La recompensa doble corrige lo que empeoró con std 0,25 solo: atrás vuelve de 0,522 a 0,073. Es solo el control de la etapa 2 de entrenamiento; falta la etapa 3 (`fase2_e_doble`, 4000 iteraciones), el control final y la prueba de la guía. No se ha medido todavía con empujones ni a 6 V.
+
+#### Tercer intento, resultado final (fase2_e_doble, etapa 3, model_11495, 4000 iteraciones desde fase2_d_doble model_7496): NO CUMPLE
+
+**Criterio** (el de la fase 2): cada movimiento por separado con 256 robots, 20 s: >=95 % sin caer, error <0,08 m/s o <0,15 rad/s, quieto se queda quieto; prueba de la guía: 0,25 m/s, 5 min, >=95 % sin caer con aleatorización completa, y ninguna articulación saturada (>90 % del bloqueo) más del 5 % del tiempo.
+
+**Movimientos** (`results/training_movements_fase2_e_doble_11495.json`, 7,4 V, sin empujones): sin caer 1,000 en los siete. Error de giro por paso: adelante 0,067, atrás 0,086, lateral izquierda 0,027, lateral derecha 0,033, giro izquierda 0,135 (media 0,385), **giro derecha 0,158 (media -0,350), no cumple por 0,008 rad/s**, quieto 0,002. Error lineal máximo 0,076 m/s (lateral izquierda). Los demás cumplen.
+
+**Prueba de la guía** (`training_gait_fase2_e_doble_prueba_guia.json`, empujones, 6 a 8,4 V, 5 min, 256 robots): **82,4 % sin caer, no cumple** (criterio 95 %).
+
+**Caídas separadas** (`training_gait_fase2_e_doble_5min_*.json`): sin empujones a 7,4 V 100 %; con empujones a 7,4 V 83,2 %; con empujones a 6 V 82,8 %. Las caídas vienen de los empujones. Peor que fase2_c (91,8 % y 85,2 %).
+
+**Par** (`training_torque_fase2_e_doble_{6.0,7.4,8.4}V.json`, 300 s, empujones, 64 robots, bloqueo de su propia tensión): la rodilla izquierda supera el 90 % del bloqueo el **13,2 % del tiempo a 6 V** (derecha 10,1 %), **4,9 % a 7,4 V** (derecha 3,4 %) y 1,8 % a 8,4 V (derecha 1,6 %; tobillo derecho 1,2 %). **No cumple a 6 V**; a 7,4 y 8,4 V queda por debajo del 5 %, la izquierda a 7,4 V por muy poco. El par máximo pasa un poco del bloqueo en las tres tensiones (0,762 frente a 0,739 N·m a 6 V; 0,940 frente a 0,912 a 7,4 V; 1,067 frente a 1,036 a 8,4 V). Peor que fase2_c a 6 V (5,7 % y 2,5 %).
+
+**Resultado:** la fase 2 no se aprueba. Fallan la prueba de la guía (82,4 %), la saturación de la rodilla a 6 V, y el giro a la derecha por 0,008 rad/s. La recompensa de giro doble resolvió el seguimiento de giro en la etapa 2 (fase2_d_doble cumplía los siete movimientos), pero la etapa 3 con empujones de 0,20 m/s empeoró las caídas y la saturación respecto a fase2_c. No hay ONNX, vídeos ni PR a main. La fase 3 (agacharse) no se empieza.
+
+**No comprobado:** la causa de que la etapa 3 empeore las caídas (hipótesis sin medir: empujones de entrenamiento demasiado fuertes para la rodilla a baja tensión); si fase2_d_doble pasa la prueba de la guía (no se midió con empujones ni a 6 V); parámetros reales del HD-1910 (todo se reentrena tras medirlos); el reloj de marcha lo tendría que generar el firmware en la Radxa a 50 Hz. Con orden cero y acción cero (`stand`) caen 7 de 64 robots con el modelo anterior.
+
+**Siguiente paso a decidir por el dueño:** (a) medir `fase2_d_doble` con la prueba de la guía y el par, para ver si la etapa 2 basta; (b) repetir la etapa 3 con empujones de 0,16 m/s; (c) pedir el criterio de saturación solo a 7,4 V, donde cumple, si el robot no va a funcionar a 6 V. Ninguno se lanza sin su decisión.
