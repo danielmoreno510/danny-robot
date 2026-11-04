@@ -192,8 +192,8 @@ parámetros son de otro robot: lo aprendido no se instala directo en el robot f�
 |---|---|---|
 | 0 | Preparar: main fusionado, modelo comprobado, colisiones, masa, centro de masas y bloqueo de par | Hecho el 2 de noviembre (abajo) |
 | 1 | Validar la marcha con el modelo final | Aprobada el 2 de noviembre con la fase 1b (abajo): desde cero no aprendió, y reentrenando desde la política antigua con penalización de choques sí |
-| 2 | Movimiento completo (avanzar, retroceder, lateral, girar, quieto) con armadura, holgura y empujones: 10 000 iteraciones | Pendiente |
-| 3 | Agacharse: orden de altura del cuerpo, hasta 3 000 iteraciones | Pendiente |
+| 2 | Movimiento completo (avanzar, retroceder, lateral, girar, quieto) con armadura, holgura y empujones | Aprobada el 4 de noviembre con `fase2_f_rodilla/model_8995.pt` (ver más abajo; PR 1 a main) |
+| 3 | Agacharse: orden de altura del cuerpo, hasta 3 000 iteraciones | En curso: criterio escrito abajo |
 | 4 | Levantarse (4.3): política propia, 10 000 iteraciones; primero boca abajo, luego boca arriba | Pendiente |
 | 5 | Sentarse y tumbarse: política propia, hasta 5 000 iteraciones por acción; solo si la fase 4 aprueba | Pendiente |
 | 6 | Movimiento natural (4.4): espera a que el usuario elija las fuentes de movimiento humano y sus licencias | Bloqueada por el usuario |
@@ -466,3 +466,19 @@ Resultados en `results/training_*_fase2_f_rodilla_*.json`. **Fase 2 cumple todos
 - Política en ONNX: `policies/danny_fase2_movimiento_completo_2026-11-04.onnx` (837 KB). Entrada `obs` de 80 valores (`base_ang_vel`, `projected_gravity`, `joint_pos`, `joint_vel`, `actions`, `command`, `gait_clock`), salida `actions` de 23 valores. Lo exporta el propio ejecutor de mjlab al guardar. `scripts/verify_policy_onnx.py` lo compara con el punto de control en 500 pasos y 16 robots: diferencia máxima 1,5e-6 (límite 1e-4), en `results/training_onnx_fase2_f_rodilla.json`. Aviso: los metadatos del ONNX dicen rigidez 1, amortiguamiento 0 y escala de acción 1,0; son valores de relleno del modelo BAM (la escala 1,0 sí es la del entrenamiento, `ACTION_SCALE`), no ganancias de un PD real. El programa de la Radxa debe usar la lista `joint_names` y `default_joint_pos` de los metadatos y el reloj de marcha a 50 Hz.
 - Vídeos de 8 s a 6,6 V, sin empujones, 0,4 MB cada uno: `results/videos/fase2_f_rodilla_{adelante,atras,lateral_izquierda,giro_izquierda,quieto}.mp4` (`scripts/record_walk_video.py`).
 - No comprobado: el ONNX no se ha ejecutado en la Radxa ni a 50 Hz reales; los vídeos son de 320×240.
+
+### Fase 3, agacharse: criterio escrito antes de entrenar (4 de noviembre)
+
+**Lo que permite el cuerpo (cálculo estático, no entrenamiento).** Con los pies planos y el tronco recto, el centro de masas queda sobre los pies con cadera -21° y rodilla 47° (la pose de pie). Al agacharse, el tobillo debe valer -(cadera + rodilla) y su límite es -45°, así que la rodilla llega a unos 82° y **el centro de masas baja unos 22 mm** (de 0,212 a 0,190 m, un 10 %). El par estático de la rodilla pasa de 0,13 a 0,24 N·m, el 29 % del bloqueo a 6,6 V (0,813 N·m): el par no es el límite, el rango del tobillo sí. Bajar más exige levantar talones o inclinar el tronco, y eso no se intenta. **Si el dueño quiere un agachado más profundo, es un tema de diseño (rango del tobillo).** Cálculo con `danny_training.xml` y la masa nominal; la masa y el centro de masas aleatorizados lo mueven unos milímetros.
+
+**Orden.** Una orden `height` en metros, de -0,02 a 0 m respecto a la altura de pie, que se suma a la altura objetivo del tronco; se resortea cada 4 a 8 s y el 20 % de los entornos recibe 0. La política la ve como una observación más (82 entradas en lugar de 80).
+
+**Corrida.** `fase3_agacharse`, hasta 3 000 iteraciones desde `fase2_f_rodilla/model_8995.pt`, ampliando la primera capa con columnas a cero para las entradas nuevas (así empieza caminando como en la fase 2), etapa 2 de aleatorización y empujones de ±0,12 m/s. Se mantiene el castigo de par (-317). Se para, sin alargar, si el 50 % o más de los robots cae hacia delante.
+
+**Aprueba** (256 robots, 20 s, 6,6 V fijos, sin empujones, salvo la última prueba) si:
+1. Con orden de altura de 0, -0,01 y -0,02 m y orden de velocidad cero: 95 % o más sin caer, error medio de altura de 4 mm o menos y velocidad media de 0,03 m/s o menos.
+2. Caminando a 0,25 m/s con altura -0,02 m: 95 % o más sin caer y error de velocidad de 0,08 m/s o menos.
+3. Los siete movimientos de la fase 2 con altura 0 siguen cumpliéndose (no se pierde lo aprendido).
+4. Rodilla y tobillo por encima del 90 % del bloqueo menos del 5 % del tiempo a 6,6 V, en el agachado quieto a -0,02 m y en la marcha agachada.
+5. Prueba de la guía (5 min, 6 a 8,4 V, empujones de ±0,12 m/s, altura aleatoria): 95 % o más sin caer.
+Si no cumple, se para y se anota; no se amplía la corrida.
