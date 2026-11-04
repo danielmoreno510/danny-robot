@@ -57,7 +57,7 @@ eslabones cortos no existen. Si la política se aprovecha de eso, añade colisio
 | Altura del centro de masas de pie | 0,212 m |
 | Par de bloqueo | 0,912 N·m a 7,4 V y 0,739 N·m a 6 V según el modelo; 1,47 N·m según ficha. Usa el modelo |
 | Velocidad en vacío | 11,5 rad/s a 7,4 V |
-| Batería | 2S: de 8,4 V a unos 6 V |
+| Batería | 2S: de 8,4 V a unos 6 V bajo carga. Danny deja de caminar a 6,6 V, y el programa corta a 6,4 V |
 | Sensores en el robot real | IMU BNO085 en el torso, y posición y velocidad de cada servo. La política no puede usar nada más |
 
 ## Orden de trabajo
@@ -82,7 +82,9 @@ eslabones cortos no existen. Si la política se aprovecha de eso, añade colisio
 rozamiento y armadura del servo ±30 %, retardo de 10 a 30 ms, holgura de hasta 0,5° y empujones.
 
 **Terminado cuando:** con aleatorización, camina a 0,25 m/s durante 5 minutos simulados sin caer en al menos el 95 % de las
-pruebas. Sin superar la curva del motor, y sin saturar ninguna articulación más del 5 % del tiempo.
+pruebas, con los empujones de la tabla de abajo (±0,12 m/s). Sin superar la curva del motor, y sin saturar ninguna articulación más
+del 5 % del tiempo a 6,6 V, 7,4 V y 8,4 V fijos. Se entrena de 6 a 8,4 V para cubrir la caída de tensión bajo carga, pero Danny
+no camina por debajo de 6,6 V: el criterio de par se mide desde ahí. Decisión del usuario del 4 de noviembre de 2026.
 
 **Primer intento, 1 de noviembre de 2026: no camina.** Los valores por defecto de mjlab están pensados para un G1 de 1,3 m. Con
 ellos, quedarse quieto da el 91 % de la recompensa de velocidad, frente al 36 % en `xgoduck_rl`, que camina con este mismo

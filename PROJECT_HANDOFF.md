@@ -2,7 +2,7 @@
 
 Punto de entrada para continuar **Robot Danny** en un chat nuevo o en otra computadora.
 
-**Fecha:** 1 de noviembre de 2026. **Etapa actual:** 3, MuJoCo, con 2.2, 2.3 y 2.4 abiertas por lo físico. La etapa 1 está
+**Fecha:** 4 de noviembre de 2026. **Etapa actual:** 3, MuJoCo, con 2.2, 2.3 y 2.4 abiertas por lo físico. La etapa 1 está
 cerrada salvo la 1.2, que va en paralelo.
 **Siguiente paso:** el amigo del usuario, que tiene la RTX 3080 Ti, repite la marcha con las escalas para Danny de la
 [guía de entrenamiento](documentation/training-guide.md). El primer intento no caminó: la configuración seguía a escala del G1.
@@ -11,6 +11,12 @@ rama `entrenamiento-danny`, y aún le faltaban esas escalas al revisarla. `main`
 request aprobado por el usuario, que es quien cambia el diseño. Levantarse es posible en simulación, pero aún frágil. El robot completo ya está en CAD:
 [piernas](documentation/lower-body-design.md), [tronco](documentation/upper-body-design.md) y
 [paneles](documentation/panels-and-protection.md).
+
+**Decisión del 4 de noviembre, tensión mínima:** Danny deja de caminar a 6,6 V (3,3 V por celda) y el programa corta a 6,4 V. Se sigue
+entrenando de 6 a 8,4 V, pero la saturación de la Fase 2 se mide a 6,6, 7,4 y 8,4 V fijos ([guía](documentation/training-guide.md), 4.2).
+La prueba de 5 minutos usa los empujones de la guía, ±0,12 m/s. El tercer intento del amigo (`fase2_e_doble`, rama `entrenamiento-danny`)
+se midió con ±0,20 m/s, más fuerte que la guía: 82 % sin caer y rodilla saturada el 13 % a 6 V. Falta repetir esas medidas con ±0,12 m/s
+y a 6,6 V antes de decidir si la Fase 2 aprueba. Que el paro a 6,6 V mantenga los 20 minutos de R5 no está medido.
 
 **Auditoría del 2 de noviembre:** [design-audit.md](documentation/design-audit.md). Corregidos los 6 bloqueos de montaje, el tobillo a -45°,
 la pose de reposo y la simulación con BAM. Quedan puntos importantes: no imprimas piezas definitivas ni compres rodamientos de 10 × 15 × 3.
