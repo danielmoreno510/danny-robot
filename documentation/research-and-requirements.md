@@ -127,15 +127,44 @@ brazo impreso y botellas de agua pesadas en la báscula. A 100 mm del eje, el bl
 0,96 kg. Falta también confirmar cómo entra la alimentación en la FE-URT-2: lo encontrado apunta a bornes de tornillo,
 sin manual oficial leído. No pude leer RCDrone.
 
-## 6. Preguntas abiertas de la etapa 1
+## 6. Fuentes de movimiento humano (etapa 1.2)
+
+Investigado el 4 de noviembre de 2026 en las páginas oficiales de cada fuente. Las licencias de CMU, 100STYLE y LAFAN1 se
+volvieron a leer en su página. No es asesoría legal. El repositorio es público y aún no tiene licencia, así que importa poder
+publicar las trayectorias retargeteadas al robot, no solo usarlas.
+
+| Fuente | Licencia | Publicar trayectorias de Danny | Uso comercial | Formato | Contenido útil |
+|---|---|---|---|---|---|
+| [CMU Mocap](http://mocap.cs.cmu.edu/) | Propia: "copied, modified, or redistributed without permission" | Sí, sin revender los datos | Sí, dentro de un producto | ASF/AMC y c3d; sin SMPL | Andar, gestos, bailes y sentarse. Que tenga levantarse del suelo no está comprobado |
+| [100STYLE](https://www.ianxmason.com/100style/) | CC BY 4.0 | Sí, citando "The 100STYLE Dataset - Ian Mason" | Sí | BVH; sin SMPL | Solo locomoción: 100 estilos hacia delante, atrás y de lado, con transiciones |
+| [Bandai Namco Research](https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset) | CC BY-NC 4.0 | Sí, sin fin comercial | No | BVH | Vida diaria, bailes y gestos con estilos |
+| [Ubisoft LAFAN1](https://github.com/ubisoft/ubisoft-laforge-animation-dataset) | CC BY-NC-ND 4.0 | **No**: ND prohíbe publicar lo adaptado | No | BVH | Andar, bailar, caer y levantarse. Es la que usan mjlab y BeyondMimic |
+| Retargeting de LAFAN1 de Unitree | Hereda NC-ND de LAFAN1 | No | No | CSV para G1 y H1 | El de LAFAN1, para otro robot |
+| [AMASS](https://amass.is.tue.mpg.de/license.html) y modelo SMPL/SMPL-X | Propia de MPI, investigación no comercial | No | No | SMPL | Más de 40 h; necesita registro |
+| SFU, Motion-X, HumanML3D | No comercial; SFU no aclara la redistribución | No o sin aclarar | No | Varios | Repiten lo anterior |
+| KIT Whole-Body | Sin licencia publicada | Sin verificar | Sin verificar | c3d | Habría que preguntar a KIT |
+| Mixamo | Los términos de Adobe prohíben entrenar aprendizaje automático con sus resultados (sección 17(C)) | No | — | FBX | Descartada |
+
+**Herramientas:** [GMR](https://github.com/YanjieZe/GMR) (MIT) retargetea BVH sin SMPL, así que CMU y 100STYLE no necesitan
+el modelo SMPL. mjlab (Apache 2.0) imita movimientos desde CSV con la convención de Unitree. Grabar al usuario con el móvil
+(WHAM, GVHMR) depende de SMPL, que no es comercial, y GVHMR solo permite investigación: queda para más adelante.
+
+**Laguna:** ninguna licencia dice si los pesos de una política entrenada cuentan como obra derivada.
+
+**Recomendación:** CMU como base y 100STYLE para estilos de marcha. Permiten publicar todo con cualquier licencia del repositorio.
+LAFAN1 solo en local, sin subir lo derivado, y solo si hace falta para levantarse.
+
+**Decisión del usuario, 4 de noviembre de 2026:** CMU y 100STYLE. Se descargan de su página oficial, no de AMASS, cuyos
+términos mandarían sobre la copia de CMU que incluye. Se cita "obtained from mocap.cs.cmu.edu" y "The 100STYLE Dataset - Ian Mason".
+
+## 7. Preguntas abiertas de la etapa 1
 
 - Si `1910_m6.json` coincide con nuestros servos: se resuelve en la etapa 5.1. Si HD-1910 y STS3215 conviven en un
   bus solo importa si se llegan a mezclar.
 - Otros actuadores compactos para las piernas, para R7 y R8.
-- Fuente de movimiento humano y sus licencias, para imitación.
 - ACDC4Robot: comprobar con un modelo simple que exporta bien a MJCF desde Fusion.
 
-## 7. Fuentes
+## 8. Fuentes
 
 [XGO-Duck](https://github.com/LuwuDynamics/xgoduck_hardware) ·
 [HD-1910 en ArmDojo](https://armdojo.com/products/feetech-hd-1910-c001-coreless-servo-microduck) ·

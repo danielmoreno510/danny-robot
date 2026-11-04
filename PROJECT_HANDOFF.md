@@ -3,7 +3,7 @@
 Punto de entrada para continuar **Robot Danny** en un chat nuevo o en otra computadora.
 
 **Fecha:** 4 de noviembre de 2026. **Etapa actual:** 3, MuJoCo, con 2.2, 2.3 y 2.4 abiertas por lo físico. La etapa 1 está
-cerrada salvo la 1.2, que va en paralelo.
+cerrada.
 **Siguiente paso:** seguir el [plan de la etapa 4](#plan-de-la-etapa-4-fases) por fases. Las fases 0 y 1 están hechas: la marcha
 con el modelo final aprobó con `fase1b_separacion_500` (ver el plan). Sigue la fase 2, movimiento completo. `marcha_reloj_1000` ya caminó hacia delante y giró con el modelo
 anterior (ver [Entrenamiento en simulación](#entrenamiento-en-simulación-etapa-4-sin-terminar)). El código de `training/` está en la
@@ -11,6 +11,9 @@ rama `entrenamiento-danny`, que se actualiza con `origin/main` antes de cada fas
 request aprobado por el usuario, que es quien cambia el diseño. Levantarse es posible en simulación, pero aún frágil. El robot completo ya está en CAD:
 [piernas](documentation/lower-body-design.md), [tronco](documentation/upper-body-design.md) y
 [paneles](documentation/panels-and-protection.md).
+
+**Decisión del 4 de noviembre, fuentes de movimiento humano (1.2):** CMU y 100STYLE, que permiten publicar lo derivado
+([sección 6](documentation/research-and-requirements.md)). La etapa 1 queda cerrada. LAFAN1 solo en local si hiciera falta.
 
 **Decisión del 4 de noviembre, tensión mínima:** Danny deja de caminar a 6,6 V (3,3 V por celda) y el programa corta a 6,4 V. Se sigue
 entrenando de 6 a 8,4 V, pero la saturación de la Fase 2 se mide a 6,6, 7,4 y 8,4 V fijos ([guía](documentation/training-guide.md), 4.2).
@@ -323,7 +326,6 @@ Si aprueba: ONNX, vídeos si caben, un PR a `main` y aviso al dueño.
 ## Pendiente de decidir por el usuario
 
 - Licencia del repositorio, que es público.
-- Fuentes de movimiento humano (1.2): sin ellas no empieza la etapa 4.4.
 
 ## Última verificación
 
