@@ -1,0 +1,137 @@
+{
+  "vin_v": 6.6,
+  "stand_pelvis_height_m": 0.22690819199324758,
+  "poses": [
+    {
+      "pelvis_drop_m": 0.0,
+      "trunk_lean_deg": 0.0,
+      "hip_pitch_deg": -20.9,
+      "knee_deg": 47.4,
+      "ankle_pitch_deg": -26.6,
+      "ankle_range_deg": [
+        -45.0,
+        40.0
+      ],
+      "hip_range_deg": [
+        -100.0,
+        20.0
+      ],
+      "knee_range_deg": [
+        0.0,
+        130.0
+      ],
+      "com_error_mm": 0.0,
+      "knee_static_torque_nm": 0.132,
+      "ankle_static_torque_nm": 0.065,
+      "hip_static_torque_nm": 0.011,
+      "knee_fraction_of_stall_6.6V": 0.163,
+      "solver_residual": 0.0,
+      "passes": true
+    },
+    {
+      "pelvis_drop_m": 0.025,
+      "trunk_lean_deg": 10.0,
+      "hip_pitch_deg": -53.0,
+      "knee_deg": 79.6,
+      "ankle_pitch_deg": -36.6,
+      "ankle_range_deg": [
+        -45.0,
+        40.0
+      ],
+      "hip_range_deg": [
+        -100.0,
+        20.0
+      ],
+      "knee_range_deg": [
+        0.0,
+        130.0
+      ],
+      "com_error_mm": 0.0,
+      "knee_static_torque_nm": 0.198,
+      "ankle_static_torque_nm": 0.065,
+      "hip_static_torque_nm": 0.076,
+      "knee_fraction_of_stall_6.6V": 0.244,
+      "solver_residual": 0.0,
+      "passes": true
+    },
+    {
+      "pelvis_drop_m": 0.045,
+      "trunk_lean_deg": 18.0,
+      "hip_pitch_deg": -75.7,
+      "knee_deg": 96.9,
+      "ankle_pitch_deg": -39.2,
+      "ankle_range_deg": [
+        -45.0,
+        40.0
+      ],
+      "hip_range_deg": [
+        -100.0,
+        20.0
+      ],
+      "knee_range_deg": [
+        0.0,
+        130.0
+      ],
+      "com_error_mm": 0.0,
+      "knee_static_torque_nm": 0.214,
+      "ankle_static_torque_nm": 0.065,
+      "hip_static_torque_nm": 0.126,
+      "knee_fraction_of_stall_6.6V": 0.263,
+      "solver_residual": 0.0,
+      "passes": true
+    },
+    {
+      "pelvis_drop_m": 0.05,
+      "trunk_lean_deg": 20.1,
+      "hip_pitch_deg": -81.3,
+      "knee_deg": 100.5,
+      "ankle_pitch_deg": -39.3,
+      "ankle_range_deg": [
+        -45.0,
+        40.0
+      ],
+      "hip_range_deg": [
+        -100.0,
+        20.0
+      ],
+      "knee_range_deg": [
+        0.0,
+        130.0
+      ],
+      "com_error_mm": 0.0,
+      "knee_static_torque_nm": 0.214,
+      "ankle_static_torque_nm": 0.065,
+      "hip_static_torque_nm": 0.139,
+      "knee_fraction_of_stall_6.6V": 0.264,
+      "solver_residual": 0.0,
+      "passes": true
+    },
+    {
+      "pelvis_drop_m": 0.06,
+      "trunk_lean_deg": 24.1,
+      "hip_pitch_deg": -92.4,
+      "knee_deg": 107.2,
+      "ankle_pitch_deg": -38.8,
+      "ankle_range_deg": [
+        -45.0,
+        40.0
+      ],
+      "hip_range_deg": [
+        -100.0,
+        20.0
+      ],
+      "knee_range_deg": [
+        0.0,
+        130.0
+      ],
+      "com_error_mm": 0.0,
+      "knee_static_torque_nm": 0.212,
+      "ankle_static_torque_nm": 0.065,
+      "hip_static_torque_nm": 0.163,
+      "knee_fraction_of_stall_6.6V": 0.26,
+      "solver_residual": 0.0,
+      "passes": true
+    }
+  ],
+  "all_pass": true
+}

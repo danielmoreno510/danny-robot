@@ -469,16 +469,31 @@ Resultados en `results/training_*_fase2_f_rodilla_*.json`. **Fase 2 cumple todos
 
 ### Fase 3, agacharse: criterio escrito antes de entrenar (4 de noviembre)
 
-**Lo que permite el cuerpo (cálculo estático, no entrenamiento).** Con los pies planos y el tronco recto, el centro de masas queda sobre los pies con cadera -21° y rodilla 47° (la pose de pie). Al agacharse, el tobillo debe valer -(cadera + rodilla) y su límite es -45°, así que la rodilla llega a unos 82° y **el centro de masas baja unos 22 mm** (de 0,212 a 0,190 m, un 10 %). El par estático de la rodilla pasa de 0,13 a 0,24 N·m, el 29 % del bloqueo a 6,6 V (0,813 N·m): el par no es el límite, el rango del tobillo sí. Bajar más exige levantar talones o inclinar el tronco, y eso no se intenta. **Si el dueño quiere un agachado más profundo, es un tema de diseño (rango del tobillo).** Cálculo con `danny_training.xml` y la masa nominal; la masa y el centro de masas aleatorizados lo mueven unos milímetros.
+**Cambio de criterio, 4 de noviembre, a propuesta del dueño** (la primera versión suponía el tronco recto y limitaba la bajada a 20 mm; con el tronco inclinado como una persona, el cuerpo baja más). Orden de altura de **0 a -0,05 m medida en la pelvis** (`pelvis_bottom`), con el tronco inclinado hacia delante en proporción a la orden: 20° a -0,05 m. La tarea `squat` de `analysis/danny_motion.py` baja la pelvis 45 mm respecto a su pose de pie (60 mm respecto al origen del modelo, 0,241 m) con el tronco a 0,35 rad. Ojo: respecto a la pose de pie de la política (pelvis a 0,228 m), -0,05 m son 5 mm más que lo comprobado allí, por eso se comprueba también a mano (siguiente párrafo).
 
-**Orden.** Una orden `height` en metros, de -0,02 a 0 m respecto a la altura de pie, que se suma a la altura objetivo del tronco; se resortea cada 4 a 8 s y el 20 % de los entornos recibe 0. La política la ve como una observación más (82 entradas en lugar de 80).
+**Cálculo estático previo** (`scripts/check_crouch_pose.py`, `results/training_crouch_static.json`; pies planos, centro de masas sobre las suelas, peso repartido por igual, 6,6 V, tronco inclinado 20° por cada 50 mm):
 
-**Corrida.** `fase3_agacharse`, hasta 3 000 iteraciones desde `fase2_f_rodilla/model_8995.pt`, ampliando la primera capa con columnas a cero para las entradas nuevas (así empieza caminando como en la fase 2), etapa 2 de aleatorización y empujones de ±0,12 m/s. Se mantiene el castigo de par (-317). Se para, sin alargar, si el 50 % o más de los robots cae hacia delante.
+| Bajada de la pelvis | Inclinación | Cadera | Rodilla | Tobillo (límite -45°) | Par de rodilla (% del bloqueo a 6,6 V) |
+|---|---|---|---|---|---|
+| 0 | 0° | -20,9° | 47,4° | -26,6° | 0,13 N·m (16 %) |
+| -0,025 m | 10° | -53,0° | 79,6° | -36,6° | 0,20 N·m (24 %) |
+| -0,045 m | 18° | -75,7° | 96,9° | -39,2° | 0,21 N·m (26 %) |
+| **-0,050 m** | **20°** | -81,3° | 100,5° | **-39,3°** | **0,21 N·m (26 %)** |
+| -0,060 m | 24° | -92,4° | 107,2° | -38,8° | 0,21 N·m (26 %) |
+
+A -0,05 m el tobillo queda dentro de su rango (5,7° de margen), la cadera (límite -100°) y la rodilla (130°) también, y el centro de masas cae sobre los pies (error de 0 mm, por construcción). Es estático: el par dinámico y la aleatorización de masa y centro de masas no están incluidos.
+
+**Orden.** Una orden `height` en metros, de -0,05 a 0 respecto a la pelvis de pie (0,228 m), que la política ve como una observación más (81 entradas en lugar de 80; el crítico, 96 en lugar de 95). Se resortea cada 4 a 8 s y el 20 % de los entornos recibe 0. Con esa orden:
+- la recompensa de postura se desplaza: la referencia de cadera, rodilla y tobillo es la de la tabla de arriba (interpolada);
+- `upright` pide un cabeceo del tronco de 0,35 rad por cada 0,05 m (7 rad/m), en vez de tronco recto;
+- recompensa de altura de la pelvis (peso 3, std 6 mm), **solo con orden de velocidad cero**: al caminar la pelvis baja sola unos 12 mm (medido con `fase2_f_rodilla`: -0,0127 m de pie, -0,0252 m a 0,25 m/s), así que caminando se exige la bajada relativa, no la absoluta.
+
+**Corrida.** `fase3_agacharse`, hasta 3 000 iteraciones desde `fase2_f_rodilla/model_8995.pt`, ampliando la primera capa del actor y del crítico con una columna a cero (y su normalizador) para la entrada nueva, de modo que empieza caminando como en la fase 2; etapa 2 de aleatorización y empujones de ±0,12 m/s; se mantiene el castigo de par (-317). Se para, sin alargar, si el 50 % o más de los robots cae hacia delante.
 
 **Aprueba** (256 robots, 20 s, 6,6 V fijos, sin empujones, salvo la última prueba) si:
-1. Con orden de altura de 0, -0,01 y -0,02 m y orden de velocidad cero: 95 % o más sin caer, error medio de altura de 4 mm o menos y velocidad media de 0,03 m/s o menos.
-2. Caminando a 0,25 m/s con altura -0,02 m: 95 % o más sin caer y error de velocidad de 0,08 m/s o menos.
+1. Quieto (orden de velocidad cero) con altura 0, -0,025 y -0,05 m: 95 % o más sin caer, error medio de altura de la pelvis de 6 mm o menos (con la aleatorización de masa y centro de masas, 4 mm no es realista: se mide la dispersión entre robots), y velocidad media de 0,03 m/s o menos.
+2. Caminando a 0,25 m/s con altura -0,025 m: 95 % o más sin caer, error de velocidad de 0,08 m/s o menos y pelvis al menos 15 mm más baja que caminando con altura 0.
 3. Los siete movimientos de la fase 2 con altura 0 siguen cumpliéndose (no se pierde lo aprendido).
-4. Rodilla y tobillo por encima del 90 % del bloqueo menos del 5 % del tiempo a 6,6 V, en el agachado quieto a -0,02 m y en la marcha agachada.
-5. Prueba de la guía (5 min, 6 a 8,4 V, empujones de ±0,12 m/s, altura aleatoria): 95 % o más sin caer.
-Si no cumple, se para y se anota; no se amplía la corrida.
+4. Rodilla y tobillo por encima del 90 % del bloqueo menos del 5 % del tiempo a 6,6 V, en el agachado quieto a -0,05 m y en la marcha agachada a -0,025 m.
+5. Prueba de la guía (5 min, 6 a 8,4 V, empujones de ±0,12 m/s, altura aleatoria entre 0 y -0,05): 95 % o más sin caer.
+Si no cumple, se para y se anota; no se amplía la corrida. Ejecución automática de la fase 3, sin esperar permisos, a petición del usuario.
