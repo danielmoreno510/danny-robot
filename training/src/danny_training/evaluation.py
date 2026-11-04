@@ -47,11 +47,11 @@ def fix_command(env_cfg: ManagerBasedRlEnvCfg, forward: float, turn: float = 0.0
   twist.rel_forward_envs = 0.0  # mjlab fuerza el 20 % de los entornos a (0,3; 0; 0), sin giro.
 
 
-def load_policy(env_cfg: ManagerBasedRlEnvCfg, checkpoint: Path):
-  """Crea el entorno y devuelve (entorno envuelto, política determinista)."""
+def load_policy(env_cfg: ManagerBasedRlEnvCfg, checkpoint: Path, render_mode: str | None = None):
+  """Crea el entorno y devuelve (entorno envuelto, política determinista). Con `render_mode="rgb_array"`, el entorno puede dibujar fotogramas."""
   device = "cuda:0" if torch.cuda.is_available() else "cpu"
   agent_cfg = load_rl_cfg(TASK)
-  env = RslRlVecEnvWrapper(ManagerBasedRlEnv(cfg=env_cfg, device=device), clip_actions=agent_cfg.clip_actions)
+  env = RslRlVecEnvWrapper(ManagerBasedRlEnv(cfg=env_cfg, device=device, render_mode=render_mode), clip_actions=agent_cfg.clip_actions)
   runner_cls = load_runner_cls(TASK) or MjlabOnPolicyRunner
   runner = runner_cls(env, asdict(agent_cfg), device=device)
   runner.load(str(checkpoint), load_cfg={"actor": True}, strict=True, map_location=device)
