@@ -51,7 +51,7 @@ Sustituye a Isaac Lab por decisión del usuario.
 | Paso | Trabajo | Estado |
 |---|---|---|
 | 4.1 | Preparar la RTX 3080 Ti con mjlab | Empieza el amigo del usuario: [guía](documentation/training-guide.md) |
-| 4.2 | Marcha con órdenes de velocidad | En curso: con el modelo anterior camina hacia delante a 0,25 m/s y gira en simulación (`marcha_reloj_1000`); con el modelo final camina hacia delante a 0,25 m/s con paso alterno (`fase1b_separacion_500`, error 0,032 m/s), tras penalizar los choques entre pies; desde cero no aprendió. Fase 2 (`fase2_a` a `fase2_c`, 10 000 iteraciones): no cumple; giro corto (0,28 de 0,5 rad/s), 88 % sin caer en la prueba de 5 min con empujones y rodilla saturada el 6,35 %. Decide el dueño el siguiente paso. Plan por fases en [PROJECT_HANDOFF.md](PROJECT_HANDOFF.md) |
+| 4.2 | Marcha con órdenes de velocidad | En curso: con el modelo anterior camina hacia delante a 0,25 m/s y gira en simulación (`marcha_reloj_1000`); con el modelo final camina hacia delante a 0,25 m/s con paso alterno (`fase1b_separacion_500`, error 0,032 m/s), tras penalizar los choques entre pies; desde cero no aprendió. Fase 2 (`fase2_a` a `fase2_c`, 10 000 iteraciones): no cumple; giro corto (0,28 de 0,5 rad/s), 88 % sin caer en la prueba de 5 min con empujones y rodilla saturada el 6,35 %. Tercer intento (recompensa de giro doble): `fase2_d_doble` (etapa 2) cumple los siete movimientos; falta etapa 3 y prueba de la guía. Plan por fases en [PROJECT_HANDOFF.md](PROJECT_HANDOFF.md) |
 | 4.3 | Levantarse | Pendiente |
 | 4.4 | Imitación de movimiento humano y gestos | Pendiente |
 | 4.5 | Si el hardware lo permite: trote y salto | Pendiente |
