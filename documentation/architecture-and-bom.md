@@ -142,7 +142,7 @@ o fallos de impresión por encima de lo estimado.
 | | Valor (E) | Lectura |
 |---|---|---|
 | Consumo caminando | 46,5 W | Sin medir |
-| Autonomía | 22,3 min | Cumple R5 por poco |
+| Autonomía | 22,3 min | Cumple R5 por poco. Supone usar el 80 % de la energía; con el paro a 6,6 V, sin medir (5.1) |
 | Pico de piernas | 14,4 A | El BMS debe dar 20 A o más |
 | Tiempo de bus por ciclo | 5,7 ms de 20 ms | Cabe; 1 Mbit/s y 23 servos |
 
@@ -155,7 +155,8 @@ la alimentación repartida desde la placa.
    continuo. Medir en 5.1.
 2. **Sin precedente** de humanoide con brazos y este servo.
 3. **Tensión:** la batería cae de 8,4 V a unos 6 V. El servo pierde velocidad y par, y el regulador pide 6 V
-   mínimo: hay que entrenar con tensión variable y cortar antes de llegar a 6 V.
+   mínimo: hay que entrenar con tensión variable y cortar antes de llegar a 6 V. Por decisión del usuario, Danny deja de
+   caminar a 6,6 V (3,3 V por celda), y el programa corta a 6,4 V.
 4. **Levantarse:** con brazos de 177 mm, sin calcular. Se comprueba en la etapa 3.
 5. **Radxa:** stock sin confirmar; la NPU de este chip no está garantizada, y la visión debe funcionar en CPU.
 6. **Masa de paneles:** estimada, y sube con cada iteración.

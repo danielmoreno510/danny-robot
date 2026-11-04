@@ -331,7 +331,7 @@ en esta tarjeta.
 - Control a 50 Hz, como en la referencia.
 - Aleatorización de masa, centro de masas, fricción, retardo, tensión de batería y holgura. Debe no acumularse
   entre reinicios.
-- Tensión variable de 6 a 8,4 V.
+- Tensión variable de 6 a 8,4 V. El par se juzga desde 6,6 V, donde Danny deja de caminar.
 - Ruido en lo que el robot mide, no en el mando.
 - Exportar a ONNX con el script del proyecto, que incluye la normalización.
 
@@ -356,7 +356,7 @@ aprobación, y **no se compra el robot entero hasta pasar 5.1 y 5.2**.
 |---|---|---|---|
 | 5.1 | Banco, ya comprado: 3 servos, FE-URT-2 y fuente. Falta brazo impreso y pesas caseras | Curva par-velocidad, holgura e identificación BAM con carga conocida | Modelo propio; 5 minutos a par de apoyo a un pie por debajo de 70 °C |
 | 5.2 | 3 servos más, hasta 6, y piezas de una pierna | Pierna sujeta, comparar con simulación | Respuesta real parecida a la simulada, criterio numérico por fijar antes |
-| 5.3 | Electrónica | Programa: bucle de 50 Hz, ONNX, paro de seguridad y corte por batería baja | Bucle estable 10 minutos sin retrasos |
+| 5.3 | Electrónica | Programa: bucle de 50 Hz, ONNX, paro de seguridad, dejar de caminar a 6,6 V y corte a 6,4 V | Bucle estable 10 minutos sin retrasos |
 | 5.4 | Resto | Montaje, IDs y calibración | Todas las articulaciones responden |
 | 5.5 | - | Del robot colgado al libre: postura, marcha y levantarse | R1 y R2 |
 | 5.6 | Micrófono y altavoz, si procede | Voz en la nube, en un proceso aparte del bucle de 50 Hz | Criterio R11, y el bucle sigue estable |
@@ -373,7 +373,9 @@ activa las protecciones de corriente, que vienen desactivadas.
 ## 11. Seguridad
 
 - **Batería:** solo paquetes con soldadura por puntos y BMS. Nunca soldar celdas directamente. Revisar tras
-  caídas fuertes. Cargar vigilada y sobre superficie no inflamable. Cortar por software a 6,4 V, porque el regulador pide 6 V.
+  caídas fuertes. Cargar vigilada y sobre superficie no inflamable. A 6,6 V, Danny deja de caminar y avisa, y se sienta
+  cuando tenga esa política. A 6,4 V,
+  el programa corta, porque el regulador pide 6 V.
 - **Tensión del servo:** máximo 8,4 V. Nunca conectar servos a 12 V.
 - **Pruebas:** robot colgado o sujeto hasta que la marcha sea fiable, con paro accesible en la mano.
 - **Primero sin carga:** cada política nueva, primero con el robot al aire y par bajo.
