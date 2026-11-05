@@ -6,7 +6,7 @@ Punto de entrada para continuar **Robot Danny** en un chat nuevo o en otra compu
 cerrada.
 **Siguiente paso:** seguir el [plan de la etapa 4](#plan-de-la-etapa-4-fases) por fases. Las fases 0 a 2 están aprobadas: la Fase 2,
 movimiento completo, con `fase2_f_rodilla/model_8995.pt`, fusionada en `main` el 4 de noviembre (PR 1), con su ONNX en `policies/` y vídeos en
-`results/videos/`. Sigue la fase 3, agacharse, con su criterio pendiente de ampliar a -0,05 m con el tronco inclinado (ver el plan). `marcha_reloj_1000` ya caminó hacia delante y giró con el modelo
+`results/videos/`. La fase 3, agacharse, no está aprobada tras dos intentos (`fase3_agacharse` y `fase3_quieto`; ver el plan) y espera la decisión del dueño. `marcha_reloj_1000` ya caminó hacia delante y giró con el modelo
 anterior (ver [Entrenamiento en simulación](#entrenamiento-en-simulación-etapa-4-sin-terminar)). El código de `training/` está en la
 rama `entrenamiento-danny`, que se actualiza con `origin/main` antes de cada fase. `main` está protegida: los colaboradores entran por pull
 request aprobado por el usuario, que es quien cambia el diseño. Levantarse es posible en simulación, pero aún frágil. El robot completo ya está en CAD:
@@ -193,7 +193,7 @@ parámetros son de otro robot: lo aprendido no se instala directo en el robot f�
 | 0 | Preparar: main fusionado, modelo comprobado, colisiones, masa, centro de masas y bloqueo de par | Hecho el 2 de noviembre (abajo) |
 | 1 | Validar la marcha con el modelo final | Aprobada el 2 de noviembre con la fase 1b (abajo): desde cero no aprendió, y reentrenando desde la política antigua con penalización de choques sí |
 | 2 | Movimiento completo (avanzar, retroceder, lateral, girar, quieto) con armadura, holgura y empujones | Aprobada el 4 de noviembre con `fase2_f_rodilla/model_8995.pt` (ver más abajo; PR 1 a main) |
-| 3 | Agacharse: orden de altura del cuerpo, hasta 3 000 iteraciones | **No aprobada** el 5 de noviembre: se agacha quieto, pero caminando apenas baja y pierde el giro de la fase 2 (resultado abajo) |
+| 3 | Agacharse: orden de altura del cuerpo, hasta 3 000 iteraciones | **No aprobada** el 5 de noviembre: `fase3_agacharse` se agacha quieto pero estropea la marcha; el segundo intento solo quieto (`fase3_quieto`) no obedece la orden de altura (resultados abajo) |
 | 4 | Levantarse (4.3): política propia, 10 000 iteraciones; primero boca abajo, luego boca arriba | Pendiente |
 | 5 | Sentarse y tumbarse: política propia, hasta 5 000 iteraciones por acción; solo si la fase 4 aprueba | Pendiente |
 | 6 | Movimiento natural (4.4): imitar CMU y 100STYLE, retargeteadas con GMR | Pendiente: fuentes elegidas el 4 de noviembre |
@@ -536,3 +536,38 @@ Corrida del 4 al 5 de noviembre, de 23:05 a 02:00, etapa 2 de aleatorización y 
 **Lo que no se comprobó:** otras ponderaciones, un punto de control intermedio (solo se midió el último), ni si la regresión del giro aparece ya en las primeras iteraciones. Según el plan, no se alarga la corrida ni se reentrena sin decisión del dueño.
 
 **Siguientes pasos posibles (decide el dueño):** (1) política de agacharse solo quieto, separada de la marcha: no estropea la fase 2 y lo que funciona (criterios 1, 4 y 5) ya cumple; (2) reentrenar con recompensa de altura también caminando (referida a la marcha de altura 0) y con las órdenes de giro de la fase 2 vigiladas en cada control; (3) mezclar con datos de la fase 2 (congelar la marcha con altura 0). La fase 2 sigue aprobada con `fase2_f_rodilla/model_8995.pt` (PR 1 a main); la fase 4 (levantarse) no depende de la 3.
+
+### Fase 3 (segundo intento): agacharse solo quieto, criterio escrito antes de entrenar (5 de noviembre)
+
+**Decisión del dueño, 5 de noviembre:** agacharse quieto como política aparte; caminar agachado queda **descartado por ahora**. Hipótesis del dueño para la regresión de `fase3_agacharse` (sin medir): el 80 % de los entornos caminaba con orden de altura y referencias de cuclillas estáticas, y solo el 20 % practicaba la marcha de la fase 2.
+
+**Corrida.** `fase3_quieto`, hasta 1 500 iteraciones desde `fase2_f_rodilla/model_8995.pt` con la primera capa ampliada (el mismo punto de partida `fase3_inicio`), orden de velocidad siempre cero (`DANNY_STAND_ONLY=1`: todos los entornos reciben orden cero) y orden de altura de 0 a -0,05 m (20 % de ceros), etapa 2 de aleatorización, empujones de ±0,12 m/s, castigo de par -317 y las mismas recompensas de altura, postura e inclinación. Se para, sin alargar, si el 50 % o más de los robots cae. Los puntos de control se guardan cada 50 iteraciones.
+
+**Aprueba** (256 robots, 6,6 V fijos, sin empujones salvo donde se indica) si:
+1. Quieto con altura 0, -0,025 y -0,05 m, 20 s: 95 % o más sin caer, error medio de altura de la pelvis de 5 mm o menos y velocidad media de 0,03 m/s o menos.
+4. Rodilla y tobillo por encima del 90 % del bloqueo menos del 5 % del tiempo a 6,6 V, quieto a -0,05 m con empujones de ±0,12 m/s.
+5. Prueba de la guía quieta (5 min, 6 a 8,4 V, empujones de ±0,12 m/s, orden de velocidad cero, altura aleatoria entre 0 y -0,05): 95 % o más sin caer.
+6. **Cambio de política (nueva).** De pie con la política de la fase 2 y orden cero, a los 3 s se cambia a esta con orden cero y altura 0, -0,025 o -0,05 m: 95 % o más sin caer en los 5 s siguientes y velocidad media de 0,03 m/s o menos entre los 2 y los 5 s tras el cambio (`scripts/measure_policy_switch.py`; la política de la fase 2 es `fase3_inicio`, su equivalente con la entrada de altura a cero). El error de altura se anota, no decide.
+Las pruebas 2 y 3 de la fase 3 anterior (marcha agachada y siete movimientos con la política nueva) ya no aplican: la marcha es la de la fase 2, sin cambios.
+Si cumple, la fase 3 se anota aprobada (agacharse quieto). Si no, se para y se anota; no se amplía la corrida. Después se escribe el criterio de la fase 4 antes de entrenar. Ejecución automática, a petición del dueño.
+
+### Fase 3 (segundo intento), resultado: NO CUMPLE (`fase3_quieto`, 1 500 iteraciones, 8995 → 10494, `model_10494.pt`)
+
+Corrida del 5 de noviembre (empezó a las 10:40), `DANNY_STAND_ONLY=1`, etapa 2, empujones de ±0,12 m/s, sin colapso (episodios de 1 000 pasos, ninguna caída en el entrenamiento). Medido automáticamente a 6,6 V (`results/training_*fase3_quieto*.json`).
+
+| Prueba | Resultado | |
+|---|---|---|
+| 1. Quieto a 0 / -0,025 / -0,05 m, 20 s | 100 % sin caer, velocidad 0,0002–0,0003 m/s; **error de altura de la pelvis 31,8 / 7,5 / 16,6 mm** (límite 5 mm). La pelvis queda en 0,196 / 0,196 / 0,195 m para las tres órdenes (objetivos 0,228 / 0,203 / 0,178) | **No cumple** |
+| 4. Rodilla y tobillo sobre el 90 % del bloqueo, quieto a -0,05 m con empujones | 0 % en rodillas y tobillos (rodilla izq. 0,48 N·m máx., der. 0,54; tobillo 0,38 / 0,34) | Cumple |
+| 5. Prueba de la guía quieta (5 min, 6 a 8,4 V, ±0,12, altura aleatoria) | 100 % sin caer, velocidad 0,0007 m/s | Cumple |
+| 6. Cambio de la política de la fase 2 a esta (orden 0, 5 s tras el cambio) | 100 % sin caer en las tres alturas, velocidad 0,0005 m/s; error de altura 34 / 9,9 / 14,1 mm (se anota, no decide) | Cumple |
+
+**Qué se ve.** La política se queda quieta y estable, pero **no obedece la orden de altura**: la pelvis queda en unos 0,195 m (33 mm por debajo de la de pie) y el tronco casi recto (0 a 0,9°, se pedía hasta 20°) para cualquier orden. Es un punto medio fijo, no un seguimiento. Los puntos de control intermedios (`results/training_gait_fase3_quieto_diag_*.json`, quieto a 0 y -0,05 m) dan lo mismo: pelvis a 0,198 / 0,197 (iteración 9000, solo 5 iteraciones después de reanudar), 0,205 / 0,205 (9250), 0,199 / 0,199 (9500) y 0,198 / 0,197 m (10000). Es decir, **la orden de altura nunca se siguió**, y la pelvis ya estaba baja a las 5 iteraciones, cuando la política de la fase 2 de pie la tenía en 0,2275 m (`results/training_switch_fase2_sin_cambio.json`, error 0,5 mm a altura 0).
+
+**Hallazgo aparte: `right_hip_yaw` está al tope de par el 99,97 % del tiempo** (0,8135 N·m, el bloqueo a 6,6 V) en el agachado quieto a -0,05 m con empujones; el izquierdo, 0 %. El criterio 4 solo cubre rodilla y tobillo, así que no decide, pero esa pose no es válida para un robot real (el servo estaría bloqueado todo el tiempo). La causa no se midió; la hipótesis es que la cadera derecha empuja contra un límite de articulación.
+
+**Lo que no se comprobó:** por qué la pelvis cae tan rápido en las primeras iteraciones (hipótesis sin medir: sin el estado del optimizador, las primeras actualizaciones son grandes y el castigo de la rodilla y la postura de cuclillas atraen a un mínimo local fijo); si con más iteraciones, otro peso de la recompensa de altura o empezando con la entrada de altura con pesos no nulos sí la seguiría; la pose de `right_hip_yaw`. Según el plan, no se alarga la corrida ni se reentrena sin decisión del dueño.
+
+**Contraste con `fase3_agacharse`**, que sí seguía la orden de altura quieto (error 2,2 / 2,1 / 4,6 mm) pero con las órdenes de velocidad de la fase 2 mezcladas. Lo que cambia entre ambas corridas es solo `DANNY_STAND_ONLY=1`, 1 500 en lugar de 3 000 iteraciones y que no hay caminata; no se sabe cuál de las tres causa la diferencia.
+
+**Estado de la fase 3:** sigue **no aprobada**. Opciones, decide el dueño: (a) usar `fase3_agacharse/model_11994.pt` solo para agacharse quieto: cumple 1, 4 y 5 quieto, pero cambia la marcha de la fase 2, así que habría que usarlo solo parado y cambiar de política con la prueba 6 (no medida con ese punto de control); (b) repetir `fase3_quieto` con una corrección que se decida después de medir la causa; (c) dejar el agacharse para después de medir el servo real. La fase 4 (levantarse) no depende de la 3 y no se ha empezado: su criterio no está escrito.

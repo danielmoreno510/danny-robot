@@ -55,6 +55,8 @@ DR_STAGE = int(os.environ.get("DANNY_DR_STAGE", "3"))
 assert DR_STAGE in DR_STAGES, f"DANNY_DR_STAGE debe ser 1, 2 o 3, no {DR_STAGE}"
 # DANNY_PUSH_M_S fija la fuerza de los empujones al entrenar, sea cual sea la etapa (la guía usa 0,12).
 PUSH_OVERRIDE_M_S = float(os.environ["DANNY_PUSH_M_S"]) if "DANNY_PUSH_M_S" in os.environ else None
+# DANNY_STAND_ONLY=1 entrena la política de agacharse quieto (fase 3): orden de velocidad siempre cero, solo cambia la altura.
+STAND_ONLY = os.environ.get("DANNY_STAND_ONLY") == "1"
 
 
 def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
@@ -135,6 +137,8 @@ def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     # 20 % a avanzar a 0,3 m/s sin girar, y aquí se quita para no sesgar las órdenes.
     twist_cmd.rel_standing_envs = 0.2
     twist_cmd.rel_forward_envs = 0.0
+    if STAND_ONLY:
+        twist_cmd.rel_standing_envs = 1.0
 
     # Reloj de marcha: fase de 0,8 s que solo avanza con orden de movimiento. La política ve su seno y su coseno.
     cfg.commands["gait"] = GaitClockCommandCfg(period_s=0.8, velocity_command_name="twist")

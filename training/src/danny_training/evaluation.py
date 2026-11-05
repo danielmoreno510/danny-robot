@@ -56,7 +56,14 @@ def load_policy(env_cfg: ManagerBasedRlEnvCfg, checkpoint: Path, render_mode: st
   device = "cuda:0" if torch.cuda.is_available() else "cpu"
   agent_cfg = load_rl_cfg(TASK)
   env = RslRlVecEnvWrapper(ManagerBasedRlEnv(cfg=env_cfg, device=device, render_mode=render_mode), clip_actions=agent_cfg.clip_actions)
+  return env, load_policy_on(env, checkpoint)
+
+
+def load_policy_on(env: RslRlVecEnvWrapper, checkpoint: Path):
+  """Política determinista de `checkpoint` sobre un entorno ya creado; sirve para cambiar de política en mitad de una prueba."""
+  device = env.unwrapped.device
+  agent_cfg = load_rl_cfg(TASK)
   runner_cls = load_runner_cls(TASK) or MjlabOnPolicyRunner
   runner = runner_cls(env, asdict(agent_cfg), device=device)
   runner.load(str(checkpoint), load_cfg={"actor": True}, strict=True, map_location=device)
-  return env, runner.get_inference_policy(device=device)
+  return runner.get_inference_policy(device=device)
