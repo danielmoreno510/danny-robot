@@ -193,7 +193,7 @@ parámetros son de otro robot: lo aprendido no se instala directo en el robot f�
 | 0 | Preparar: main fusionado, modelo comprobado, colisiones, masa, centro de masas y bloqueo de par | Hecho el 2 de noviembre (abajo) |
 | 1 | Validar la marcha con el modelo final | Aprobada el 2 de noviembre con la fase 1b (abajo): desde cero no aprendió, y reentrenando desde la política antigua con penalización de choques sí |
 | 2 | Movimiento completo (avanzar, retroceder, lateral, girar, quieto) con armadura, holgura y empujones | Aprobada el 4 de noviembre con `fase2_f_rodilla/model_8995.pt` (ver más abajo; PR 1 a main) |
-| 3 | Agacharse: orden de altura del cuerpo, hasta 3 000 iteraciones | En curso: criterio escrito abajo |
+| 3 | Agacharse: orden de altura del cuerpo, hasta 3 000 iteraciones | **No aprobada** el 5 de noviembre: se agacha quieto, pero caminando apenas baja y pierde el giro de la fase 2 (resultado abajo) |
 | 4 | Levantarse (4.3): política propia, 10 000 iteraciones; primero boca abajo, luego boca arriba | Pendiente |
 | 5 | Sentarse y tumbarse: política propia, hasta 5 000 iteraciones por acción; solo si la fase 4 aprueba | Pendiente |
 | 6 | Movimiento natural (4.4): espera a que el usuario elija las fuentes de movimiento humano y sus licencias | Bloqueada por el usuario |
@@ -497,3 +497,21 @@ A -0,05 m el tobillo queda dentro de su rango (5,7° de margen), la cadera (lím
 4. Rodilla y tobillo por encima del 90 % del bloqueo menos del 5 % del tiempo a 6,6 V, en el agachado quieto a -0,05 m y en la marcha agachada a -0,025 m.
 5. Prueba de la guía (5 min, 6 a 8,4 V, empujones de ±0,12 m/s, altura aleatoria entre 0 y -0,05): 95 % o más sin caer.
 Si no cumple, se para y se anota; no se amplía la corrida. Ejecución automática de la fase 3, sin esperar permisos, a petición del usuario.
+
+### Fase 3, resultado: NO CUMPLE (`fase3_agacharse`, 3 000 iteraciones, 8995 → 11994, `model_11994.pt`)
+
+Corrida del 4 al 5 de noviembre, de 23:05 a 02:00, etapa 2 de aleatorización y empujones de ±0,12 m/s, sin colapso (episodios de 987 a 1000 pasos). Se midió automáticamente con el criterio de arriba, a 6,6 V (`results/training_*fase3_agacharse*.json`). Punto de partida: `fase2_f_rodilla/model_8995.pt` con la primera capa ampliada (`scripts/extend_checkpoint_inputs.py`); con altura 0 y ese punto de partida, antes de entrenar, caminaba como en la fase 2 (error de velocidad 0,0375 m/s, 100 % sin caer).
+
+| Prueba del criterio | Resultado | |
+|---|---|---|
+| 1. Quieto a 0 / -0,025 / -0,05 m | 100 % sin caer; error de altura 2,2 / 2,1 / 4,6 mm (límite 5 mm); velocidad media 0,002 / 0,002 / 0,001 m/s | **Cumple** |
+| 2. Marcha a 0,25 m/s a -0,025 m | 100 % sin caer, error de velocidad 0,043 m/s; pero la pelvis baja **4,6 mm** respecto a caminar con altura 0 (0,2065 → 0,2019 m); se pedían 15 mm | **No cumple** |
+| 3. Siete movimientos a altura 0 | cumplen 3 de 7: lateral izq. 0,104, lateral der. 0,137 y quieto. Fallan **adelante** (giro 0,159 rad/s), **atrás** (0,336), **giro izq.** (0,321) y **giro der.** (0,406) | **No cumple** |
+| 4. Rodilla y tobillo sobre el 90 % del bloqueo, 6,6 V | 0 % en rodillas y tobillos, quieto a -0,05 m y marchando a -0,025 m (con empujones de 0,12). Peor articulación: codo izq. 1,5 % (quieto), cadera izq. 3,8 % (marcha) | **Cumple** |
+| 5. Prueba de la guía (5 min, 6 a 8,4 V, ±0,12, altura aleatoria) | 100 % sin caer, error de velocidad 0,044 m/s | **Cumple** |
+
+**Qué se ve.** Quieto, la política baja la pelvis hasta 50 mm con el tronco a 12,6° (se pedían 20°), con el par muy por debajo del límite. Lo que falla es la marcha: (a) caminando agachado no sigue la orden de altura, solo 4,6 mm de los 25 pedidos (la recompensa de altura solo actúa parado y la de postura, que sí actúa caminando, no bastó); (b) con altura 0 la marcha cambió respecto a la fase 2: la pelvis camina 8 mm más baja (0,2065 frente a 0,2149 m) y el tronco inclinado 9,8° (4,2° antes), y el seguimiento del giro se rompió (error de giro 0,16 a 0,41 rad/s caminando). La velocidad lineal se mantiene (0,038 m/s). La causa de (b) no está medida: la hipótesis es que la inclinación y la postura agachada, premiadas quieto, se filtraron a la marcha con altura 0 porque la política comparte pesos; no se probó.
+
+**Lo que no se comprobó:** otras ponderaciones, un punto de control intermedio (solo se midió el último), ni si la regresión del giro aparece ya en las primeras iteraciones. Según el plan, no se alarga la corrida ni se reentrena sin decisión del dueño.
+
+**Siguientes pasos posibles (decide el dueño):** (1) política de agacharse solo quieto, separada de la marcha: no estropea la fase 2 y lo que funciona (criterios 1, 4 y 5) ya cumple; (2) reentrenar con recompensa de altura también caminando (referida a la marcha de altura 0) y con las órdenes de giro de la fase 2 vigiladas en cada control; (3) mezclar con datos de la fase 2 (congelar la marcha con altura 0). La fase 2 sigue aprobada con `fase2_f_rodilla/model_8995.pt` (PR 1 a main); la fase 4 (levantarse) no depende de la 3.
