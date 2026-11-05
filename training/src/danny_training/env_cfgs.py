@@ -30,7 +30,7 @@ from mjlab.tasks.velocity.mdp import UniformVelocityCommandCfg
 from mjlab.tasks.velocity.velocity_env_cfg import make_velocity_env_cfg
 from mjlab.utils.noise import UniformNoiseCfg as Unoise
 
-from danny_training import mdp as danny_mdp
+from danny_training import crouch, mdp as danny_mdp
 from danny_training.gait_clock import GaitClockCommandCfg
 from danny_training.robot import DANNY_ROBOT_CFG
 
@@ -55,6 +55,8 @@ DR_STAGE = int(os.environ.get("DANNY_DR_STAGE", "3"))
 assert DR_STAGE in DR_STAGES, f"DANNY_DR_STAGE debe ser 1, 2 o 3, no {DR_STAGE}"
 # DANNY_PUSH_M_S fija la fuerza de los empujones al entrenar, sea cual sea la etapa (la guía usa 0,12).
 PUSH_OVERRIDE_M_S = float(os.environ["DANNY_PUSH_M_S"]) if "DANNY_PUSH_M_S" in os.environ else None
+# DANNY_STAND_ONLY=1 entrena la política de agacharse quieto (fase 3): orden de velocidad siempre cero, solo cambia la altura.
+STAND_ONLY = os.environ.get("DANNY_STAND_ONLY") == "1"
 
 
 def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
@@ -135,12 +137,21 @@ def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     # 20 % a avanzar a 0,3 m/s sin girar, y aquí se quita para no sesgar las órdenes.
     twist_cmd.rel_standing_envs = 0.2
     twist_cmd.rel_forward_envs = 0.0
+    if STAND_ONLY:
+        twist_cmd.rel_standing_envs = 1.0
 
     # Reloj de marcha: fase de 0,8 s que solo avanza con orden de movimiento. La política ve su seno y su coseno.
     cfg.commands["gait"] = GaitClockCommandCfg(period_s=0.8, velocity_command_name="twist")
     for group in ("actor", "critic"):
         cfg.observations[group].terms["gait_clock"] = ObservationTermCfg(
             func=generated_commands, params={"command_name": "gait"}
+        )
+
+    # Fase 3, agacharse: orden de bajada de la pelvis, de 0 a -0,05 m, que la política ve como una observación más (la última).
+    cfg.commands["height"] = crouch.HeightCommandCfg()
+    for group in ("actor", "critic"):
+        cfg.observations[group].terms["height"] = ObservationTermCfg(
+            func=generated_commands, params={"command_name": "height"}
         )
 
     # Aleatorización de la guía: suelo 0,4 a 1,2; masa ±10 %; centro de masas ±10 mm; servo ±30 %.
@@ -203,6 +214,16 @@ def danny_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     cfg.rewards["pose"].params["std_running"] = dict(cfg.rewards["pose"].params["std_walking"])
 
     cfg.rewards["upright"].params["asset_cfg"].body_names = (TRUNK_BODY,)
+    # Agacharse: el tronco se inclina hacia delante en proporción a la bajada pedida, y la pose de referencia baja con ella.
+    cfg.rewards["upright"].func = danny_mdp.crouch_upright
+    cfg.rewards["upright"].params = {"std": cfg.rewards["upright"].params["std"], "command_name": "height", "asset_cfg": SceneEntityCfg("robot", body_names=(TRUNK_BODY,))}
+    cfg.rewards["pose"].func = danny_mdp.crouch_posture
+    cfg.rewards["pose"].params["crouch_command_name"] = "height"
+    cfg.rewards["track_pelvis_height"] = RewardTermCfg(
+        func=danny_mdp.track_pelvis_height,
+        weight=3.0,
+        params={"std": 0.006, "command_name": "height", "twist_name": "twist", "asset_cfg": SceneEntityCfg("robot", site_names=("pelvis_bottom",))},
+    )
     cfg.rewards["body_ang_vel"].params["asset_cfg"].body_names = (TRUNK_BODY,)
     for reward_name in ("foot_clearance", "foot_slip"):
         cfg.rewards[reward_name].params["asset_cfg"].site_names = FOOT_SITES

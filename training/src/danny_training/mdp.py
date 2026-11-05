@@ -9,6 +9,9 @@ from mjlab.managers.event_manager import requires_model_fields
 from mjlab.managers.reward_manager import RewardTermCfg
 from mjlab.managers.scene_entity_config import SceneEntityCfg
 
+from mjlab.tasks.velocity.mdp import variable_posture
+
+from danny_training import crouch
 from danny_training.actuator import FrictionDRBamActuator, stall_torque_nm
 
 _DEFAULT_ASSET_CFG = SceneEntityCfg("robot")
@@ -147,3 +150,58 @@ class link_pair_contacts:
 
   def reset(self, env_ids: torch.Tensor | slice | None = None) -> None:
     pass
+
+
+def track_pelvis_height(
+  env: ManagerBasedRlEnv,
+  std: float,
+  command_name: str,
+  twist_name: str,
+  asset_cfg: SceneEntityCfg,
+  speed_threshold: float = 0.05,
+) -> torch.Tensor:
+  """Premia que la pelvis esté a la altura de pie más la orden, solo con orden de velocidad cero.
+
+  Al caminar la pelvis baja sola unos 12 mm, así que la altura absoluta solo se exige parado; caminando manda la pose de referencia.
+  """
+  asset: Entity = env.scene[asset_cfg.name]
+  drop = env.command_manager.get_command(command_name)[:, 0]
+  twist = env.command_manager.get_command(twist_name)
+  standing = ((twist[:, :2].norm(dim=1) + twist[:, 2].abs()) < speed_threshold).float()
+  error = asset.data.site_pos_w[:, asset_cfg.site_ids[0], 2] - (crouch.STAND_PELVIS_Z_M + drop)
+  return standing * torch.exp(-torch.square(error) / std**2)
+
+
+def crouch_upright(
+  env: ManagerBasedRlEnv,
+  std: float,
+  command_name: str,
+  asset_cfg: SceneEntityCfg = _DEFAULT_ASSET_CFG,
+) -> torch.Tensor:
+  """Como `upright`, pero el tronco debe inclinarse hacia delante en proporción a la bajada pedida (7 rad por metro de bajada)."""
+  asset: Entity = env.scene[asset_cfg.name]
+  drop = env.command_manager.get_command(command_name)[:, 0]
+  target_x = torch.sin(-drop * crouch.LEAN_RAD_PER_M)
+  gravity_b = asset.data.projected_gravity_b
+  error = torch.square(gravity_b[:, 0] - target_x) + torch.square(gravity_b[:, 1])
+  return torch.exp(-error / std**2)
+
+
+class crouch_posture(variable_posture):
+  """Como `variable_posture`, con la cadera, la rodilla y el tobillo de referencia desplazados según la bajada pedida (tabla de `crouch`)."""
+
+  def __init__(self, cfg: RewardTermCfg, env: ManagerBasedRlEnv):
+    super().__init__(cfg, env)
+    asset: Entity = env.scene[cfg.params["asset_cfg"].name]
+    self.default_joint_pos = self.default_joint_pos.clone()
+    self._columns = {}
+    for joint, values in crouch.JOINT_TABLE.items():
+      ids, _ = asset.find_joints([f"left_{joint}", f"right_{joint}"], preserve_order=True)
+      self._columns[joint] = (list(ids), values)
+
+  def __call__(self, env: ManagerBasedRlEnv, **kwargs) -> torch.Tensor:
+    drop = -env.command_manager.get_command(kwargs["crouch_command_name"])[:, 0]
+    for ids, values in self._columns.values():
+      self.default_joint_pos[:, ids] = crouch.interpolate(drop, values)[:, None]
+    kwargs.pop("crouch_command_name")
+    return super().__call__(env, **kwargs)

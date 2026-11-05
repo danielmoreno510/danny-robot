@@ -16,6 +16,7 @@ from pathlib import Path
 
 import torch
 
+from danny_training.crouch import STAND_PELVIS_Z_M
 from danny_training.evaluation import TASK, eval_env_cfg, fix_command, load_policy
 
 WARMUP_S = 2.0
@@ -27,6 +28,7 @@ def measure_gait(
   forward: float = 0.25,
   turn: float = 0.0,
   lateral: float = 0.0,
+  height: float | None = 0.0,
   vin: float | None = None,
   nominal_mass: bool = False,
   drop_link_contacts: str | None = None,
@@ -37,7 +39,7 @@ def measure_gait(
 ) -> dict:
   """Corre `checkpoint` con una orden fija y devuelve las medidas. Las opciones de diagnóstico quitan partes del modelo."""
   env_cfg = eval_env_cfg(num_envs, seconds, vin, pushes, push_speed)
-  fix_command(env_cfg, forward, turn, lateral)
+  fix_command(env_cfg, forward, turn, lateral, height)
   if nominal_mass:
     for event in ("randomize_body_mass", "base_com"):
       env_cfg.events.pop(event)
@@ -78,6 +80,9 @@ def measure_gait(
   knee_ids = robot.find_joints(["left_knee", "right_knee"], preserve_order=True)[0]
   knee_stance_sum = torch.zeros(n, 2, device=device)
   knee_stance_steps = torch.zeros(n, 2, device=device)
+  pelvis_ids = robot.find_sites(["pelvis_bottom"])[0]
+  pelvis_sum = torch.zeros(n, device=device)
+  lean_sum = torch.zeros(n, device=device)
   counted = 0
 
   obs = env.get_observations()
@@ -97,6 +102,8 @@ def measure_gait(
         yaw_sum += yaw
         yaw_err_sum += (yaw - cmd[:, 2]).abs()
         yaw_abs_sum += yaw.abs()
+        pelvis_sum += robot.data.site_pos_w[:, pelvis_ids[0], 2]
+        lean_sum += torch.asin(robot.data.projected_gravity_b[:, 0].clamp(-1.0, 1.0))
         single += (found.sum(dim=1) == 1).float()
         knee_stance_sum += robot.data.joint_pos[:, knee_ids] * found.float()
         knee_stance_steps += found.float()
@@ -129,6 +136,7 @@ def measure_gait(
     "forward_command_m_s": forward,
     "lateral_command_m_s": lateral,
     "turn_command_rad_s": turn,
+    "height_command_m": height,
     "fraction_envs_not_fallen": round(float(ok.float().mean()), 4),
     "mean_forward_velocity_m_s": mean(vx_sum / counted),
     "mean_xy_velocity_error_m_s": mean(err_sum / counted),
@@ -139,6 +147,9 @@ def measure_gait(
     "fraction_time_single_support": mean(single / counted),
     "touchdowns_per_foot_per_s": mean(total_td / 2 / seconds_counted),
     "fraction_alternating_touchdowns": mean(alt_frac),
+    "mean_pelvis_height_m": mean(pelvis_sum / counted),
+    "mean_pelvis_height_error_m": mean((pelvis_sum / counted - (STAND_PELVIS_Z_M + height)).abs()) if height is not None else None,
+    "mean_trunk_lean_deg": mean(torch.rad2deg(lean_sum / counted)),
     "mean_knee_angle_stance_deg": mean(torch.rad2deg(knee_stance_sum.sum(dim=1) / knee_stance_steps.sum(dim=1).clamp(min=1))),
     "fraction_touchdowns_left": round(float(touchdowns[ok, 0].sum() / touchdowns[ok].sum().clamp(min=1)), 4) if ok.any() else None,
     "note": f"{'Con' if pushes or push_speed is not None else 'Sin'} empujones. Orden fija. Se descartan los primeros {WARMUP_S} s. Solo entornos que no caen. Velocidad del centro de masas de base_link.",

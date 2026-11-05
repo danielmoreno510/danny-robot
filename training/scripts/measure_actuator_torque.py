@@ -26,6 +26,7 @@ def main() -> None:
   parser.add_argument("--checkpoint", required=True, type=Path)
   parser.add_argument("--forward-speed", type=float, default=None, help="Orden fija de avance en m/s; sin ella, las del entrenamiento")
   parser.add_argument("--name", required=True, help="Nombre del resultado en results/")
+  parser.add_argument("--height", type=float, default=0.0, help="Bajada de la pelvis en m (≤ 0)")
   parser.add_argument("--vin", type=float, default=None, help="Tensión fija de los servos en V; sin ella, la del entrenamiento (6 a 8,4)")
   parser.add_argument("--pushes", action="store_true", help="Mantiene los empujones del entrenamiento (±0,20 m/s)")
   parser.add_argument("--push", type=float, default=None, metavar="M_S", help="Empujones de ±M_S m/s en XY cada 3 a 6 s (la guía usa 0,12)")
@@ -34,8 +35,8 @@ def main() -> None:
   args = parser.parse_args()
 
   env_cfg = eval_env_cfg(args.num_envs, args.seconds, args.vin, args.pushes, args.push)
-  if args.forward_speed is not None:
-    fix_command(env_cfg, args.forward_speed)
+  if args.forward_speed is not None or args.height != 0.0:
+    fix_command(env_cfg, args.forward_speed or 0.0, height=args.height)
   env, policy = load_policy(env_cfg, args.checkpoint)
   device = env.unwrapped.device
 
@@ -72,6 +73,7 @@ def main() -> None:
     "num_envs": args.num_envs,
     "seconds_simulated": args.seconds,
     "vin_v": args.vin,
+    "height_command_m": args.height,
     "pushes": args.pushes or args.push is not None,
     "push_speed_m_s": args.push if args.push is not None else (0.2 if args.pushes else None),
     "stall_torque_nm": round(stall_nm, 4),

@@ -1,0 +1,11 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-04_23-05-41_fase3_agacharse\\model_11994.pt",
+  "onnx": "2026-11-04_23-05-41_fase3_agacharse.onnx",
+  "observation_size": 81,
+  "action_size": 23,
+  "steps": 500,
+  "num_envs": 16,
+  "max_abs_action_difference": 2.384185791015625e-06,
+  "max_allowed": 0.0001,
+  "passes": true
+}

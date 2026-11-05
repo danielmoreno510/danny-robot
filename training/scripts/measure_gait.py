@@ -27,6 +27,8 @@ def main() -> None:
   parser.add_argument("--forward", type=float, default=FORWARD_CMD, help="Orden de avance en m/s")
   parser.add_argument("--lateral", type=float, default=0.0, help="Orden lateral en m/s, positiva a la izquierda")
   parser.add_argument("--turn", type=float, default=0.0, help="Orden de giro en rad/s, positivo a la izquierda")
+  parser.add_argument("--height", type=float, default=0.0, help="Bajada de la pelvis en m (≤ 0, hasta -0,05); \"random\" no: sin esta opción vale 0")
+  parser.add_argument("--random-height", action="store_true", help="Alturas del entrenamiento (de 0 a -0,05 m, el 20 % en 0) en vez de una fija")
   parser.add_argument("--vin", type=float, default=None, help="Tensión fija de los servos en V; sin ella, la del entrenamiento (6 a 8,4)")
   parser.add_argument("--pushes", action="store_true", help="Mantiene los empujones del entrenamiento (±0,20 m/s)")
   parser.add_argument("--push", type=float, default=None, metavar="M_S", help="Empujones de ±M_S m/s en XY cada 3 a 6 s (la guía usa 0,12)")
@@ -41,6 +43,7 @@ def main() -> None:
     forward=args.forward,
     turn=args.turn,
     lateral=args.lateral,
+    height=None if args.random_height else args.height,
     vin=args.vin,
     nominal_mass=args.nominal_mass,
     drop_link_contacts=args.drop_link_contacts,
