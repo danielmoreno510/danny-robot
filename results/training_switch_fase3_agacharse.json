@@ -1,0 +1,32 @@
+{
+  "stand_checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-04_23-05-41_fase3_agacharse\\model_11994.pt",
+  "phase2_checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-05_00-00-00_fase3_inicio\\model_8995.pt",
+  "vin_v": 6.6,
+  "seconds_before_switch": 3.0,
+  "seconds_after_switch": 5.0,
+  "window_after_switch_s": [
+    2.0,
+    5.0
+  ],
+  "note": "Sin empujones. Orden de velocidad cero. Velocidad y altura se miden entre los 2 y 5 s tras el cambio, solo en entornos que no caen.",
+  "by_height_command_m": {
+    "0.0": {
+      "fraction_not_fallen_before_switch": 1.0,
+      "fraction_not_fallen": 1.0,
+      "mean_xy_speed_m_s": 0.0027,
+      "mean_pelvis_height_error_m": 0.0009
+    },
+    "-0.025": {
+      "fraction_not_fallen_before_switch": 1.0,
+      "fraction_not_fallen": 1.0,
+      "mean_xy_speed_m_s": 0.0025,
+      "mean_pelvis_height_error_m": 0.0014
+    },
+    "-0.05": {
+      "fraction_not_fallen_before_switch": 1.0,
+      "fraction_not_fallen": 1.0,
+      "mean_xy_speed_m_s": 0.0015,
+      "mean_pelvis_height_error_m": 0.0053
+    }
+  }
+}
