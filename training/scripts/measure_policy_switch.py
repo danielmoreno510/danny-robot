@@ -1,8 +1,8 @@
-"""Mide el cambio de la política de marcha de la fase 2 a la de agacharse quieto (fase 3), y guarda el resultado en results/.
+"""Mide el cambio de la polÃ­tica de marcha de la fase 2 a la de agacharse quieto (fase 3), y guarda el resultado en results/.
 
-Danny parte de pie con la política de la fase 2 y orden de velocidad cero; a los 3 s se cambia a la política de agacharse con la
-misma orden cero y una orden de altura fija. Se mide durante los 5 s siguientes: fracción que no cae, velocidad media entre los 2 y
-los 5 s tras el cambio (debe estar quieto) y error de altura de la pelvis en esa misma ventana. La política de la fase 2 es el punto de
+Danny parte de pie con la polÃ­tica de la fase 2 y orden de velocidad cero; a los 3 s se cambia a la polÃ­tica de agacharse con la
+misma orden cero y una orden de altura fija. Se mide durante los 5 s siguientes: fracciÃ³n que no cae, velocidad media entre los 2 y
+los 5 s tras el cambio (debe estar quieto) y error de altura de la pelvis en esa misma ventana. La polÃ­tica de la fase 2 es el punto de
 partida de la fase 3 con la entrada de altura a cero (`extend_checkpoint_inputs.py`), que camina igual (error de velocidad 0,0375 m/s).
 
 Uso (desde training/):
@@ -31,6 +31,7 @@ def main() -> None:
   parser.add_argument("--name", required=True, help="Nombre del resultado en results/")
   parser.add_argument("--vin", type=float, default=6.6)
   parser.add_argument("--num-envs", type=int, default=256)
+  parser.add_argument("--reverse", action="store_true", help="Parte con la política de agacharse y cambia a la marcha de la fase 2")
   args = parser.parse_args()
 
   heights = {}
@@ -52,7 +53,8 @@ def main() -> None:
     obs = env.get_observations()
     with torch.inference_mode():
       for i in range(total):
-        policy = walk_policy if i < switch else stand_policy
+        first, second = (stand_policy, walk_policy) if args.reverse else (walk_policy, stand_policy)
+        policy = first if i < switch else second
         obs, _, _, _ = env.step(policy(obs))
         alive &= ~u.reset_terminated.bool()
         if i == switch - 1:
@@ -79,6 +81,7 @@ def main() -> None:
     "seconds_before_switch": BEFORE_S,
     "seconds_after_switch": AFTER_S,
     "window_after_switch_s": [SETTLE_S, AFTER_S],
+    "direction": "agacharse -> marcha fase 2" if args.reverse else "marcha fase 2 -> agacharse",
     "note": "Sin empujones. Orden de velocidad cero. Velocidad y altura se miden entre los 2 y 5 s tras el cambio, solo en entornos que no caen.",
     "by_height_command_m": heights,
   }

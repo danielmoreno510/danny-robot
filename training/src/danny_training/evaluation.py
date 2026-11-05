@@ -14,14 +14,14 @@ from mjlab.tasks.registry import load_env_cfg, load_rl_cfg, load_runner_cls
 TASK = "Mjlab-Velocity-Flat-Danny"
 RESULTS = Path(__file__).resolve().parents[3] / "results"
 
-def eval_env_cfg(num_envs: int, seconds: float, vin: float | None = None, pushes: bool = False, push_speed: float | None = None) -> ManagerBasedRlEnvCfg:
+def eval_env_cfg(num_envs: int, seconds: float, vin: float | None = None, pushes: bool = False, push_speed: float | None = None, task: str = TASK) -> ManagerBasedRlEnvCfg:
   """Configuración de entrenamiento sin empujones: se mide la marcha, no la recuperación.
 
   Con `vin`, todos los servos trabajan a esa tensión fija (V), sin caída de tensión por la carga. Sin ella, la tensión se
   sortea entre 6 y 8,4 V como en el entrenamiento. Con `pushes`, se mantienen los empujones del entrenamiento (±0,20 m/s, la etapa 3).
   Con `push_speed` (m/s), hay empujones de esa fuerza en XY, ±`push_speed`, cada 3 a 6 s; la guía usa 0,12.
   """
-  env_cfg = load_env_cfg(TASK)
+  env_cfg = load_env_cfg(task)
   env_cfg.scene.num_envs = num_envs
   env_cfg.episode_length_s = seconds
   if not pushes and push_speed is None:
@@ -51,19 +51,19 @@ def fix_command(env_cfg: ManagerBasedRlEnvCfg, forward: float, turn: float = 0.0
     env_cfg.commands["height"].zero_fraction = 0.0
 
 
-def load_policy(env_cfg: ManagerBasedRlEnvCfg, checkpoint: Path, render_mode: str | None = None):
+def load_policy(env_cfg: ManagerBasedRlEnvCfg, checkpoint: Path, render_mode: str | None = None, task: str = TASK):
   """Crea el entorno y devuelve (entorno envuelto, política determinista). Con `render_mode="rgb_array"`, el entorno puede dibujar fotogramas."""
   device = "cuda:0" if torch.cuda.is_available() else "cpu"
-  agent_cfg = load_rl_cfg(TASK)
+  agent_cfg = load_rl_cfg(task)
   env = RslRlVecEnvWrapper(ManagerBasedRlEnv(cfg=env_cfg, device=device, render_mode=render_mode), clip_actions=agent_cfg.clip_actions)
-  return env, load_policy_on(env, checkpoint)
+  return env, load_policy_on(env, checkpoint, task)
 
 
-def load_policy_on(env: RslRlVecEnvWrapper, checkpoint: Path):
+def load_policy_on(env: RslRlVecEnvWrapper, checkpoint: Path, task: str = TASK):
   """Política determinista de `checkpoint` sobre un entorno ya creado; sirve para cambiar de política en mitad de una prueba."""
   device = env.unwrapped.device
-  agent_cfg = load_rl_cfg(TASK)
-  runner_cls = load_runner_cls(TASK) or MjlabOnPolicyRunner
+  agent_cfg = load_rl_cfg(task)
+  runner_cls = load_runner_cls(task) or MjlabOnPolicyRunner
   runner = runner_cls(env, asdict(agent_cfg), device=device)
   runner.load(str(checkpoint), load_cfg={"actor": True}, strict=True, map_location=device)
   return runner.get_inference_policy(device=device)
