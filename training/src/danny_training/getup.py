@@ -10,6 +10,7 @@ from __future__ import annotations
 import math
 import os
 
+import mujoco
 import torch
 from mjlab.entity import Entity
 from mjlab.envs import ManagerBasedRlEnv, ManagerBasedRlEnvCfg
@@ -20,12 +21,22 @@ from mjlab.tasks.velocity import mdp as velocity_mdp
 from mjlab.utils.lab_api.math import quat_from_euler_xyz, sample_uniform
 
 from danny_training import crouch, env_cfgs, mdp as danny_mdp
+from danny_training.robot import DANNY_XML
 
 PRONE_FRACTION = float(os.environ.get("DANNY_PRONE_FRACTION", "1.0"))
 START_PITCH_RAD = 1.5  # boca abajo +1,5; boca arriba -1,5 (igual que la búsqueda).
 START_HEIGHT_M = {"prone": 0.045, "supine": 0.03}
 START_JOINT_NOISE_RAD = 0.05
 PELVIS_SITE = "pelvis_bottom"
+# Ayuda vertical del entrenamiento (corrida 2): fuerza hacia arriba en la pelvis, como fracción del peso, que se mantiene y se quita. Solo
+# con DANNY_GETUP_ASSIST=1; las medidas y los vídeos la dejan apagada. Pasos de entorno por iteración de PPO: 24.
+ASSIST = os.environ.get("DANNY_GETUP_ASSIST", "0") == "1"
+ASSIST_FRACTION = 0.8
+ASSIST_HOLD_ITERATIONS = 500
+ASSIST_END_ITERATIONS = 2500
+STEPS_PER_ITERATION = 24
+ROBOT_MASS_KG = 1.30  # PROJECT_HANDOFF.md, etapa 3.
+SOFT_LIMIT_FACTOR = 0.9  # el mismo de `robot.py`.
 # Umbrales de la definición de «se levanta» (PROJECT_HANDOFF.md, Fase 4).
 STOOD_PELVIS_M = 0.20
 STOOD_TILT_RAD = math.radians(15.0)
@@ -58,14 +69,40 @@ def reset_lying(env: ManagerBasedRlEnv, env_ids: torch.Tensor | None, prone_frac
   asset.write_joint_state_to_sim(joint_pos, torch.zeros_like(joint_pos), env_ids=env_ids)
 
 
+def assist_lift(env: ManagerBasedRlEnv, env_ids: torch.Tensor | None, asset_cfg: SceneEntityCfg) -> None:
+  """Empuja la pelvis hacia arriba con una fracción del peso: constante hasta ASSIST_HOLD_ITERATIONS y lineal hasta 0 en ASSIST_END_ITERATIONS."""
+  iteration = env.common_step_counter / STEPS_PER_ITERATION
+  fade = min(1.0, max(0.0, (ASSIST_END_ITERATIONS - iteration) / (ASSIST_END_ITERATIONS - ASSIST_HOLD_ITERATIONS)))
+  forces = torch.zeros(env.num_envs, len(asset_cfg.body_ids), 3, device=env.device)
+  forces[..., 2] = ASSIST_FRACTION * fade * ROBOT_MASS_KG * 9.81
+  env.scene[asset_cfg.name].write_external_wrench_to_sim(forces, torch.zeros_like(forces), body_ids=asset_cfg.body_ids)
+  env.extras["log"]["Metrics/getup_assist_fraction"] = torch.tensor(ASSIST_FRACTION * fade, device=env.device)
+
+
+def soft_limit_clip() -> dict[str, tuple[float, float]]:
+  """Rango de cada articulación (límite blando) en el que se acota el objetivo de posición pedido por la política."""
+  model = mujoco.MjModel.from_xml_path(str(DANNY_XML))
+  clip = {}
+  for joint in range(model.njnt):
+    if model.jnt_type[joint] == mujoco.mjtJoint.mjJNT_HINGE:
+      low, high = model.jnt_range[joint]
+      mid, half = (low + high) / 2, (high - low) / 2 * SOFT_LIMIT_FACTOR
+      clip[mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_JOINT, joint)] = (float(mid - half), float(mid + half))
+  return clip
+
+
 def _pelvis_z(env: ManagerBasedRlEnv, asset_cfg: SceneEntityCfg) -> torch.Tensor:
   asset: Entity = env.scene[asset_cfg.name]
   return asset.data.site_pos_w[:, asset_cfg.site_ids[0], 2]
 
 
 def pelvis_height_progress(env: ManagerBasedRlEnv, asset_cfg: SceneEntityCfg) -> torch.Tensor:
-  """Altura de la pelvis respecto a la de pie, de 0 a 1 (lineal, para que haya pendiente desde el suelo)."""
-  return (_pelvis_z(env, asset_cfg) / crouch.STAND_PELVIS_Z_M).clamp(0.0, 1.0)
+  """Altura de la pelvis respecto a la de pie, de 0 a 1 (lineal, para que haya pendiente desde el suelo), por (1 + cos del tronco) / 2.
+
+  Sin el factor de tronco, la corrida 1 se quedó del revés sobre la cabeza (pelvis a 0,152 m, tronco a 147°) cobrando casi todo.
+  """
+  cos_tilt = -env.scene["robot"].data.projected_gravity_b[:, 2]
+  return (_pelvis_z(env, asset_cfg) / crouch.STAND_PELVIS_Z_M).clamp(0.0, 1.0) * (1.0 + cos_tilt) / 2.0
 
 
 def feet_down_when_up(env: ManagerBasedRlEnv, sensor_name: str, asset_cfg: SceneEntityCfg, min_height: float = 0.15) -> torch.Tensor:
@@ -77,12 +114,15 @@ def feet_down_when_up(env: ManagerBasedRlEnv, sensor_name: str, asset_cfg: Scene
 def stand_still(env: ManagerBasedRlEnv, std: float, asset_cfg: SceneEntityCfg, min_height: float = 0.20) -> torch.Tensor:
   """Premia estar quieto (velocidad lineal y angular del tronco) una vez la pelvis pasa de `min_height`."""
   robot: Entity = env.scene["robot"]
-  speed2 = robot.data.root_com_lin_vel_b.square().sum(dim=1) + 0.1 * robot.data.root_link_ang_vel_b.square().sum(dim=1)
+  speed2 = robot.data.root_com_lin_vel_b.square().mean(dim=1) + 0.1 * robot.data.root_link_ang_vel_b.square().mean(dim=1)
   return (_pelvis_z(env, asset_cfg) > min_height).float() * torch.exp(-speed2 / std**2)
 
 
 def pose_when_up(env: ManagerBasedRlEnv, asset_cfg: SceneEntityCfg, min_height: float = 0.15) -> torch.Tensor:
-  """Error cuadrático medio respecto a la pose de pie por defecto, solo con la pelvis sobre `min_height`."""
+  """Error cuadrático medio respecto a la pose de pie por defecto, solo con la pelvis sobre `min_height`.
+
+  La corrida 3 lo probó como suma con peso -2 y la política dejó de levantarse (ver PROJECT_HANDOFF.md): se mantiene el de la corrida 2.
+  """
   robot: Entity = env.scene["robot"]
   error = (robot.data.joint_pos - robot.data.default_joint_pos).square().mean(dim=1)
   return error * (_pelvis_z(env, asset_cfg) > min_height).float()
@@ -142,8 +182,14 @@ def danny_getup_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   # Sin terminación por caída: estar tumbado es el inicio.
   cfg.terminations.pop("fell_over", None)
 
+  # Objetivo de posición acotado al rango blando: en la corrida 1 la política pidió -308° en una cadera de -94°.
+  cfg.actions["joint_pos"].clip = soft_limit_clip()
+
   pelvis = SceneEntityCfg("robot", site_names=(PELVIS_SITE,))
   trunk = SceneEntityCfg("robot", body_names=(env_cfgs.TRUNK_BODY,))
+  if ASSIST:
+    cfg.events["assist_lift"] = EventTermCfg(func=assist_lift, mode="step", params={"asset_cfg": SceneEntityCfg("robot", body_names=(env_cfgs.TRUNK_BODY,))})
+
   cfg.rewards = {
     "pelvis_height": RewardTermCfg(func=pelvis_height_progress, weight=4.0, params={"asset_cfg": pelvis}),
     "upright": RewardTermCfg(func=velocity_mdp.upright, weight=2.0, params={"std": math.sqrt(0.2), "asset_cfg": trunk}),
