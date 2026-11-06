@@ -118,10 +118,11 @@ def stand_still(env: ManagerBasedRlEnv, std: float, asset_cfg: SceneEntityCfg, m
   return (_pelvis_z(env, asset_cfg) > min_height).float() * torch.exp(-speed2 / std**2)
 
 
-def pose_when_up(env: ManagerBasedRlEnv, asset_cfg: SceneEntityCfg, min_height: float = 0.15) -> torch.Tensor:
-  """Error cuadrático medio respecto a la pose de pie por defecto, solo con la pelvis sobre `min_height`.
+def pose_when_up(env: ManagerBasedRlEnv, asset_cfg: SceneEntityCfg, min_height: float = 0.0) -> torch.Tensor:
+  """Error cuadrático medio respecto a la pose de pie por defecto, solo con la pelvis sobre `min_height` (0: siempre).
 
-  La corrida 3 lo probó como suma con peso -2 y la política dejó de levantarse (ver PROJECT_HANDOFF.md): se mantiene el de la corrida 2.
+  Con umbral 0,15 m y suma con peso -2 la política dejó de levantarse (corrida 3, ver PROJECT_HANDOFF.md: se quedó a 0,141 m, bajo el umbral).
+  Corrida 4: sin umbral, para que no haya escalón en la recompensa; media con peso -1,5.
   """
   robot: Entity = env.scene["robot"]
   error = (robot.data.joint_pos - robot.data.default_joint_pos).square().mean(dim=1)
@@ -197,7 +198,7 @@ def danny_getup_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
       func=feet_down_when_up, weight=1.0, params={"sensor_name": "feet_ground_contact", "asset_cfg": pelvis}
     ),
     "stand_still": RewardTermCfg(func=stand_still, weight=2.0, params={"std": 0.3, "asset_cfg": pelvis}),
-    "pose_when_up": RewardTermCfg(func=pose_when_up, weight=-1.0, params={"asset_cfg": pelvis}),
+    "pose_when_up": RewardTermCfg(func=pose_when_up, weight=-1.5, params={"asset_cfg": pelvis}),
     "dof_pos_limits": RewardTermCfg(func=velocity_mdp.joint_pos_limits, weight=-1.0),
     "action_rate_l2": RewardTermCfg(func=velocity_mdp.action_rate_l2, weight=-0.1),
     "link_pair_contacts": RewardTermCfg(func=danny_mdp.link_pair_contacts, weight=-1.0),

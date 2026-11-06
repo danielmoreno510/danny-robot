@@ -692,3 +692,39 @@ Falla por poco solo el cambio a la marcha; la postura de pie de la corrida 2 es 
 ### Fase 4, estado al cerrar la pasada autónoma (6 de noviembre): NO APROBADA
 
 Tres corridas hechas (máximo de la pasada). La mejor es la **corrida 2** (`fase4_boca_abajo_ayuda/model_4999.pt`): se levanta el 100 % boca abajo a 6,6 V, con tensión aleatoria y a 7,4 V; saturación de pie y racha al tope mientras se levanta cumplen; falla **solo el cambio a la marcha: 91,0 % a 6,6 V y 94,5 % aleatoria (se pide 95 %)**, 96,1 % a 7,4 V. Su postura de pie es de topes (cintura a -54°, brazos y piernas contra sus límites a las 3 000 iteraciones; no se midió en la 4 999). **No comprobado:** la postura final de la corrida 2; boca arriba; el cambio a la marcha con empujones; el robot real. La fase 5 y la 6 no empiezan. Siguientes pasos posibles, para decidir: (1) quitar el umbral de 0,15 m del castigo de pose y subirlo poco a poco desde el modelo 4 999; (2) añadir como parte de la recompensa de pie el estado que necesita la marcha (pose de la fase 2) con peso suave y una corrida corta; (3) aceptar el 91 % como paso intermedio y medir antes la causa de las caídas tras el cambio (inclinación, qué articulación).
+
+### Fase 4, corrida 4 (`fase4_pose_sin_umbral`), criterio escrito antes de entrenar (6 de noviembre)
+
+Decisión del usuario: quitar el umbral de 0,15 m del castigo de pose. Cambio único: `pose_when_up` sin umbral de altura (siempre activo, así no hay escalón en la recompensa), **media** de errores cuadráticos con peso **-1,5** (corrida 2: -1 con umbral; corrida 3: suma con peso -2, es decir unas 150 veces más fuerte). 1 500 iteraciones desde `fase4_boca_abajo_ayuda/model_4999.pt`, sin ayuda, etapa 2, 4096 entornos (`/d/Claude/fase4_pose_sin_umbral.sh`). Aprobación: la de la corrida 3 (80 % se levanta a 6,6 V y aleatoria; cambio a la marcha 95 %; saturación de pie 5 %; ninguna articulación más de 0,5 s seguidas al tope mientras se levanta). Comprobación a las 500 iteraciones: `stood` 80 % o más (la corrida 2 daba 100 %); si baja del 50 % se para y se documenta. Es la cuarta corrida de la fase: el tope de 3 de la pasada autónoma se levantó por decisión del usuario.
+
+### Fase 4, corrida 4 (`fase4_pose_sin_umbral`): NO CUMPLE el cambio a la marcha (6 de noviembre)
+
+1 500 iteraciones (hasta la 6 498, `puntos_de_control/fase4_pose_sin_umbral_model_6498.pt`), sin colapso: a las 500 iteraciones `stood` 96,5 % (criterio 80 %). Medido con `measure_getup.py`, 256 robots boca abajo, 20 s (`results/training_getup_fase4_pose_sin_umbral_{6.6V,7.4V,aleatoria}.json`):
+
+| Tensión | Se levanta | Mediana | Cambio a la marcha sin caer en 5 s (se pide 95 %) | Racha más larga al tope mientras se levanta |
+|---|---|---|---|---|
+| 6,6 V | 100 % | 3,9 s | 91,0 % (no cumple) | 0,22 s (`left_hip_pitch`) |
+| Aleatoria 6 a 8,4 V | 100 % | 3,88 s | 93,75 % (no cumple) | 0,20 s |
+| 7,4 V (informa) | 100 % | 3,82 s | 94,5 % | 0,20 s |
+
+Saturación de pie: 1,3 % como mucho (`left_hip_pitch`, 6,6 V). Cumple levantarse, saturación y el umbral de 0,5 s; falla solo el cambio a la marcha, igual que la corrida 2 (91,0 / 94,5 / 96,1 %): quitar el umbral y penalizar más la pose **no lo mejoró** (a 6,6 V igual, en las otras dos algo peor). Conclusión con números: la hipótesis «la postura de topes explica las caídas tras el cambio» no se sostiene; castigar la pose no es la palanca. **No comprobado:** la postura final de esta corrida (no se corrió `diagnose_getup_posture.py`) ni por qué caen los robots (inclinación, articulación, instante). Siguiente paso propuesto, sin entrenar: medir esas caídas (tiempo hasta caer, dirección, articulación) en el modelo 6 498 y en el 4 999. Código: `getup.py` queda con la pose sin umbral y peso -1,5 (corrida 4); `fase4_boca_abajo_ayuda/model_4999.pt` sigue siendo la referencia más simple. Fase 4 no aprobada.
+
+### Fase 4: por qué caen tras el cambio a la marcha (medido sin entrenar, 6 de noviembre)
+
+`training/scripts/diagnose_getup_switch_falls.py` repite el cambio (orden cero) con 512 robots a 6,6 V y guarda `results/training_getup_caidas_<name>.json`. Resultados:
+
+| Modelo | Caen | Sin caer | Mediana hasta caer | Dirección |
+|---|---|---|---|---|
+| Corrida 2 (`model_4999`) | 32 de 512 | 93,75 % | 1,12 s | 29 hacia delante, 3 a la izquierda |
+| Corrida 4 (`model_6498`) | 32 de 512 | 93,75 % | 1,14 s | 30 hacia delante, 2 a la izquierda |
+| Corrida 4, 6 s de pie antes del cambio | 35 de 512 | 93,2 % | 1,08 s | 27 delante, 8 izquierda |
+| Corrida 4, 10 s de pie antes del cambio | 31 de 512 | 94,0 % | 1,12 s | 24 delante, 7 izquierda |
+
+(Con 256 robots el mismo modelo daba 91,0 %: el ruido de muestreo es de unos ±2 puntos; con 512, 93,75 %.)
+
+- **Es un fallo de la política de marcha con orden cero, no de la política de levantarse ni de la postura de topes:** las corridas 2 y 4 dan lo mismo, y esperar 6 o 10 s de pie antes del cambio no lo arregla (quedaría en 93 a 94 %). Los que caen lo hacen siempre hacia delante (más del 80 %), 0,8 a 1,8 s después del cambio; los que no caen se quedan a un máximo de 10,5° de inclinación (percentil 95).
+- **Diferencias al cambiar (caen menos sus medias en desviaciones típicas):** pelvis más alta (+0,6 a +0,9 σ), algo más de velocidad (+0,8 σ), rodillas y caderas algo menos flexionadas (rodilla derecha 4,0° frente a 6,0°; cadera 11,5° frente a 13,5°). Diferencias de 1 a 2 σ con ángulos de 2°; indican que los robots que caen se quedan un poco más estirados, no una postura distinta.
+- **Hipótesis (no comprobada):** la política de marcha de la fase 2 arranca de una postura ligeramente más flexionada que la de pie de la política de levantarse y, con orden cero desde la postura estirada, se inclina hacia delante. **No comprobado:** que flexionar más las rodillas al cambiar lo arregle; el cambio con la orden de marcha real; el cambio desde la política de agacharse de la fase 3.
+- **Siguiente paso sin entrenar:** probar en el cambio un periodo de transición (p. ej. mezclar las dos acciones en 0,5 s) o una pose de pie objetivo más flexionada en la política de levantarse, y medir con este mismo script. La fase 4 sigue sin aprobarse (93,75 % frente a 95 %, mejor que la corrida 2 original solo por la muestra).
+
+**Transición suave entre políticas (probada, empeora):** `--blend-s` mezcla linealmente la acción de la política de levantarse con la de marcha durante N segundos tras el cambio (modelo `fase4_pose_sin_umbral/model_6498.pt`, 512 robots, `results/training_getup_caidas_*mezcla*.json`). Cambio seco: 93,75 % sin caer. Mezcla de 0,5 s: **3,5 %** sin caer a 6,6 V y 2,9 % con tensión aleatoria; mezcla de 1,0 s: **0 %** (los 512 caen, 94 % hacia delante, mediana 0,88 s). La mezcla de acciones de dos políticas distintas da objetivos que ninguna de las dos espera y es peor que el cambio seco; descartada. Sigue sin explicar por qué caen el 6 % con el cambio seco. **Siguiente paso posible:** pedir en el entrenamiento de levantarse una pose de pie más flexionada (rodillas y caderas como las de los robots que no caen: rodilla ~6°, cadera ~13,5°) o ajustar el reloj/observación extra del cambio; no se hace sin decisión.

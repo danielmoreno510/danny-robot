@@ -1,0 +1,33 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-06_07-52-07_fase4_pose_sin_umbral\\model_6498.pt",
+  "vin_v": 6.6,
+  "window_s": 3.0,
+  "blend_s": 1.0,
+  "num_envs": 512,
+  "robots_that_got_up_and_have_5s_after": 512,
+  "fell": 512,
+  "fraction_not_fallen": 0.0,
+  "time_to_fall_s": {
+    "min": 0.7,
+    "median": 0.88,
+    "max": 1.68
+  },
+  "fall_direction_robot_frame": {
+    "hacia_delante": 483,
+    "hacia_atras": 0,
+    "hacia_la_izquierda": 7,
+    "hacia_la_derecha": 22
+  },
+  "peak_tilt_deg_after_switch": {
+    "fell_median": 93.2,
+    "stayed_median": null,
+    "stayed_p95": null
+  },
+  "state_at_switch_fell_minus_stayed_in_std": {
+    "pelvis_height_m": NaN,
+    "tilt_deg": NaN,
+    "speed_m_s": NaN
+  },
+  "joint_angle_at_switch_fell_minus_stayed": {},
+  "joint_speed_at_switch_fell_minus_stayed_in_std": {}
+}
