@@ -131,6 +131,22 @@ def pose_stand(env: ManagerBasedRlEnv, std: float, asset_cfg: SceneEntityCfg) ->
   return torch.exp(-error / std**2) * pelvis_height_progress(env, asset_cfg)
 
 
+def action_out_of_range_l1(env: ManagerBasedRlEnv) -> torch.Tensor:
+  """Suma, en rad, de lo que el objetivo sin recortar (defecto + acción cruda) sale del rango recortado de cada articulación (L1).
+
+  El recorte de `soft_limit_clip` deja a la política sin señal en las articulaciones cuya acción media queda fuera del rango (corridas 1 a 6: la
+  recompensa de pose no podía moverlas). Este castigo crece con la distancia, así que da pendiente aunque toda la muestra caiga recortada.
+  """
+  robot: Entity = env.scene["robot"]
+  cache = env.extras.setdefault("_action_range", {})
+  if "low" not in cache:
+    clip = soft_limit_clip()
+    cache["low"] = torch.tensor([clip[name][0] for name in robot.joint_names], device=env.device)
+    cache["high"] = torch.tensor([clip[name][1] for name in robot.joint_names], device=env.device)
+  target = robot.data.default_joint_pos + env.action_manager.action
+  return ((target - cache["high"]).clamp(min=0.0) + (cache["low"] - target).clamp(min=0.0)).sum(dim=1)
+
+
 def servo_torque_excess_when_up(env: ManagerBasedRlEnv, threshold: float, asset_cfg: SceneEntityCfg, pelvis_cfg: SceneEntityCfg) -> torch.Tensor:
   """Como `servo_torque_excess` en todas las articulaciones, pero solo con la pelvis sobre 0,20 m: levantarse puede exigir picos, quedarse de pie no."""
   return danny_mdp.servo_torque_excess(env, threshold, asset_cfg) * (_pelvis_z(env, pelvis_cfg) > STOOD_PELVIS_M).float()
@@ -201,6 +217,7 @@ def danny_getup_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     ),
     "stand_still": RewardTermCfg(func=stand_still, weight=2.0, params={"std": 0.3, "asset_cfg": pelvis}),
     "pose_stand": RewardTermCfg(func=pose_stand, weight=2.0, params={"std": 2.0, "asset_cfg": pelvis}),
+    "action_out_of_range": RewardTermCfg(func=action_out_of_range_l1, weight=-0.035),
     "dof_pos_limits": RewardTermCfg(func=velocity_mdp.joint_pos_limits, weight=-1.0),
     "action_rate_l2": RewardTermCfg(func=velocity_mdp.action_rate_l2, weight=-0.1),
     "link_pair_contacts": RewardTermCfg(func=danny_mdp.link_pair_contacts, weight=-1.0),

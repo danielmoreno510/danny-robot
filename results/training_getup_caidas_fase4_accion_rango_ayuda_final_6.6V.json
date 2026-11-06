@@ -1,0 +1,26 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-06_15-36-24_fase4_accion_rango_ayuda\\model_4999.pt",
+  "vin_v": 6.6,
+  "window_s": 3.0,
+  "blend_s": 0.0,
+  "ramp_s": 0.0,
+  "ramp_from_target": false,
+  "num_envs": 512,
+  "robots_that_got_up_and_have_5s_after": 511,
+  "fell": 0,
+  "fraction_not_fallen": 1.0,
+  "time_to_fall_s": null,
+  "fall_direction_robot_frame": null,
+  "peak_tilt_deg_after_switch": {
+    "fell_median": null,
+    "stayed_median": 2.3,
+    "stayed_p95": 4.2
+  },
+  "state_at_switch_fell_minus_stayed_in_std": {
+    "pelvis_height_m": NaN,
+    "tilt_deg": NaN,
+    "speed_m_s": NaN
+  },
+  "joint_angle_at_switch_fell_minus_stayed": {},
+  "joint_speed_at_switch_fell_minus_stayed_in_std": {}
+}
