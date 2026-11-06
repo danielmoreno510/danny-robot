@@ -118,15 +118,17 @@ def stand_still(env: ManagerBasedRlEnv, std: float, asset_cfg: SceneEntityCfg, m
   return (_pelvis_z(env, asset_cfg) > min_height).float() * torch.exp(-speed2 / std**2)
 
 
-def pose_when_up(env: ManagerBasedRlEnv, asset_cfg: SceneEntityCfg, min_height: float = 0.0) -> torch.Tensor:
-  """Error cuadrático medio respecto a la pose de pie por defecto, solo con la pelvis sobre `min_height` (0: siempre).
+def pose_stand(env: ManagerBasedRlEnv, std: float, asset_cfg: SceneEntityCfg) -> torch.Tensor:
+  """exp(-suma de errores cuadráticos / std²) respecto a la pose de pie de la fase 2, por el avance de altura y tronco.
 
-  Con umbral 0,15 m y suma con peso -2 la política dejó de levantarse (corrida 3, ver PROJECT_HANDOFF.md: se quedó a 0,141 m, bajo el umbral).
-  Corrida 4: sin umbral, para que no haya escalón en la recompensa; media con peso -1,5.
+  Positiva y multiplicada por `pelvis_height_progress`: no hay escalón de altura y solo cobra cuando el robot está levantado y vertical.
+  Sustituye al castigo `pose_when_up` de las corridas 2 a 4 (media de errores, demasiado débil: un error de 40° en una articulación de 23
+  costaba 0,02) y evita el escalón de la corrida 3 (ver PROJECT_HANDOFF.md). Con std² = 1 rad² (corrida 5) la postura de topes (suma de
+  unos 4 rad²) cobraba 0,02 y no había pendiente; con std² = 4 rad² (corrida 6) cobra 0,37 y la pose de pie cobra 1.
   """
   robot: Entity = env.scene["robot"]
-  error = (robot.data.joint_pos - robot.data.default_joint_pos).square().mean(dim=1)
-  return error * (_pelvis_z(env, asset_cfg) > min_height).float()
+  error = (robot.data.joint_pos - robot.data.default_joint_pos).square().sum(dim=1)
+  return torch.exp(-error / std**2) * pelvis_height_progress(env, asset_cfg)
 
 
 def servo_torque_excess_when_up(env: ManagerBasedRlEnv, threshold: float, asset_cfg: SceneEntityCfg, pelvis_cfg: SceneEntityCfg) -> torch.Tensor:
@@ -198,7 +200,7 @@ def danny_getup_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
       func=feet_down_when_up, weight=1.0, params={"sensor_name": "feet_ground_contact", "asset_cfg": pelvis}
     ),
     "stand_still": RewardTermCfg(func=stand_still, weight=2.0, params={"std": 0.3, "asset_cfg": pelvis}),
-    "pose_when_up": RewardTermCfg(func=pose_when_up, weight=-1.5, params={"asset_cfg": pelvis}),
+    "pose_stand": RewardTermCfg(func=pose_stand, weight=2.0, params={"std": 2.0, "asset_cfg": pelvis}),
     "dof_pos_limits": RewardTermCfg(func=velocity_mdp.joint_pos_limits, weight=-1.0),
     "action_rate_l2": RewardTermCfg(func=velocity_mdp.action_rate_l2, weight=-0.1),
     "link_pair_contacts": RewardTermCfg(func=danny_mdp.link_pair_contacts, weight=-1.0),

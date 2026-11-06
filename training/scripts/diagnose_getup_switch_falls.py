@@ -38,6 +38,8 @@ def main() -> None:
   parser.add_argument("--num-envs", type=int, default=512)
   parser.add_argument("--seconds", type=float, default=20.0)
   parser.add_argument("--blend-s", type=float, default=0.0, help="Segundos en que la acción pasa de la política de levantarse a la de marcha (0: cambio seco)")
+  parser.add_argument("--ramp-s", type=float, default=0.0, help="Segundos en que los objetivos de los servos van en línea recta de la posición medida a la pose de pie de la fase 2, antes de dar el mando a la política de marcha")
+  parser.add_argument("--ramp-from-target", action="store_true", help="La rampa parte del último objetivo de la política de levantarse y no de la posición medida (la política puede empujar contra topes: objetivo y posición difieren hasta 25°)")
   parser.add_argument("--window-s", type=float, default=WINDOW_S, help="Segundos seguidos de pie antes del cambio (el criterio es 3)")
   args = parser.parse_args()
 
@@ -56,12 +58,16 @@ def main() -> None:
   foot_geoms = torch.tensor([i for i in range(model.ngeom) if model.geom_bodyid[i] in foot_bodies], device=device)
 
   steps = int((args.seconds + AFTER_S) / dt)
+  ramp_steps = int(args.ramp_s / dt)
+  stand = robot.data.default_joint_pos[0]  # pose de pie de la fase 2 (el estado inicial del robot es el mismo en las dos tareas)
+  action_term = u.action_manager.get_term("joint_pos")
   window, after, rise_steps = int(args.window_s / dt), int(AFTER_S / dt), int(args.seconds / dt)
   run = torch.zeros(n, dtype=torch.int32, device=device)
   speed_ring = torch.zeros(n, window, device=device)
   success_step = torch.full((n,), -1, dtype=torch.int32, device=device)
   fall_step = torch.full((n,), -1, dtype=torch.int32, device=device)
   at_switch_q = torch.zeros(n, len(joint_names), device=device)
+  at_switch_target = torch.zeros(n, len(joint_names), device=device)
   at_switch_qd = torch.zeros(n, len(joint_names), device=device)
   at_switch_scalar = torch.zeros(n, 3, device=device)  # altura de la pelvis, inclinación, velocidad lineal
   fall_gravity = torch.zeros(n, 3, device=device)  # gravedad proyectada en el tronco al caer
@@ -76,8 +82,18 @@ def main() -> None:
       if switched.any():
         walk_obs = obs.clone()
         walk_obs["actor"] = torch.cat([obs["actor"], extra], dim=1)
-        mix = ((step - success_step).float() / max(args.blend_s / dt, 1.0)).clamp(0.0, 1.0)[:, None]
-        action = torch.where(switched[:, None], (1.0 - mix) * action + mix * walk_policy(walk_obs), action)
+        if ramp_steps:
+          # Objetivo de posición en línea recta de la medida a la pose de pie; la acción que lo produce es (objetivo - defecto) / escala.
+          frac = ((step - success_step).float() / ramp_steps).clamp(0.0, 1.0)[:, None]
+          start = at_switch_target if args.ramp_from_target else at_switch_q
+          target = start + (stand[None, :] - start) * frac
+          ramp_action = (target - robot.data.default_joint_pos) / action_term._scale
+          in_ramp = (step - success_step) < ramp_steps
+          action = torch.where((switched & in_ramp)[:, None], ramp_action, torch.where(switched[:, None], walk_policy(walk_obs), action))
+          walk_obs = None
+        if walk_obs is not None:
+         mix = ((step - success_step).float() / max(args.blend_s / dt, 1.0)).clamp(0.0, 1.0)[:, None]
+         action = torch.where(switched[:, None], (1.0 - mix) * action + mix * walk_policy(walk_obs), action)
       obs, _, _, _ = env.step(action)
 
       z = robot.data.site_pos_w[:, pelvis_id, 2]
@@ -98,16 +114,17 @@ def main() -> None:
       new = (success_step < 0) & (run >= window) & (speed_ring.mean(dim=1) <= SPEED_MAX) & (step < rise_steps)
       success_step = torch.where(new, torch.full_like(success_step, step), success_step)
       at_switch_q[new] = robot.data.joint_pos[new]
+      at_switch_target[new] = robot.data.joint_pos_target[new]
       at_switch_qd[new] = robot.data.joint_vel[new]
       at_switch_scalar[new] = torch.stack([z, torch.rad2deg(tilt), speed], dim=1)[new]
 
-      after_switch = (success_step >= 0) & (step > success_step) & (step - success_step <= after)
+      after_switch = (success_step >= 0) & (step > success_step) & (step - success_step <= ramp_steps + after)
       peak_tilt = torch.where(after_switch, torch.maximum(peak_tilt, tilt), peak_tilt)
       fall_now = after_switch & (tilt > FALL_TILT_RAD) & (fall_step < 0)
       fall_step = torch.where(fall_now, torch.full_like(fall_step, step), fall_step)
       fall_gravity[fall_now] = gravity[fall_now]
 
-  checked = (success_step >= 0) & ((steps - 1 - success_step) >= after)
+  checked = (success_step >= 0) & ((steps - 1 - success_step) >= ramp_steps + after)
   fell = checked & (fall_step >= 0)
   stayed = checked & (fall_step < 0)
   time_to_fall = (fall_step[fell] - success_step[fell]).float() * dt
@@ -130,6 +147,8 @@ def main() -> None:
     "vin_v": args.vin if args.vin is not None else "aleatoria 6 a 8,4",
     "window_s": args.window_s,
     "blend_s": args.blend_s,
+    "ramp_s": args.ramp_s,
+    "ramp_from_target": args.ramp_from_target,
     "num_envs": n,
     "robots_that_got_up_and_have_5s_after": int(checked.sum()),
     "fell": int(fell.sum()),
