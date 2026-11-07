@@ -71,7 +71,9 @@ def reset_lying(env: ManagerBasedRlEnv, env_ids: torch.Tensor | None, prone_frac
 
 def assist_lift(env: ManagerBasedRlEnv, env_ids: torch.Tensor | None, asset_cfg: SceneEntityCfg) -> None:
   """Empuja la pelvis hacia arriba con una fracción del peso: constante hasta ASSIST_HOLD_ITERATIONS y lineal hasta 0 en ASSIST_END_ITERATIONS."""
-  iteration = env.common_step_counter / STEPS_PER_ITERATION
+  # Al reanudar un entrenamiento el contador de pasos continúa desde el punto de control: la ayuda se cuenta desde el primer paso de esta corrida.
+  start = env.extras.setdefault("_assist_start_step", env.common_step_counter)
+  iteration = (env.common_step_counter - start) / STEPS_PER_ITERATION
   fade = min(1.0, max(0.0, (ASSIST_END_ITERATIONS - iteration) / (ASSIST_END_ITERATIONS - ASSIST_HOLD_ITERATIONS)))
   forces = torch.zeros(env.num_envs, len(asset_cfg.body_ids), 3, device=env.device)
   forces[..., 2] = ASSIST_FRACTION * fade * ROBOT_MASS_KG * 9.81
@@ -225,6 +227,13 @@ def danny_getup_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
       func=servo_torque_excess_when_up,
       weight=-317.0,
       params={"threshold": 0.8, "asset_cfg": SceneEntityCfg("robot", joint_names=(r".*",)), "pelvis_cfg": pelvis},
+    ),
+    # Corrida 10: par de rodillas siempre activo (sin umbral de altura, para no crear un escalon), como en la fase 2. Boca arriba la rodilla derecha
+    # llegaba al tope hasta 1,34 s en algun robot suelto (results/training_getup_fase4_final_boca_arriba_6.6V_1024.json).
+    "servo_torque_excess_knees": RewardTermCfg(
+      func=danny_mdp.servo_torque_excess,
+      weight=-317.0,
+      params={"threshold": 0.8, "asset_cfg": SceneEntityCfg("robot", joint_names=(r".*knee.*",))},
     ),
     "getup_progress": RewardTermCfg(func=getup_progress, weight=1e-9, params={"asset_cfg": pelvis}),
   }

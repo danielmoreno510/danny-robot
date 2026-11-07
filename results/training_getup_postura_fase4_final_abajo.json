@@ -1,0 +1,553 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-06_20-35-08_fase4_boca_arriba\\model_9998.pt",
+  "vin_v": 6.6,
+  "num_envs": 256,
+  "window_s": [
+    10.0,
+    20.0
+  ],
+  "pelvis_height_m": {
+    "mean": 0.2212,
+    "p10": 0.2204,
+    "p90": 0.2219
+  },
+  "trunk_tilt_deg": {
+    "mean": 1.7812,
+    "p10": 0.5803,
+    "p90": 3.2574
+  },
+  "fraction_of_robots_with_pelvis_above_0.15m_and_tilt_below_45deg": 1.0,
+  "fraction_of_robots_with_pelvis_above_0.15m": 1.0,
+  "fraction_of_time_link_touches_floor": {
+    "left_foot_1": 1.0,
+    "right_foot_1": 1.0
+  },
+  "by_second": {
+    "pelvis_z_mean": [
+      0.06,
+      0.2203,
+      0.2204,
+      0.2205,
+      0.2206,
+      0.2207,
+      0.2208,
+      0.2208,
+      0.2209,
+      0.2209,
+      0.221,
+      0.221,
+      0.2211,
+      0.2211,
+      0.2211,
+      0.2212,
+      0.2212,
+      0.2212,
+      0.2213,
+      0.2213
+    ],
+    "tilt_deg_mean": [
+      86.5,
+      2.4,
+      2.1,
+      2.0,
+      2.0,
+      1.9,
+      1.9,
+      1.9,
+      1.9,
+      1.8,
+      1.8,
+      1.8,
+      1.8,
+      1.8,
+      1.8,
+      1.8,
+      1.8,
+      1.8,
+      1.8,
+      1.8
+    ],
+    "left_hip_pitch": [
+      {
+        "target_deg": -80.6,
+        "real_deg": -0.1,
+        "torque_over_stall": 0.283
+      },
+      {
+        "target_deg": -22.3,
+        "real_deg": -4.8,
+        "torque_over_stall": 0.345
+      },
+      {
+        "target_deg": -22.6,
+        "real_deg": -4.8,
+        "torque_over_stall": 0.352
+      },
+      {
+        "target_deg": -22.4,
+        "real_deg": -4.8,
+        "torque_over_stall": 0.35
+      },
+      {
+        "target_deg": -22.4,
+        "real_deg": -4.8,
+        "torque_over_stall": 0.347
+      },
+      {
+        "target_deg": -22.5,
+        "real_deg": -4.9,
+        "torque_over_stall": 0.347
+      },
+      {
+        "target_deg": -22.4,
+        "real_deg": -4.9,
+        "torque_over_stall": 0.345
+      },
+      {
+        "target_deg": -22.3,
+        "real_deg": -4.9,
+        "torque_over_stall": 0.343
+      },
+      {
+        "target_deg": -22.3,
+        "real_deg": -5.0,
+        "torque_over_stall": 0.342
+      },
+      {
+        "target_deg": -22.2,
+        "real_deg": -5.0,
+        "torque_over_stall": 0.34
+      },
+      {
+        "target_deg": -22.2,
+        "real_deg": -5.0,
+        "torque_over_stall": 0.34
+      },
+      {
+        "target_deg": -22.1,
+        "real_deg": -5.0,
+        "torque_over_stall": 0.337
+      },
+      {
+        "target_deg": -22.1,
+        "real_deg": -5.1,
+        "torque_over_stall": 0.338
+      },
+      {
+        "target_deg": -22.1,
+        "real_deg": -5.1,
+        "torque_over_stall": 0.335
+      },
+      {
+        "target_deg": -22.2,
+        "real_deg": -5.1,
+        "torque_over_stall": 0.336
+      },
+      {
+        "target_deg": -22.0,
+        "real_deg": -5.1,
+        "torque_over_stall": 0.333
+      },
+      {
+        "target_deg": -22.0,
+        "real_deg": -5.2,
+        "torque_over_stall": 0.331
+      },
+      {
+        "target_deg": -21.9,
+        "real_deg": -5.2,
+        "torque_over_stall": 0.331
+      },
+      {
+        "target_deg": -22.0,
+        "real_deg": -5.2,
+        "torque_over_stall": 0.331
+      },
+      {
+        "target_deg": -21.9,
+        "real_deg": -5.2,
+        "torque_over_stall": 0.331
+      }
+    ],
+    "right_hip_pitch": [
+      {
+        "target_deg": -45.7,
+        "real_deg": -0.1,
+        "torque_over_stall": 0.273
+      },
+      {
+        "target_deg": -10.6,
+        "real_deg": -28.7,
+        "torque_over_stall": 0.355
+      },
+      {
+        "target_deg": -12.2,
+        "real_deg": -28.6,
+        "torque_over_stall": 0.322
+      },
+      {
+        "target_deg": -13.2,
+        "real_deg": -28.6,
+        "torque_over_stall": 0.304
+      },
+      {
+        "target_deg": -13.8,
+        "real_deg": -28.5,
+        "torque_over_stall": 0.291
+      },
+      {
+        "target_deg": -14.0,
+        "real_deg": -28.5,
+        "torque_over_stall": 0.287
+      },
+      {
+        "target_deg": -14.1,
+        "real_deg": -28.5,
+        "torque_over_stall": 0.286
+      },
+      {
+        "target_deg": -14.2,
+        "real_deg": -28.5,
+        "torque_over_stall": 0.277
+      },
+      {
+        "target_deg": -14.6,
+        "real_deg": -28.5,
+        "torque_over_stall": 0.274
+      },
+      {
+        "target_deg": -14.8,
+        "real_deg": -28.4,
+        "torque_over_stall": 0.267
+      },
+      {
+        "target_deg": -15.1,
+        "real_deg": -28.4,
+        "torque_over_stall": 0.262
+      },
+      {
+        "target_deg": -15.1,
+        "real_deg": -28.4,
+        "torque_over_stall": 0.259
+      },
+      {
+        "target_deg": -15.1,
+        "real_deg": -28.4,
+        "torque_over_stall": 0.263
+      },
+      {
+        "target_deg": -15.4,
+        "real_deg": -28.4,
+        "torque_over_stall": 0.256
+      },
+      {
+        "target_deg": -15.4,
+        "real_deg": -28.4,
+        "torque_over_stall": 0.256
+      },
+      {
+        "target_deg": -15.6,
+        "real_deg": -28.4,
+        "torque_over_stall": 0.251
+      },
+      {
+        "target_deg": -15.4,
+        "real_deg": -28.3,
+        "torque_over_stall": 0.253
+      },
+      {
+        "target_deg": -15.9,
+        "real_deg": -28.3,
+        "torque_over_stall": 0.246
+      },
+      {
+        "target_deg": -15.7,
+        "real_deg": -28.3,
+        "torque_over_stall": 0.249
+      },
+      {
+        "target_deg": -16.0,
+        "real_deg": -28.3,
+        "torque_over_stall": 0.245
+      }
+    ]
+  },
+  "by_joint": {
+    "left_hip_yaw": {
+      "limit_deg": [
+        -12.7,
+        27.8
+      ],
+      "target_deg_mean": -12.8,
+      "real_deg_mean": -11.2,
+      "real_deg_std_between_robots": 0.8,
+      "fraction_within_3deg_of_lower_limit": 0.961,
+      "fraction_within_3deg_of_upper_limit": 0.0,
+      "torque_over_stall_mean": 0.029
+    },
+    "left_hip_roll": {
+      "limit_deg": [
+        -12.5,
+        32.5
+      ],
+      "target_deg_mean": -12.5,
+      "real_deg_mean": 5.9,
+      "real_deg_std_between_robots": 1.7,
+      "fraction_within_3deg_of_lower_limit": 0.0,
+      "fraction_within_3deg_of_upper_limit": 0.0,
+      "torque_over_stall_mean": 0.359
+    },
+    "left_hip_pitch": {
+      "limit_deg": [
+        -94.0,
+        14.0
+      ],
+      "target_deg_mean": -22.0,
+      "real_deg_mean": -5.1,
+      "real_deg_std_between_robots": 1.9,
+      "fraction_within_3deg_of_lower_limit": 0.0,
+      "fraction_within_3deg_of_upper_limit": 0.0,
+      "torque_over_stall_mean": 0.333
+    },
+    "left_knee": {
+      "limit_deg": [
+        6.5,
+        123.5
+      ],
+      "target_deg_mean": 27.0,
+      "real_deg_mean": 42.6,
+      "real_deg_std_between_robots": 1.8,
+      "fraction_within_3deg_of_lower_limit": 0.0,
+      "fraction_within_3deg_of_upper_limit": 0.0,
+      "torque_over_stall_mean": 0.307
+    },
+    "left_ankle_pitch": {
+      "limit_deg": [
+        -40.7,
+        35.8
+      ],
+      "target_deg_mean": -40.8,
+      "real_deg_mean": -38.9,
+      "real_deg_std_between_robots": 1.0,
+      "fraction_within_3deg_of_lower_limit": 0.918,
+      "fraction_within_3deg_of_upper_limit": 0.0,
+      "torque_over_stall_mean": 0.036
+    },
+    "left_ankle_roll": {
+      "limit_deg": [
+        -18.0,
+        18.0
+      ],
+      "target_deg_mean": -15.8,
+      "real_deg_mean": -7.8,
+      "real_deg_std_between_robots": 1.2,
+      "fraction_within_3deg_of_lower_limit": 0.0,
+      "fraction_within_3deg_of_upper_limit": 0.0,
+      "torque_over_stall_mean": 0.157
+    },
+    "right_hip_yaw": {
+      "limit_deg": [
+        -27.8,
+        12.7
+      ],
+      "target_deg_mean": 12.7,
+      "real_deg_mean": 11.3,
+      "real_deg_std_between_robots": 0.7,
+      "fraction_within_3deg_of_lower_limit": 0.0,
+      "fraction_within_3deg_of_upper_limit": 0.985,
+      "torque_over_stall_mean": 0.027
+    },
+    "right_hip_roll": {
+      "limit_deg": [
+        -32.5,
+        12.5
+      ],
+      "target_deg_mean": 12.5,
+      "real_deg_mean": -9.8,
+      "real_deg_std_between_robots": 2.2,
+      "fraction_within_3deg_of_lower_limit": 0.0,
+      "fraction_within_3deg_of_upper_limit": 0.0,
+      "torque_over_stall_mean": 0.438
+    },
+    "right_hip_pitch": {
+      "limit_deg": [
+        -94.0,
+        14.0
+      ],
+      "target_deg_mean": -15.6,
+      "real_deg_mean": -28.4,
+      "real_deg_std_between_robots": 1.1,
+      "fraction_within_3deg_of_lower_limit": 0.0,
+      "fraction_within_3deg_of_upper_limit": 0.0,
+      "torque_over_stall_mean": 0.251
+    },
+    "right_knee": {
+      "limit_deg": [
+        6.5,
+        123.5
+      ],
+      "target_deg_mean": 51.6,
+      "real_deg_mean": 53.8,
+      "real_deg_std_between_robots": 1.5,
+      "fraction_within_3deg_of_lower_limit": 0.0,
+      "fraction_within_3deg_of_upper_limit": 0.0,
+      "torque_over_stall_mean": 0.09
+    },
+    "right_ankle_pitch": {
+      "limit_deg": [
+        -40.7,
+        35.8
+      ],
+      "target_deg_mean": -13.5,
+      "real_deg_mean": -26.2,
+      "real_deg_std_between_robots": 1.7,
+      "fraction_within_3deg_of_lower_limit": 0.0,
+      "fraction_within_3deg_of_upper_limit": 0.0,
+      "torque_over_stall_mean": 0.253
+    },
+    "right_ankle_roll": {
+      "limit_deg": [
+        -18.0,
+        18.0
+      ],
+      "target_deg_mean": 15.6,
+      "real_deg_mean": 8.9,
+      "real_deg_std_between_robots": 1.7,
+      "fraction_within_3deg_of_lower_limit": 0.0,
+      "fraction_within_3deg_of_upper_limit": 0.0,
+      "torque_over_stall_mean": 0.135
+    },
+    "waist_yaw": {
+      "limit_deg": [
+        -54.0,
+        54.0
+      ],
+      "target_deg_mean": -1.5,
+      "real_deg_mean": -1.8,
+      "real_deg_std_between_robots": 0.9,
+      "fraction_within_3deg_of_lower_limit": 0.0,
+      "fraction_within_3deg_of_upper_limit": 0.0,
+      "torque_over_stall_mean": 0.013
+    },
+    "left_shoulder_pitch": {
+      "limit_deg": [
+        -159.3,
+        34.2
+      ],
+      "target_deg_mean": -3.4,
+      "real_deg_mean": -3.5,
+      "real_deg_std_between_robots": 0.7,
+      "fraction_within_3deg_of_lower_limit": 0.0,
+      "fraction_within_3deg_of_upper_limit": 0.0,
+      "torque_over_stall_mean": 0.014
+    },
+    "left_shoulder_roll": {
+      "limit_deg": [
+        -3.5,
+        113.5
+      ],
+      "target_deg_mean": 8.5,
+      "real_deg_mean": 8.2,
+      "real_deg_std_between_robots": 0.6,
+      "fraction_within_3deg_of_lower_limit": 0.0,
+      "fraction_within_3deg_of_upper_limit": 0.0,
+      "torque_over_stall_mean": 0.013
+    },
+    "left_shoulder_yaw": {
+      "limit_deg": [
+        -72.0,
+        72.0
+      ],
+      "target_deg_mean": -1.4,
+      "real_deg_mean": -1.2,
+      "real_deg_std_between_robots": 0.8,
+      "fraction_within_3deg_of_lower_limit": 0.0,
+      "fraction_within_3deg_of_upper_limit": 0.0,
+      "torque_over_stall_mean": 0.01
+    },
+    "left_elbow": {
+      "limit_deg": [
+        -123.5,
+        -6.5
+      ],
+      "target_deg_mean": -11.9,
+      "real_deg_mean": -11.8,
+      "real_deg_std_between_robots": 0.5,
+      "fraction_within_3deg_of_lower_limit": 0.0,
+      "fraction_within_3deg_of_upper_limit": 0.0,
+      "torque_over_stall_mean": 0.012
+    },
+    "right_shoulder_pitch": {
+      "limit_deg": [
+        -159.3,
+        34.2
+      ],
+      "target_deg_mean": -0.7,
+      "real_deg_mean": -1.3,
+      "real_deg_std_between_robots": 0.7,
+      "fraction_within_3deg_of_lower_limit": 0.0,
+      "fraction_within_3deg_of_upper_limit": 0.0,
+      "torque_over_stall_mean": 0.015
+    },
+    "right_shoulder_roll": {
+      "limit_deg": [
+        -113.5,
+        3.5
+      ],
+      "target_deg_mean": -10.3,
+      "real_deg_mean": -10.2,
+      "real_deg_std_between_robots": 0.8,
+      "fraction_within_3deg_of_lower_limit": 0.0,
+      "fraction_within_3deg_of_upper_limit": 0.0,
+      "torque_over_stall_mean": 0.012
+    },
+    "right_shoulder_yaw": {
+      "limit_deg": [
+        -72.0,
+        72.0
+      ],
+      "target_deg_mean": -1.5,
+      "real_deg_mean": -1.8,
+      "real_deg_std_between_robots": 0.9,
+      "fraction_within_3deg_of_lower_limit": 0.0,
+      "fraction_within_3deg_of_upper_limit": 0.0,
+      "torque_over_stall_mean": 0.012
+    },
+    "right_elbow": {
+      "limit_deg": [
+        -123.5,
+        -6.5
+      ],
+      "target_deg_mean": -12.6,
+      "real_deg_mean": -11.9,
+      "real_deg_std_between_robots": 1.7,
+      "fraction_within_3deg_of_lower_limit": 0.0,
+      "fraction_within_3deg_of_upper_limit": 0.1,
+      "torque_over_stall_mean": 0.018
+    },
+    "neck_yaw": {
+      "limit_deg": [
+        -63.0,
+        63.0
+      ],
+      "target_deg_mean": -2.1,
+      "real_deg_mean": -2.4,
+      "real_deg_std_between_robots": 1.2,
+      "fraction_within_3deg_of_lower_limit": 0.0,
+      "fraction_within_3deg_of_upper_limit": 0.0,
+      "torque_over_stall_mean": 0.012
+    },
+    "neck_pitch": {
+      "limit_deg": [
+        -26.5,
+        36.5
+      ],
+      "target_deg_mean": -1.9,
+      "real_deg_mean": -1.2,
+      "real_deg_std_between_robots": 1.0,
+      "fraction_within_3deg_of_lower_limit": 0.0,
+      "fraction_within_3deg_of_upper_limit": 0.0,
+      "torque_over_stall_mean": 0.016
+    }
+  }
+}
