@@ -1,0 +1,31 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-07_15-08-23_fase4_simetria_suave\\model_12996.pt",
+  "vin_v": 6.6,
+  "prone_fraction": 1.0,
+  "num_envs": 4096,
+  "outliers_per_knee": {
+    "left_knee": {
+      "outliers": 0,
+      "of": 4096,
+      "longest_run_s_of_outliers": [],
+      "tail_fraction_of_outliers": [],
+      "top_features_by_zscore_of_outlier_mean": []
+    },
+    "right_knee": {
+      "outliers": 0,
+      "of": 4096,
+      "longest_run_s_of_outliers": [],
+      "tail_fraction_of_outliers": [],
+      "top_features_by_zscore_of_outlier_mean": []
+    }
+  },
+  "criterion": "racha > 0.5 s o fraccion de los ultimos 10.0 s > 0.05",
+  "outlier_state_during_longest_run": [],
+  "rest_state_mean_whole_run": {
+    "pelvis_z_m": 0.216,
+    "tilt_deg": 4.1,
+    "non_foot_body_on_floor_contacts": 0.03,
+    "foot_foot_contacts": 0.0,
+    "other_self_contacts": 0.0
+  }
+}

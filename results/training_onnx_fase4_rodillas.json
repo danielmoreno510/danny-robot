@@ -1,0 +1,11 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-07_08-24-49_fase4_rodillas\\model_11497.pt",
+  "onnx": "danny_fase4_levantarse_2026-11-07.onnx",
+  "observation_size": 78,
+  "action_size": 23,
+  "steps": 500,
+  "num_envs": 16,
+  "max_abs_action_difference": 3.0994415283203125e-06,
+  "max_allowed": 0.0001,
+  "passes": true
+}

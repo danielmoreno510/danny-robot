@@ -18,7 +18,7 @@ import numpy as np
 import onnxruntime as ort
 import torch
 
-from danny_training.evaluation import RESULTS, eval_env_cfg, load_policy
+from danny_training.evaluation import RESULTS, TASK, eval_env_cfg, load_policy
 
 MAX_ERROR = 1e-4
 
@@ -30,9 +30,10 @@ def main() -> None:
   parser.add_argument("--name", required=True, help="Nombre del resultado en results/")
   parser.add_argument("--num-envs", type=int, default=16)
   parser.add_argument("--seconds", type=float, default=10.0)
+  parser.add_argument("--task", default=TASK, help="Tarea del punto de control (por ejemplo Mjlab-GetUp-Danny)")
   args = parser.parse_args()
 
-  env, policy = load_policy(eval_env_cfg(args.num_envs, args.seconds), args.checkpoint)
+  env, policy = load_policy(eval_env_cfg(args.num_envs, args.seconds, task=args.task), args.checkpoint, task=args.task)
   session = ort.InferenceSession(str(args.onnx), providers=["CPUExecutionProvider"])
   input_name = session.get_inputs()[0].name
   obs = env.get_observations()

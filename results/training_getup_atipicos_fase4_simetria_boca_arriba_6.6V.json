@@ -1,0 +1,52 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-07_13-09-11_fase4_simetria\\model_12996.pt",
+  "vin_v": 6.6,
+  "prone_fraction": 0.0,
+  "num_envs": 4096,
+  "outliers_per_knee": {
+    "left_knee": {
+      "outliers": 0,
+      "of": 4096,
+      "longest_run_s_of_outliers": [],
+      "tail_fraction_of_outliers": [],
+      "top_features_by_zscore_of_outlier_mean": []
+    },
+    "right_knee": {
+      "outliers": 1,
+      "of": 4096,
+      "longest_run_s_of_outliers": [
+        0.56
+      ],
+      "tail_fraction_of_outliers": [
+        0.0
+      ],
+      "top_features_by_zscore_of_outlier_mean": []
+    }
+  },
+  "criterion": "racha > 0.5 s o fraccion de los ultimos 10.0 s > 0.05",
+  "outlier_state_during_longest_run": [
+    {
+      "robot": 751,
+      "knee": "right_knee",
+      "run_s": 0.56,
+      "from_s": 1.52,
+      "to_s": 2.08,
+      "pelvis_z_m": 0.203,
+      "tilt_deg": 13.9,
+      "left_foot_on_floor": 1.0,
+      "right_foot_on_floor": 2.0,
+      "non_foot_body_on_floor_contacts": 0.0,
+      "foot_foot_contacts": 0.0,
+      "other_self_contacts": 0.0,
+      "right_knee_deg": 82.4,
+      "video": "fase4_simetria_boca_arriba_6.6V_robot751_right_knee_0.56s.mp4"
+    }
+  ],
+  "rest_state_mean_whole_run": {
+    "pelvis_z_m": 0.21,
+    "tilt_deg": 8.3,
+    "non_foot_body_on_floor_contacts": 0.1,
+    "foot_foot_contacts": 0.0,
+    "other_self_contacts": 0.01
+  }
+}

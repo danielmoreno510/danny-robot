@@ -1,0 +1,218 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-07_15-08-23_fase4_simetria_suave\\model_12996.pt",
+  "walk_checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-05_00-00-00_fase3_inicio\\model_8995.pt",
+  "vin_v": 6.6,
+  "prone_fraction": 0.0,
+  "num_envs": 4096,
+  "seconds_to_get_up": 20.0,
+  "definition": "pelvis >= 0,20 m, tronco <= 15 grados, dos pies apoyados, ningun eslabon (salvo pies) en el suelo, velocidad media <= 0,05 m/s, 3 s seguidos",
+  "fraction_got_up": 1.0,
+  "fraction_ever_pelvis_above_0.10m": 1.0,
+  "fraction_pelvis_0.15m_tilt_45deg_at_end": 0.9346,
+  "time_to_stand_s": {
+    "median": 4.78,
+    "p90": 5.3
+  },
+  "switch_to_walk": {
+    "robots_that_got_up_and_have_5s_after": 4096,
+    "fraction_not_fallen": 0.9346,
+    "mean_xy_speed_m_s_last_3s": 0.003,
+    "mean_pelvis_height_m_last_3s": 0.2091,
+    "note": "Cambio a la politica de la fase 2 con orden cero en el instante en que el robot cumple 3 s de pie; cae si el tronco pasa de 70 grados."
+  },
+  "joint_with_longest_saturated_run_while_rising": {
+    "joint": "right_knee",
+    "seconds": 0.5
+  },
+  "joint_with_most_saturation_while_standing": {
+    "joint": "left_knee",
+    "fraction": 0.1267
+  },
+  "saturation_threshold": "par > 0,9 x bloqueo de la tension de cada robot",
+  "by_joint": {
+    "left_hip_yaw": {
+      "rising_peak_torque_over_stall": 1.031,
+      "rising_saturated_fraction_mean": 0.0002,
+      "rising_saturated_fraction_max": 0.0179,
+      "rising_longest_saturated_run_s_max": 0.02,
+      "rising_longest_saturated_run_s_p95": 0.0,
+      "standing_saturated_fraction_max": 0.0
+    },
+    "left_hip_roll": {
+      "rising_peak_torque_over_stall": 1.031,
+      "rising_saturated_fraction_mean": 0.0009,
+      "rising_saturated_fraction_max": 0.0206,
+      "rising_longest_saturated_run_s_max": 0.04,
+      "rising_longest_saturated_run_s_p95": 0.02,
+      "standing_saturated_fraction_max": 0.0
+    },
+    "left_hip_pitch": {
+      "rising_peak_torque_over_stall": 1.031,
+      "rising_saturated_fraction_mean": 0.0077,
+      "rising_saturated_fraction_max": 0.0517,
+      "rising_longest_saturated_run_s_max": 0.1,
+      "rising_longest_saturated_run_s_p95": 0.02,
+      "standing_saturated_fraction_max": 0.0
+    },
+    "left_knee": {
+      "rising_peak_torque_over_stall": 1.031,
+      "rising_saturated_fraction_mean": 0.0197,
+      "rising_saturated_fraction_max": 0.1129,
+      "rising_longest_saturated_run_s_max": 0.34,
+      "rising_longest_saturated_run_s_p95": 0.08,
+      "standing_saturated_fraction_max": 0.1267
+    },
+    "left_ankle_pitch": {
+      "rising_peak_torque_over_stall": 1.031,
+      "rising_saturated_fraction_mean": 0.0039,
+      "rising_saturated_fraction_max": 0.0722,
+      "rising_longest_saturated_run_s_max": 0.12,
+      "rising_longest_saturated_run_s_p95": 0.02,
+      "standing_saturated_fraction_max": 0.0133
+    },
+    "left_ankle_roll": {
+      "rising_peak_torque_over_stall": 0.927,
+      "rising_saturated_fraction_mean": 0.0,
+      "rising_saturated_fraction_max": 0.0109,
+      "rising_longest_saturated_run_s_max": 0.02,
+      "rising_longest_saturated_run_s_p95": 0.0,
+      "standing_saturated_fraction_max": 0.0
+    },
+    "right_hip_yaw": {
+      "rising_peak_torque_over_stall": 1.031,
+      "rising_saturated_fraction_mean": 0.0,
+      "rising_saturated_fraction_max": 0.0101,
+      "rising_longest_saturated_run_s_max": 0.02,
+      "rising_longest_saturated_run_s_p95": 0.0,
+      "standing_saturated_fraction_max": 0.0
+    },
+    "right_hip_roll": {
+      "rising_peak_torque_over_stall": 1.031,
+      "rising_saturated_fraction_mean": 0.0014,
+      "rising_saturated_fraction_max": 0.0323,
+      "rising_longest_saturated_run_s_max": 0.04,
+      "rising_longest_saturated_run_s_p95": 0.02,
+      "standing_saturated_fraction_max": 0.0
+    },
+    "right_hip_pitch": {
+      "rising_peak_torque_over_stall": 1.031,
+      "rising_saturated_fraction_mean": 0.045,
+      "rising_saturated_fraction_max": 0.179,
+      "rising_longest_saturated_run_s_max": 0.28,
+      "rising_longest_saturated_run_s_p95": 0.08,
+      "standing_saturated_fraction_max": 0.0067
+    },
+    "right_knee": {
+      "rising_peak_torque_over_stall": 1.031,
+      "rising_saturated_fraction_mean": 0.0365,
+      "rising_saturated_fraction_max": 0.25,
+      "rising_longest_saturated_run_s_max": 0.5,
+      "rising_longest_saturated_run_s_p95": 0.06,
+      "standing_saturated_fraction_max": 0.0
+    },
+    "right_ankle_pitch": {
+      "rising_peak_torque_over_stall": 1.031,
+      "rising_saturated_fraction_mean": 0.0068,
+      "rising_saturated_fraction_max": 0.0617,
+      "rising_longest_saturated_run_s_max": 0.12,
+      "rising_longest_saturated_run_s_p95": 0.02,
+      "standing_saturated_fraction_max": 0.0
+    },
+    "right_ankle_roll": {
+      "rising_peak_torque_over_stall": 0.898,
+      "rising_saturated_fraction_mean": 0.0,
+      "rising_saturated_fraction_max": 0.0,
+      "rising_longest_saturated_run_s_max": 0.0,
+      "rising_longest_saturated_run_s_p95": 0.0,
+      "standing_saturated_fraction_max": 0.0
+    },
+    "waist_yaw": {
+      "rising_peak_torque_over_stall": 1.031,
+      "rising_saturated_fraction_mean": 0.02,
+      "rising_saturated_fraction_max": 0.1023,
+      "rising_longest_saturated_run_s_max": 0.2,
+      "rising_longest_saturated_run_s_p95": 0.08,
+      "standing_saturated_fraction_max": 0.0
+    },
+    "left_shoulder_pitch": {
+      "rising_peak_torque_over_stall": 1.031,
+      "rising_saturated_fraction_mean": 0.0098,
+      "rising_saturated_fraction_max": 0.0761,
+      "rising_longest_saturated_run_s_max": 0.16,
+      "rising_longest_saturated_run_s_p95": 0.04,
+      "standing_saturated_fraction_max": 0.0
+    },
+    "left_shoulder_roll": {
+      "rising_peak_torque_over_stall": 1.031,
+      "rising_saturated_fraction_mean": 0.0277,
+      "rising_saturated_fraction_max": 0.0984,
+      "rising_longest_saturated_run_s_max": 0.22,
+      "rising_longest_saturated_run_s_p95": 0.04,
+      "standing_saturated_fraction_max": 0.0
+    },
+    "left_shoulder_yaw": {
+      "rising_peak_torque_over_stall": 1.031,
+      "rising_saturated_fraction_mean": 0.0147,
+      "rising_saturated_fraction_max": 0.0625,
+      "rising_longest_saturated_run_s_max": 0.04,
+      "rising_longest_saturated_run_s_p95": 0.02,
+      "standing_saturated_fraction_max": 0.0
+    },
+    "left_elbow": {
+      "rising_peak_torque_over_stall": 1.031,
+      "rising_saturated_fraction_mean": 0.0056,
+      "rising_saturated_fraction_max": 0.0737,
+      "rising_longest_saturated_run_s_max": 0.14,
+      "rising_longest_saturated_run_s_p95": 0.02,
+      "standing_saturated_fraction_max": 0.0
+    },
+    "right_shoulder_pitch": {
+      "rising_peak_torque_over_stall": 1.031,
+      "rising_saturated_fraction_mean": 0.011,
+      "rising_saturated_fraction_max": 0.0685,
+      "rising_longest_saturated_run_s_max": 0.14,
+      "rising_longest_saturated_run_s_p95": 0.04,
+      "standing_saturated_fraction_max": 0.0
+    },
+    "right_shoulder_roll": {
+      "rising_peak_torque_over_stall": 1.031,
+      "rising_saturated_fraction_mean": 0.0318,
+      "rising_saturated_fraction_max": 0.226,
+      "rising_longest_saturated_run_s_max": 0.32,
+      "rising_longest_saturated_run_s_p95": 0.06,
+      "standing_saturated_fraction_max": 0.0
+    },
+    "right_shoulder_yaw": {
+      "rising_peak_torque_over_stall": 1.031,
+      "rising_saturated_fraction_mean": 0.0278,
+      "rising_saturated_fraction_max": 0.1017,
+      "rising_longest_saturated_run_s_max": 0.08,
+      "rising_longest_saturated_run_s_p95": 0.04,
+      "standing_saturated_fraction_max": 0.0
+    },
+    "right_elbow": {
+      "rising_peak_torque_over_stall": 1.031,
+      "rising_saturated_fraction_mean": 0.0096,
+      "rising_saturated_fraction_max": 0.0568,
+      "rising_longest_saturated_run_s_max": 0.04,
+      "rising_longest_saturated_run_s_p95": 0.02,
+      "standing_saturated_fraction_max": 0.0
+    },
+    "neck_yaw": {
+      "rising_peak_torque_over_stall": 1.031,
+      "rising_saturated_fraction_mean": 0.0152,
+      "rising_saturated_fraction_max": 0.0794,
+      "rising_longest_saturated_run_s_max": 0.04,
+      "rising_longest_saturated_run_s_p95": 0.04,
+      "standing_saturated_fraction_max": 0.0
+    },
+    "neck_pitch": {
+      "rising_peak_torque_over_stall": 1.031,
+      "rising_saturated_fraction_mean": 0.0041,
+      "rising_saturated_fraction_max": 0.044,
+      "rising_longest_saturated_run_s_max": 0.04,
+      "rising_longest_saturated_run_s_p95": 0.02,
+      "standing_saturated_fraction_max": 0.0
+    }
+  }
+}

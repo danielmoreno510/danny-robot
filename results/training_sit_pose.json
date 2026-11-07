@@ -1,0 +1,82 @@
+{
+  "piernas_adelante_recta": {
+    "pose_deg": {
+      "hip_pitch": -85.0,
+      "knee": 10.0,
+      "ankle_pitch": 0.0
+    },
+    "pelvis_z_m": {
+      "mean": 0.03,
+      "p10": 0.03,
+      "p90": 0.03
+    },
+    "trunk_tilt_deg_mean": 90.6,
+    "speed_m_s_mean": 0.0,
+    "fraction_of_robots_tilt_below_25deg": 0.0,
+    "bodies_touching_floor_contacts_per_step_per_robot": {
+      "robot/left_hip_yaw_link_1": 2.0,
+      "robot/right_hip_yaw_link_1": 2.0,
+      "robot/torso_1": 1.86
+    }
+  },
+  "piernas_adelante_flexion": {
+    "pose_deg": {
+      "hip_pitch": -80.0,
+      "knee": 40.0,
+      "ankle_pitch": -10.0
+    },
+    "pelvis_z_m": {
+      "mean": 0.03,
+      "p10": 0.03,
+      "p90": 0.03
+    },
+    "trunk_tilt_deg_mean": 90.3,
+    "speed_m_s_mean": 0.0,
+    "fraction_of_robots_tilt_below_25deg": 0.0,
+    "bodies_touching_floor_contacts_per_step_per_robot": {
+      "robot/left_hip_yaw_link_1": 2.41,
+      "robot/right_hip_yaw_link_1": 2.47,
+      "robot/torso_1": 0.97
+    }
+  },
+  "piernas_adelante_cadera_94": {
+    "pose_deg": {
+      "hip_pitch": -90.0,
+      "knee": 20.0,
+      "ankle_pitch": 0.0
+    },
+    "pelvis_z_m": {
+      "mean": 0.03,
+      "p10": 0.03,
+      "p90": 0.03
+    },
+    "trunk_tilt_deg_mean": 90.6,
+    "speed_m_s_mean": 0.0,
+    "fraction_of_robots_tilt_below_25deg": 0.0,
+    "bodies_touching_floor_contacts_per_step_per_robot": {
+      "robot/left_hip_yaw_link_1": 1.97,
+      "robot/right_hip_yaw_link_1": 1.98,
+      "robot/torso_1": 1.84
+    }
+  },
+  "sobre_talones": {
+    "pose_deg": {
+      "hip_pitch": -90.0,
+      "knee": 120.0,
+      "ankle_pitch": 30.0
+    },
+    "pelvis_z_m": {
+      "mean": 0.03,
+      "p10": 0.03,
+      "p90": 0.03
+    },
+    "trunk_tilt_deg_mean": 90.3,
+    "speed_m_s_mean": 0.0,
+    "fraction_of_robots_tilt_below_25deg": 0.0,
+    "bodies_touching_floor_contacts_per_step_per_robot": {
+      "robot/left_hip_yaw_link_1": 2.21,
+      "robot/right_hip_yaw_link_1": 2.25,
+      "robot/torso_1": 1.12
+    }
+  }
+}

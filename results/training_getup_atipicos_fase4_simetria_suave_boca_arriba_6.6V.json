@@ -1,0 +1,176 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-07_15-08-23_fase4_simetria_suave\\model_12996.pt",
+  "vin_v": 6.6,
+  "prone_fraction": 0.0,
+  "num_envs": 4096,
+  "outliers_per_knee": {
+    "left_knee": {
+      "outliers": 0,
+      "of": 4096,
+      "longest_run_s_of_outliers": [],
+      "tail_fraction_of_outliers": [],
+      "top_features_by_zscore_of_outlier_mean": []
+    },
+    "right_knee": {
+      "outliers": 2,
+      "of": 4096,
+      "longest_run_s_of_outliers": [
+        0.52,
+        0.62
+      ],
+      "tail_fraction_of_outliers": [
+        0.0,
+        0.0
+      ],
+      "top_features_by_zscore_of_outlier_mean": [
+        {
+          "feature": "dof_frictionloss[11]",
+          "z": 1.83,
+          "outlier_mean": 0.12365,
+          "rest_mean": 0.08928,
+          "rest_std": 0.01883
+        },
+        {
+          "feature": "dof_frictionloss[9]",
+          "z": 1.72,
+          "outlier_mean": 0.1974,
+          "rest_mean": 0.14344,
+          "rest_std": 0.03141
+        },
+        {
+          "feature": "dof_frictionloss[20]",
+          "z": 1.42,
+          "outlier_mean": 0.03862,
+          "rest_mean": 0.03002,
+          "rest_std": 0.00605
+        },
+        {
+          "feature": "joint_pos_inicial_left_shoulder_yaw",
+          "z": -1.4,
+          "outlier_mean": -0.04063,
+          "rest_mean": 6e-05,
+          "rest_std": 0.02909
+        },
+        {
+          "feature": "body_ipos[58]",
+          "z": 1.22,
+          "outlier_mean": 0.06332,
+          "rest_mean": 0.05624,
+          "rest_std": 0.00582
+        },
+        {
+          "feature": "body_ipos[55]",
+          "z": 1.22,
+          "outlier_mean": 0.07284,
+          "rest_mean": 0.06577,
+          "rest_std": 0.00582
+        },
+        {
+          "feature": "body_ipos[13]",
+          "z": 1.22,
+          "outlier_mean": 0.03298,
+          "rest_mean": 0.02591,
+          "rest_std": 0.00582
+        },
+        {
+          "feature": "body_ipos[43]",
+          "z": 1.22,
+          "outlier_mean": -0.02816,
+          "rest_mean": -0.03524,
+          "rest_std": 0.00582
+        },
+        {
+          "feature": "body_ipos[37]",
+          "z": 1.22,
+          "outlier_mean": -0.02192,
+          "rest_mean": -0.02899,
+          "rest_std": 0.00582
+        },
+        {
+          "feature": "body_ipos[28]",
+          "z": 1.22,
+          "outlier_mean": -0.01936,
+          "rest_mean": -0.02644,
+          "rest_std": 0.00582
+        },
+        {
+          "feature": "body_ipos[16]",
+          "z": 1.22,
+          "outlier_mean": 0.03606,
+          "rest_mean": 0.02899,
+          "rest_std": 0.00582
+        },
+        {
+          "feature": "body_ipos[7]",
+          "z": 1.22,
+          "outlier_mean": 0.00708,
+          "rest_mean": 1e-05,
+          "rest_std": 0.00582
+        },
+        {
+          "feature": "body_ipos[73]",
+          "z": 1.22,
+          "outlier_mean": 0.00708,
+          "rest_mean": 1e-05,
+          "rest_std": 0.00582
+        },
+        {
+          "feature": "body_ipos[46]",
+          "z": 1.22,
+          "outlier_mean": 0.00705,
+          "rest_mean": -2e-05,
+          "rest_std": 0.00582
+        },
+        {
+          "feature": "body_ipos[76]",
+          "z": 1.22,
+          "outlier_mean": 0.00708,
+          "rest_mean": 1e-05,
+          "rest_std": 0.00582
+        }
+      ]
+    }
+  },
+  "criterion": "racha > 0.5 s o fraccion de los ultimos 10.0 s > 0.05",
+  "outlier_state_during_longest_run": [
+    {
+      "robot": 3966,
+      "knee": "right_knee",
+      "run_s": 0.62,
+      "from_s": 1.36,
+      "to_s": 1.98,
+      "pelvis_z_m": 0.19,
+      "tilt_deg": 19.5,
+      "left_foot_on_floor": 0.84,
+      "right_foot_on_floor": 1.71,
+      "non_foot_body_on_floor_contacts": 0.0,
+      "foot_foot_contacts": 0.0,
+      "other_self_contacts": 0.13,
+      "right_knee_deg": 91.0,
+      "video": "fase4_simetria_suave_boca_arriba_6.6V_robot3966_right_knee_0.62s.mp4"
+    },
+    {
+      "robot": 3139,
+      "knee": "right_knee",
+      "run_s": 0.52,
+      "from_s": 1.44,
+      "to_s": 1.96,
+      "pelvis_z_m": 0.199,
+      "tilt_deg": 12.7,
+      "left_foot_on_floor": 0.46,
+      "right_foot_on_floor": 1.73,
+      "non_foot_body_on_floor_contacts": 0.0,
+      "foot_foot_contacts": 0.0,
+      "other_self_contacts": 0.08,
+      "right_knee_deg": 77.8,
+      "video": "fase4_simetria_suave_boca_arriba_6.6V_robot3139_right_knee_0.52s.mp4"
+    }
+  ],
+  "rest_state_mean_whole_run": {
+    "pelvis_z_m": 0.21,
+    "tilt_deg": 8.0,
+    "non_foot_body_on_floor_contacts": 0.09,
+    "foot_foot_contacts": 0.0,
+    "other_self_contacts": 0.01
+  }
+}

@@ -9,7 +9,7 @@ movimiento completo, con `fase2_f_rodilla/model_8995.pt`, fusionada en `main` el
 `results/videos/`. La fase 3, agacharse quieto, está aprobada con `fase3_agacharse/model_11994.pt`, usado solo parado y con ONNX en `policies/` (ver el plan); caminar agachado queda descartado por ahora. `marcha_reloj_1000` ya caminó hacia delante y giró con el modelo
 anterior (ver [Entrenamiento en simulación](#entrenamiento-en-simulación-etapa-4-sin-terminar)). El código de `training/` está en la
 rama `entrenamiento-danny`, que se actualiza con `origin/main` antes de cada fase. `main` está protegida: los colaboradores entran por pull
-request aprobado por el usuario, que es quien cambia el diseño. Levantarse es posible en simulación, pero aún frágil. El robot completo ya está en CAD:
+request aprobado por el usuario, que es quien cambia el diseño. La fase 4, levantarse (boca abajo y boca arriba), está **aprobada el 7 de noviembre con `fase4_rodillas/model_11497.pt`** (corrida 10; ver más abajo), con su ONNX en `policies/danny_fase4_levantarse_2026-11-07.onnx`. El robot completo ya está en CAD:
 [piernas](documentation/lower-body-design.md), [tronco](documentation/upper-body-design.md) y
 [paneles](documentation/panels-and-protection.md).
 
@@ -194,8 +194,8 @@ parámetros son de otro robot: lo aprendido no se instala directo en el robot f�
 | 1 | Validar la marcha con el modelo final | Aprobada el 2 de noviembre con la fase 1b (abajo): desde cero no aprendió, y reentrenando desde la política antigua con penalización de choques sí |
 | 2 | Movimiento completo (avanzar, retroceder, lateral, girar, quieto) con armadura, holgura y empujones | Aprobada el 4 de noviembre con `fase2_f_rodilla/model_8995.pt` (ver más abajo; PR 1 a main) |
 | 3 | Agacharse: orden de altura del cuerpo, hasta 3 000 iteraciones | **Aprobada (agacharse quieto)** el 5 de noviembre con `fase3_agacharse/model_11994.pt`, usado solo parado; caminar agachado, descartado por ahora (ver más abajo) |
-| 4 | Levantarse (4.3): política propia, 10 000 iteraciones; primero boca abajo, luego boca arriba | Criterio escrito y tarea implementada el 5 de noviembre; corrida 1 (boca abajo) NO CUMPLE: 0 % de pie en 3 137 iteraciones, parada (ver abajo) |
-| 5 | Sentarse y tumbarse: política propia, hasta 5 000 iteraciones por acción; solo si la fase 4 aprueba | Pendiente |
+| 4 | Levantarse (4.3): política propia; boca abajo y boca arriba | **Aprobada el 7 de noviembre con `fase4_rodillas/model_11497.pt` (corrida 10)**, con una excepción de cola aceptada por el dueño (abajo) |
+| 5 | Sentarse y tumbarse: política propia, hasta 5 000 iteraciones por acción; solo si la fase 4 aprueba | En curso desde el 7 de noviembre (la fase 4 aprobó; el dueño pidió seguir con la 5 y no con la 6) |
 | 6 | Movimiento natural (4.4): imitar CMU y 100STYLE, retargeteadas con GMR | Pendiente: fuentes elegidas el 4 de noviembre |
 
 Fuera del plan, salvo que el usuario lo pida: correr, saltar y tomar objetos.
@@ -809,7 +809,7 @@ Decisión del usuario. **Desde cero** (sin punto de partida) con la receta de la
 
 ### Fase 4, corrida 8 (`fase4_accion_rango_ayuda`): CUMPLE el criterio escrito, boca abajo (6 de noviembre)
 
-5 000 iteraciones desde cero (`/d/Claude/fase4_accion_rango_ayuda.sh`, unas 3 horas), receta de la corrida 2 más `action_out_of_range` (-0,035) y `pose_stand` (std 2, peso 2) desde la primera iteración. Punto de control `fase4_accion_rango_ayuda/model_4999.pt` (copia en `puntos_de_control/fase4_accion_rango_ayuda_model_4999.pt`; ONNX `policies/danny_fase4_levantarse_2026-11-06.onnx`, exportado por el propio entrenamiento y **sin verificar** contra el punto de control: `verify_policy_onnx.py` no admite esta tarea). Medido sin ayuda con `measure_getup.py`, 512 robots boca abajo, 20 s (`results/training_getup_fase4_accion_rango_ayuda_final_{6.6V,7.4V,aleatoria}.json`):
+5 000 iteraciones desde cero (`/d/Claude/fase4_accion_rango_ayuda.sh`, unas 3 horas), receta de la corrida 2 más `action_out_of_range` (-0,035) y `pose_stand` (std 2, peso 2) desde la primera iteración. Punto de control `fase4_accion_rango_ayuda/model_4999.pt` (copia en `puntos_de_control/fase4_accion_rango_ayuda_model_4999.pt`; ONNX `danny_fase4_levantarse_2026-11-06.onnx`, borrado el 7 de noviembre y sustituido por el de la corrida 10). Medido sin ayuda con `measure_getup.py`, 512 robots boca abajo, 20 s (`results/training_getup_fase4_accion_rango_ayuda_final_{6.6V,7.4V,aleatoria}.json`):
 
 | Tensión | Se levanta | Mediana | Cambio a la marcha sin caer en 5 s (se pide 95 %) | Racha más larga al tope mientras se levanta | Saturación de pie (se pide 5 %) |
 |---|---|---|---|---|---|
@@ -900,3 +900,84 @@ Pedido por el dueño el 7 de noviembre, **independiente de lo que pase en simula
 - **Nota de medida:** en la primera versión del script la rodilla de la que se daba el ángulo estaba mal etiquetada (`left_knee_deg`); es la derecha (`right_knee_deg`), y está corregido en el script y en el JSON.
 
 **Fase 4: sigue sin aprobar** (condición 1). La fase 5 y 6 no empiezan. Opciones para decidir con estos datos: (a) un ajuste que penalice estar mucho tiempo al tope de par con una rodilla (por ejemplo, más peso al castigo de par de rodillas o un castigo creciente con el tiempo seguido al tope), midiendo después con 4 096 robots; (b) pedir una postura de pie simétrica al terminar de levantarse (castigar la diferencia de altura o de ángulo entre los pies/rodillas) para evitar el pie adelantado; (c) relajar la condición 1 (decisión del dueño).
+
+
+### Fase 4, corrida 11 (`fase4_simetria`), criterio escrito antes de entrenar (7 de noviembre)
+
+Decisión del dueño: probar una postura de pie simétrica para quitar el pie adelantado de los robots atípicos. **Medido antes:** la asimetría no es solo de los atípicos; la postura de pie típica de la corrida 9 tiene la cadera izquierda a -5° y la derecha a -29° (24° de diferencia; con la misma convención de signo, la pose de pie de la fase 2 es -20,9° en las dos). **Cambio único sobre la corrida 10 (que se conserva entera, incluido el castigo de par en rodillas):** recompensa `pose_symmetry` (`getup.py`): exp(-suma, sobre cadera, rodilla y tobillo de cabeceo, de (izquierda - derecha)² / std²) por `pelvis_height_progress`, con **std 0,5 rad (std² 0,25) y peso 2,0**. Positiva y multiplicada por el avance de altura y tronco, como `pose_stand`, para no crear escalón. Con la asimetría típica (suma de unos 0,5 rad²) cobra 0,14 de 1 (0,27 por paso); simétrica, 1 (2,0 por paso): un empuje del orden de `pose_stand` y `stand_still`. **Corrida:** 1 500 iteraciones desde `fase4_rodillas/model_11497.pt`, 4096 entornos, etapa 2, mitad boca abajo y mitad boca arriba, sin ayuda (`/d/Claude/fase4_simetria.sh`).
+
+**Comprobación a las 500 iteraciones:** `stood` 80 % o más en el entrenamiento (la corrida 10 daba 95 %); si baja del 50 % se para, se anota y no se sigue.
+
+**Aprobación (criterio de la fase 4 vigente, con el cambio del dueño de hoy):** medido con **4 096 robots** para ver la cola (el criterio pide 1 024 o más), boca abajo y boca arriba por separado, a 6,6 V y con tensión aleatoria: 80 % o más se levanta; 95 % o más sin caer a los 5 s del cambio a la marcha con orden cero; el 99 % de los robots o más sin pasar de 0,5 s seguidos al tope mientras se levanta; el 99 % o más con saturación de pie de 5 % o menos; **ningún robot más de 2 s seguidos al tope**. Informativo: 7,4 V; postura de pie (diferencia izquierda-derecha de cadera, rodilla y tobillo, y distancia a la pose de la fase 2); exceso de acción cruda; vídeos y estado de los atípicos que queden (`diagnose_getup_outlier_robots.py`). Si no cumple, se para y se anota qué falla; no se alarga la corrida.
+
+
+**Corrida 11, resultado (7 de noviembre): NO CUMPLE; la simetría quita la cola pero rompe el cambio a la marcha.** 1 500 iteraciones sin errores (`stood` 94 % a las 500 y al final, `pose_symmetry` 1,8 de 2,0). Medida con `model_12996.pt`, 4 096 robots (1 024 a 7,4 V), `results/training_getup_fase4_simetria_boca_{abajo,arriba}_{6.6V,aleatoria,7.4V}.json`:
+
+| Caso | Se levanta | **Sin caer tras el cambio** (pide 95 %) | Racha más larga al tope | Saturación de pie (máx.) |
+|---|---|---|---|---|
+| Boca abajo 6,6 V | 100 % | **90,8 %** | 0,12 s | 2,7 % |
+| Boca abajo aleatoria | 100 % | **90,8 %** | 0,14 s | 0,7 % |
+| Boca arriba 6,6 V | 100 % | **88,2 %** | 0,86 s (`right_knee`) | 6,0 % (un robot) |
+| Boca arriba aleatoria | 100 % | **91,0 %** | 0,34 s | 1,3 % |
+| Boca abajo / arriba 7,4 V (informativo) | 100 % | 85,8 % / 92,5 % | 0,06 / 0,26 s | |
+
+- **Lo que sí consigue:** la postura de pie es simétrica (cadera izquierda -17,9° y derecha -18,6° boca abajo; -19,7° y -20,2° boca arriba; la pose de la fase 2 es -20,9°; la corrida 9 daba -5° y -29°) y **la cola desaparece**: atípicos con una rodilla más de 0,5 s al tope, 0 de 4 096 boca abajo y 1 de 4 096 boca arriba (0,56 s; la corrida 10 daba 14 con rachas de hasta 4,6 s). Se cumplen el 99 % y «ningún robot más de 2 s».
+- **Lo que rompe:** el cambio a la marcha cae entre el 8 y el 12 % (la corrida 10 caía el 0 al 0,2 %). Diagnóstico de caídas (`diagnose_getup_switch_falls.py`, 1 024 robots boca abajo, 6,6 V, `results/training_getup_caidas_fase4_simetria_6.6V.json`): caen 55, **todos hacia delante**, entre 1,6 y 5,0 s después del cambio (mediana 2,9 s). Ninguna articulación lo explica (la mayor diferencia entre los que caen y los que no es de 0,9 desviaciones típicas); la velocidad del tronco al cambiar es 0,7 desviaciones típicas mayor en los que caen. Es decir, ya **no es la postura simétrica o asimétrica**: la política de la fase 2 recibe una postura que no sostiene y se va hacia delante. Esa medida con 1 024 robots dio 94,6 % sin caer y la de 4 096, 90,8 %: la diferencia entre muestras (3,8 puntos) es mayor que el ±2 que se había medido antes con 512.
+- **Informativas:** exceso de acción cruda 2,7 rad boca abajo y 2,8 boca arriba (corrida 10: 2,1 y 2,3), es decir, algo peor.
+- **No comprobado:** por qué la postura simétrica hace caer hacia delante a la política de la fase 2 (posición del centro de masas al cambiar); si un peso menor de simetría da un compromiso; empujones; ONNX de la tarea; robot real.
+
+**Fase 4 sigue sin aprobar.** Las dos mejores corridas hasta ahora fallan en cosas opuestas: la 10 cumple el cambio a la marcha (99,8 a 100 %) y falla la cola de rodilla (4 robots de más de 2 s boca arriba); la 11 cumple la cola y falla el cambio (88 a 91 %). Fase 5 y 6 sin empezar.
+
+
+### Fase 4, corrida 12 (`fase4_simetria_suave`), criterio escrito antes de entrenar (7 de noviembre)
+
+Decisión del dueño: probar un peso menor de la simetría, desde la corrida 10. **Medido antes:** con peso 2,0 (corrida 11) la postura queda simétrica y la cola desaparece, pero el cambio a la marcha cae el 8 a 12 %; con peso 0 (corrida 10) el cambio cae el 0 a 0,2 % y hay cola (14 de 4 096, 4 robots de más de 2 s). **Cambio único sobre la corrida 11:** `pose_symmetry` con **peso 0,5** (era 2,0; std 0,5 rad igual) y arranque desde **`fase4_rodillas/model_11497.pt`** (la corrida 10, sin simetría), no desde la 11. Con la asimetría típica de la corrida 10 (suma de unos 0,5 rad², 24° de diferencia de cadera) cobra 0,07 por paso y simétrica 0,5. Es una hipótesis de punto intermedio: no se sabe si existe. 1 500 iteraciones, 4096 entornos, etapa 2, mitad y mitad, sin ayuda (`/d/Claude/fase4_simetria_suave.sh`).
+
+**Comprobación a las 500 iteraciones:** `stood` 80 % o más; si baja del 50 %, se para.
+
+**Aprobación: la misma de la corrida 11** (4 096 robots, boca abajo y boca arriba por separado, a 6,6 V y con tensión aleatoria; se levanta 80 % o más; **95 % o más sin caer tras el cambio**; 99 % de los robots sin pasar de 0,5 s al tope al levantarse; 99 % con saturación de pie de 5 % o menos; **ningún robot más de 2 s seguidos al tope**), con 7,4 V, postura, acción cruda y atípicos como informativos. Si el cambio a la marcha cae más del 5 %, o hay robots de más de 2 s, no aprueba y se para. Una medida de 1 024 robots no basta: entre 1 024 y 4 096 hubo 3,8 puntos de diferencia en el cambio a la marcha.
+
+
+**Corrida 12, resultado (7 de noviembre): NO CUMPLE; con peso 0,5 el cambio a la marcha también cae.** 1 500 iteraciones sin errores (`stood` 94 % a las 500 y al final, `pose_symmetry` 0,44 de 0,5). Medida con `model_12996.pt`, 4 096 robots (1 024 a 7,4 V), `results/training_getup_fase4_simetria_suave_boca_*.json`:
+
+| Caso | Se levanta | **Sin caer tras el cambio** (pide 95 %) | Racha más larga al tope | Saturación de pie (máx.) |
+|---|---|---|---|---|
+| Boca abajo 6,6 V | 100 % | **90,1 %** | 0,42 s | 1,3 % |
+| Boca abajo aleatoria | 99,98 % | **91,2 %** | 0,28 s | 2,0 % |
+| Boca arriba 6,6 V | 100 % | **93,5 %** | 0,50 s | 12,7 % (un robot) |
+| Boca arriba aleatoria | 99,98 % | 95,0 % | 0,54 s | 0,7 % |
+| Boca abajo / arriba 7,4 V (informativo) | 100 % | 92,9 % / 98,2 % | 0,08 / 0,26 s | |
+
+Postura (256 robots, 6,6 V): cadera izquierda/derecha -15,9° / -19,5° boca abajo y -18,2° / -21,3° boca arriba (con peso 2,0: -17,9°/-18,6° y -19,7°/-20,2°; peso 0: -5°/-29°). Atípicos de rodilla con la racha de más de 0,5 s: 0 de 4 096 boca abajo y 2 de 4 096 boca arriba (0,62 y 0,52 s; ninguno de 2 s). Acción cruda: exceso 2,8 rad boca abajo y 2,9 boca arriba.
+
+**El cambio cae entre el 5 y el 10 %, igual que con peso 2,0** (diagnóstico de caídas, 2 048 robots boca abajo, 6,6 V: 150 de 2 048 sin caer 92,7 %, todos hacia delante, entre 1,5 y 4,7 s, mediana 2,8 s). Cualquier peso de simetría probado (0,5 y 2,0) rompe el cambio a la marcha; **no hay punto intermedio entre 0 y 0,5**, o al menos no se ha encontrado. **Prueba de espera (medición, sin entrenar):** esperar más de pie antes de cambiar no lo arregla: con 5 s de pie antes del cambio caen 148 de 2 048 (7,2 %) y con 8 s, 132 (6,4 %); con los 3 s del criterio, 7,3 %. No es un problema de estabilizarse. **Hipótesis (no comprobada):** la política de la fase 2 sostiene mejor la postura asimétrica de la corrida 10 que la simétrica, quizá por dónde queda el centro de masas respecto al punto de apoyo, o porque esta postura no es una que viera al entrenar.
+
+**Balance de la fase 4 (corridas 9 a 12), todo con 4 096 robots salvo la 9:** la corrida 10 cumple el cambio a la marcha y falla la cola; las 11 y 12 cumplen la cola y fallan el cambio. Fase 4 sin aprobar; fase 5 y 6 sin empezar.
+
+
+### Fase 4 APROBADA (7 de noviembre): corrida 10, con una excepción aceptada
+
+**Decisión del dueño, 7 de noviembre:** se aprueba la fase 4 con **`fase4_rodillas/model_11497.pt`** (corrida 10; copia en `/d/Claude/puntos_de_control/fase4_rodillas_model_11497.pt`, fuera del repo). Es la política de levantarse desde el suelo, boca abajo y boca arriba, con una sola red.
+
+**Cambio del criterio escrito, decidido por el dueño:** la condición «ningún robot más de 2 s seguidos al tope de par mientras se levanta» se **relaja** para esta corrida. Queda anotada la cola: boca arriba a 6,6 V, 14 de 4 096 robots (0,34 %) pasan más de 0,5 s con la rodilla derecha al tope, y 4 de ellos (0,1 %) entre 3,2 y 4,6 s, en una postura de pie con un pie adelantado que deshacen en unos 1 a 5 s; boca abajo no hay cola (0 de 4 096). **Motivo:** las corridas 11 y 12 (simetría de piernas, peso 2,0 y 0,5) quitan la cola pero hacen que el cambio a la marcha caiga entre el 5 y el 12 %, y esperar más de pie antes de cambiar no lo arregla (6 a 7 % de caídas esperando 5 u 8 s). **Compensación obligatoria:** el requisito de la etapa 5 (robot real) de relajar o parar una articulación que pase más de 1 s cerca de su bloqueo protege al servo en esos casos.
+
+**Cifras de la aprobación** (`model_11497.pt`, `results/training_getup_fase4_rodillas_boca_{abajo,arriba}_{6.6V,aleatoria,7.4V}.json`, 1 024 robots; la cola, con 4 096 en `training_getup_atipicos_fase4_rodillas_boca_*.json`): se levanta el 100 % boca abajo y boca arriba a 6,6 V, con tensión aleatoria y a 7,4 V; sin caer tras el cambio a la marcha, 100 % en los seis casos; saturación de pie por debajo del 5 % en todos menos un robot (17,3 %, rodilla derecha, boca arriba a 6,6 V); racha al tope de 0,12 a 0,26 s boca abajo y de 0,36 a 1,08 s boca arriba como máximo entre robots. Tiempo mediano en ponerse de pie, 3,6 s boca abajo y 4,4 a 4,7 s boca arriba. Corridas posteriores que no se adoptan: 11 (`fase4_simetria`, cambio 88 a 91 %) y 12 (`fase4_simetria_suave`, 90 a 95 %). Su código (recompensa `pose_symmetry`) se quitó de `getup.py`; la receta está descrita arriba y sus resultados en `results/training_getup_fase4_simetria*.json`.
+
+**ONNX:** `policies/danny_fase4_levantarse_2026-11-07.onnx` (78 entradas, 23 salidas; sin el reloj de marcha ni la orden de altura). **Verificado** contra el punto de control con `scripts/verify_policy_onnx.py --task Mjlab-GetUp-Danny` (500 pasos, 16 robots): diferencia máxima 3,1e-6 (límite 1e-4), `results/training_onnx_fase4_rodillas.json`. Se sustituyó el ONNX de la corrida 8.
+
+**Cómo usarla:** el robot tumbado ejecuta esta política hasta cumplir el criterio de «se levanta» (3 s seguidos con pelvis a 0,20 m o más, tronco a 15° o menos, los dos pies en el suelo y velocidad media de 0,05 m/s o menos); en ese instante cambia a la política de la fase 2 con orden cero (el reloj de marcha parado, `[0, 1]`, y la altura 0). **No comprobado:** empujones durante el cambio, otras posturas iniciales distintas de las dos del entrenamiento (prone o supine con pitch ±1,5 rad), el robot real, y los servos pegados al tope en la guiñada de cadera (posible calor).
+
+
+## Fase 5: sentarse y tumbarse (empezada el 7 de noviembre)
+
+El dueño aprobó la fase 4 y pidió seguir con la 5 (la 6 no empieza). **Decisiones de diseño (mías, a revisar por el dueño):** dos acciones, cada una con **política propia**: (a) **sentarse** desde de pie hasta quedar sentado en el suelo, quieto; (b) **tumbarse** desde sentado hasta quedar boca arriba, quieto. Se hace primero (a) (tarea `Mjlab-SitDown-Danny`, `training/src/danny_training/sit.py`) y luego (b). Hasta 5 000 iteraciones por acción, desde cero, 4096 entornos, etapa 2 de aleatorización, sin ayuda. Las dos políticas no llevan orden: arrancan en su estado inicial y hacen su acción (como la de levantarse; 78 entradas y 23 salidas).
+
+**Medido antes de escribir el criterio** (`scripts/check_sit_pose.py`, `results/training_sit_pose.json`): sentado en el suelo con las piernas hacia delante (cadera de cabeceo -80 a -90°, rodilla de 10° a 40°) y los brazos colgando, el robot **se cae hacia atrás hasta quedar boca arriba**, pase lo que pase con la pose de las piernas (cuatro candidatas, 64 robots, 6,6 V; pelvis a 0,03 m y tronco a 90° al final); sobre los talones, igual. Por tanto «sentado» **no es una pose pasiva**: la política tiene que apoyarse con los brazos o con los pies. Por eso el sentado permite apoyar manos, brazos, piernas y pies, y prohíbe tocar el suelo con tronco, cuello y cabeza. La altura de la pelvis sentado **no se ha medido** (el robot terminó tumbado): `SEATED_PELVIS_M` = 0,07 m es una **estimación** que se ajusta con lo que aprenda la política. Altura de pie: 0,228 m.
+
+### Fase 5, sentarse, corrida 1 (`fase5_sentarse`), criterio escrito antes de entrenar (7 de noviembre)
+
+**Tarea:** empieza de pie en la pose de la fase 2 (altura 0,228 m, órdenes cero), episodio de 10 s, termina si el tronco pasa de 70°. **Recompensas** (`sit.py`): `sit_progress` (peso 4: bajada de la pelvis de 0 a 1 entre 0,228 y 0,05 m, por (1 + cos del tronco) / 2, lineal para que haya pendiente desde el principio y sin escalones), `seated_still` (peso 2: exp(-velocidad² / 0,3²) por el avance, quieto solo cobra abajo), `descent_speed_excess` (-5: cuadrado de lo que la pelvis baja a más de 0,4 m/s), `forbidden_floor_contacts` (-1 por contacto de tronco, cuello o cabeza con el suelo), y las de las corridas de levantarse que sirvieron: `action_out_of_range` (-0,035), `dof_pos_limits` (-1), `action_rate_l2` (-0,1), `link_pair_contacts` (-1) y castigo de par al 80 % del bloqueo en todas las articulaciones (-317). 5 000 iteraciones desde cero (`/d/Claude/fase5_sentarse.sh`).
+
+**Comprobaciones:** a las 1 000 iteraciones, `sit_low_fraction` (pelvis a 0,15 m o menos) del 50 % o más; a las 2 500, `sit_seated_fraction` del 30 % o más. Si no, se para, se anota y no se alarga.
+
+**Aprobación** (script de medida `scripts/measure_sit.py`, por escribir mientras entrena; 4 096 robots, 6,6 V y tensión aleatoria de 6 a 8,4 V, sin empujones): **se sienta el 95 % o más** (pelvis a 0,07 m o menos, tronco a 35° o menos, velocidad media de 0,05 m/s o menos, sin tronco, cuello ni cabeza tocando el suelo, 3 s seguidos, en 10 s); **suave:** el 95 % o más con la bajada de la pelvis a 0,6 m/s o menos; **no cae:** el 98 % o más sin que el tronco pase de 70° en ningún momento; saturación (par sobre el 90 % del bloqueo): el 99 % o más de los robots sin pasar de 0,5 s seguidos mientras baja y con saturación 5 % o menos estando sentado, y ningún robot más de 2 s seguidos. 7,4 V solo informativo. Si no cumple, se para y se anota qué falla. **Fuera de esta corrida:** levantarse desde sentado con la política de la fase 4 (no entrenada para ello) y la política de tumbarse.

@@ -1,0 +1,252 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-07_15-08-23_fase4_simetria_suave\\model_12996.pt",
+  "task": "Mjlab-GetUp-Danny",
+  "vin_v": 6.6,
+  "num_envs": 256,
+  "window_s": [
+    10.0,
+    20.0
+  ],
+  "total_excess_rad_sum_over_joints_mean": 2.776,
+  "joints_outside_range_more_than_half_the_time": [
+    "left_hip_yaw",
+    "left_hip_roll",
+    "left_ankle_pitch",
+    "left_ankle_roll",
+    "right_hip_yaw",
+    "right_hip_roll",
+    "right_ankle_roll"
+  ],
+  "by_joint": {
+    "left_hip_yaw": {
+      "range_deg": [
+        -12.7,
+        27.8
+      ],
+      "raw_action_rad_mean": -0.978,
+      "fraction_of_time_outside_range": 1.0,
+      "excess_rad_mean": 0.755,
+      "excess_deg_max": 64.1
+    },
+    "left_hip_roll": {
+      "range_deg": [
+        -12.5,
+        32.5
+      ],
+      "raw_action_rad_mean": -0.573,
+      "fraction_of_time_outside_range": 1.0,
+      "excess_rad_mean": 0.355,
+      "excess_deg_max": 47.8
+    },
+    "left_hip_pitch": {
+      "range_deg": [
+        -94.0,
+        14.0
+      ],
+      "raw_action_rad_mean": -0.17,
+      "fraction_of_time_outside_range": 0.0,
+      "excess_rad_mean": 0.0,
+      "excess_deg_max": 0.0
+    },
+    "left_knee": {
+      "range_deg": [
+        6.5,
+        123.5
+      ],
+      "raw_action_rad_mean": -0.17,
+      "fraction_of_time_outside_range": 0.0,
+      "excess_rad_mean": 0.0,
+      "excess_deg_max": 0.0
+    },
+    "left_ankle_pitch": {
+      "range_deg": [
+        -40.7,
+        35.8
+      ],
+      "raw_action_rad_mean": -0.372,
+      "fraction_of_time_outside_range": 0.907,
+      "excess_rad_mean": 0.13,
+      "excess_deg_max": 26.3
+    },
+    "left_ankle_roll": {
+      "range_deg": [
+        -18.0,
+        18.0
+      ],
+      "raw_action_rad_mean": -0.585,
+      "fraction_of_time_outside_range": 1.0,
+      "excess_rad_mean": 0.27,
+      "excess_deg_max": 39.2
+    },
+    "right_hip_yaw": {
+      "range_deg": [
+        -27.8,
+        12.7
+      ],
+      "raw_action_rad_mean": 0.735,
+      "fraction_of_time_outside_range": 1.0,
+      "excess_rad_mean": 0.513,
+      "excess_deg_max": 41.9
+    },
+    "right_hip_roll": {
+      "range_deg": [
+        -32.5,
+        12.5
+      ],
+      "raw_action_rad_mean": 0.821,
+      "fraction_of_time_outside_range": 1.0,
+      "excess_rad_mean": 0.603,
+      "excess_deg_max": 46.2
+    },
+    "right_hip_pitch": {
+      "range_deg": [
+        -94.0,
+        14.0
+      ],
+      "raw_action_rad_mean": 0.141,
+      "fraction_of_time_outside_range": 0.0,
+      "excess_rad_mean": 0.0,
+      "excess_deg_max": 0.0
+    },
+    "right_knee": {
+      "range_deg": [
+        6.5,
+        123.5
+      ],
+      "raw_action_rad_mean": 0.054,
+      "fraction_of_time_outside_range": 0.0,
+      "excess_rad_mean": 0.0,
+      "excess_deg_max": 0.0
+    },
+    "right_ankle_pitch": {
+      "range_deg": [
+        -40.7,
+        35.8
+      ],
+      "raw_action_rad_mean": 0.105,
+      "fraction_of_time_outside_range": 0.0,
+      "excess_rad_mean": 0.0,
+      "excess_deg_max": 1.6
+    },
+    "right_ankle_roll": {
+      "range_deg": [
+        -18.0,
+        18.0
+      ],
+      "raw_action_rad_mean": 0.46,
+      "fraction_of_time_outside_range": 0.919,
+      "excess_rad_mean": 0.15,
+      "excess_deg_max": 39.3
+    },
+    "waist_yaw": {
+      "range_deg": [
+        -54.0,
+        54.0
+      ],
+      "raw_action_rad_mean": -0.033,
+      "fraction_of_time_outside_range": 0.0,
+      "excess_rad_mean": 0.0,
+      "excess_deg_max": 0.0
+    },
+    "left_shoulder_pitch": {
+      "range_deg": [
+        -159.3,
+        34.2
+      ],
+      "raw_action_rad_mean": -0.02,
+      "fraction_of_time_outside_range": 0.0,
+      "excess_rad_mean": 0.0,
+      "excess_deg_max": 0.0
+    },
+    "left_shoulder_roll": {
+      "range_deg": [
+        -3.5,
+        113.5
+      ],
+      "raw_action_rad_mean": -0.001,
+      "fraction_of_time_outside_range": 0.0,
+      "excess_rad_mean": 0.0,
+      "excess_deg_max": 0.0
+    },
+    "left_shoulder_yaw": {
+      "range_deg": [
+        -72.0,
+        72.0
+      ],
+      "raw_action_rad_mean": 0.023,
+      "fraction_of_time_outside_range": 0.0,
+      "excess_rad_mean": 0.0,
+      "excess_deg_max": 0.0
+    },
+    "left_elbow": {
+      "range_deg": [
+        -123.5,
+        -6.5
+      ],
+      "raw_action_rad_mean": 0.052,
+      "fraction_of_time_outside_range": 0.0,
+      "excess_rad_mean": 0.0,
+      "excess_deg_max": 0.0
+    },
+    "right_shoulder_pitch": {
+      "range_deg": [
+        -159.3,
+        34.2
+      ],
+      "raw_action_rad_mean": -0.017,
+      "fraction_of_time_outside_range": 0.0,
+      "excess_rad_mean": 0.0,
+      "excess_deg_max": 0.0
+    },
+    "right_shoulder_roll": {
+      "range_deg": [
+        -113.5,
+        3.5
+      ],
+      "raw_action_rad_mean": -0.059,
+      "fraction_of_time_outside_range": 0.0,
+      "excess_rad_mean": 0.0,
+      "excess_deg_max": 0.0
+    },
+    "right_shoulder_yaw": {
+      "range_deg": [
+        -72.0,
+        72.0
+      ],
+      "raw_action_rad_mean": -0.01,
+      "fraction_of_time_outside_range": 0.0,
+      "excess_rad_mean": 0.0,
+      "excess_deg_max": 0.0
+    },
+    "right_elbow": {
+      "range_deg": [
+        -123.5,
+        -6.5
+      ],
+      "raw_action_rad_mean": -0.015,
+      "fraction_of_time_outside_range": 0.0,
+      "excess_rad_mean": 0.0,
+      "excess_deg_max": 0.0
+    },
+    "neck_yaw": {
+      "range_deg": [
+        -63.0,
+        63.0
+      ],
+      "raw_action_rad_mean": 0.04,
+      "fraction_of_time_outside_range": 0.0,
+      "excess_rad_mean": 0.0,
+      "excess_deg_max": 0.0
+    },
+    "neck_pitch": {
+      "range_deg": [
+        -26.5,
+        36.5
+      ],
+      "raw_action_rad_mean": -0.002,
+      "fraction_of_time_outside_range": 0.0,
+      "excess_rad_mean": 0.0,
+      "excess_deg_max": 0.0
+    }
+  }
+}

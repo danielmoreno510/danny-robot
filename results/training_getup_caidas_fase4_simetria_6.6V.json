@@ -1,0 +1,217 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-07_13-09-11_fase4_simetria\\model_12996.pt",
+  "vin_v": 6.6,
+  "window_s": 3.0,
+  "blend_s": 0.0,
+  "ramp_s": 0.0,
+  "ramp_from_target": false,
+  "num_envs": 1024,
+  "robots_that_got_up_and_have_5s_after": 1024,
+  "fell": 55,
+  "fraction_not_fallen": 0.9463,
+  "time_to_fall_s": {
+    "min": 1.64,
+    "median": 2.88,
+    "max": 4.98
+  },
+  "fall_direction_robot_frame": {
+    "hacia_delante": 55,
+    "hacia_atras": 0,
+    "hacia_la_izquierda": 0,
+    "hacia_la_derecha": 0
+  },
+  "peak_tilt_deg_after_switch": {
+    "fell_median": 98.2,
+    "stayed_median": 4.4,
+    "stayed_p95": 7.8
+  },
+  "state_at_switch_fell_minus_stayed_in_std": {
+    "pelvis_height_m": -0.04,
+    "tilt_deg": 1.52,
+    "speed_m_s": 0.71
+  },
+  "joint_angle_at_switch_fell_minus_stayed": {
+    "left_hip_yaw": {
+      "deg_mean_fell": -10.4,
+      "deg_mean_stayed": -11.1,
+      "diff_in_std": 0.55
+    },
+    "left_hip_roll": {
+      "deg_mean_fell": 8.2,
+      "deg_mean_stayed": 8.9,
+      "diff_in_std": -0.52
+    },
+    "left_hip_pitch": {
+      "deg_mean_fell": -19.5,
+      "deg_mean_stayed": -17.3,
+      "diff_in_std": -0.81
+    },
+    "left_knee": {
+      "deg_mean_fell": 51.2,
+      "deg_mean_stayed": 51.5,
+      "diff_in_std": -0.1
+    },
+    "left_ankle_pitch": {
+      "deg_mean_fell": -34.8,
+      "deg_mean_stayed": -35.2,
+      "diff_in_std": 0.27
+    },
+    "left_ankle_roll": {
+      "deg_mean_fell": -11.0,
+      "deg_mean_stayed": -10.6,
+      "diff_in_std": -0.35
+    },
+    "right_hip_yaw": {
+      "deg_mean_fell": 10.1,
+      "deg_mean_stayed": 10.4,
+      "diff_in_std": -0.32
+    },
+    "right_hip_roll": {
+      "deg_mean_fell": -14.1,
+      "deg_mean_stayed": -13.0,
+      "diff_in_std": -0.41
+    },
+    "right_hip_pitch": {
+      "deg_mean_fell": -19.5,
+      "deg_mean_stayed": -18.7,
+      "diff_in_std": -0.41
+    },
+    "right_knee": {
+      "deg_mean_fell": 51.9,
+      "deg_mean_stayed": 51.3,
+      "diff_in_std": 0.24
+    },
+    "right_ankle_pitch": {
+      "deg_mean_fell": -34.5,
+      "deg_mean_stayed": -32.9,
+      "diff_in_std": -0.79
+    },
+    "right_ankle_roll": {
+      "deg_mean_fell": 12.4,
+      "deg_mean_stayed": 12.4,
+      "diff_in_std": -0.03
+    },
+    "waist_yaw": {
+      "deg_mean_fell": -0.5,
+      "deg_mean_stayed": -0.9,
+      "diff_in_std": 0.48
+    },
+    "left_shoulder_pitch": {
+      "deg_mean_fell": -3.1,
+      "deg_mean_stayed": -3.5,
+      "diff_in_std": 0.5
+    },
+    "left_shoulder_roll": {
+      "deg_mean_fell": 10.9,
+      "deg_mean_stayed": 10.2,
+      "diff_in_std": 0.89
+    },
+    "left_shoulder_yaw": {
+      "deg_mean_fell": -0.9,
+      "deg_mean_stayed": -0.2,
+      "diff_in_std": -0.78
+    },
+    "left_elbow": {
+      "deg_mean_fell": -9.9,
+      "deg_mean_stayed": -10.1,
+      "diff_in_std": 0.24
+    },
+    "right_shoulder_pitch": {
+      "deg_mean_fell": -0.3,
+      "deg_mean_stayed": 0.1,
+      "diff_in_std": -0.45
+    },
+    "right_shoulder_roll": {
+      "deg_mean_fell": -10.8,
+      "deg_mean_stayed": -11.2,
+      "diff_in_std": 0.25
+    },
+    "right_shoulder_yaw": {
+      "deg_mean_fell": -1.5,
+      "deg_mean_stayed": -1.4,
+      "diff_in_std": -0.16
+    },
+    "right_elbow": {
+      "deg_mean_fell": -9.1,
+      "deg_mean_stayed": -9.7,
+      "diff_in_std": 0.57
+    },
+    "neck_yaw": {
+      "deg_mean_fell": -0.5,
+      "deg_mean_stayed": -0.8,
+      "diff_in_std": 0.51
+    },
+    "neck_pitch": {
+      "deg_mean_fell": 2.4,
+      "deg_mean_stayed": 2.7,
+      "diff_in_std": -0.27
+    }
+  },
+  "joint_speed_at_switch_fell_minus_stayed_in_std": {
+    "left_hip_yaw": 0.26,
+    "left_hip_roll": 0.48,
+    "left_hip_pitch": 0.24,
+    "left_knee": -0.24,
+    "left_ankle_pitch": -0.35,
+    "left_ankle_roll": 0.6,
+    "right_hip_yaw": -0.58,
+    "right_hip_roll": 0.04,
+    "right_hip_pitch": -0.14,
+    "right_knee": -0.22,
+    "right_ankle_pitch": 0.4,
+    "right_ankle_roll": -0.23,
+    "waist_yaw": -0.16,
+    "left_shoulder_pitch": -0.21,
+    "left_shoulder_roll": -0.15,
+    "left_shoulder_yaw": -0.06,
+    "left_elbow": 0.02,
+    "right_shoulder_pitch": 0.07,
+    "right_shoulder_roll": -0.16,
+    "right_shoulder_yaw": 0.21,
+    "right_elbow": 0.04,
+    "neck_yaw": -0.11,
+    "neck_pitch": 0.06
+  },
+  "largest_angle_differences": [
+    [
+      "left_shoulder_roll",
+      {
+        "deg_mean_fell": 10.9,
+        "deg_mean_stayed": 10.2,
+        "diff_in_std": 0.89
+      }
+    ],
+    [
+      "left_hip_pitch",
+      {
+        "deg_mean_fell": -19.5,
+        "deg_mean_stayed": -17.3,
+        "diff_in_std": -0.81
+      }
+    ],
+    [
+      "right_ankle_pitch",
+      {
+        "deg_mean_fell": -34.5,
+        "deg_mean_stayed": -32.9,
+        "diff_in_std": -0.79
+      }
+    ],
+    [
+      "left_shoulder_yaw",
+      {
+        "deg_mean_fell": -0.9,
+        "deg_mean_stayed": -0.2,
+        "diff_in_std": -0.78
+      }
+    ],
+    [
+      "right_elbow",
+      {
+        "deg_mean_fell": -9.1,
+        "deg_mean_stayed": -9.7,
+        "diff_in_std": 0.57
+      }
+    ]
+  ]
+}
