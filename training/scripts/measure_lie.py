@@ -32,7 +32,7 @@ def main() -> None:
   parser.add_argument("--vin", type=float, default=None, help="Tensión fija en V; sin ella, la sorteada del entrenamiento (6 a 8,4)")
   parser.add_argument("--num-envs", type=int, default=1024)
   parser.add_argument("--seconds", type=float, default=10.0)
-  parser.add_argument("--settle-steps", type=int, default=lie.SETTLE_STEPS)
+  parser.add_argument("--settle-steps", type=int, default=0 if lie.LIE_START == "sit_end" else lie.SETTLE_STEPS)
   parser.add_argument("--videos", type=int, default=0)
   args = parser.parse_args()
 

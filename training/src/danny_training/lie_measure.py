@@ -92,6 +92,24 @@ def settle(env, steps: int):
   return obs
 
 
+def hold_fixed_pose(env, steps: int, rec: LieRecorder | None = None):
+  """Sujeta `steps` pasos cada articulación con la posición objetivo fija en la pose con que empezó (sin política) y registra con `rec`.
+
+  A diferencia de `settle`, el objetivo no sigue a la articulación: es el de la pose inicial, así que lo que se mide es lo que hace la pose sola
+  con el servo sujetándola. Devuelve la observación.
+  """
+  term = env.unwrapped.action_manager.get_term("joint_pos")
+  robot = env.unwrapped.scene["robot"]
+  hold = ((robot.data.joint_pos - term.offset) / term.scale).clone()
+  obs = env.get_observations()
+  with torch.inference_mode():
+    for t in range(steps):
+      obs, _, _, _ = env.step(hold)
+      if rec is not None:
+        rec.record(t)
+  return obs
+
+
 def quantiles(x: torch.Tensor) -> dict:
   return {"median": round(float(x.median()), 3), "p95": round(float(torch.quantile(x, 0.95)), 3), "max": round(float(x.max()), 3)}
 

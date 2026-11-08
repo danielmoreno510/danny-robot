@@ -1,0 +1,4684 @@
+{
+  "vin_v": 6.6,
+  "stall_torque_nm": 0.8131,
+  "limit_fraction": 0.8,
+  "heights": [
+    {
+      "pelvis_z_m": 0.228,
+      "any_feasible_pose": true,
+      "best_lean": {
+        "lean_deg": 10.0,
+        "converged": true,
+        "in_range": {
+          "hip_pitch": true,
+          "knee": true,
+          "ankle_pitch": true
+        },
+        "angles_deg": {
+          "hip_pitch": -34.1,
+          "knee": 44.5,
+          "ankle_pitch": -20.4
+        },
+        "torque_nm": {
+          "hip_pitch": 0.076,
+          "knee": 0.089,
+          "ankle_pitch": 0.065
+        },
+        "fraction_of_stall": {
+          "hip_pitch": 0.093,
+          "knee": 0.109,
+          "ankle_pitch": 0.08
+        },
+        "max_fraction_of_stall": 0.109,
+        "feasible": true
+      },
+      "best_max_fraction_of_stall": 0.109,
+      "within_80_percent": true,
+      "sweep": [
+        {
+          "lean_deg": 0.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -19.9,
+            "knee": 45.5,
+            "ankle_pitch": -25.6
+          },
+          "torque_nm": {
+            "hip_pitch": 0.011,
+            "knee": 0.126,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.013,
+            "knee": 0.155,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.155,
+          "feasible": true
+        },
+        {
+          "lean_deg": 5.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -27.3,
+            "knee": 45.5,
+            "ankle_pitch": -23.2
+          },
+          "torque_nm": {
+            "hip_pitch": 0.043,
+            "knee": 0.109,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.053,
+            "knee": 0.134,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.134,
+          "feasible": true
+        },
+        {
+          "lean_deg": 10.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -34.1,
+            "knee": 44.5,
+            "ankle_pitch": -20.4
+          },
+          "torque_nm": {
+            "hip_pitch": 0.076,
+            "knee": 0.089,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.093,
+            "knee": 0.109,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.109,
+          "feasible": true
+        },
+        {
+          "lean_deg": 15.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -40.3,
+            "knee": 42.4,
+            "ankle_pitch": -17.1
+          },
+          "torque_nm": {
+            "hip_pitch": 0.107,
+            "knee": 0.065,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.132,
+            "knee": 0.08,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.132,
+          "feasible": true
+        },
+        {
+          "lean_deg": 20.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -45.9,
+            "knee": 39.2,
+            "ankle_pitch": -13.3
+          },
+          "torque_nm": {
+            "hip_pitch": 0.138,
+            "knee": 0.037,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.17,
+            "knee": 0.046,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.17,
+          "feasible": true
+        },
+        {
+          "lean_deg": 25.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -50.6,
+            "knee": 34.7,
+            "ankle_pitch": -9.1
+          },
+          "torque_nm": {
+            "hip_pitch": 0.168,
+            "knee": 0.005,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.207,
+            "knee": 0.006,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.207,
+          "feasible": true
+        },
+        {
+          "lean_deg": 30.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -54.2,
+            "knee": 28.4,
+            "ankle_pitch": -4.2
+          },
+          "torque_nm": {
+            "hip_pitch": 0.197,
+            "knee": 0.032,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.242,
+            "knee": 0.04,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.242,
+          "feasible": true
+        },
+        {
+          "lean_deg": 35.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -56.1,
+            "knee": 19.1,
+            "ankle_pitch": 1.9
+          },
+          "torque_nm": {
+            "hip_pitch": 0.224,
+            "knee": 0.08,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.275,
+            "knee": 0.098,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.275,
+          "feasible": true
+        },
+        {
+          "lean_deg": 40.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -52.0,
+            "knee": -1.2,
+            "ankle_pitch": 13.2
+          },
+          "torque_nm": {
+            "hip_pitch": 0.249,
+            "knee": 0.166,
+            "ankle_pitch": 0.066
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.307,
+            "knee": 0.204,
+            "ankle_pitch": 0.081
+          },
+          "max_fraction_of_stall": 0.307,
+          "feasible": false
+        },
+        {
+          "lean_deg": 45.0,
+          "converged": false,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -58.3,
+            "knee": -1.4,
+            "ankle_pitch": 14.8
+          },
+          "torque_nm": {
+            "hip_pitch": 0.273,
+            "knee": 0.18,
+            "ankle_pitch": 0.069
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.335,
+            "knee": 0.222,
+            "ankle_pitch": 0.085
+          },
+          "max_fraction_of_stall": 0.335,
+          "feasible": false
+        },
+        {
+          "lean_deg": 50.0,
+          "converged": false,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -64.5,
+            "knee": -1.5,
+            "ankle_pitch": 16.1
+          },
+          "torque_nm": {
+            "hip_pitch": 0.294,
+            "knee": 0.194,
+            "ankle_pitch": 0.073
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.362,
+            "knee": 0.238,
+            "ankle_pitch": 0.089
+          },
+          "max_fraction_of_stall": 0.362,
+          "feasible": false
+        },
+        {
+          "lean_deg": 55.0,
+          "converged": false,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -70.4,
+            "knee": -1.6,
+            "ankle_pitch": 16.8
+          },
+          "torque_nm": {
+            "hip_pitch": 0.313,
+            "knee": 0.207,
+            "ankle_pitch": 0.078
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.385,
+            "knee": 0.254,
+            "ankle_pitch": 0.096
+          },
+          "max_fraction_of_stall": 0.385,
+          "feasible": false
+        },
+        {
+          "lean_deg": 60.0,
+          "converged": false,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -76.2,
+            "knee": -1.6,
+            "ankle_pitch": 17.6
+          },
+          "torque_nm": {
+            "hip_pitch": 0.33,
+            "knee": 0.218,
+            "ankle_pitch": 0.084
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.406,
+            "knee": 0.268,
+            "ankle_pitch": 0.103
+          },
+          "max_fraction_of_stall": 0.406,
+          "feasible": false
+        },
+        {
+          "lean_deg": 65.0,
+          "converged": false,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -81.8,
+            "knee": -1.7,
+            "ankle_pitch": 18.2
+          },
+          "torque_nm": {
+            "hip_pitch": 0.344,
+            "knee": 0.228,
+            "ankle_pitch": 0.089
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.424,
+            "knee": 0.281,
+            "ankle_pitch": 0.11
+          },
+          "max_fraction_of_stall": 0.424,
+          "feasible": false
+        },
+        {
+          "lean_deg": 70.0,
+          "converged": false,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -87.2,
+            "knee": -1.7,
+            "ankle_pitch": 18.6
+          },
+          "torque_nm": {
+            "hip_pitch": 0.356,
+            "knee": 0.237,
+            "ankle_pitch": 0.095
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.438,
+            "knee": 0.292,
+            "ankle_pitch": 0.116
+          },
+          "max_fraction_of_stall": 0.438,
+          "feasible": false
+        },
+        {
+          "lean_deg": 75.0,
+          "converged": false,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -92.6,
+            "knee": -1.8,
+            "ankle_pitch": 19.7
+          },
+          "torque_nm": {
+            "hip_pitch": 0.365,
+            "knee": 0.244,
+            "ankle_pitch": 0.098
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.449,
+            "knee": 0.3,
+            "ankle_pitch": 0.12
+          },
+          "max_fraction_of_stall": 0.449,
+          "feasible": false
+        },
+        {
+          "lean_deg": 80.0,
+          "converged": false,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -99.5,
+            "knee": -1.9,
+            "ankle_pitch": -159.8
+          },
+          "torque_nm": {
+            "hip_pitch": 0.371,
+            "knee": 0.237,
+            "ankle_pitch": 0.076
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.456,
+            "knee": 0.291,
+            "ankle_pitch": 0.094
+          },
+          "max_fraction_of_stall": 0.456,
+          "feasible": false
+        },
+        {
+          "lean_deg": 85.0,
+          "converged": false,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -102.6,
+            "knee": -1.8,
+            "ankle_pitch": -340.2
+          },
+          "torque_nm": {
+            "hip_pitch": 0.375,
+            "knee": 0.253,
+            "ankle_pitch": 0.107
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.461,
+            "knee": 0.311,
+            "ankle_pitch": 0.132
+          },
+          "max_fraction_of_stall": 0.461,
+          "feasible": false
+        },
+        {
+          "lean_deg": 90.0,
+          "converged": false,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -107.4,
+            "knee": -1.7,
+            "ankle_pitch": 19.6
+          },
+          "torque_nm": {
+            "hip_pitch": 0.375,
+            "knee": 0.255,
+            "ankle_pitch": 0.111
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.461,
+            "knee": 0.313,
+            "ankle_pitch": 0.136
+          },
+          "max_fraction_of_stall": 0.461,
+          "feasible": false
+        }
+      ]
+    },
+    {
+      "pelvis_z_m": 0.2,
+      "any_feasible_pose": true,
+      "best_lean": {
+        "lean_deg": 20.0,
+        "converged": true,
+        "in_range": {
+          "hip_pitch": true,
+          "knee": true,
+          "ankle_pitch": true
+        },
+        "angles_deg": {
+          "hip_pitch": -67.7,
+          "knee": 78.3,
+          "ankle_pitch": -30.6
+        },
+        "torque_nm": {
+          "hip_pitch": 0.138,
+          "knee": 0.159,
+          "ankle_pitch": 0.065
+        },
+        "fraction_of_stall": {
+          "hip_pitch": 0.17,
+          "knee": 0.196,
+          "ankle_pitch": 0.08
+        },
+        "max_fraction_of_stall": 0.196,
+        "feasible": true
+      },
+      "best_max_fraction_of_stall": 0.196,
+      "within_80_percent": true,
+      "sweep": [
+        {
+          "lean_deg": 0.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -38.6,
+            "knee": 82.5,
+            "ankle_pitch": -43.8
+          },
+          "torque_nm": {
+            "hip_pitch": 0.011,
+            "knee": 0.24,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.013,
+            "knee": 0.296,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.296,
+          "feasible": true
+        },
+        {
+          "lean_deg": 5.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -46.5,
+            "knee": 82.4,
+            "ankle_pitch": -40.8
+          },
+          "torque_nm": {
+            "hip_pitch": 0.043,
+            "knee": 0.224,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.053,
+            "knee": 0.275,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.275,
+          "feasible": true
+        },
+        {
+          "lean_deg": 10.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -54.1,
+            "knee": 81.6,
+            "ankle_pitch": -37.6
+          },
+          "torque_nm": {
+            "hip_pitch": 0.076,
+            "knee": 0.204,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.093,
+            "knee": 0.251,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.251,
+          "feasible": true
+        },
+        {
+          "lean_deg": 15.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -61.1,
+            "knee": 80.3,
+            "ankle_pitch": -34.1
+          },
+          "torque_nm": {
+            "hip_pitch": 0.107,
+            "knee": 0.183,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.132,
+            "knee": 0.225,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.225,
+          "feasible": true
+        },
+        {
+          "lean_deg": 20.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -67.7,
+            "knee": 78.3,
+            "ankle_pitch": -30.6
+          },
+          "torque_nm": {
+            "hip_pitch": 0.138,
+            "knee": 0.159,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.17,
+            "knee": 0.196,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.196,
+          "feasible": true
+        },
+        {
+          "lean_deg": 25.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -73.8,
+            "knee": 75.7,
+            "ankle_pitch": -26.9
+          },
+          "torque_nm": {
+            "hip_pitch": 0.168,
+            "knee": 0.135,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.207,
+            "knee": 0.165,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.207,
+          "feasible": true
+        },
+        {
+          "lean_deg": 30.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -79.3,
+            "knee": 72.5,
+            "ankle_pitch": -23.1
+          },
+          "torque_nm": {
+            "hip_pitch": 0.197,
+            "knee": 0.109,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.242,
+            "knee": 0.133,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.242,
+          "feasible": true
+        },
+        {
+          "lean_deg": 35.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -84.4,
+            "knee": 68.7,
+            "ankle_pitch": -19.4
+          },
+          "torque_nm": {
+            "hip_pitch": 0.224,
+            "knee": 0.082,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.275,
+            "knee": 0.1,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.275,
+          "feasible": true
+        },
+        {
+          "lean_deg": 40.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -88.9,
+            "knee": 64.5,
+            "ankle_pitch": -15.6
+          },
+          "torque_nm": {
+            "hip_pitch": 0.249,
+            "knee": 0.054,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.307,
+            "knee": 0.066,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.307,
+          "feasible": true
+        },
+        {
+          "lean_deg": 45.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -92.8,
+            "knee": 59.6,
+            "ankle_pitch": -11.8
+          },
+          "torque_nm": {
+            "hip_pitch": 0.273,
+            "knee": 0.025,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.335,
+            "knee": 0.031,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.335,
+          "feasible": true
+        },
+        {
+          "lean_deg": 50.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -96.2,
+            "knee": 54.2,
+            "ankle_pitch": -8.0
+          },
+          "torque_nm": {
+            "hip_pitch": 0.294,
+            "knee": 0.004,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.362,
+            "knee": 0.004,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.362,
+          "feasible": true
+        },
+        {
+          "lean_deg": 55.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -99.0,
+            "knee": 48.1,
+            "ankle_pitch": -4.0
+          },
+          "torque_nm": {
+            "hip_pitch": 0.313,
+            "knee": 0.034,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.385,
+            "knee": 0.041,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.385,
+          "feasible": true
+        },
+        {
+          "lean_deg": 60.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -101.1,
+            "knee": 41.1,
+            "ankle_pitch": 0.1
+          },
+          "torque_nm": {
+            "hip_pitch": 0.33,
+            "knee": 0.065,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.406,
+            "knee": 0.08,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.406,
+          "feasible": false
+        },
+        {
+          "lean_deg": 65.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -102.4,
+            "knee": 32.8,
+            "ankle_pitch": 4.6
+          },
+          "torque_nm": {
+            "hip_pitch": 0.344,
+            "knee": 0.1,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.424,
+            "knee": 0.123,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.424,
+          "feasible": false
+        },
+        {
+          "lean_deg": 70.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -102.2,
+            "knee": 22.2,
+            "ankle_pitch": 10.0
+          },
+          "torque_nm": {
+            "hip_pitch": 0.356,
+            "knee": 0.142,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.438,
+            "knee": 0.174,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.438,
+          "feasible": false
+        },
+        {
+          "lean_deg": 75.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -94.8,
+            "knee": -2.0,
+            "ankle_pitch": 21.8
+          },
+          "torque_nm": {
+            "hip_pitch": 0.365,
+            "knee": 0.229,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.449,
+            "knee": 0.281,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.449,
+          "feasible": false
+        },
+        {
+          "lean_deg": 80.0,
+          "converged": false,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -101.3,
+            "knee": -2.1,
+            "ankle_pitch": -157.5
+          },
+          "torque_nm": {
+            "hip_pitch": 0.371,
+            "knee": 0.225,
+            "ankle_pitch": 0.05
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.456,
+            "knee": 0.277,
+            "ankle_pitch": 0.062
+          },
+          "max_fraction_of_stall": 0.456,
+          "feasible": false
+        },
+        {
+          "lean_deg": 85.0,
+          "converged": false,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -104.7,
+            "knee": -1.9,
+            "ankle_pitch": -338.4
+          },
+          "torque_nm": {
+            "hip_pitch": 0.375,
+            "knee": 0.239,
+            "ankle_pitch": 0.076
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.461,
+            "knee": 0.294,
+            "ankle_pitch": 0.094
+          },
+          "max_fraction_of_stall": 0.461,
+          "feasible": false
+        },
+        {
+          "lean_deg": 90.0,
+          "converged": false,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -109.5,
+            "knee": -1.9,
+            "ankle_pitch": 21.6
+          },
+          "torque_nm": {
+            "hip_pitch": 0.375,
+            "knee": 0.241,
+            "ankle_pitch": 0.08
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.461,
+            "knee": 0.296,
+            "ankle_pitch": 0.098
+          },
+          "max_fraction_of_stall": 0.461,
+          "feasible": false
+        }
+      ]
+    },
+    {
+      "pelvis_z_m": 0.19,
+      "any_feasible_pose": true,
+      "best_lean": {
+        "lean_deg": 25.0,
+        "converged": true,
+        "in_range": {
+          "hip_pitch": true,
+          "knee": true,
+          "ankle_pitch": true
+        },
+        "angles_deg": {
+          "hip_pitch": -80.1,
+          "knee": 86.0,
+          "ankle_pitch": -30.9
+        },
+        "torque_nm": {
+          "hip_pitch": 0.168,
+          "knee": 0.162,
+          "ankle_pitch": 0.065
+        },
+        "fraction_of_stall": {
+          "hip_pitch": 0.207,
+          "knee": 0.199,
+          "ankle_pitch": 0.08
+        },
+        "max_fraction_of_stall": 0.207,
+        "feasible": true
+      },
+      "best_max_fraction_of_stall": 0.207,
+      "within_80_percent": true,
+      "sweep": [
+        {
+          "lean_deg": 0.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -43.7,
+            "knee": 92.5,
+            "ankle_pitch": -48.8
+          },
+          "torque_nm": {
+            "hip_pitch": 0.011,
+            "knee": 0.267,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.013,
+            "knee": 0.329,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.329,
+          "feasible": false
+        },
+        {
+          "lean_deg": 5.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -51.8,
+            "knee": 92.4,
+            "ankle_pitch": -45.6
+          },
+          "torque_nm": {
+            "hip_pitch": 0.043,
+            "knee": 0.25,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.053,
+            "knee": 0.308,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.308,
+          "feasible": false
+        },
+        {
+          "lean_deg": 10.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -59.6,
+            "knee": 91.7,
+            "ankle_pitch": -42.1
+          },
+          "torque_nm": {
+            "hip_pitch": 0.076,
+            "knee": 0.231,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.093,
+            "knee": 0.284,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.284,
+          "feasible": true
+        },
+        {
+          "lean_deg": 15.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -66.9,
+            "knee": 90.4,
+            "ankle_pitch": -38.5
+          },
+          "torque_nm": {
+            "hip_pitch": 0.107,
+            "knee": 0.209,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.132,
+            "knee": 0.258,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.258,
+          "feasible": true
+        },
+        {
+          "lean_deg": 20.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -73.8,
+            "knee": 88.5,
+            "ankle_pitch": -34.7
+          },
+          "torque_nm": {
+            "hip_pitch": 0.138,
+            "knee": 0.186,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.17,
+            "knee": 0.229,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.229,
+          "feasible": true
+        },
+        {
+          "lean_deg": 25.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -80.1,
+            "knee": 86.0,
+            "ankle_pitch": -30.9
+          },
+          "torque_nm": {
+            "hip_pitch": 0.168,
+            "knee": 0.162,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.207,
+            "knee": 0.199,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.207,
+          "feasible": true
+        },
+        {
+          "lean_deg": 30.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -85.9,
+            "knee": 83.1,
+            "ankle_pitch": -27.2
+          },
+          "torque_nm": {
+            "hip_pitch": 0.197,
+            "knee": 0.137,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.242,
+            "knee": 0.168,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.242,
+          "feasible": true
+        },
+        {
+          "lean_deg": 35.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -91.2,
+            "knee": 79.6,
+            "ankle_pitch": -23.4
+          },
+          "torque_nm": {
+            "hip_pitch": 0.224,
+            "knee": 0.111,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.275,
+            "knee": 0.136,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.275,
+          "feasible": true
+        },
+        {
+          "lean_deg": 40.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -96.0,
+            "knee": 75.8,
+            "ankle_pitch": -19.8
+          },
+          "torque_nm": {
+            "hip_pitch": 0.249,
+            "knee": 0.084,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.307,
+            "knee": 0.104,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.307,
+          "feasible": true
+        },
+        {
+          "lean_deg": 45.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -100.3,
+            "knee": 71.5,
+            "ankle_pitch": -16.2
+          },
+          "torque_nm": {
+            "hip_pitch": 0.273,
+            "knee": 0.058,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.335,
+            "knee": 0.072,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.335,
+          "feasible": false
+        },
+        {
+          "lean_deg": 50.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -104.1,
+            "knee": 66.8,
+            "ankle_pitch": -12.7
+          },
+          "torque_nm": {
+            "hip_pitch": 0.294,
+            "knee": 0.032,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.362,
+            "knee": 0.039,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.362,
+          "feasible": false
+        },
+        {
+          "lean_deg": 55.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -107.5,
+            "knee": 61.7,
+            "ankle_pitch": -9.2
+          },
+          "torque_nm": {
+            "hip_pitch": 0.313,
+            "knee": 0.006,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.385,
+            "knee": 0.007,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.385,
+          "feasible": false
+        },
+        {
+          "lean_deg": 60.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -110.4,
+            "knee": 56.2,
+            "ankle_pitch": -5.8
+          },
+          "torque_nm": {
+            "hip_pitch": 0.33,
+            "knee": 0.02,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.406,
+            "knee": 0.025,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.406,
+          "feasible": false
+        },
+        {
+          "lean_deg": 65.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -112.8,
+            "knee": 50.2,
+            "ankle_pitch": -2.4
+          },
+          "torque_nm": {
+            "hip_pitch": 0.344,
+            "knee": 0.046,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.424,
+            "knee": 0.057,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.424,
+          "feasible": false
+        },
+        {
+          "lean_deg": 70.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -114.7,
+            "knee": 43.6,
+            "ankle_pitch": 1.1
+          },
+          "torque_nm": {
+            "hip_pitch": 0.356,
+            "knee": 0.073,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.438,
+            "knee": 0.09,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.438,
+          "feasible": false
+        },
+        {
+          "lean_deg": 75.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -116.0,
+            "knee": 36.2,
+            "ankle_pitch": 4.7
+          },
+          "torque_nm": {
+            "hip_pitch": 0.365,
+            "knee": 0.101,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.449,
+            "knee": 0.124,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.449,
+          "feasible": false
+        },
+        {
+          "lean_deg": 80.0,
+          "converged": false,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -101.8,
+            "knee": -2.1,
+            "ankle_pitch": -155.2
+          },
+          "torque_nm": {
+            "hip_pitch": 0.371,
+            "knee": 0.222,
+            "ankle_pitch": 0.044
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.456,
+            "knee": 0.273,
+            "ankle_pitch": 0.054
+          },
+          "max_fraction_of_stall": 0.456,
+          "feasible": false
+        },
+        {
+          "lean_deg": 85.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -96.7,
+            "knee": -19.5,
+            "ankle_pitch": -328.8
+          },
+          "torque_nm": {
+            "hip_pitch": 0.375,
+            "knee": 0.293,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.461,
+            "knee": 0.361,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.461,
+          "feasible": false
+        },
+        {
+          "lean_deg": 90.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -110.4,
+            "knee": -2.0,
+            "ankle_pitch": 22.4
+          },
+          "torque_nm": {
+            "hip_pitch": 0.375,
+            "knee": 0.235,
+            "ankle_pitch": 0.067
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.461,
+            "knee": 0.289,
+            "ankle_pitch": 0.083
+          },
+          "max_fraction_of_stall": 0.461,
+          "feasible": false
+        }
+      ]
+    },
+    {
+      "pelvis_z_m": 0.18,
+      "any_feasible_pose": true,
+      "best_lean": {
+        "lean_deg": 25.0,
+        "converged": true,
+        "in_range": {
+          "hip_pitch": true,
+          "knee": true,
+          "ankle_pitch": true
+        },
+        "angles_deg": {
+          "hip_pitch": -86.1,
+          "knee": 95.4,
+          "ankle_pitch": -34.4
+        },
+        "torque_nm": {
+          "hip_pitch": 0.168,
+          "knee": 0.184,
+          "ankle_pitch": 0.065
+        },
+        "fraction_of_stall": {
+          "hip_pitch": 0.207,
+          "knee": 0.227,
+          "ankle_pitch": 0.08
+        },
+        "max_fraction_of_stall": 0.227,
+        "feasible": true
+      },
+      "best_max_fraction_of_stall": 0.227,
+      "within_80_percent": true,
+      "sweep": [
+        {
+          "lean_deg": 0.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -48.3,
+            "knee": 101.8,
+            "ankle_pitch": -53.5
+          },
+          "torque_nm": {
+            "hip_pitch": 0.011,
+            "knee": 0.29,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.013,
+            "knee": 0.356,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.356,
+          "feasible": false
+        },
+        {
+          "lean_deg": 5.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -56.7,
+            "knee": 101.7,
+            "ankle_pitch": -50.0
+          },
+          "torque_nm": {
+            "hip_pitch": 0.043,
+            "knee": 0.273,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.053,
+            "knee": 0.335,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.335,
+          "feasible": false
+        },
+        {
+          "lean_deg": 10.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -64.8,
+            "knee": 101.0,
+            "ankle_pitch": -46.2
+          },
+          "torque_nm": {
+            "hip_pitch": 0.076,
+            "knee": 0.253,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.093,
+            "knee": 0.312,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.312,
+          "feasible": false
+        },
+        {
+          "lean_deg": 15.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -72.4,
+            "knee": 99.7,
+            "ankle_pitch": -42.3
+          },
+          "torque_nm": {
+            "hip_pitch": 0.107,
+            "knee": 0.232,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.132,
+            "knee": 0.285,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.285,
+          "feasible": true
+        },
+        {
+          "lean_deg": 20.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -79.5,
+            "knee": 97.8,
+            "ankle_pitch": -38.3
+          },
+          "torque_nm": {
+            "hip_pitch": 0.138,
+            "knee": 0.209,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.17,
+            "knee": 0.257,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.257,
+          "feasible": true
+        },
+        {
+          "lean_deg": 25.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -86.1,
+            "knee": 95.4,
+            "ankle_pitch": -34.4
+          },
+          "torque_nm": {
+            "hip_pitch": 0.168,
+            "knee": 0.184,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.207,
+            "knee": 0.227,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.227,
+          "feasible": true
+        },
+        {
+          "lean_deg": 30.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -92.1,
+            "knee": 92.6,
+            "ankle_pitch": -30.5
+          },
+          "torque_nm": {
+            "hip_pitch": 0.197,
+            "knee": 0.159,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.242,
+            "knee": 0.196,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.242,
+          "feasible": true
+        },
+        {
+          "lean_deg": 35.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -97.6,
+            "knee": 89.4,
+            "ankle_pitch": -26.7
+          },
+          "torque_nm": {
+            "hip_pitch": 0.224,
+            "knee": 0.134,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.275,
+            "knee": 0.164,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.275,
+          "feasible": true
+        },
+        {
+          "lean_deg": 40.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -102.6,
+            "knee": 85.7,
+            "ankle_pitch": -23.1
+          },
+          "torque_nm": {
+            "hip_pitch": 0.249,
+            "knee": 0.108,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.307,
+            "knee": 0.133,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.307,
+          "feasible": false
+        },
+        {
+          "lean_deg": 45.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -107.2,
+            "knee": 81.8,
+            "ankle_pitch": -19.6
+          },
+          "torque_nm": {
+            "hip_pitch": 0.273,
+            "knee": 0.083,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.335,
+            "knee": 0.102,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.335,
+          "feasible": false
+        },
+        {
+          "lean_deg": 50.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -111.2,
+            "knee": 77.5,
+            "ankle_pitch": -16.3
+          },
+          "torque_nm": {
+            "hip_pitch": 0.294,
+            "knee": 0.059,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.362,
+            "knee": 0.072,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.362,
+          "feasible": false
+        },
+        {
+          "lean_deg": 55.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -114.9,
+            "knee": 73.0,
+            "ankle_pitch": -13.1
+          },
+          "torque_nm": {
+            "hip_pitch": 0.313,
+            "knee": 0.035,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.385,
+            "knee": 0.043,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.385,
+          "feasible": false
+        },
+        {
+          "lean_deg": 60.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -118.2,
+            "knee": 68.2,
+            "ankle_pitch": -10.0
+          },
+          "torque_nm": {
+            "hip_pitch": 0.33,
+            "knee": 0.012,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.406,
+            "knee": 0.015,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.406,
+          "feasible": false
+        },
+        {
+          "lean_deg": 65.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -121.1,
+            "knee": 63.2,
+            "ankle_pitch": -7.1
+          },
+          "torque_nm": {
+            "hip_pitch": 0.344,
+            "knee": 0.01,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.424,
+            "knee": 0.013,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.424,
+          "feasible": false
+        },
+        {
+          "lean_deg": 70.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -123.6,
+            "knee": 57.9,
+            "ankle_pitch": -4.3
+          },
+          "torque_nm": {
+            "hip_pitch": 0.356,
+            "knee": 0.032,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.438,
+            "knee": 0.039,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.438,
+          "feasible": false
+        },
+        {
+          "lean_deg": 75.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -125.8,
+            "knee": 52.4,
+            "ankle_pitch": -1.5
+          },
+          "torque_nm": {
+            "hip_pitch": 0.365,
+            "knee": 0.053,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.449,
+            "knee": 0.065,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.449,
+          "feasible": false
+        },
+        {
+          "lean_deg": 80.0,
+          "converged": false,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -102.6,
+            "knee": -2.2,
+            "ankle_pitch": -154.4
+          },
+          "torque_nm": {
+            "hip_pitch": 0.371,
+            "knee": 0.217,
+            "ankle_pitch": 0.032
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.456,
+            "knee": 0.267,
+            "ankle_pitch": 0.04
+          },
+          "max_fraction_of_stall": 0.456,
+          "feasible": false
+        },
+        {
+          "lean_deg": 85.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -85.1,
+            "knee": -44.5,
+            "ankle_pitch": -315.4
+          },
+          "torque_nm": {
+            "hip_pitch": 0.375,
+            "knee": 0.374,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.461,
+            "knee": 0.46,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.461,
+          "feasible": false
+        },
+        {
+          "lean_deg": 90.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -130.0,
+            "knee": 33.3,
+            "ankle_pitch": 6.7
+          },
+          "torque_nm": {
+            "hip_pitch": 0.375,
+            "knee": 0.116,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.461,
+            "knee": 0.143,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.461,
+          "feasible": false
+        }
+      ]
+    },
+    {
+      "pelvis_z_m": 0.17,
+      "any_feasible_pose": true,
+      "best_lean": {
+        "lean_deg": 30.0,
+        "converged": true,
+        "in_range": {
+          "hip_pitch": true,
+          "knee": true,
+          "ankle_pitch": true
+        },
+        "angles_deg": {
+          "hip_pitch": -98.1,
+          "knee": 101.4,
+          "ankle_pitch": -33.2
+        },
+        "torque_nm": {
+          "hip_pitch": 0.197,
+          "knee": 0.177,
+          "ankle_pitch": 0.065
+        },
+        "fraction_of_stall": {
+          "hip_pitch": 0.242,
+          "knee": 0.218,
+          "ankle_pitch": 0.08
+        },
+        "max_fraction_of_stall": 0.242,
+        "feasible": true
+      },
+      "best_max_fraction_of_stall": 0.242,
+      "within_80_percent": true,
+      "sweep": [
+        {
+          "lean_deg": 0.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -52.5,
+            "knee": 110.5,
+            "ankle_pitch": -57.9
+          },
+          "torque_nm": {
+            "hip_pitch": 0.011,
+            "knee": 0.309,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.013,
+            "knee": 0.38,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.38,
+          "feasible": false
+        },
+        {
+          "lean_deg": 5.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -61.4,
+            "knee": 110.4,
+            "ankle_pitch": -54.0
+          },
+          "torque_nm": {
+            "hip_pitch": 0.043,
+            "knee": 0.292,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.053,
+            "knee": 0.359,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.359,
+          "feasible": false
+        },
+        {
+          "lean_deg": 10.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -69.8,
+            "knee": 109.7,
+            "ankle_pitch": -49.9
+          },
+          "torque_nm": {
+            "hip_pitch": 0.076,
+            "knee": 0.272,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.093,
+            "knee": 0.335,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.335,
+          "feasible": false
+        },
+        {
+          "lean_deg": 15.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -77.7,
+            "knee": 108.3,
+            "ankle_pitch": -45.6
+          },
+          "torque_nm": {
+            "hip_pitch": 0.107,
+            "knee": 0.25,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.132,
+            "knee": 0.308,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.308,
+          "feasible": false
+        },
+        {
+          "lean_deg": 20.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -85.1,
+            "knee": 106.5,
+            "ankle_pitch": -41.4
+          },
+          "torque_nm": {
+            "hip_pitch": 0.138,
+            "knee": 0.227,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.17,
+            "knee": 0.279,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.279,
+          "feasible": true
+        },
+        {
+          "lean_deg": 25.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -91.9,
+            "knee": 104.2,
+            "ankle_pitch": -37.3
+          },
+          "torque_nm": {
+            "hip_pitch": 0.168,
+            "knee": 0.202,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.207,
+            "knee": 0.249,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.249,
+          "feasible": true
+        },
+        {
+          "lean_deg": 30.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -98.1,
+            "knee": 101.4,
+            "ankle_pitch": -33.2
+          },
+          "torque_nm": {
+            "hip_pitch": 0.197,
+            "knee": 0.177,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.242,
+            "knee": 0.218,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.242,
+          "feasible": true
+        },
+        {
+          "lean_deg": 35.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -103.8,
+            "knee": 98.2,
+            "ankle_pitch": -29.4
+          },
+          "torque_nm": {
+            "hip_pitch": 0.224,
+            "knee": 0.152,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.275,
+            "knee": 0.187,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.275,
+          "feasible": false
+        },
+        {
+          "lean_deg": 40.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -109.0,
+            "knee": 94.8,
+            "ankle_pitch": -25.7
+          },
+          "torque_nm": {
+            "hip_pitch": 0.249,
+            "knee": 0.127,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.307,
+            "knee": 0.156,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.307,
+          "feasible": false
+        },
+        {
+          "lean_deg": 45.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -113.7,
+            "knee": 91.0,
+            "ankle_pitch": -22.3
+          },
+          "torque_nm": {
+            "hip_pitch": 0.273,
+            "knee": 0.103,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.335,
+            "knee": 0.126,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.335,
+          "feasible": false
+        },
+        {
+          "lean_deg": 50.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -118.0,
+            "knee": 87.0,
+            "ankle_pitch": -19.1
+          },
+          "torque_nm": {
+            "hip_pitch": 0.294,
+            "knee": 0.079,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.362,
+            "knee": 0.097,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.362,
+          "feasible": false
+        },
+        {
+          "lean_deg": 55.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -121.8,
+            "knee": 82.8,
+            "ankle_pitch": -16.0
+          },
+          "torque_nm": {
+            "hip_pitch": 0.313,
+            "knee": 0.057,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.385,
+            "knee": 0.07,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.385,
+          "feasible": false
+        },
+        {
+          "lean_deg": 60.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -125.3,
+            "knee": 78.5,
+            "ankle_pitch": -13.2
+          },
+          "torque_nm": {
+            "hip_pitch": 0.33,
+            "knee": 0.036,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.406,
+            "knee": 0.044,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.406,
+          "feasible": false
+        },
+        {
+          "lean_deg": 65.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -128.5,
+            "knee": 74.0,
+            "ankle_pitch": -10.5
+          },
+          "torque_nm": {
+            "hip_pitch": 0.344,
+            "knee": 0.016,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.424,
+            "knee": 0.02,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.424,
+          "feasible": false
+        },
+        {
+          "lean_deg": 70.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -131.4,
+            "knee": 69.4,
+            "ankle_pitch": -8.1
+          },
+          "torque_nm": {
+            "hip_pitch": 0.356,
+            "knee": 0.003,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.438,
+            "knee": 0.003,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.438,
+          "feasible": false
+        },
+        {
+          "lean_deg": 75.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -133.9,
+            "knee": 64.8,
+            "ankle_pitch": -5.8
+          },
+          "torque_nm": {
+            "hip_pitch": 0.365,
+            "knee": 0.02,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.449,
+            "knee": 0.025,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.449,
+          "feasible": false
+        },
+        {
+          "lean_deg": 80.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -136.3,
+            "knee": 60.0,
+            "ankle_pitch": -3.7
+          },
+          "torque_nm": {
+            "hip_pitch": 0.371,
+            "knee": 0.036,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.456,
+            "knee": 0.044,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.456,
+          "feasible": false
+        },
+        {
+          "lean_deg": 85.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -138.4,
+            "knee": 55.2,
+            "ankle_pitch": -1.8
+          },
+          "torque_nm": {
+            "hip_pitch": 0.375,
+            "knee": 0.051,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.461,
+            "knee": 0.063,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.461,
+          "feasible": false
+        },
+        {
+          "lean_deg": 90.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -140.3,
+            "knee": 50.3,
+            "ankle_pitch": 0.1
+          },
+          "torque_nm": {
+            "hip_pitch": 0.375,
+            "knee": 0.065,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.461,
+            "knee": 0.08,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.461,
+          "feasible": false
+        }
+      ]
+    },
+    {
+      "pelvis_z_m": 0.16,
+      "any_feasible_pose": true,
+      "best_lean": {
+        "lean_deg": 25.0,
+        "converged": true,
+        "in_range": {
+          "hip_pitch": true,
+          "knee": true,
+          "ankle_pitch": true
+        },
+        "angles_deg": {
+          "hip_pitch": -97.7,
+          "knee": 112.3,
+          "ankle_pitch": -39.6
+        },
+        "torque_nm": {
+          "hip_pitch": 0.168,
+          "knee": 0.216,
+          "ankle_pitch": 0.065
+        },
+        "fraction_of_stall": {
+          "hip_pitch": 0.207,
+          "knee": 0.266,
+          "ankle_pitch": 0.08
+        },
+        "max_fraction_of_stall": 0.266,
+        "feasible": true
+      },
+      "best_max_fraction_of_stall": 0.266,
+      "within_80_percent": true,
+      "sweep": [
+        {
+          "lean_deg": 0.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -56.5,
+            "knee": 118.7,
+            "ankle_pitch": -62.2
+          },
+          "torque_nm": {
+            "hip_pitch": 0.011,
+            "knee": 0.325,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.013,
+            "knee": 0.4,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.4,
+          "feasible": false
+        },
+        {
+          "lean_deg": 5.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -65.8,
+            "knee": 118.6,
+            "ankle_pitch": -57.8
+          },
+          "torque_nm": {
+            "hip_pitch": 0.043,
+            "knee": 0.308,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.053,
+            "knee": 0.379,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.379,
+          "feasible": false
+        },
+        {
+          "lean_deg": 10.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -74.7,
+            "knee": 117.9,
+            "ankle_pitch": -53.2
+          },
+          "torque_nm": {
+            "hip_pitch": 0.076,
+            "knee": 0.288,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.093,
+            "knee": 0.355,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.355,
+          "feasible": false
+        },
+        {
+          "lean_deg": 15.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -82.9,
+            "knee": 116.5,
+            "ankle_pitch": -48.6
+          },
+          "torque_nm": {
+            "hip_pitch": 0.107,
+            "knee": 0.266,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.132,
+            "knee": 0.327,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.327,
+          "feasible": false
+        },
+        {
+          "lean_deg": 20.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -90.6,
+            "knee": 114.7,
+            "ankle_pitch": -44.0
+          },
+          "torque_nm": {
+            "hip_pitch": 0.138,
+            "knee": 0.242,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.17,
+            "knee": 0.297,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.297,
+          "feasible": true
+        },
+        {
+          "lean_deg": 25.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -97.7,
+            "knee": 112.3,
+            "ankle_pitch": -39.6
+          },
+          "torque_nm": {
+            "hip_pitch": 0.168,
+            "knee": 0.216,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.207,
+            "knee": 0.266,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.266,
+          "feasible": true
+        },
+        {
+          "lean_deg": 30.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -104.2,
+            "knee": 109.6,
+            "ankle_pitch": -35.4
+          },
+          "torque_nm": {
+            "hip_pitch": 0.197,
+            "knee": 0.191,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.242,
+            "knee": 0.235,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.242,
+          "feasible": false
+        },
+        {
+          "lean_deg": 35.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -110.0,
+            "knee": 106.5,
+            "ankle_pitch": -31.4
+          },
+          "torque_nm": {
+            "hip_pitch": 0.224,
+            "knee": 0.165,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.275,
+            "knee": 0.203,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.275,
+          "feasible": false
+        },
+        {
+          "lean_deg": 40.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -115.3,
+            "knee": 103.1,
+            "ankle_pitch": -27.7
+          },
+          "torque_nm": {
+            "hip_pitch": 0.249,
+            "knee": 0.14,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.307,
+            "knee": 0.173,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.307,
+          "feasible": false
+        },
+        {
+          "lean_deg": 45.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -120.2,
+            "knee": 99.4,
+            "ankle_pitch": -24.3
+          },
+          "torque_nm": {
+            "hip_pitch": 0.273,
+            "knee": 0.117,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.335,
+            "knee": 0.143,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.335,
+          "feasible": false
+        },
+        {
+          "lean_deg": 50.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -124.5,
+            "knee": 95.6,
+            "ankle_pitch": -21.1
+          },
+          "torque_nm": {
+            "hip_pitch": 0.294,
+            "knee": 0.094,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.362,
+            "knee": 0.116,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.362,
+          "feasible": false
+        },
+        {
+          "lean_deg": 55.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -128.5,
+            "knee": 91.7,
+            "ankle_pitch": -18.2
+          },
+          "torque_nm": {
+            "hip_pitch": 0.313,
+            "knee": 0.073,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.385,
+            "knee": 0.09,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.385,
+          "feasible": false
+        },
+        {
+          "lean_deg": 60.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -132.1,
+            "knee": 87.6,
+            "ankle_pitch": -15.5
+          },
+          "torque_nm": {
+            "hip_pitch": 0.33,
+            "knee": 0.053,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.406,
+            "knee": 0.065,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.406,
+          "feasible": false
+        },
+        {
+          "lean_deg": 65.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -135.4,
+            "knee": 83.5,
+            "ankle_pitch": -13.1
+          },
+          "torque_nm": {
+            "hip_pitch": 0.344,
+            "knee": 0.035,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.424,
+            "knee": 0.043,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.424,
+          "feasible": false
+        },
+        {
+          "lean_deg": 70.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -138.5,
+            "knee": 79.4,
+            "ankle_pitch": -10.9
+          },
+          "torque_nm": {
+            "hip_pitch": 0.356,
+            "knee": 0.019,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.438,
+            "knee": 0.023,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.438,
+          "feasible": false
+        },
+        {
+          "lean_deg": 75.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -141.3,
+            "knee": 75.2,
+            "ankle_pitch": -8.9
+          },
+          "torque_nm": {
+            "hip_pitch": 0.365,
+            "knee": 0.004,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.449,
+            "knee": 0.005,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.449,
+          "feasible": false
+        },
+        {
+          "lean_deg": 80.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -143.9,
+            "knee": 71.1,
+            "ankle_pitch": -7.2
+          },
+          "torque_nm": {
+            "hip_pitch": 0.371,
+            "knee": 0.01,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.456,
+            "knee": 0.012,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.456,
+          "feasible": false
+        },
+        {
+          "lean_deg": 85.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -146.3,
+            "knee": 67.0,
+            "ankle_pitch": -5.7
+          },
+          "torque_nm": {
+            "hip_pitch": 0.375,
+            "knee": 0.021,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.461,
+            "knee": 0.026,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.461,
+          "feasible": false
+        },
+        {
+          "lean_deg": 90.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -148.6,
+            "knee": 63.0,
+            "ankle_pitch": -4.4
+          },
+          "torque_nm": {
+            "hip_pitch": 0.375,
+            "knee": 0.031,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.461,
+            "knee": 0.038,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.461,
+          "feasible": false
+        }
+      ]
+    },
+    {
+      "pelvis_z_m": 0.15,
+      "any_feasible_pose": false,
+      "best_lean": null,
+      "best_max_fraction_of_stall": null,
+      "within_80_percent": false,
+      "sweep": [
+        {
+          "lean_deg": 0.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -60.3,
+            "knee": 126.7,
+            "ankle_pitch": -66.4
+          },
+          "torque_nm": {
+            "hip_pitch": 0.011,
+            "knee": 0.339,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.013,
+            "knee": 0.417,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.417,
+          "feasible": false
+        },
+        {
+          "lean_deg": 5.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -70.2,
+            "knee": 126.5,
+            "ankle_pitch": -61.4
+          },
+          "torque_nm": {
+            "hip_pitch": 0.043,
+            "knee": 0.322,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.053,
+            "knee": 0.396,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.396,
+          "feasible": false
+        },
+        {
+          "lean_deg": 10.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -79.5,
+            "knee": 125.7,
+            "ankle_pitch": -56.2
+          },
+          "torque_nm": {
+            "hip_pitch": 0.076,
+            "knee": 0.302,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.093,
+            "knee": 0.371,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.371,
+          "feasible": false
+        },
+        {
+          "lean_deg": 15.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -88.3,
+            "knee": 124.4,
+            "ankle_pitch": -51.1
+          },
+          "torque_nm": {
+            "hip_pitch": 0.107,
+            "knee": 0.278,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.132,
+            "knee": 0.342,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.342,
+          "feasible": false
+        },
+        {
+          "lean_deg": 20.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": true,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -96.3,
+            "knee": 122.4,
+            "ankle_pitch": -46.1
+          },
+          "torque_nm": {
+            "hip_pitch": 0.138,
+            "knee": 0.253,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.17,
+            "knee": 0.311,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.311,
+          "feasible": false
+        },
+        {
+          "lean_deg": 25.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -103.7,
+            "knee": 120.1,
+            "ankle_pitch": -41.4
+          },
+          "torque_nm": {
+            "hip_pitch": 0.168,
+            "knee": 0.227,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.207,
+            "knee": 0.279,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.279,
+          "feasible": false
+        },
+        {
+          "lean_deg": 30.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -110.3,
+            "knee": 117.3,
+            "ankle_pitch": -37.0
+          },
+          "torque_nm": {
+            "hip_pitch": 0.197,
+            "knee": 0.2,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.242,
+            "knee": 0.246,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.246,
+          "feasible": false
+        },
+        {
+          "lean_deg": 35.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -116.3,
+            "knee": 114.2,
+            "ankle_pitch": -32.8
+          },
+          "torque_nm": {
+            "hip_pitch": 0.224,
+            "knee": 0.174,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.275,
+            "knee": 0.214,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.275,
+          "feasible": false
+        },
+        {
+          "lean_deg": 40.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -121.7,
+            "knee": 110.8,
+            "ankle_pitch": -29.1
+          },
+          "torque_nm": {
+            "hip_pitch": 0.249,
+            "knee": 0.149,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.307,
+            "knee": 0.184,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.307,
+          "feasible": false
+        },
+        {
+          "lean_deg": 45.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -126.6,
+            "knee": 107.3,
+            "ankle_pitch": -25.6
+          },
+          "torque_nm": {
+            "hip_pitch": 0.273,
+            "knee": 0.126,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.335,
+            "knee": 0.155,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.335,
+          "feasible": false
+        },
+        {
+          "lean_deg": 50.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -131.1,
+            "knee": 103.6,
+            "ankle_pitch": -22.5
+          },
+          "torque_nm": {
+            "hip_pitch": 0.294,
+            "knee": 0.104,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.362,
+            "knee": 0.128,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.362,
+          "feasible": false
+        },
+        {
+          "lean_deg": 55.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -135.1,
+            "knee": 99.8,
+            "ankle_pitch": -19.7
+          },
+          "torque_nm": {
+            "hip_pitch": 0.313,
+            "knee": 0.084,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.385,
+            "knee": 0.103,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.385,
+          "feasible": false
+        },
+        {
+          "lean_deg": 60.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -138.8,
+            "knee": 95.9,
+            "ankle_pitch": -17.1
+          },
+          "torque_nm": {
+            "hip_pitch": 0.33,
+            "knee": 0.065,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.406,
+            "knee": 0.08,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.406,
+          "feasible": false
+        },
+        {
+          "lean_deg": 65.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -142.2,
+            "knee": 92.0,
+            "ankle_pitch": -14.9
+          },
+          "torque_nm": {
+            "hip_pitch": 0.344,
+            "knee": 0.048,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.424,
+            "knee": 0.06,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.424,
+          "feasible": false
+        },
+        {
+          "lean_deg": 70.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -145.3,
+            "knee": 88.2,
+            "ankle_pitch": -12.9
+          },
+          "torque_nm": {
+            "hip_pitch": 0.356,
+            "knee": 0.034,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.438,
+            "knee": 0.041,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.438,
+          "feasible": false
+        },
+        {
+          "lean_deg": 75.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -148.2,
+            "knee": 84.4,
+            "ankle_pitch": -11.2
+          },
+          "torque_nm": {
+            "hip_pitch": 0.365,
+            "knee": 0.021,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.449,
+            "knee": 0.025,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.449,
+          "feasible": false
+        },
+        {
+          "lean_deg": 80.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -151.0,
+            "knee": 80.7,
+            "ankle_pitch": -9.7
+          },
+          "torque_nm": {
+            "hip_pitch": 0.371,
+            "knee": 0.01,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.456,
+            "knee": 0.012,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.456,
+          "feasible": false
+        },
+        {
+          "lean_deg": 85.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -153.6,
+            "knee": 77.1,
+            "ankle_pitch": -8.5
+          },
+          "torque_nm": {
+            "hip_pitch": 0.375,
+            "knee": 0.0,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.461,
+            "knee": 0.001,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.461,
+          "feasible": false
+        },
+        {
+          "lean_deg": 90.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -156.0,
+            "knee": 73.6,
+            "ankle_pitch": -7.5
+          },
+          "torque_nm": {
+            "hip_pitch": 0.375,
+            "knee": 0.007,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.461,
+            "knee": 0.009,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.461,
+          "feasible": false
+        }
+      ]
+    },
+    {
+      "pelvis_z_m": 0.1,
+      "any_feasible_pose": false,
+      "best_lean": null,
+      "best_max_fraction_of_stall": null,
+      "within_80_percent": false,
+      "sweep": [
+        {
+          "lean_deg": 0.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -73.7,
+            "knee": 163.2,
+            "ankle_pitch": -89.5
+          },
+          "torque_nm": {
+            "hip_pitch": 0.011,
+            "knee": 0.376,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.013,
+            "knee": 0.462,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.462,
+          "feasible": false
+        },
+        {
+          "lean_deg": 5.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -93.7,
+            "knee": 162.9,
+            "ankle_pitch": -74.3
+          },
+          "torque_nm": {
+            "hip_pitch": 0.043,
+            "knee": 0.359,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.053,
+            "knee": 0.442,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.442,
+          "feasible": false
+        },
+        {
+          "lean_deg": 10.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -110.6,
+            "knee": 161.5,
+            "ankle_pitch": -60.9
+          },
+          "torque_nm": {
+            "hip_pitch": 0.076,
+            "knee": 0.32,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.093,
+            "knee": 0.394,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.394,
+          "feasible": false
+        },
+        {
+          "lean_deg": 15.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -124.1,
+            "knee": 159.2,
+            "ankle_pitch": -50.1
+          },
+          "torque_nm": {
+            "hip_pitch": 0.107,
+            "knee": 0.273,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.132,
+            "knee": 0.336,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.336,
+          "feasible": false
+        },
+        {
+          "lean_deg": 20.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -134.9,
+            "knee": 156.4,
+            "ankle_pitch": -41.5
+          },
+          "torque_nm": {
+            "hip_pitch": 0.138,
+            "knee": 0.227,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.17,
+            "knee": 0.28,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.28,
+          "feasible": false
+        },
+        {
+          "lean_deg": 25.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -143.5,
+            "knee": 153.2,
+            "ankle_pitch": -34.7
+          },
+          "torque_nm": {
+            "hip_pitch": 0.168,
+            "knee": 0.186,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.207,
+            "knee": 0.229,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.229,
+          "feasible": false
+        },
+        {
+          "lean_deg": 30.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -150.4,
+            "knee": 149.7,
+            "ankle_pitch": -29.3
+          },
+          "torque_nm": {
+            "hip_pitch": 0.197,
+            "knee": 0.151,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.242,
+            "knee": 0.186,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.242,
+          "feasible": false
+        },
+        {
+          "lean_deg": 35.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -156.2,
+            "knee": 146.1,
+            "ankle_pitch": -24.9
+          },
+          "torque_nm": {
+            "hip_pitch": 0.224,
+            "knee": 0.121,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.275,
+            "knee": 0.149,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.275,
+          "feasible": false
+        },
+        {
+          "lean_deg": 40.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -161.0,
+            "knee": 142.4,
+            "ankle_pitch": -21.4
+          },
+          "torque_nm": {
+            "hip_pitch": 0.249,
+            "knee": 0.096,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.307,
+            "knee": 0.119,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.307,
+          "feasible": false
+        },
+        {
+          "lean_deg": 45.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -165.2,
+            "knee": 138.8,
+            "ankle_pitch": -18.6
+          },
+          "torque_nm": {
+            "hip_pitch": 0.273,
+            "knee": 0.076,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.335,
+            "knee": 0.093,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.335,
+          "feasible": false
+        },
+        {
+          "lean_deg": 50.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -168.9,
+            "knee": 135.2,
+            "ankle_pitch": -16.3
+          },
+          "torque_nm": {
+            "hip_pitch": 0.294,
+            "knee": 0.059,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.362,
+            "knee": 0.072,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.362,
+          "feasible": false
+        },
+        {
+          "lean_deg": 55.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -172.2,
+            "knee": 131.6,
+            "ankle_pitch": -14.4
+          },
+          "torque_nm": {
+            "hip_pitch": 0.313,
+            "knee": 0.045,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.385,
+            "knee": 0.056,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.385,
+          "feasible": false
+        },
+        {
+          "lean_deg": 60.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -175.2,
+            "knee": 128.3,
+            "ankle_pitch": -13.0
+          },
+          "torque_nm": {
+            "hip_pitch": 0.33,
+            "knee": 0.035,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.406,
+            "knee": 0.042,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.406,
+          "feasible": false
+        },
+        {
+          "lean_deg": 65.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -178.1,
+            "knee": 125.0,
+            "ankle_pitch": -11.9
+          },
+          "torque_nm": {
+            "hip_pitch": 0.344,
+            "knee": 0.026,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.424,
+            "knee": 0.032,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.424,
+          "feasible": false
+        },
+        {
+          "lean_deg": 70.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -180.8,
+            "knee": 122.0,
+            "ankle_pitch": -11.2
+          },
+          "torque_nm": {
+            "hip_pitch": 0.356,
+            "knee": 0.021,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.438,
+            "knee": 0.026,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.438,
+          "feasible": false
+        },
+        {
+          "lean_deg": 75.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": true,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -183.4,
+            "knee": 119.1,
+            "ankle_pitch": -10.8
+          },
+          "torque_nm": {
+            "hip_pitch": 0.365,
+            "knee": 0.018,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.449,
+            "knee": 0.022,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.449,
+          "feasible": false
+        },
+        {
+          "lean_deg": 80.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -89.2,
+            "knee": 311.7,
+            "ankle_pitch": -122.4
+          },
+          "torque_nm": {
+            "hip_pitch": 0.371,
+            "knee": 0.307,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.456,
+            "knee": 0.377,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.456,
+          "feasible": false
+        },
+        {
+          "lean_deg": 85.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -97.0,
+            "knee": 318.0,
+            "ankle_pitch": -126.0
+          },
+          "torque_nm": {
+            "hip_pitch": 0.375,
+            "knee": 0.291,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.461,
+            "knee": 0.358,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.461,
+          "feasible": false
+        },
+        {
+          "lean_deg": 90.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -72.0,
+            "knee": 242.2,
+            "ankle_pitch": -260.2
+          },
+          "torque_nm": {
+            "hip_pitch": 0.375,
+            "knee": 0.5,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.461,
+            "knee": 0.615,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.615,
+          "feasible": false
+        }
+      ]
+    },
+    {
+      "pelvis_z_m": 0.07,
+      "any_feasible_pose": false,
+      "best_lean": null,
+      "best_max_fraction_of_stall": null,
+      "within_80_percent": false,
+      "sweep": [
+        {
+          "lean_deg": 0.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -138.8,
+            "knee": 185.3,
+            "ankle_pitch": -46.5
+          },
+          "torque_nm": {
+            "hip_pitch": 0.011,
+            "knee": 0.255,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.013,
+            "knee": 0.314,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.314,
+          "feasible": false
+        },
+        {
+          "lean_deg": 5.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -74.7,
+            "knee": 184.7,
+            "ankle_pitch": -115.0
+          },
+          "torque_nm": {
+            "hip_pitch": 0.043,
+            "knee": 0.334,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.053,
+            "knee": 0.411,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.411,
+          "feasible": false
+        },
+        {
+          "lean_deg": 10.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -54.6,
+            "knee": 186.4,
+            "ankle_pitch": -141.9
+          },
+          "torque_nm": {
+            "hip_pitch": 0.076,
+            "knee": 0.207,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.093,
+            "knee": 0.254,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.254,
+          "feasible": false
+        },
+        {
+          "lean_deg": 15.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -45.0,
+            "knee": 188.8,
+            "ankle_pitch": -158.8
+          },
+          "torque_nm": {
+            "hip_pitch": 0.107,
+            "knee": 0.094,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.132,
+            "knee": 0.116,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.132,
+          "feasible": false
+        },
+        {
+          "lean_deg": 20.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": 153.3,
+            "knee": 170.9,
+            "ankle_pitch": -344.2
+          },
+          "torque_nm": {
+            "hip_pitch": 0.138,
+            "knee": 0.185,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.17,
+            "knee": 0.227,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.227,
+          "feasible": false
+        },
+        {
+          "lean_deg": 25.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -40.9,
+            "knee": 194.9,
+            "ankle_pitch": -179.1
+          },
+          "torque_nm": {
+            "hip_pitch": 0.168,
+            "knee": 0.058,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.207,
+            "knee": 0.072,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.207,
+          "feasible": false
+        },
+        {
+          "lean_deg": 30.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -42.4,
+            "knee": 198.3,
+            "ankle_pitch": -185.9
+          },
+          "torque_nm": {
+            "hip_pitch": 0.197,
+            "knee": 0.111,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.242,
+            "knee": 0.136,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.242,
+          "feasible": false
+        },
+        {
+          "lean_deg": 35.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -45.0,
+            "knee": 201.6,
+            "ankle_pitch": -191.6
+          },
+          "torque_nm": {
+            "hip_pitch": 0.224,
+            "knee": 0.154,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.275,
+            "knee": 0.19,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.275,
+          "feasible": false
+        },
+        {
+          "lean_deg": 40.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -199.9,
+            "knee": 154.0,
+            "ankle_pitch": 6.0
+          },
+          "torque_nm": {
+            "hip_pitch": 0.249,
+            "knee": 0.111,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.307,
+            "knee": 0.136,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.307,
+          "feasible": false
+        },
+        {
+          "lean_deg": 45.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -200.7,
+            "knee": 150.3,
+            "ankle_pitch": 5.4
+          },
+          "torque_nm": {
+            "hip_pitch": 0.273,
+            "knee": 0.106,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.335,
+            "knee": 0.131,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.335,
+          "feasible": false
+        },
+        {
+          "lean_deg": 50.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -201.7,
+            "knee": 146.7,
+            "ankle_pitch": 4.9
+          },
+          "torque_nm": {
+            "hip_pitch": 0.294,
+            "knee": 0.103,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.362,
+            "knee": 0.126,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.362,
+          "feasible": false
+        },
+        {
+          "lean_deg": 55.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -202.9,
+            "knee": 143.5,
+            "ankle_pitch": 4.4
+          },
+          "torque_nm": {
+            "hip_pitch": 0.313,
+            "knee": 0.099,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.385,
+            "knee": 0.121,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.385,
+          "feasible": false
+        },
+        {
+          "lean_deg": 60.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -204.2,
+            "knee": 140.4,
+            "ankle_pitch": 3.8
+          },
+          "torque_nm": {
+            "hip_pitch": 0.33,
+            "knee": 0.094,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.406,
+            "knee": 0.116,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.406,
+          "feasible": false
+        },
+        {
+          "lean_deg": 65.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": false,
+            "knee": false,
+            "ankle_pitch": true
+          },
+          "angles_deg": {
+            "hip_pitch": -205.7,
+            "knee": 137.6,
+            "ankle_pitch": 3.1
+          },
+          "torque_nm": {
+            "hip_pitch": 0.344,
+            "knee": 0.089,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.424,
+            "knee": 0.109,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.424,
+          "feasible": false
+        },
+        {
+          "lean_deg": 70.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -70.4,
+            "knee": 221.2,
+            "ankle_pitch": -220.9
+          },
+          "torque_nm": {
+            "hip_pitch": 0.356,
+            "knee": 0.354,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.438,
+            "knee": 0.435,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.438,
+          "feasible": false
+        },
+        {
+          "lean_deg": 75.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -73.8,
+            "knee": 223.2,
+            "ankle_pitch": -224.4
+          },
+          "torque_nm": {
+            "hip_pitch": 0.365,
+            "knee": 0.374,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.449,
+            "knee": 0.46,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.46,
+          "feasible": false
+        },
+        {
+          "lean_deg": 80.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -77.0,
+            "knee": 224.9,
+            "ankle_pitch": -227.9
+          },
+          "torque_nm": {
+            "hip_pitch": 0.371,
+            "knee": 0.393,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.456,
+            "knee": 0.483,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.483,
+          "feasible": false
+        },
+        {
+          "lean_deg": 85.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -80.1,
+            "knee": 226.4,
+            "ankle_pitch": -231.3
+          },
+          "torque_nm": {
+            "hip_pitch": 0.375,
+            "knee": 0.41,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.461,
+            "knee": 0.504,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.504,
+          "feasible": false
+        },
+        {
+          "lean_deg": 90.0,
+          "converged": true,
+          "in_range": {
+            "hip_pitch": true,
+            "knee": false,
+            "ankle_pitch": false
+          },
+          "angles_deg": {
+            "hip_pitch": -82.9,
+            "knee": 227.6,
+            "ankle_pitch": -234.7
+          },
+          "torque_nm": {
+            "hip_pitch": 0.375,
+            "knee": 0.425,
+            "ankle_pitch": 0.065
+          },
+          "fraction_of_stall": {
+            "hip_pitch": 0.461,
+            "knee": 0.523,
+            "ankle_pitch": 0.08
+          },
+          "max_fraction_of_stall": 0.523,
+          "feasible": false
+        }
+      ]
+    }
+  ]
+}

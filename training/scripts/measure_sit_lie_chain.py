@@ -22,12 +22,33 @@ import torch
 
 from danny_training.evaluation import RESULTS, eval_env_cfg, load_policy, load_policy_on
 from danny_training import crouch, getup, lie_measure, sit
+from danny_training.servo_speed import joint_speed_report
 from danny_training.actuator import FrictionDRBamActuator, stall_torque_nm
 
 SIT_TASK, LIE_TASK = "Mjlab-SitDown-Danny", "Mjlab-LieDown-Danny"
 WINDOW_S, SATURATED = 3.0, 0.9
 FALL_TILT_RAD = math.radians(70.0)
 SOFT_DESCENT_M_S = 0.6
+
+
+def switch_analysis(sit_rate: torch.Tensor, lie_rate: torch.Tensor, dt: float) -> dict:
+  """Giro de la pelvis (valor absoluto, mediana de los robots) por paso alrededor del cambio de política, por eje, y cuándo ocurre el pico de cabeceo."""
+  before, after = sit_rate[:, -5:].abs(), lie_rate[:, :20].abs()
+  axes = lie_measure.AXES
+  trace = lambda x, a: [round(float(x[:, t, a].median()), 3) for t in range(x.shape[1])]
+  peak = lie_rate.abs()
+  out = {
+    "step_dt_s": dt,
+    "last_5_steps_of_sit_median_abs_rate_rad_s": {axes[a]: trace(before, a) for a in range(3)},
+    "first_20_steps_of_lie_median_abs_rate_rad_s": {axes[a]: trace(after, a) for a in range(3)},
+    "lie_peak_axis_fraction_of_robots": {axes[a]: round(float((peak.amax(dim=1).argmax(dim=1) == a).float().mean()), 4) for a in range(3)},
+    "lie_peak_step_by_axis_median": {axes[a]: int(peak[:, :, a].argmax(dim=1).float().median()) for a in range(3)},
+    "lie_peak_time_after_switch_s_by_axis_median": {axes[a]: round(float(peak[:, :, a].argmax(dim=1).float().median() * dt), 2) for a in range(3)},
+    "sit_peak_in_last_second_any_axis": lie_measure.quantiles(sit_rate[:, -int(1.0 / dt):].abs().amax(dim=(1, 2))),
+    "lie_peak_pitch_rad_s": lie_measure.quantiles(peak[:, :, 1].amax(dim=1)),
+    "lie_peak_pitch_after_first_0.5s_rad_s": lie_measure.quantiles(peak[:, int(0.5 / dt):, 1].amax(dim=1)),
+  }
+  return out
 
 
 def main() -> None:
@@ -63,11 +84,15 @@ def main() -> None:
   run = torch.zeros(n, dtype=torch.int32, device=device)
   speed_ring = torch.zeros(n, window, device=device)
   success_step = torch.full((n,), -1, dtype=torch.int32, device=device)
+  max_dq_sit = torch.zeros(n, len(joint_names), device=device)
+  sit_pelvis_rate = torch.zeros(n, sit_steps, 3, device=device)
   obs = env.get_observations()
   with torch.inference_mode():
     for step in range(sit_steps):
       obs, _, _, _ = env.step(sit_policy(obs))
       data = robot.data
+      max_dq_sit = torch.maximum(max_dq_sit, data.joint_vel.abs())
+      sit_pelvis_rate[:, step] = data.root_link_ang_vel_b
       z = data.site_pos_w[:, pelvis_id, 2]
       tilt = torch.acos((-data.projected_gravity_b[:, 2]).clamp(-1.0, 1.0))
       speed = data.root_com_lin_vel_b.norm(dim=1)
@@ -117,11 +142,13 @@ def main() -> None:
   lie_steps = int(args.lie_seconds / dt)
   rec = lie_measure.LieRecorder(env, lie_steps, stall)
   start_pelvis_z = robot.data.site_pos_w[:, pelvis_id, 2].clone()
+  max_dq_lie = torch.zeros(n, len(joint_names), device=device)
   obs = env.get_observations()
   with torch.inference_mode():
     for step in range(lie_steps):
       obs, _, _, _ = env.step(lie_policy(obs))
       rec.record(step)
+      max_dq_lie = torch.maximum(max_dq_lie, robot.data.joint_vel.abs())
   lie = lie_measure.lie_report(rec, dt)
   out = {
     "sit_checkpoint": str(args.sit_checkpoint),
@@ -137,6 +164,11 @@ def main() -> None:
       "pelvis_z_at_switch_m": {"median": round(float(start_pelvis_z.median()), 4), "max": round(float(start_pelvis_z.max()), 4)},
     },
     "lie_part": lie,
+    "switch_analysis": switch_analysis(sit_pelvis_rate, rec.pelvis_rate, dt),
+    "joint_speed": {
+      "sit_part": joint_speed_report(max_dq_sit, joint_names, args.vin, robot),
+      "lie_part": joint_speed_report(max_dq_lie, joint_names, args.vin, robot),
+    },
   }
   path = RESULTS / f"training_cadena_sentarse_tumbarse_{args.name}.json"
   path.write_text(json.dumps(out, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")

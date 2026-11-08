@@ -1,0 +1,11 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-08_16-48-49_fase5_tumbarse_desde_sentado\\model_11497.pt",
+  "onnx": "danny_fase5_tumbarse_desde_sentado_2026-11-08.onnx",
+  "observation_size": 78,
+  "action_size": 23,
+  "steps": 500,
+  "num_envs": 16,
+  "max_abs_action_difference": 1.3113021850585938e-06,
+  "max_allowed": 0.0001,
+  "passes": true
+}

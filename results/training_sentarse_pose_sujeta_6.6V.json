@@ -1,0 +1,70 @@
+{
+  "what": "objetivo de las articulaciones fijo en la pose sentada inicial (sin política), mismo inicio que tumbarse",
+  "vin_v": 6.6,
+  "num_envs": 4096,
+  "seconds": 3.0,
+  "start": "sit_end",
+  "pelvis_rate_peak_rad_s": {
+    "any_axis": {
+      "median": 2.106,
+      "p95": 2.846,
+      "max": 3.547
+    },
+    "balanceo": {
+      "median": 0.305,
+      "p95": 0.629,
+      "max": 1.595
+    },
+    "cabeceo": {
+      "median": 2.106,
+      "p95": 2.846,
+      "max": 3.547
+    },
+    "guinada": {
+      "median": 0.584,
+      "p95": 0.922,
+      "max": 1.21
+    }
+  },
+  "pelvis_pitch_peak_time_s_median": 0.02,
+  "pelvis_rate_peak_by_window_any_axis": {
+    "first_100ms": {
+      "median": 2.106,
+      "p95": 2.846,
+      "max": 3.547
+    },
+    "first_500ms": {
+      "median": 2.106,
+      "p95": 2.846,
+      "max": 3.547
+    },
+    "first_1000ms": {
+      "median": 2.106,
+      "p95": 2.846,
+      "max": 3.547
+    }
+  },
+  "fraction_of_robots_with_every_axis_at_most_3_rad_s": 0.9768,
+  "median_abs_pitch_rate_by_step_rad_s": [
+    1.308,
+    1.974,
+    1.773,
+    0.284,
+    0.125,
+    0.192,
+    0.227,
+    0.241,
+    0.242,
+    0.237,
+    0.229,
+    0.219,
+    0.204,
+    0.187,
+    0.171
+  ],
+  "final": {
+    "gravity_x_median": -0.067,
+    "lin_speed_median_m_s": 0.0,
+    "lin_speed_at_0.5s_median_m_s": 0.0
+  }
+}

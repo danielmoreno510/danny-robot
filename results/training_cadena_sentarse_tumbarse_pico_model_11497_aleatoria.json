@@ -1,0 +1,764 @@
+{
+  "sit_checkpoint": "D:\\Claude\\puntos_de_control\\fase5_sentarse_suave_model_3549.pt",
+  "lie_checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-08_16-48-49_fase5_tumbarse_desde_sentado\\model_11497.pt",
+  "vin_v": "aleatoria 6 a 8,4",
+  "num_envs": 4096,
+  "sit_seconds": 10.0,
+  "lie_seconds": 10.0,
+  "chain_passes": false,
+  "sit_part": {
+    "passes_all": true,
+    "criteria": {
+      "seated": {
+        "value": 1.0,
+        "required": 0.95,
+        "passes": true
+      },
+      "descent_at_most_0.6_m_s": {
+        "value": 0.978,
+        "required": 0.95,
+        "passes": true
+      },
+      "never_tilted_over_70deg": {
+        "value": 1.0,
+        "required": 0.98,
+        "passes": true
+      },
+      "saturation_moving_run_at_most_0.5s": {
+        "value": 1.0,
+        "required": 0.99,
+        "passes": true
+      },
+      "saturation_seated_at_most_5pct": {
+        "value": 1.0,
+        "required": 0.99,
+        "passes": true
+      },
+      "saturation_no_robot_over_2s": {
+        "value": 1.0,
+        "required": 1.0,
+        "passes": true
+      }
+    },
+    "pelvis_z_at_switch_m": {
+      "median": 0.0564,
+      "max": 0.0565
+    }
+  },
+  "lie_part": {
+    "definition_lying": "eje x del tronco hacia arriba (gravedad x <= -0,9), inclinacion lateral <= 0,3, velocidad lineal <= 0,05 m/s y angular <= 0,1 rad/s, 3 s seguidos",
+    "criteria": {
+      "lying": {
+        "value": 1.0,
+        "required": 0.95,
+        "passes": true
+      },
+      "trunk_impact_at_most_0.8_m_s": {
+        "value": 1.0,
+        "required": 0.95,
+        "passes": true
+      },
+      "head_never_touches_floor": {
+        "value": 1.0,
+        "required": 0.99,
+        "passes": true
+      },
+      "pelvis_rate_at_most_3_rad_s_every_axis": {
+        "value": 0.0535,
+        "required": 1.0,
+        "passes": false
+      },
+      "saturation_moving_run_at_most_0.5s": {
+        "value": 1.0,
+        "required": 0.99,
+        "passes": true
+      },
+      "saturation_lying_at_most_5pct": {
+        "value": 1.0,
+        "required": 0.99,
+        "passes": true
+      },
+      "saturation_no_robot_over_2s": {
+        "value": 1.0,
+        "required": 1.0,
+        "passes": true
+      }
+    },
+    "time_to_lying_s": {
+      "median": 3.54
+    },
+    "trunk_neck_head_impact_speed_at_first_floor_contact": {
+      "torso_1": {
+        "fraction_of_robots_that_touch_floor": 1.0,
+        "first_contact_time_s_median": 0.62,
+        "speed_m_s": {
+          "median": 0.268,
+          "p95": 0.333,
+          "max": 0.409
+        }
+      },
+      "neck_link_1": {
+        "fraction_of_robots_that_touch_floor": 0.0,
+        "first_contact_time_s_median": null,
+        "speed_m_s": null
+      },
+      "head_1": {
+        "fraction_of_robots_that_touch_floor": 0.0,
+        "first_contact_time_s_median": null,
+        "speed_m_s": null
+      }
+    },
+    "fraction_trunk_touches_floor": 1.0,
+    "pelvis_rate_peak_rad_s": {
+      "any_axis": {
+        "median": 3.588,
+        "p95": 4.337,
+        "max": 5.164
+      },
+      "balanceo": {
+        "median": 2.228,
+        "p95": 2.405,
+        "max": 2.883
+      },
+      "cabeceo": {
+        "median": 3.588,
+        "p95": 4.337,
+        "max": 5.164
+      },
+      "guinada": {
+        "median": 2.049,
+        "p95": 2.361,
+        "max": 3.099
+      }
+    },
+    "pelvis_rate_peak_time_s_median": 0.06,
+    "pelvis_rate_fraction_of_robots_at_most_3_rad_s_by_axis": {
+      "balanceo": 1.0,
+      "cabeceo": 0.0535,
+      "guinada": 0.9995
+    },
+    "final_gravity_x": {
+      "median": -1.0,
+      "p10": -1.0
+    },
+    "passes_all": false
+  },
+  "switch_analysis": {
+    "step_dt_s": 0.02,
+    "last_5_steps_of_sit_median_abs_rate_rad_s": {
+      "balanceo": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cabeceo": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "guinada": [
+        0.001,
+        0.001,
+        0.001,
+        0.001,
+        0.001
+      ]
+    },
+    "first_20_steps_of_lie_median_abs_rate_rad_s": {
+      "balanceo": [
+        0.001,
+        0.055,
+        0.152,
+        0.241,
+        0.119,
+        0.167,
+        0.246,
+        0.302,
+        1.551,
+        1.993,
+        1.943,
+        1.971,
+        2.024,
+        2.014,
+        1.99,
+        1.994,
+        2.015,
+        2.023,
+        2.004,
+        2.022
+      ],
+      "cabeceo": [
+        0.187,
+        1.325,
+        2.725,
+        3.558,
+        2.804,
+        2.219,
+        2.189,
+        2.241,
+        2.398,
+        2.427,
+        2.348,
+        2.319,
+        2.333,
+        2.34,
+        2.329,
+        2.311,
+        2.29,
+        2.279,
+        2.282,
+        2.223
+      ],
+      "guinada": [
+        0.014,
+        0.828,
+        1.308,
+        1.285,
+        0.875,
+        0.58,
+        0.426,
+        0.204,
+        0.537,
+        0.587,
+        0.259,
+        0.21,
+        0.454,
+        0.8,
+        1.091,
+        1.338,
+        1.497,
+        1.602,
+        1.632,
+        1.524
+      ]
+    },
+    "lie_peak_axis_fraction_of_robots": {
+      "balanceo": 0.0,
+      "cabeceo": 0.9998,
+      "guinada": 0.0002
+    },
+    "lie_peak_step_by_axis_median": {
+      "balanceo": 17,
+      "cabeceo": 3,
+      "guinada": 27
+    },
+    "lie_peak_time_after_switch_s_by_axis_median": {
+      "balanceo": 0.34,
+      "cabeceo": 0.06,
+      "guinada": 0.54
+    },
+    "sit_peak_in_last_second_any_axis": {
+      "median": 0.001,
+      "p95": 0.004,
+      "max": 0.016
+    },
+    "lie_peak_pitch_rad_s": {
+      "median": 3.588,
+      "p95": 4.337,
+      "max": 5.164
+    },
+    "lie_peak_pitch_after_first_0.5s_rad_s": {
+      "median": 2.318,
+      "p95": 2.522,
+      "max": 2.902
+    }
+  },
+  "joint_speed": {
+    "sit_part": {
+      "servo_no_load_rad_s": {
+        "at_vin_median": 11.6,
+        "datasheet_at_7.4V": 11.9
+      },
+      "model_no_load_rad_s_at_vin_median": 11.22,
+      "model_kt": 0.6238,
+      "model_resistance_ohm": 4.91,
+      "model_electrical_damping_n_m_s_per_rad": 0.0792,
+      "model_max_velocity_rad_s": 100.0,
+      "fastest_joints": [
+        [
+          "left_knee",
+          13.42
+        ],
+        [
+          "right_knee",
+          13.35
+        ],
+        [
+          "right_shoulder_pitch",
+          12.63
+        ],
+        [
+          "left_shoulder_roll",
+          11.74
+        ],
+        [
+          "left_hip_pitch",
+          11.29
+        ],
+        [
+          "right_hip_pitch",
+          11.2
+        ]
+      ],
+      "by_joint": {
+        "left_hip_yaw": {
+          "max_speed_rad_s": {
+            "median": 3.11,
+            "p95": 3.91,
+            "max": 5.11
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "left_hip_roll": {
+          "max_speed_rad_s": {
+            "median": 3.84,
+            "p95": 4.69,
+            "max": 5.73
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "left_hip_pitch": {
+          "max_speed_rad_s": {
+            "median": 9.32,
+            "p95": 10.52,
+            "max": 11.29
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0002
+        },
+        "left_knee": {
+          "max_speed_rad_s": {
+            "median": 10.59,
+            "p95": 12.14,
+            "max": 13.42
+          },
+          "fraction_of_robots_over_servo_no_load": 0.1841,
+          "fraction_of_robots_over_model_no_load": 0.3152
+        },
+        "left_ankle_pitch": {
+          "max_speed_rad_s": {
+            "median": 6.99,
+            "p95": 7.73,
+            "max": 9.02
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "left_ankle_roll": {
+          "max_speed_rad_s": {
+            "median": 3.34,
+            "p95": 4.13,
+            "max": 5.11
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "right_hip_yaw": {
+          "max_speed_rad_s": {
+            "median": 3.8,
+            "p95": 4.88,
+            "max": 5.97
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "right_hip_roll": {
+          "max_speed_rad_s": {
+            "median": 3.41,
+            "p95": 3.93,
+            "max": 4.69
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "right_hip_pitch": {
+          "max_speed_rad_s": {
+            "median": 9.15,
+            "p95": 10.26,
+            "max": 11.2
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0022
+        },
+        "right_knee": {
+          "max_speed_rad_s": {
+            "median": 10.2,
+            "p95": 11.52,
+            "max": 13.35
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0132,
+          "fraction_of_robots_over_model_no_load": 0.0569
+        },
+        "right_ankle_pitch": {
+          "max_speed_rad_s": {
+            "median": 7.11,
+            "p95": 8.63,
+            "max": 10.24
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "right_ankle_roll": {
+          "max_speed_rad_s": {
+            "median": 3.49,
+            "p95": 3.98,
+            "max": 4.89
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "waist_yaw": {
+          "max_speed_rad_s": {
+            "median": 6.81,
+            "p95": 7.97,
+            "max": 8.95
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "left_shoulder_pitch": {
+          "max_speed_rad_s": {
+            "median": 4.31,
+            "p95": 5.0,
+            "max": 5.71
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "left_shoulder_roll": {
+          "max_speed_rad_s": {
+            "median": 9.27,
+            "p95": 10.61,
+            "max": 11.74
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "left_shoulder_yaw": {
+          "max_speed_rad_s": {
+            "median": 8.52,
+            "p95": 9.86,
+            "max": 11.06
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "left_elbow": {
+          "max_speed_rad_s": {
+            "median": 7.74,
+            "p95": 8.81,
+            "max": 9.75
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "right_shoulder_pitch": {
+          "max_speed_rad_s": {
+            "median": 10.11,
+            "p95": 11.8,
+            "max": 12.63
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "right_shoulder_roll": {
+          "max_speed_rad_s": {
+            "median": 8.06,
+            "p95": 9.2,
+            "max": 10.17
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "right_shoulder_yaw": {
+          "max_speed_rad_s": {
+            "median": 7.67,
+            "p95": 8.55,
+            "max": 9.38
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "right_elbow": {
+          "max_speed_rad_s": {
+            "median": 8.23,
+            "p95": 9.05,
+            "max": 10.07
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "neck_yaw": {
+          "max_speed_rad_s": {
+            "median": 8.7,
+            "p95": 9.96,
+            "max": 10.86
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "neck_pitch": {
+          "max_speed_rad_s": {
+            "median": 5.18,
+            "p95": 5.92,
+            "max": 6.86
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        }
+      }
+    },
+    "lie_part": {
+      "servo_no_load_rad_s": {
+        "at_vin_median": 11.6,
+        "datasheet_at_7.4V": 11.9
+      },
+      "model_no_load_rad_s_at_vin_median": 11.22,
+      "model_kt": 0.6238,
+      "model_resistance_ohm": 4.91,
+      "model_electrical_damping_n_m_s_per_rad": 0.0792,
+      "model_max_velocity_rad_s": 100.0,
+      "fastest_joints": [
+        [
+          "left_shoulder_roll",
+          13.34
+        ],
+        [
+          "right_elbow",
+          12.66
+        ],
+        [
+          "left_elbow",
+          12.36
+        ],
+        [
+          "left_shoulder_yaw",
+          12.33
+        ],
+        [
+          "right_shoulder_pitch",
+          12.02
+        ],
+        [
+          "neck_yaw",
+          10.93
+        ]
+      ],
+      "by_joint": {
+        "left_hip_yaw": {
+          "max_speed_rad_s": {
+            "median": 1.24,
+            "p95": 1.74,
+            "max": 2.46
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "left_hip_roll": {
+          "max_speed_rad_s": {
+            "median": 1.81,
+            "p95": 2.29,
+            "max": 3.03
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "left_hip_pitch": {
+          "max_speed_rad_s": {
+            "median": 4.46,
+            "p95": 6.21,
+            "max": 7.38
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "left_knee": {
+          "max_speed_rad_s": {
+            "median": 3.61,
+            "p95": 4.36,
+            "max": 5.27
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "left_ankle_pitch": {
+          "max_speed_rad_s": {
+            "median": 6.26,
+            "p95": 7.25,
+            "max": 8.26
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "left_ankle_roll": {
+          "max_speed_rad_s": {
+            "median": 3.5,
+            "p95": 4.09,
+            "max": 4.66
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "right_hip_yaw": {
+          "max_speed_rad_s": {
+            "median": 2.31,
+            "p95": 2.79,
+            "max": 3.45
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "right_hip_roll": {
+          "max_speed_rad_s": {
+            "median": 1.56,
+            "p95": 1.91,
+            "max": 2.52
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "right_hip_pitch": {
+          "max_speed_rad_s": {
+            "median": 3.87,
+            "p95": 4.31,
+            "max": 5.51
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "right_knee": {
+          "max_speed_rad_s": {
+            "median": 3.12,
+            "p95": 3.41,
+            "max": 3.66
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "right_ankle_pitch": {
+          "max_speed_rad_s": {
+            "median": 4.61,
+            "p95": 6.32,
+            "max": 8.07
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "right_ankle_roll": {
+          "max_speed_rad_s": {
+            "median": 1.99,
+            "p95": 2.24,
+            "max": 2.49
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "waist_yaw": {
+          "max_speed_rad_s": {
+            "median": 7.72,
+            "p95": 8.44,
+            "max": 9.22
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "left_shoulder_pitch": {
+          "max_speed_rad_s": {
+            "median": 7.99,
+            "p95": 9.32,
+            "max": 10.41
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "left_shoulder_roll": {
+          "max_speed_rad_s": {
+            "median": 10.79,
+            "p95": 12.34,
+            "max": 13.34
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0237,
+          "fraction_of_robots_over_model_no_load": 0.1855
+        },
+        "left_shoulder_yaw": {
+          "max_speed_rad_s": {
+            "median": 10.14,
+            "p95": 11.42,
+            "max": 12.33
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "left_elbow": {
+          "max_speed_rad_s": {
+            "median": 10.01,
+            "p95": 11.35,
+            "max": 12.36
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "right_shoulder_pitch": {
+          "max_speed_rad_s": {
+            "median": 9.58,
+            "p95": 10.9,
+            "max": 12.02
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "right_shoulder_roll": {
+          "max_speed_rad_s": {
+            "median": 7.53,
+            "p95": 8.9,
+            "max": 10.54
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "right_shoulder_yaw": {
+          "max_speed_rad_s": {
+            "median": 6.67,
+            "p95": 7.47,
+            "max": 8.55
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "right_elbow": {
+          "max_speed_rad_s": {
+            "median": 10.42,
+            "p95": 11.88,
+            "max": 12.66
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "neck_yaw": {
+          "max_speed_rad_s": {
+            "median": 7.55,
+            "p95": 9.0,
+            "max": 10.93
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        },
+        "neck_pitch": {
+          "max_speed_rad_s": {
+            "median": 5.98,
+            "p95": 6.72,
+            "max": 7.37
+          },
+          "fraction_of_robots_over_servo_no_load": 0.0,
+          "fraction_of_robots_over_model_no_load": 0.0
+        }
+      }
+    }
+  }
+}
