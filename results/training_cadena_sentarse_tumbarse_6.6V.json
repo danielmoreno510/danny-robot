@@ -1,0 +1,150 @@
+{
+  "sit_checkpoint": "D:\\Claude\\puntos_de_control\\fase5_sentarse_suave_model_3549.pt",
+  "lie_checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-08_01-00-33_fase5_tumbarse_suave\\model_6498.pt",
+  "vin_v": 6.6,
+  "num_envs": 4096,
+  "sit_seconds": 10.0,
+  "lie_seconds": 10.0,
+  "chain_passes": false,
+  "sit_part": {
+    "passes_all": true,
+    "criteria": {
+      "seated": {
+        "value": 1.0,
+        "required": 0.95,
+        "passes": true
+      },
+      "descent_at_most_0.6_m_s": {
+        "value": 0.9768,
+        "required": 0.95,
+        "passes": true
+      },
+      "never_tilted_over_70deg": {
+        "value": 1.0,
+        "required": 0.98,
+        "passes": true
+      },
+      "saturation_moving_run_at_most_0.5s": {
+        "value": 1.0,
+        "required": 0.99,
+        "passes": true
+      },
+      "saturation_seated_at_most_5pct": {
+        "value": 1.0,
+        "required": 0.99,
+        "passes": true
+      },
+      "saturation_no_robot_over_2s": {
+        "value": 1.0,
+        "required": 1.0,
+        "passes": true
+      }
+    },
+    "pelvis_z_at_switch_m": {
+      "median": 0.0564,
+      "max": 0.0565
+    }
+  },
+  "lie_part": {
+    "definition_lying": "eje x del tronco hacia arriba (gravedad x <= -0,9), inclinacion lateral <= 0,3, velocidad lineal <= 0,05 m/s y angular <= 0,1 rad/s, 3 s seguidos",
+    "criteria": {
+      "lying": {
+        "value": 1.0,
+        "required": 0.95,
+        "passes": true
+      },
+      "trunk_impact_at_most_0.8_m_s": {
+        "value": 0.8889,
+        "required": 0.95,
+        "passes": false
+      },
+      "head_never_touches_floor": {
+        "value": 0.8218,
+        "required": 0.99,
+        "passes": false
+      },
+      "pelvis_rate_at_most_3_rad_s_every_axis": {
+        "value": 0.0,
+        "required": 1.0,
+        "passes": false
+      },
+      "saturation_moving_run_at_most_0.5s": {
+        "value": 1.0,
+        "required": 0.99,
+        "passes": true
+      },
+      "saturation_lying_at_most_5pct": {
+        "value": 1.0,
+        "required": 0.99,
+        "passes": true
+      },
+      "saturation_no_robot_over_2s": {
+        "value": 1.0,
+        "required": 1.0,
+        "passes": true
+      }
+    },
+    "time_to_lying_s": {
+      "median": 3.58
+    },
+    "trunk_neck_head_impact_speed_at_first_floor_contact": {
+      "torso_1": {
+        "fraction_of_robots_that_touch_floor": 1.0,
+        "first_contact_time_s_median": 0.58,
+        "speed_m_s": {
+          "median": 0.558,
+          "p95": 0.856,
+          "max": 0.969
+        }
+      },
+      "neck_link_1": {
+        "fraction_of_robots_that_touch_floor": 0.0,
+        "first_contact_time_s_median": null,
+        "speed_m_s": null
+      },
+      "head_1": {
+        "fraction_of_robots_that_touch_floor": 0.1782,
+        "first_contact_time_s_median": 0.5,
+        "speed_m_s": {
+          "median": 1.159,
+          "p95": 1.353,
+          "max": 1.413
+        }
+      }
+    },
+    "fraction_trunk_touches_floor": 1.0,
+    "pelvis_rate_peak_rad_s": {
+      "any_axis": {
+        "median": 12.137,
+        "p95": 14.204,
+        "max": 15.811
+      },
+      "balanceo": {
+        "median": 5.246,
+        "p95": 6.111,
+        "max": 7.049
+      },
+      "cabeceo": {
+        "median": 3.4,
+        "p95": 4.746,
+        "max": 5.561
+      },
+      "guinada": {
+        "median": 12.137,
+        "p95": 14.204,
+        "max": 15.811
+      }
+    },
+    "pelvis_rate_peak_time_s_median": 0.52,
+    "pelvis_rate_fraction_of_robots_at_most_3_rad_s_by_axis": {
+      "balanceo": 0.0,
+      "cabeceo": 0.283,
+      "guinada": 0.0
+    },
+    "final_gravity_x": {
+      "median": -1.0,
+      "p10": -1.0
+    },
+    "passes_all": false
+  }
+}

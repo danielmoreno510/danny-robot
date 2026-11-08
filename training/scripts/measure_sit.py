@@ -17,6 +17,7 @@ import json
 import math
 from pathlib import Path
 
+import imageio
 import mujoco
 import torch
 
@@ -47,12 +48,13 @@ def main() -> None:
   parser.add_argument("--vin", type=float, default=None, help="Tensión fija en V; sin ella, la sorteada del entrenamiento (6 a 8,4)")
   parser.add_argument("--num-envs", type=int, default=1024)
   parser.add_argument("--seconds", type=float, default=10.0)
+  parser.add_argument("--videos", action="store_true", help="Graba en results/videos/ un robot tipico (bajada mediana) y el de la bajada mas rapida")
   parser.add_argument("--seated-pelvis-m", type=float, default=sit.SEATED_PELVIS_M, help="Altura máxima de la pelvis sentado")
   args = parser.parse_args()
 
   cfg = eval_env_cfg(args.num_envs, args.seconds + 1.0, args.vin, task=SIT_TASK)
   cfg.terminations = {}  # se mide si cae, no se reinicia.
-  env, policy = load_policy(cfg, args.checkpoint, task=SIT_TASK)
+  env, policy = load_policy(cfg, args.checkpoint, render_mode="rgb_array" if args.videos else None, task=SIT_TASK)
   u = env.unwrapped
   device, n, dt = u.device, args.num_envs, u.step_dt
   robot = u.scene["robot"]
@@ -74,6 +76,7 @@ def main() -> None:
   success_step = torch.full((n,), -1, dtype=torch.int32, device=device)
   last = {"z": torch.zeros(n, device=device), "tilt": torch.zeros(n, device=device)}
   touching = torch.zeros(n, model.nbody, device=device)
+  trajectory = torch.zeros(n, steps, u.sim.data.qpos.shape[1], device=device) if args.videos else None
   obs = env.get_observations()
   with torch.inference_mode():
     for step in range(steps):
@@ -108,6 +111,8 @@ def main() -> None:
       new = (success_step < 0) & (run >= window) & (speed_ring.mean(dim=1) <= SPEED_MAX)
       success_step = torch.where(new, torch.full_like(success_step, step), success_step)
       last["z"], last["tilt"] = z, torch.rad2deg(tilt)
+      if trajectory is not None:
+        trajectory[:, step] = u.sim.data.qpos
 
   ok = success_step >= 0
   time_index = torch.arange(steps, device=device)[None, :]
@@ -150,6 +155,23 @@ def main() -> None:
       "by_joint": per_joint,
     },
   }
+  if args.videos:
+    candidates = torch.nonzero(ok & ~fell).flatten()
+    typical = int(candidates[torch.argmin((max_down[candidates] - max_down[candidates].median()).abs())])
+    fastest = int(candidates[torch.argmax(max_down[candidates])])
+    videos = RESULTS / "videos"
+    videos.mkdir(parents=True, exist_ok=True)
+    out["videos"] = []
+    for label, i in (("tipico", typical), ("bajada_mas_rapida", fastest)):
+      path = videos / f"{args.name}_{label}_robot{i}_bajada{float(max_down[i]):.2f}ms.mp4"
+      with imageio.get_writer(path, fps=int(round(u.metadata["render_fps"])), macro_block_size=1) as writer:
+        for t in range(steps):
+          u.sim.data.qpos[0] = trajectory[i, t]
+          u.sim.data.qvel[0] = 0.0
+          u.sim.forward()
+          writer.append_data(u.render())
+      out["videos"].append({"robot": i, "kind": label, "max_descent_speed_m_s": round(float(max_down[i]), 3), "file": path.name})
+      print(path.name)
   path = RESULTS / f"training_sentarse_{args.name}.json"
   path.write_text(json.dumps(out, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
   print(json.dumps({k: v for k, v in out.items() if k != "saturation"}, indent=1, ensure_ascii=False))

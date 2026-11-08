@@ -1,0 +1,136 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-08_01-00-33_fase5_tumbarse_suave\\model_6498.pt",
+  "vin_v": 6.6,
+  "num_envs": 4096,
+  "seconds": 10.0,
+  "reset": {
+    "robots_penetrating_floor_at_step_0": 0,
+    "min_contact_distance_step_0_m": "sin contactos (apoyado a 1 mm)",
+    "settle_steps": 3,
+    "speed_after_settle_m_s": {
+      "median": 0.0611,
+      "max": 0.135
+    },
+    "gravity_x_after_settle_median": -0.075
+  },
+  "definition_lying": "eje x del tronco hacia arriba (gravedad x <= -0,9), inclinacion lateral <= 0,3, velocidad lineal <= 0,05 m/s y angular <= 0,1 rad/s, 3 s seguidos",
+  "criteria": {
+    "lying": {
+      "value": 1.0,
+      "required": 0.95,
+      "passes": true
+    },
+    "trunk_impact_at_most_0.8_m_s": {
+      "value": 0.9993,
+      "required": 0.95,
+      "passes": true
+    },
+    "head_never_touches_floor": {
+      "value": 0.9988,
+      "required": 0.99,
+      "passes": true
+    },
+    "pelvis_rate_at_most_3_rad_s_every_axis": {
+      "value": 0.0,
+      "required": 1.0,
+      "passes": false
+    },
+    "saturation_moving_run_at_most_0.5s": {
+      "value": 1.0,
+      "required": 0.99,
+      "passes": true
+    },
+    "saturation_lying_at_most_5pct": {
+      "value": 1.0,
+      "required": 0.99,
+      "passes": true
+    },
+    "saturation_no_robot_over_2s": {
+      "value": 1.0,
+      "required": 1.0,
+      "passes": true
+    }
+  },
+  "time_to_lying_s": {
+    "median": 3.4
+  },
+  "trunk_neck_head_impact_speed_at_first_floor_contact": {
+    "torso_1": {
+      "fraction_of_robots_that_touch_floor": 1.0,
+      "first_contact_time_s_median": 0.42,
+      "speed_m_s": {
+        "median": 0.576,
+        "p95": 0.702,
+        "max": 0.836
+      }
+    },
+    "neck_link_1": {
+      "fraction_of_robots_that_touch_floor": 0.0,
+      "first_contact_time_s_median": null,
+      "speed_m_s": null
+    },
+    "head_1": {
+      "fraction_of_robots_that_touch_floor": 0.0012,
+      "first_contact_time_s_median": 0.42,
+      "speed_m_s": {
+        "median": 0.739,
+        "p95": 0.776,
+        "max": 0.777
+      }
+    }
+  },
+  "fraction_trunk_touches_floor": 1.0,
+  "pelvis_rate_peak_rad_s": {
+    "any_axis": {
+      "median": 14.894,
+      "p95": 16.573,
+      "max": 18.756
+    },
+    "balanceo": {
+      "median": 7.84,
+      "p95": 8.535,
+      "max": 9.507
+    },
+    "cabeceo": {
+      "median": 2.131,
+      "p95": 2.583,
+      "max": 3.079
+    },
+    "guinada": {
+      "median": 14.894,
+      "p95": 16.573,
+      "max": 18.756
+    }
+  },
+  "pelvis_rate_peak_time_s_median": 0.36,
+  "pelvis_rate_fraction_of_robots_at_most_3_rad_s_by_axis": {
+    "balanceo": 0.0,
+    "cabeceo": 0.9998,
+    "guinada": 0.0
+  },
+  "final_gravity_x": {
+    "median": -1.0,
+    "p10": -1.0
+  },
+  "passes_all": false,
+  "highest_pelvis_rate_robots": [
+    {
+      "robot": 3531,
+      "peak_rad_s": 18.76,
+      "time_s": 0.3,
+      "axis": "guinada"
+    },
+    {
+      "robot": 1826,
+      "peak_rad_s": 18.55,
+      "time_s": 0.36,
+      "axis": "guinada"
+    },
+    {
+      "robot": 499,
+      "peak_rad_s": 18.47,
+      "time_s": 0.34,
+      "axis": "guinada"
+    }
+  ]
+}

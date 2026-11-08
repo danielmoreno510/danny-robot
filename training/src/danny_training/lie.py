@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import math
 
+import mujoco
 import torch
 from mjlab.entity import Entity
 from mjlab.envs import ManagerBasedRlEnv, ManagerBasedRlEnvCfg
@@ -24,12 +25,29 @@ from danny_training import crouch, env_cfgs, getup, mdp as danny_mdp, sit
 SEATED_JOINTS_RAD = {"hip_pitch": math.radians(-91.0), "knee": math.radians(7.0), "ankle_pitch": math.radians(-32.0)}
 SEATED_PELVIS_M = 0.056
 START_DROP_MARGIN_M = 0.01
+START_CLEARANCE_M = 0.001  # separación entre el punto más bajo y el suelo al empezar: apoyado, sin penetrar.
+SETTLE_STEPS = 10  # pasos quietos (articulaciones sujetas en su pose) antes de contar, en las medidas.
 START_JOINT_NOISE_RAD = 0.05
 LYING_GRAVITY_X = -0.9
 LYING_SIDE_MAX = 0.3
 LYING_SPEED_M_S = 0.05
 LYING_ANGULAR_RAD_S = 0.1
 MAX_PITCH_RATE_RAD_S = 2.0
+
+
+def lowest_floor_distance(env: ManagerBasedRlEnv) -> torch.Tensor:
+  """Distancia mínima de los contactos con el suelo de cada robot (negativa si penetra); 1 si no hay ningún contacto cerca."""
+  cache = env.extras.setdefault("_lowest_floor_distance", {})
+  model = env.sim.mj_model
+  if "floor" not in cache:
+    cache["floor"] = torch.tensor([i for i in range(model.ngeom) if model.geom_type[i] == mujoco.mjtGeom.mjGEOM_PLANE], device=env.device)
+  data = env.sim.data
+  geom = data.contact.geom.long()
+  active = (torch.arange(geom.shape[0], device=env.device) < data.nacon[0]) & torch.isin(geom, cache["floor"]).any(dim=1)
+  world = data.contact.worldid.long()
+  distance = torch.ones(env.num_envs, device=env.device)
+  distance.scatter_reduce_(0, world[active], data.contact.dist[active], reduce="amin")
+  return distance
 
 
 def reset_seated(env: ManagerBasedRlEnv, env_ids: torch.Tensor | None, joint_noise_rad: float) -> None:
@@ -56,6 +74,14 @@ def reset_seated(env: ManagerBasedRlEnv, env_ids: torch.Tensor | None, joint_noi
   limits = asset.data.soft_joint_pos_limits[env_ids]
   joint_pos = joint_pos.clamp(limits[..., 0], limits[..., 1])
   asset.write_joint_state_to_sim(joint_pos, torch.zeros_like(joint_pos), env_ids=env_ids)
+
+  # Apoya el robot: sube o baja la pelvis hasta que el punto más bajo (pies, antebrazos) quede a `START_CLEARANCE_M` del suelo, sin penetrar.
+  env.sim.forward()
+  distance = lowest_floor_distance(env)[env_ids]
+  shift = torch.where(distance < 0.5, START_CLEARANCE_M - distance, torch.zeros_like(distance))
+  pos[:, 2] += shift
+  asset.write_root_link_pose_to_sim(torch.cat([pos, quat], dim=-1), env_ids=env_ids)
+  env.sim.forward()
 
 
 def lie_progress(env: ManagerBasedRlEnv) -> torch.Tensor:
