@@ -1,0 +1,157 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-08_01-00-33_fase5_tumbarse_suave\\model_6498.pt",
+  "vin_v": "aleatoria 6 a 8,4",
+  "num_envs": 4096,
+  "seconds": 10.0,
+  "pitch_rate_limit_rad_s": 2.0,
+  "pitch_peak_rad_s": {
+    "median": 2.034,
+    "p95": 3.284,
+    "max": 4.617
+  },
+  "fraction_pitch_peak_at_most_limit": 0.4768,
+  "fraction_robots_touching_floor_with_torso_neck_or_head": 1.0,
+  "first_contact_time_s": {
+    "median": 0.4
+  },
+  "peak_time_s": {
+    "median": 0.02
+  },
+  "when_is_the_pitch_peak": {
+    "windows": "antes: >0.1 s antes del primer contacto; golpe: de 0.1 s antes a 0.2 s despues; despues: mas tarde; sin_contacto: nunca toca",
+    "antes": 0.9497,
+    "golpe": 0.0503,
+    "despues_rebote": 0.0,
+    "sin_contacto": 0.0,
+    "in_first_0.5s_start": 1.0
+  },
+  "alternative_criteria_fraction_at_most_limit": {
+    "pitch_peak_only_before_contact": 0.4824,
+    "pitch_peak_excluding_impact_window": 0.4824,
+    "pitch_peak_excluding_first_0.5s": 0.9998
+  },
+  "pitch_peak_before_contact_rad_s": {
+    "median": 2.027,
+    "p95": 3.284,
+    "max": 4.617
+  },
+  "pitch_peak_excluding_impact_window_rad_s": {
+    "median": 2.027,
+    "p95": 3.284,
+    "max": 4.617
+  },
+  "largest_rotation_of_whole_episode": {
+    "note": "mayor |giro| entre pelvis, tronco, cuello y cabeza y los tres ejes de la pelvis (x balanceo, y cabeceo, z guinada)",
+    "value_rad_s": {
+      "median": 15.819,
+      "p95": 17.955,
+      "max": 20.099
+    },
+    "axis_fraction_of_robots": {
+      "balanceo": 0.0,
+      "cabeceo": 0.0,
+      "guinada": 1.0
+    },
+    "body_fraction_of_robots": {
+      "pelvis": 1.0,
+      "torso_1": 0.0,
+      "neck_link_1": 0.0,
+      "head_1": 0.0
+    },
+    "pelvis_largest_axis_fraction_of_robots": {
+      "balanceo": 0.0,
+      "cabeceo": 0.0,
+      "guinada": 1.0
+    },
+    "pelvis_peak_by_axis_rad_s": {
+      "balanceo": {
+        "median": 8.544,
+        "p95": 10.365,
+        "max": 12.071
+      },
+      "cabeceo": {
+        "median": 2.034,
+        "p95": 3.284,
+        "max": 4.617
+      },
+      "guinada": {
+        "median": 15.819,
+        "p95": 17.955,
+        "max": 20.099
+      }
+    }
+  },
+  "impact_speed_at_first_floor_contact": {
+    "torso_1": {
+      "fraction_of_robots_that_touch_floor": 1.0,
+      "first_contact_time_s_median": 0.4,
+      "speed_m_s": {
+        "median": 0.564,
+        "p95": 0.715,
+        "max": 0.894
+      },
+      "downward_speed_m_s": {
+        "median": 0.533,
+        "p95": 0.681,
+        "max": 0.853
+      }
+    },
+    "neck_link_1": {
+      "fraction_of_robots_that_touch_floor": 0.0,
+      "first_contact_time_s_median": null,
+      "speed_m_s": null,
+      "downward_speed_m_s": null
+    },
+    "head_1": {
+      "fraction_of_robots_that_touch_floor": 0.0012,
+      "first_contact_time_s_median": 0.38,
+      "speed_m_s": {
+        "median": 0.689,
+        "p95": 0.794,
+        "max": 0.805
+      },
+      "downward_speed_m_s": {
+        "median": 0.68,
+        "p95": 0.76,
+        "max": 0.764
+      }
+    }
+  },
+  "top_pitch_peak_robots": [
+    {
+      "robot": 466,
+      "pitch_peak_rad_s": 4.62,
+      "peak_time_s": 0.02,
+      "first_contact_time_s": 0.4,
+      "largest_rotation": "pelvis/guinada 15.93 rad/s"
+    },
+    {
+      "robot": 1815,
+      "pitch_peak_rad_s": 4.46,
+      "peak_time_s": 0.02,
+      "first_contact_time_s": 0.36,
+      "largest_rotation": "pelvis/guinada 16.89 rad/s"
+    },
+    {
+      "robot": 1997,
+      "pitch_peak_rad_s": 4.41,
+      "peak_time_s": 0.02,
+      "first_contact_time_s": 0.42,
+      "largest_rotation": "pelvis/guinada 14.61 rad/s"
+    },
+    {
+      "robot": 1291,
+      "pitch_peak_rad_s": 4.35,
+      "peak_time_s": 0.02,
+      "first_contact_time_s": 0.34,
+      "largest_rotation": "pelvis/guinada 18.44 rad/s"
+    },
+    {
+      "robot": 2572,
+      "pitch_peak_rad_s": 4.34,
+      "peak_time_s": 0.02,
+      "first_contact_time_s": 0.44,
+      "largest_rotation": "pelvis/guinada 17.04 rad/s"
+    }
+  ]
+}

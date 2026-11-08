@@ -5,6 +5,7 @@ from mjlab.tasks.velocity.rl import VelocityOnPolicyRunner
 
 from danny_training.env_cfgs import danny_flat_env_cfg
 from danny_training.getup import danny_getup_env_cfg
+from danny_training.lie import danny_lie_env_cfg
 from danny_training.rl_cfg import danny_flat_ppo_runner_cfg
 from danny_training.sit import danny_sit_env_cfg
 
@@ -28,6 +29,14 @@ register_mjlab_task(
   task_id="Mjlab-SitDown-Danny",
   env_cfg=danny_sit_env_cfg(),
   play_env_cfg=danny_sit_env_cfg(play=True),
+  rl_cfg=danny_flat_ppo_runner_cfg(),
+  runner_cls=VelocityOnPolicyRunner,
+)
+
+register_mjlab_task(
+  task_id="Mjlab-LieDown-Danny",
+  env_cfg=danny_lie_env_cfg(),
+  play_env_cfg=danny_lie_env_cfg(play=True),
   rl_cfg=danny_flat_ppo_runner_cfg(),
   runner_cls=VelocityOnPolicyRunner,
 )

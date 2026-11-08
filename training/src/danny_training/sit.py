@@ -97,7 +97,7 @@ def danny_sit_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   cfg.rewards = {
     "sit_progress": RewardTermCfg(func=sit_progress, weight=4.0, params={"asset_cfg": pelvis}),
     "seated_still": RewardTermCfg(func=seated_still, weight=2.0, params={"std": 0.3, "asset_cfg": pelvis}),
-    "descent_speed_excess": RewardTermCfg(func=descent_speed_excess, weight=-5.0),
+    "descent_speed_excess": RewardTermCfg(func=descent_speed_excess, weight=-100.0),
     "forbidden_floor_contacts": RewardTermCfg(func=forbidden_floor_contacts, weight=-1.0),
     "action_out_of_range": RewardTermCfg(func=getup.action_out_of_range_l1, weight=-0.035),
     "dof_pos_limits": RewardTermCfg(func=velocity_mdp.joint_pos_limits, weight=-1.0),
