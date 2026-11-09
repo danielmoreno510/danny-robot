@@ -2,7 +2,7 @@
 
 Cada robot empieza de pie con la aleatorización completa de la etapa 3 y sin empujones. «Se sienta» cuando, antes de `--seconds`, durante 3 s
 seguidos se cumple a la vez: pelvis a 0,07 m o menos, tronco a 35° o menos, velocidad media de 0,05 m/s o menos y ni tronco, cuello ni cabeza
-tocando el suelo (PROJECT_HANDOFF.md, Fase 5). Se mide también la velocidad máxima de bajada de la pelvis (solo por debajo de la altura de pie menos 1 cm, para no contar la caída del robot al nacer), si el tronco pasa de 70° en algún
+tocando el suelo (PROJECT_HANDOFF.md, Fase 5). Se mide también la velocidad máxima de bajada de la pelvis (solo por debajo de la altura de pie menos 1 cm, para no contar la caída del robot al nacer), si el tronco pasa de 80° en algún
 momento, la saturación de par (sobre el 90 % del bloqueo de la tensión de cada robot) mientras baja y estando sentado, y la postura final
 (altura de la pelvis, inclinación, qué eslabones tocan el suelo), que sirve para ajustar el umbral de altura si es una estimación.
 
@@ -56,7 +56,7 @@ def main() -> None:
   parser.add_argument("--num-envs", type=int, default=1024)
   parser.add_argument("--seconds", type=float, default=10.0)
   parser.add_argument("--videos", action="store_true", help="Graba en results/videos/ un robot tipico (bajada mediana) y el de la bajada mas rapida")
-  parser.add_argument("--fall-tilt-deg", type=float, default=70.0, help="Inclinación del tronco a partir de la cual se cuenta caída")
+  parser.add_argument("--fall-tilt-deg", type=float, default=80.0, help="Inclinación del tronco a partir de la cual se cuenta caída")
   parser.add_argument("--seated-pelvis-m", type=float, default=sit.SEATED_PELVIS_M, help="Altura máxima de la pelvis sentado")
   args = parser.parse_args()
 
@@ -75,6 +75,7 @@ def main() -> None:
   forbidden = torch.tensor([model.body(f"robot/{name}").id for name in sit.FORBIDDEN_BODIES], device=device)
   pelvis_body = int(model.site_bodyid[model.site(f"robot/{getup.PELVIS_SITE}").id])
   hand_bodies = torch.tensor([i for i in range(model.nbody) if "forearm" in model.body(i).name], device=device)
+  support_bodies = torch.tensor([pelvis_body] + [i for i in range(model.nbody) if "thigh" in model.body(i).name], device=device)  # pelvis y muslos
   fall_tilt = math.radians(args.fall_tilt_deg)
 
   steps = int(args.seconds / dt)
@@ -94,6 +95,10 @@ def main() -> None:
   hands_first = torch.full((n,), -1, dtype=torch.int32, device=device)
   pelvis_first = torch.full((n,), -1, dtype=torch.int32, device=device)
   pelvis_touch_speed = torch.zeros(n, device=device)
+  support_first = torch.full((n,), -1, dtype=torch.int32, device=device)
+  support_touch_speed = torch.zeros(n, device=device)
+  cross_step = torch.full((n,), -1, dtype=torch.int32, device=device)
+  cross_speed = torch.zeros(n, device=device)
   max_tilt = torch.zeros(n, device=device)
   hand_z_at_contact = torch.full((n,), float("nan"), device=device)
   prev_down = torch.zeros(n, device=device)
@@ -142,6 +147,13 @@ def main() -> None:
       new_pelvis = (pelvis_first < 0) & pelvis_now
       pelvis_touch_speed = torch.where(new_pelvis, prev_down, pelvis_touch_speed)
       pelvis_first = torch.where(new_pelvis, torch.full_like(pelvis_first, step), pelvis_first)
+      support_now = per_body[:, support_bodies].sum(dim=1) > 0
+      new_support = (support_first < 0) & support_now
+      support_touch_speed = torch.where(new_support, prev_down, support_touch_speed)
+      support_first = torch.where(new_support, torch.full_like(support_first, step), support_first)
+      new_cross = (cross_step < 0) & (z <= args.seated_pelvis_m) & (descent_start >= 0)
+      cross_speed = torch.where(new_cross, prev_down, cross_speed)
+      cross_step = torch.where(new_cross, torch.full_like(cross_step, step), cross_step)
       prev_down = down
       if step >= steps - int(1.0 / dt):
         touching += (per_body > 0).float()
@@ -160,7 +172,9 @@ def main() -> None:
   descent_s = torch.where((descent_start >= 0) & (reach_step >= 0), (reach_step - descent_start).float() * dt, torch.zeros(n, device=device))
   descent160_s = torch.where((descent_start >= 0) & (reach160_step >= 0), (reach160_step - descent_start).float() * dt, torch.zeros(n, device=device))
   hands_before_pelvis = (hands_first >= 0) & ((pelvis_first < 0) | (hands_first < pelvis_first))
-  touch_ok = (pelvis_first < 0) | (pelvis_touch_speed <= MAX_PELVIS_TOUCH_M_S)
+  # Punto 5: hay que medir de verdad. Vale si la pelvis o los muslos tocan el suelo a 0,4 m/s o menos Y la pelvis baja de 0,07 m a 0,4 m/s o menos;
+  # un robot en el que no ocurre alguna de las dos cosas no cumple.
+  touch_ok = (support_first >= 0) & (support_touch_speed <= MAX_PELVIS_TOUCH_M_S) & (cross_step >= 0) & (cross_speed <= MAX_PELVIS_TOUCH_M_S)
   ok = success_step >= 0
   time_index = torch.arange(steps, device=device)[None, :]
   moving_len = torch.where(ok, success_step - window + 1, torch.full_like(success_step, steps))
@@ -181,10 +195,10 @@ def main() -> None:
   }
   new_checks = {
     "seated": (ok.float().mean(), 0.95),
-    "descent_to_0.16_m_lasts_at_least_1_s": ((descent160_s >= MIN_DESCENT_S).float().mean(), 0.95),
+    "full_descent_0.218_to_0.07_m_lasts_at_least_1_s": ((descent_s >= MIN_DESCENT_S).float().mean(), 0.95),
     "pelvis_descent_speed_to_0.16_m_at_most_0.3_m_s": ((max_down_to160 <= MAX_DESCENT_M_S).float().mean(), 0.95),
     "hands_touch_floor_before_pelvis": (hands_before_pelvis.float().mean(), 0.95),
-    "pelvis_touches_floor_at_most_0.4_m_s": (touch_ok.float().mean(), 0.95),
+    "pelvis_or_thighs_touch_floor_and_pelvis_crosses_0.07_m_at_most_0.4_m_s": (touch_ok.float().mean(), 0.95),
     "trunk_rate_at_most_3_rad_s_every_axis": ((rate_max.amax(dim=1) <= MAX_TRUNK_RATE_RAD_S).float().mean(), 0.99),
     f"never_tilted_over_{args.fall_tilt_deg:g}deg": ((~fell).float().mean(), 0.98),
     "saturation_moving_run_at_most_0.5s": ((worst_run <= 0.5).float().mean(), 0.99),
@@ -211,6 +225,10 @@ def main() -> None:
     "hands_first_touch_fraction_of_robots": round(float((hands_first >= 0).float().mean()), 4),
     "pelvis_z_at_first_hand_contact_m": {"median": round(float(hand_z_at_contact[~torch.isnan(hand_z_at_contact)].median()), 3), "max": round(float(hand_z_at_contact[~torch.isnan(hand_z_at_contact)].max()), 3)} if (~torch.isnan(hand_z_at_contact)).any() else None,
     "pelvis_touch_speed_m_s": {"median": round(float(pelvis_touch_speed[pelvis_first >= 0].median()), 3), "p95": round(float(torch.quantile(pelvis_touch_speed[pelvis_first >= 0], 0.95)), 3)} if (pelvis_first >= 0).any() else None,
+    "pelvis_or_thigh_first_floor_contact_speed_m_s": {"median": round(float(support_touch_speed[support_first >= 0].median()), 3), "p95": round(float(torch.quantile(support_touch_speed[support_first >= 0], 0.95)), 3), "max": round(float(support_touch_speed[support_first >= 0].max()), 3)} if (support_first >= 0).any() else None,
+    "pelvis_or_thigh_touched_floor_fraction_of_robots": round(float((support_first >= 0).float().mean()), 4),
+    "pelvis_speed_when_crossing_0.07_m_m_s": {"median": round(float(cross_speed[cross_step >= 0].median()), 3), "p95": round(float(torch.quantile(cross_speed[cross_step >= 0], 0.95)), 3), "max": round(float(cross_speed[cross_step >= 0].max()), 3)} if (cross_step >= 0).any() else None,
+    "pelvis_crossed_0.07_m_fraction_of_robots": round(float((cross_step >= 0).float().mean()), 4),
     "pelvis_touched_floor_fraction_of_robots": round(float((pelvis_first >= 0).float().mean()), 4),
     "max_trunk_tilt_deg": {"median": round(math.degrees(float(max_tilt.median())), 1), "p95": round(math.degrees(float(torch.quantile(max_tilt, 0.95))), 1), "max": round(math.degrees(float(max_tilt.max())), 1)},
     "arms_max_deviation_from_rest_deg_at_end": {"median": round(math.degrees(float(arm_worst.median())), 1), "p95": round(math.degrees(float(torch.quantile(arm_worst, 0.95))), 1), "max": round(math.degrees(float(arm_worst.max())), 1)},

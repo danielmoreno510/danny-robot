@@ -24,10 +24,11 @@ SEATED_PELVIS_M = 0.07
 SEATED_TILT_RAD = math.radians(35.0)
 SEATED_SPEED_M_S = 0.05
 SEAT_Z_M = 0.05  # altura de la pelvis sentado con que se normaliza el avance (estimación, ver PROJECT_HANDOFF.md).
-MAX_DESCENT_SPEED_M_S = 0.2  # el criterio es 0,3 m/s; el margen y el alargar la bajada hasta 1 s o más salen de pedir menos
+MAX_DESCENT_SPEED_M_S = 0.15  # el criterio es 0,3 m/s de 0,218 a 0,16 m; 0,15 sale de bajar 0,15 m en 1 s (decisión del dueño, 9 nov, tras model_7700)
 MAX_TRUNK_RATE_RAD_S = 2.0  # el criterio es 3 rad/s en cualquier eje
 HAND_BODIES = ("left_forearm_1", "right_forearm_1")
 HANDS_REWARD_PELVIS_M = 0.13
+FALL_TILT_RAD = math.radians(80.0)  # decisión del dueño, 9 nov: el contacto de las manos pide el tronco a 65-70° (mjlab corta a 70°)
 FORBIDDEN_BODIES = ("torso_1", "neck_link_1", "head_1")
 
 
@@ -114,6 +115,7 @@ def danny_sit_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     cfg.observations[group].terms.pop("height")
   cfg.commands["twist"].rel_standing_envs = 1.0
   cfg.events.pop("push_robot", None)
+  cfg.terminations["fell_over"].params["limit_angle"] = FALL_TILT_RAD
   cfg.actions["joint_pos"].clip = getup.soft_limit_clip()
 
   pelvis = SceneEntityCfg("robot", site_names=(getup.PELVIS_SITE,))
