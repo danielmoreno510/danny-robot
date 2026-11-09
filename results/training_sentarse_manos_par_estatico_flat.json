@@ -1,0 +1,310 @@
+{
+  "feet": "flat",
+  "vin_v": 6.6,
+  "stall_torque_nm": 0.8131,
+  "limit_fraction": 0.8,
+  "highest_pelvis_z_with_hands_on_floor_m": null,
+  "fall_from_start": {},
+  "heights": [
+    {
+      "pelvis_z_m": 0.2,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.19,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.18,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.17,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.16,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.15,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.14,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.13,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.12,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.11,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.1,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.09,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.08,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.07,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.06,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    }
+  ]
+}

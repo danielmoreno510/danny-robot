@@ -1,0 +1,133 @@
+{
+  "vin_v": 6.6,
+  "stall_torque_nm": 0.8131,
+  "limit_fraction": 0.8,
+  "poses": [
+    {
+      "pelvis_z_m": 0.13,
+      "hands_fraction_of_weight": 0.3,
+      "trunk_lean_back_deg": 70.0,
+      "foot_support": "talon",
+      "lowest_sole_vertex_minus_sole_centre_cm": -1.5,
+      "fraction_of_stall": {
+        "hip_pitch": 0.355,
+        "knee": 0.589,
+        "ankle_pitch": 0.257,
+        "shoulder_pitch": 0.113,
+        "elbow": 0.052
+      },
+      "angles_deg": {
+        "hip_pitch": 18.7,
+        "knee": 123.4,
+        "ankle_pitch": 39.7,
+        "shoulder_pitch": 45.0,
+        "elbow": -1.1
+      }
+    },
+    {
+      "pelvis_z_m": 0.13,
+      "hands_fraction_of_weight": 0.4,
+      "trunk_lean_back_deg": 70.0,
+      "foot_support": "talon",
+      "lowest_sole_vertex_minus_sole_centre_cm": -1.5,
+      "fraction_of_stall": {
+        "hip_pitch": 0.311,
+        "knee": 0.491,
+        "ankle_pitch": 0.219,
+        "shoulder_pitch": 0.161,
+        "elbow": 0.068
+      },
+      "angles_deg": {
+        "hip_pitch": 20.0,
+        "knee": 122.6,
+        "ankle_pitch": 40.0,
+        "shoulder_pitch": 44.8,
+        "elbow": -0.0
+      }
+    },
+    {
+      "pelvis_z_m": 0.12,
+      "hands_fraction_of_weight": 0.3,
+      "trunk_lean_back_deg": 70.0,
+      "foot_support": "talon",
+      "lowest_sole_vertex_minus_sole_centre_cm": -1.8,
+      "fraction_of_stall": {
+        "hip_pitch": 0.385,
+        "knee": 0.614,
+        "ankle_pitch": 0.274,
+        "shoulder_pitch": 0.15,
+        "elbow": 0.073
+      },
+      "angles_deg": {
+        "hip_pitch": 20.0,
+        "knee": 127.0,
+        "ankle_pitch": 40.0,
+        "shoulder_pitch": 37.3,
+        "elbow": -0.0
+      }
+    },
+    {
+      "pelvis_z_m": 0.12,
+      "hands_fraction_of_weight": 0.3,
+      "trunk_lean_back_deg": 65.0,
+      "foot_support": "talon",
+      "lowest_sole_vertex_minus_sole_centre_cm": -1.8,
+      "fraction_of_stall": {
+        "hip_pitch": 0.373,
+        "knee": 0.613,
+        "ankle_pitch": 0.273,
+        "shoulder_pitch": 0.138,
+        "elbow": 0.088
+      },
+      "angles_deg": {
+        "hip_pitch": 11.7,
+        "knee": 130.0,
+        "ankle_pitch": 40.0,
+        "shoulder_pitch": 45.0,
+        "elbow": -17.7
+      }
+    },
+    {
+      "pelvis_z_m": 0.12,
+      "hands_fraction_of_weight": 0.4,
+      "trunk_lean_back_deg": 65.0,
+      "foot_support": "talon",
+      "lowest_sole_vertex_minus_sole_centre_cm": -2.0,
+      "fraction_of_stall": {
+        "hip_pitch": 0.342,
+        "knee": 0.517,
+        "ankle_pitch": 0.237,
+        "shoulder_pitch": 0.195,
+        "elbow": 0.119
+      },
+      "angles_deg": {
+        "hip_pitch": 16.8,
+        "knee": 127.4,
+        "ankle_pitch": 40.0,
+        "shoulder_pitch": 45.0,
+        "elbow": -17.7
+      }
+    },
+    {
+      "pelvis_z_m": 0.06,
+      "hands_fraction_of_weight": 0.5,
+      "trunk_lean_back_deg": -0.0,
+      "foot_support": "talon",
+      "lowest_sole_vertex_minus_sole_centre_cm": -3.1,
+      "fraction_of_stall": {
+        "hip_pitch": 0.39,
+        "knee": 0.332,
+        "ankle_pitch": 0.222,
+        "shoulder_pitch": 0.364,
+        "elbow": 0.205
+      },
+      "angles_deg": {
+        "hip_pitch": 20.0,
+        "knee": 130.0,
+        "ankle_pitch": -11.4,
+        "shoulder_pitch": -33.2,
+        "elbow": -16.0
+      }
+    }
+  ]
+}

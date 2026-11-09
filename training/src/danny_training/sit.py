@@ -24,7 +24,10 @@ SEATED_PELVIS_M = 0.07
 SEATED_TILT_RAD = math.radians(35.0)
 SEATED_SPEED_M_S = 0.05
 SEAT_Z_M = 0.05  # altura de la pelvis sentado con que se normaliza el avance (estimación, ver PROJECT_HANDOFF.md).
-MAX_DESCENT_SPEED_M_S = 0.4
+MAX_DESCENT_SPEED_M_S = 0.2  # el criterio es 0,3 m/s; el margen y el alargar la bajada hasta 1 s o más salen de pedir menos
+MAX_TRUNK_RATE_RAD_S = 2.0  # el criterio es 3 rad/s en cualquier eje
+HAND_BODIES = ("left_forearm_1", "right_forearm_1")
+HANDS_REWARD_PELVIS_M = 0.13
 FORBIDDEN_BODIES = ("torso_1", "neck_link_1", "head_1")
 
 
@@ -47,13 +50,19 @@ def descent_speed_excess(env: ManagerBasedRlEnv) -> torch.Tensor:
   return (-vz - MAX_DESCENT_SPEED_M_S).clamp(min=0.0).square()
 
 
-def forbidden_floor_contacts(env: ManagerBasedRlEnv) -> torch.Tensor:
-  """Número de contactos con el suelo de tronco, cuello y cabeza."""
-  cache = env.extras.setdefault("_forbidden_floor", {})
+def trunk_rate_excess(env: ManagerBasedRlEnv) -> torch.Tensor:
+  """Suma, por eje de la pelvis, del cuadrado de lo que el giro supera `MAX_TRUNK_RATE_RAD_S`."""
+  rate = env.scene["robot"].data.root_link_ang_vel_b.abs()
+  return (rate - MAX_TRUNK_RATE_RAD_S).clamp(min=0.0).square().sum(dim=1)
+
+
+def _floor_contacts(env: ManagerBasedRlEnv, bodies: tuple[str, ...], key: str) -> torch.Tensor:
+  """Número de contactos con el suelo de los cuerpos `bodies` (`key` identifica la caché)."""
+  cache = env.extras.setdefault(key, {})
   model = env.sim.mj_model
   if "geoms" not in cache:
-    bodies = [model.body(f"robot/{name}").id for name in FORBIDDEN_BODIES]
-    cache["geoms"] = torch.tensor([i for i in range(model.ngeom) if model.geom_bodyid[i] in bodies], device=env.device)
+    ids = [model.body(f"robot/{name}").id for name in bodies]
+    cache["geoms"] = torch.tensor([i for i in range(model.ngeom) if model.geom_bodyid[i] in ids], device=env.device)
     cache["floor"] = torch.tensor([i for i in range(model.ngeom) if model.geom_type[i] == mujoco.mjtGeom.mjGEOM_PLANE], device=env.device)
   data = env.sim.data
   geom = data.contact.geom.long()
@@ -62,6 +71,20 @@ def forbidden_floor_contacts(env: ManagerBasedRlEnv) -> torch.Tensor:
   other = torch.where(first, geom[:, 1], geom[:, 0])
   hit = active & (first | second) & torch.isin(other, cache["geoms"])
   return torch.zeros(env.num_envs, device=env.device).index_add_(0, data.contact.worldid[hit].long(), torch.ones(int(hit.sum()), device=env.device))
+
+
+def forbidden_floor_contacts(env: ManagerBasedRlEnv) -> torch.Tensor:
+  """Número de contactos con el suelo de tronco, cuello y cabeza."""
+  return _floor_contacts(env, FORBIDDEN_BODIES, "_forbidden_floor")
+
+
+def hands_on_floor_when_low(env: ManagerBasedRlEnv, asset_cfg: SceneEntityCfg) -> torch.Tensor:
+  """1 si algún antebrazo toca el suelo y la pelvis está a `HANDS_REWARD_PELVIS_M` o menos; 0 en otro caso.
+
+  Con la pelvis más arriba las manos no llegan al suelo detrás (cálculo con el modelo), así que el tope impide agacharse sobre las manos desde arriba.
+  """
+  touching = _floor_contacts(env, HAND_BODIES, "_hand_floor") > 0
+  return (touching & (getup._pelvis_z(env, asset_cfg) <= HANDS_REWARD_PELVIS_M)).float()
 
 
 class sit_metrics:
@@ -98,6 +121,8 @@ def danny_sit_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     "sit_progress": RewardTermCfg(func=sit_progress, weight=4.0, params={"asset_cfg": pelvis}),
     "seated_still": RewardTermCfg(func=seated_still, weight=2.0, params={"std": 0.3, "asset_cfg": pelvis}),
     "descent_speed_excess": RewardTermCfg(func=descent_speed_excess, weight=-100.0),
+    "trunk_rate_excess": RewardTermCfg(func=trunk_rate_excess, weight=-1.0),
+    "hands_on_floor_when_low": RewardTermCfg(func=hands_on_floor_when_low, weight=1.0, params={"asset_cfg": pelvis}),
     "forbidden_floor_contacts": RewardTermCfg(func=forbidden_floor_contacts, weight=-1.0),
     "action_out_of_range": RewardTermCfg(func=getup.action_out_of_range_l1, weight=-0.035),
     "dof_pos_limits": RewardTermCfg(func=velocity_mdp.joint_pos_limits, weight=-1.0),

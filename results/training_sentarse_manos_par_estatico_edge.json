@@ -1,0 +1,427 @@
+{
+  "feet": "edge",
+  "vin_v": 6.6,
+  "stall_torque_nm": 0.8131,
+  "limit_fraction": 0.8,
+  "highest_pelvis_z_with_hands_on_floor_m": 0.13,
+  "fall_from_start": {
+    "0.16": {
+      "drop_m": 0.03,
+      "free_fall_speed_m_s": 0.77,
+      "drop_for_0.4_m_s_free_fall_m": 0.0082
+    }
+  },
+  "heights": [
+    {
+      "pelvis_z_m": 0.2,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.19,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.18,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.17,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.16,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.15,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.14,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.13,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [
+            -70.0
+          ],
+          "best": {
+            "lean_deg": -70.0,
+            "angles_deg": {
+              "hip_pitch": 18.7,
+              "knee": 123.4,
+              "ankle_pitch": 39.7,
+              "shoulder_pitch": 45.0,
+              "elbow": -1.1
+            },
+            "fraction_of_stall": {
+              "hip_pitch": 0.355,
+              "knee": 0.589,
+              "ankle_pitch": 0.257,
+              "shoulder_pitch": 0.113,
+              "elbow": 0.052
+            },
+            "max_fraction_of_stall": 0.589,
+            "hand_x_m": -0.232,
+            "foot_x_m": -0.245,
+            "com_x_m": -0.241
+          },
+          "within_80_percent": true
+        },
+        "0.4": {
+          "feasible_lean_deg": [
+            -70.0
+          ],
+          "best": {
+            "lean_deg": -70.0,
+            "angles_deg": {
+              "hip_pitch": 20.0,
+              "knee": 122.6,
+              "ankle_pitch": 40.0,
+              "shoulder_pitch": 44.8,
+              "elbow": -0.0
+            },
+            "fraction_of_stall": {
+              "hip_pitch": 0.311,
+              "knee": 0.491,
+              "ankle_pitch": 0.219,
+              "shoulder_pitch": 0.161,
+              "elbow": 0.068
+            },
+            "max_fraction_of_stall": 0.491,
+            "hand_x_m": -0.232,
+            "foot_x_m": -0.247,
+            "com_x_m": -0.241
+          },
+          "within_80_percent": true
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.12,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [
+            -70.0,
+            -65.0
+          ],
+          "best": {
+            "lean_deg": -65.0,
+            "angles_deg": {
+              "hip_pitch": 11.7,
+              "knee": 130.0,
+              "ankle_pitch": 40.0,
+              "shoulder_pitch": 45.0,
+              "elbow": -17.7
+            },
+            "fraction_of_stall": {
+              "hip_pitch": 0.373,
+              "knee": 0.613,
+              "ankle_pitch": 0.273,
+              "shoulder_pitch": 0.138,
+              "elbow": 0.088
+            },
+            "max_fraction_of_stall": 0.613,
+            "hand_x_m": -0.212,
+            "foot_x_m": -0.242,
+            "com_x_m": -0.233
+          },
+          "within_80_percent": true
+        },
+        "0.4": {
+          "feasible_lean_deg": [
+            -65.0
+          ],
+          "best": {
+            "lean_deg": -65.0,
+            "angles_deg": {
+              "hip_pitch": 16.8,
+              "knee": 127.4,
+              "ankle_pitch": 40.0,
+              "shoulder_pitch": 45.0,
+              "elbow": -17.7
+            },
+            "fraction_of_stall": {
+              "hip_pitch": 0.342,
+              "knee": 0.517,
+              "ankle_pitch": 0.237,
+              "shoulder_pitch": 0.195,
+              "elbow": 0.119
+            },
+            "max_fraction_of_stall": 0.517,
+            "hand_x_m": -0.212,
+            "foot_x_m": -0.248,
+            "com_x_m": -0.234
+          },
+          "within_80_percent": true
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.11,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.1,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.09,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.08,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.07,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        }
+      }
+    },
+    {
+      "pelvis_z_m": 0.06,
+      "by_support": {
+        "0.3": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.4": {
+          "feasible_lean_deg": [],
+          "best": null,
+          "within_80_percent": false
+        },
+        "0.5": {
+          "feasible_lean_deg": [
+            0.0
+          ],
+          "best": {
+            "lean_deg": 0.0,
+            "angles_deg": {
+              "hip_pitch": 20.0,
+              "knee": 130.0,
+              "ankle_pitch": -11.4,
+              "shoulder_pitch": -33.2,
+              "elbow": -16.0
+            },
+            "fraction_of_stall": {
+              "hip_pitch": 0.39,
+              "knee": 0.332,
+              "ankle_pitch": 0.222,
+              "shoulder_pitch": 0.364,
+              "elbow": 0.205
+            },
+            "max_fraction_of_stall": 0.39,
+            "hand_x_m": 0.12,
+            "foot_x_m": -0.125,
+            "com_x_m": -0.002
+          },
+          "within_80_percent": true
+        }
+      }
+    }
+  ]
+}
