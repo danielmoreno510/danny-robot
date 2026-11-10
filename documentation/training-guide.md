@@ -153,6 +153,52 @@ el dueño del proyecto.
 **Fuentes elegidas en la etapa 1.2: CMU y 100STYLE** (sección 6 de `research-and-requirements.md`), retargeteadas con GMR. LAFAN1 y
 AMASS no se publican. Aquí es donde deja de moverse raro.
 
+**Fase 6: entrenar con física los 17 movimientos aprobados (criterio aprobado por el dueño el 11 de noviembre).** Las referencias ya
+están hechas, adaptadas a Danny y aprobadas por el dueño en vídeo: no se tocan. Cada una es un CSV a 50 Hz con la convención de mjlab
+para imitar movimiento: por fila, posición de la base (x, y, z en m), orientación (qx, qy, qz, qw) y las 23 articulaciones en el orden
+del modelo (el del handbook; `joint_order` del informe `results/gesture_<nombre>.json`). Los vídeos de referencia están en
+`results/videos/gesture_<nombre>.mp4`, y el método, en la Fase 6 de `PROJECT_HANDOFF.md`. **Datos de CMU:** "The data used in this
+project was obtained from mocap.cs.cmu.edu. The database was created with funding from NSF EIA-0196217."
+
+| # | Movimiento | Archivo en `results/retargeted/` | Duración |
+|---|---|---|---|
+| 1 | Saludar (**el primero, de prueba**) | `cmu_141_16_lento1.8.csv` | 4,5 s |
+| 2 | Pedir ayuda / nervioso, dos manos | `cmu_141_16_dos_manos_amplitud0.5.csv` | 2,5 s |
+| 3 | Conversación, explicar con las manos | `cmu_18_08.csv` | 17,4 s |
+| 4 | Conversación, la otra persona | `cmu_19_08_lento1.3.csv` | 22,6 s |
+| 5 | "Mope" (abatido) | `cmu_141_27.csv` | 4,6 s |
+| 6 | Dar la mano | `cmu_141_23.csv` | 2,1 s |
+| 7 | Saludar con el brazo alto | `cmu_143_25_lento1.8.csv` | 9,9 s |
+| 8 | Encoger los hombros | `cmu_141_21.csv` | 2,3 s |
+| 9 | Chocar los cinco | `cmu_141_22.csv` | 1,7 s |
+| 10 | Peek A Boo | `cmu_143_33.csv` | 3,0 s |
+| 11 | Chicken Dance, piernas fijas | `cmu_143_34.csv` | 6,5 s |
+| 12 | Chicken Dance, pareja A, piernas fijas | `cmu_18_15.csv` | 12,8 s |
+| 13 | Chicken Dance, otra toma, piernas fijas | `cmu_20_01.csv` | 10,7 s |
+| 14 | Chicken Dance, pareja B, piernas fijas | `cmu_21_01.csv` | 10,7 s |
+| 15 | Brazos en alto y giro del tronco | `cmu_05_12.csv` | 11,3 s |
+| 16 | Chicken Dance con piernas | `cmu_143_34_hasta5.4_piernas_lento1.4.csv` | 7,6 s |
+| 17 | Chicken Dance con piernas, otra toma | `cmu_20_01_piernas.csv` | 10,7 s |
+
+**Cómo:** con la tarea de seguimiento de movimiento de mjlab (la de BeyondMimic), adaptada a Danny, y su script para pasar CSV a su
+formato de movimiento. Comprueba el nombre exacto de la tarea y del script en tu versión de mjlab. Una política por movimiento, empezando
+por **saludar**; si saludar no cumple, se para y se avisa antes de seguir. Después, los gestos (2 a 10), los bailes con piernas fijas (11
+a 15) y al final los dos con piernas (16 y 17). Los movimientos de 1 a 15 tienen las piernas y la pelvis quietas en la pose `stand`: Danny
+no debe dar pasos.
+
+**Pasa si cumple todo**, medido con 4 096 robots, a 6,6 V y con tensión aleatoria, con la aleatorización y los empujones de la fase 2:
+1. **No cae:** el 95 % de los robots o más termina el movimiento sin caerse.
+2. **Sigue la referencia:** manos, codos y pies a 2 cm o menos de su posición en la referencia en la mediana, y a 4 cm o menos en el
+   percentil 95 (estimación: la referencia ya tenía 1-2 cm de error frente a la persona).
+3. **Saturación,** como en las fases 4 y 5: el 99 % de los robots o más sin ninguna articulación por encima del 90 % del bloqueo más de
+   0,5 s seguidos, y ninguno más de 2 s.
+4. **Pies:** en los movimientos 1 a 15, el 95 % de los robots o más no da ningún paso; en el 16 y el 17, el pie apoyado no resbala más
+   de 1 cm.
+5. **Vídeo de Danny con física junto a la referencia, aprobado por el dueño.**
+6. **ONNX verificado,** como en las demás fases.
+
+El andar natural no tiene referencia: dos intentos no cumplieron (Fase 6 en `PROJECT_HANDOFF.md`) y el dueño decidió pedirlo al entrenar.
+
 ## Reglas
 
 Son las de [CLAUDE.md](../CLAUDE.md). Las más importantes para ti:

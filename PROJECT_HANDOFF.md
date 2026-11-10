@@ -228,6 +228,12 @@ referencia cinemática del andar. Danny ya anda con física (fase 2), y la natur
 pisadas o la simetría de rodillas como recompensa. **Decisión del dueño (11 de noviembre): se deja el andar para el entrenamiento con
 física.** El código de andar (`--walk`) y sus informes quedan como referencia del intento.
 
+**Entrenamiento con física de los 17 movimientos: criterio aprobado por el dueño el 11 de noviembre.** Está, con la lista de archivos, en la
+sección 4.4 de [training-guide.md](documentation/training-guide.md): una política por movimiento con la tarea de seguimiento de mjlab,
+empezando por saludar como prueba; pasa si no cae el 95 %, manos, codos y pies a 2 cm de mediana y 4 cm de p95 de la referencia, saturación
+como en las fases 4 y 5, sin pasos en los movimientos de pie (95 %) o pie apoyado sin resbalar más de 1 cm en los de piernas, vídeo aprobado
+por el dueño y ONNX verificado. Lo hace el amigo del dueño en su GPU; la rama `fase6-gestos` tiene que llegarle (por `main` o directamente).
+
 **Antes del margen, no cumplían,** con `--speed-cap` y margen de 5 mm. Por topes del brazo, que el ritmo no arregla, porque la persona lleva el brazo más atrás o
 más arriba de lo que permite el hombro de Danny: encoger los hombros 141_21 (5,3 % en `right_shoulder_pitch` a +45°), chocar los cinco
 141_22 (6,0 %), Peek a Boo 141_18 y 143_33 (49 % y 25 %), Macarena 143_35 (18 %: codo a -130° y hombro a +45°, con las manos detrás de la
