@@ -1172,3 +1172,13 @@ Entrenamiento terminado (11497 a 14497, `fase5_tumbarse_desde_sentado_manos/mode
 **Corrección de lo que dije en el chat:** el criterio de giro de la pelvis pide el **100 %** de los robots, no el 95 %.
 
 **No comprobado:** de dónde sale el pico de cabeceo a los 0,06 s en esta corrida (arranque de la pose soltándose o primera acción de la política; sin la medida con acción cero); empujones; levantarse tras tumbarse; robot real. **Decisión pendiente del dueño** (el criterio escrito no se cambia sin él): seguir entrenando tumbarse con castigo más fuerte del cabeceo al arranque, analizar el pico de los 0,06 s antes de tocar nada, o revisar el límite de 3 rad/s (para mediana 3,2 rad/s y 100 % de los robots el límite pide un cambio de política, no un retoque). La fase 6 no empieza hasta que lo confirme.
+
+**Medida del pico de cabeceo del arranque (10 de noviembre, sin entrenar)** (`scripts/diagnose_lie_start_peak.py`, `model_14496`, 4 096 robots, 6,6 V, entorno de tumbarse con el inicio de `model_12198`, mismos robots y semilla; `results/training_tumbarse_pico_arranque_manos_model_14496_6.6V.json`). Giro de la pelvis, pico en 2 s, y fracción de robots con todos los ejes a 3 rad/s o menos:
+
+| Modo | Pico (cualquier eje, mediana / p95 / máx.) | Cabeceo (mediana) | Cumplen los 3 ejes |
+|---|---|---|---|
+| Política de tumbarse | 2,77 / 3,13 / 3,97 rad/s, a 0,10 s | 2,77 | **86,7 %** |
+| Mantener la pose sentada (objetivo = posición inicial) | 1,58 / 1,98 / 2,76 rad/s, en el paso 0 | 1,49 | 100 % |
+| Acción cero (pose de pie) | 8,38 / 10,7 / 15,2 rad/s, a 0,26 s | 8,25 | 0 % |
+
+**Lectura:** (1) la pose sentada soltándose NO es la causa: sosteniéndola, el giro es de 1,6 rad/s de mediana y solo en el paso 0 (reinicio), y cumple el 100 %. (2) La causa es la primera acción de la política: el cabeceo pasa de 1,6 rad/s en el paso 0 a 2,4 rad/s en el paso 2 y se queda ahí. (3) **En el entorno de tumbarse la política cumple el 86,7 %, no el 27 % de la cadena:** el cambio de política en la cadena añade unos 0,4-0,5 rad/s al pico (3,2 frente a 2,8 rad/s). **No comprobado:** por qué (hipótesis mía, sin medir: la observación de tumbarse incluye la última acción, que en la cadena viene de la política de sentarse y en el entorno de tumbarse es cero; también la pose real de la cadena frente al estado guardado con ruido de 0,02 rad). Ni el 86,7 % ni el 27 % llegan al 100 % que pide el criterio.
