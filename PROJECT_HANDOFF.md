@@ -1219,3 +1219,7 @@ Entrenamiento terminado (14497 a 17497, `fase5_tumbarse_cadena_exacta/model_1749
 | 17495 | 21,4 % | 3,31 |
 
 **Lectura:** la mejor es `model_15000` con 73,7 %; el resto de 14500 a 16050 está entre 60 % y 71 %, y desde 16500 el cabeceo empeora (más entrenamiento lo estropea). Ninguna llega al 100 %: el techo de este enfoque ronda el 70 %. El 68,9 % de las 1 500 iteraciones (1 024 robots) era coherente con esto, no un error. `model_15000` no está copiado a `puntos_de_control` (no aprobado). **No comprobado:** con tensión aleatoria en los intermedios; si otro castigo o más robots de arranque exacto cambia el techo.
+
+### Fase 5, tumbarse, corrida 6: lanzada (10 de noviembre) — castigo del giro de la pelvis más fuerte
+
+El dueño eligió seguir entrenando. Cambio único respecto a la corrida 5: `pelvis_rate_excess` pasa de −8 a **−30** (umbral 2 rad/s, recorte 5; `training/src/danny_training/lie.py`). Sale de `fase5_tumbarse_cadena_exacta/model_15000.pt` (mejor punto de la corrida 5, 73,7 %), 1 500 iteraciones (15000 a 16500), 4 096 robots, `DANNY_DR_STAGE=2`, run `fase5_tumbarse_castigo_fuerte`; script `D:\Claudease5_tumbarse_castigo_fuerte.sh`, log `D:\Claudease5_tumbarse_castigo_fuerte.log`. Plan: al acabar (~70 min), medir la cadena (4 096 robots, 6,6 V) en varios puntos de control y comparar con el 73,7 % de `model_15000`. **Riesgo conocido:** un castigo mayor puede frenar la política y empeorar tumbado, impacto o saturación; el techo de la corrida 5 era ~70 % y no sé si este cambio lo rompe.
