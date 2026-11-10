@@ -1223,3 +1223,18 @@ Entrenamiento terminado (14497 a 17497, `fase5_tumbarse_cadena_exacta/model_1749
 ### Fase 5, tumbarse, corrida 6: lanzada (10 de noviembre) — castigo del giro de la pelvis más fuerte
 
 El dueño eligió seguir entrenando. Cambio único respecto a la corrida 5: `pelvis_rate_excess` pasa de −8 a **−30** (umbral 2 rad/s, recorte 5; `training/src/danny_training/lie.py`). Sale de `fase5_tumbarse_cadena_exacta/model_15000.pt` (mejor punto de la corrida 5, 73,7 %), 1 500 iteraciones (15000 a 16500), 4 096 robots, `DANNY_DR_STAGE=2`, run `fase5_tumbarse_castigo_fuerte`; script `D:\Claudease5_tumbarse_castigo_fuerte.sh`, log `D:\Claudease5_tumbarse_castigo_fuerte.log`. Plan: al acabar (~70 min), medir la cadena (4 096 robots, 6,6 V) en varios puntos de control y comparar con el 73,7 % de `model_15000`. **Riesgo conocido:** un castigo mayor puede frenar la política y empeorar tumbado, impacto o saturación; el techo de la corrida 5 era ~70 % y no sé si este cambio lo rompe.
+
+### Fase 5, tumbarse, corrida 6: resultado (11 de noviembre) — mejora a 87 %, no llega al 100 %
+
+Entrenamiento terminado (15000 a 16500, `fase5_tumbarse_castigo_fuerte/model_16499.pt`, castigo −30). Cadena con `model_12198`, 4 096 robots, 6,6 V (`results/training_cadena_sentarse_tumbarse_castigo_fuerte_model_<N>_6.6.json`). Sentarse, tumbado, impacto, cabeza y saturación pasan en todos los puntos (100 %).
+
+| Iteración | Giro de pelvis a 3 rad/s o menos (exige 100 %) | Cabeceo, pico mediana | Pico máx. cualquier eje |
+|---|---|---|---|
+| 15250 | **87,4 %** | 2,65 | 3,63 |
+| 15500 | 78,6 % | 2,74 | 3,79 |
+| 15750 | 60,1 % | 2,92 | 4,21 |
+| 16000 | 80,7 % | 2,70 | 3,93 |
+| 16250 | 71,2 % | 2,79 | 4,07 |
+| 16499 | 78,3 % | 2,72 | 3,91 |
+
+**Lectura:** el castigo −30 sube el techo de ~74 % a ~87 % (mejor `model_15250`) sin romper nada más, y ya no se degrada con las iteraciones (final 78 %). Pero sigue sin llegar al 100 % y oscila entre puntos de control (60-87 %). `model_15250` de la corrida 6 no está copiado a `puntos_de_control` (no aprobado). **No comprobado:** tensión aleatoria; si un castigo aún mayor o más iteraciones llegan al 100 %; si la cola (máx. 3,6-4,2 rad/s) es alcanzable bajo 3.
