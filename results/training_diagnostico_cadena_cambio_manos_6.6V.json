@@ -1,0 +1,1108 @@
+{
+  "sit_checkpoint": "D:\\Claude\\puntos_de_control\\fase5_sentarse_manos_afinado_model_12198.pt",
+  "vin_v": 6.6,
+  "num_envs": 4096,
+  "state_at_switch": {
+    "root_z_chain_m": {
+      "median": -0.1844,
+      "p5": -0.1845,
+      "p95": -0.1838
+    },
+    "root_z_saved_m": {
+      "median": -0.1844,
+      "p5": -0.1845,
+      "p95": -0.1829
+    },
+    "tilt_quat_wxyz_chain_median": [
+      1.0,
+      -0.0002,
+      -0.0059,
+      -0.0
+    ],
+    "tilt_quat_wxyz_saved_median": [
+      1.0,
+      -0.0003,
+      -0.0066,
+      -0.0
+    ],
+    "root_lin_speed_chain_m_s": {
+      "median": 0.0,
+      "p5": 0.0,
+      "p95": 0.0002
+    },
+    "root_ang_speed_chain_rad_s": {
+      "median": 0.0008,
+      "p5": 0.0003,
+      "p95": 0.0019
+    },
+    "joints": {
+      "left_hip_yaw": {
+        "chain_median": -0.085,
+        "saved_median": -0.084,
+        "chain_spread_p5_p95": [
+          -0.113,
+          -0.06
+        ],
+        "saved_spread_p5_p95": [
+          -0.112,
+          -0.056
+        ],
+        "chain_abs_velocity_median_rad_s": 0.0013
+      },
+      "left_hip_roll": {
+        "chain_median": -0.001,
+        "saved_median": -0.001,
+        "chain_spread_p5_p95": [
+          -0.01,
+          0.002
+        ],
+        "saved_spread_p5_p95": [
+          -0.011,
+          0.005
+        ],
+        "chain_abs_velocity_median_rad_s": 0.0001
+      },
+      "left_hip_pitch": {
+        "chain_median": -1.613,
+        "saved_median": -1.61,
+        "chain_spread_p5_p95": [
+          -1.626,
+          -1.598
+        ],
+        "saved_spread_p5_p95": [
+          -1.625,
+          -1.593
+        ],
+        "chain_abs_velocity_median_rad_s": 0.0002
+      },
+      "left_knee": {
+        "chain_median": 0.133,
+        "saved_median": 0.133,
+        "chain_spread_p5_p95": [
+          0.124,
+          0.141
+        ],
+        "saved_spread_p5_p95": [
+          0.124,
+          0.142
+        ],
+        "chain_abs_velocity_median_rad_s": 0.0005
+      },
+      "left_ankle_pitch": {
+        "chain_median": -0.6,
+        "saved_median": -0.601,
+        "chain_spread_p5_p95": [
+          -0.617,
+          -0.579
+        ],
+        "saved_spread_p5_p95": [
+          -0.619,
+          -0.577
+        ],
+        "chain_abs_velocity_median_rad_s": 0.0003
+      },
+      "left_ankle_roll": {
+        "chain_median": -0.006,
+        "saved_median": -0.008,
+        "chain_spread_p5_p95": [
+          -0.04,
+          0.014
+        ],
+        "saved_spread_p5_p95": [
+          -0.047,
+          0.012
+        ],
+        "chain_abs_velocity_median_rad_s": 0.0005
+      },
+      "right_hip_yaw": {
+        "chain_median": -0.362,
+        "saved_median": -0.359,
+        "chain_spread_p5_p95": [
+          -0.386,
+          -0.333
+        ],
+        "saved_spread_p5_p95": [
+          -0.385,
+          -0.327
+        ],
+        "chain_abs_velocity_median_rad_s": 0.0004
+      },
+      "right_hip_roll": {
+        "chain_median": -0.004,
+        "saved_median": -0.004,
+        "chain_spread_p5_p95": [
+          -0.012,
+          0.002
+        ],
+        "saved_spread_p5_p95": [
+          -0.012,
+          0.003
+        ],
+        "chain_abs_velocity_median_rad_s": 0.0002
+      },
+      "right_hip_pitch": {
+        "chain_median": -1.619,
+        "saved_median": -1.616,
+        "chain_spread_p5_p95": [
+          -1.632,
+          -1.606
+        ],
+        "saved_spread_p5_p95": [
+          -1.631,
+          -1.602
+        ],
+        "chain_abs_velocity_median_rad_s": 0.0002
+      },
+      "right_knee": {
+        "chain_median": 0.144,
+        "saved_median": 0.143,
+        "chain_spread_p5_p95": [
+          0.133,
+          0.154
+        ],
+        "saved_spread_p5_p95": [
+          0.133,
+          0.155
+        ],
+        "chain_abs_velocity_median_rad_s": 0.0007
+      },
+      "right_ankle_pitch": {
+        "chain_median": -0.581,
+        "saved_median": -0.582,
+        "chain_spread_p5_p95": [
+          -0.596,
+          -0.57
+        ],
+        "saved_spread_p5_p95": [
+          -0.598,
+          -0.571
+        ],
+        "chain_abs_velocity_median_rad_s": 0.0004
+      },
+      "right_ankle_roll": {
+        "chain_median": -0.004,
+        "saved_median": -0.003,
+        "chain_spread_p5_p95": [
+          -0.018,
+          0.008
+        ],
+        "saved_spread_p5_p95": [
+          -0.019,
+          0.009
+        ],
+        "chain_abs_velocity_median_rad_s": 0.0005
+      },
+      "waist_yaw": {
+        "chain_median": 0.851,
+        "saved_median": 0.853,
+        "chain_spread_p5_p95": [
+          0.736,
+          0.908
+        ],
+        "saved_spread_p5_p95": [
+          0.712,
+          0.913
+        ],
+        "chain_abs_velocity_median_rad_s": 0.0003
+      },
+      "left_shoulder_pitch": {
+        "chain_median": 0.582,
+        "saved_median": 0.579,
+        "chain_spread_p5_p95": [
+          0.561,
+          0.601
+        ],
+        "saved_spread_p5_p95": [
+          0.556,
+          0.602
+        ],
+        "chain_abs_velocity_median_rad_s": 0.0004
+      },
+      "left_shoulder_roll": {
+        "chain_median": 0.55,
+        "saved_median": 0.562,
+        "chain_spread_p5_p95": [
+          0.459,
+          0.636
+        ],
+        "saved_spread_p5_p95": [
+          0.475,
+          0.649
+        ],
+        "chain_abs_velocity_median_rad_s": 0.0005
+      },
+      "left_shoulder_yaw": {
+        "chain_median": -1.206,
+        "saved_median": -1.206,
+        "chain_spread_p5_p95": [
+          -1.228,
+          -1.188
+        ],
+        "saved_spread_p5_p95": [
+          -1.229,
+          -1.187
+        ],
+        "chain_abs_velocity_median_rad_s": 0.0008
+      },
+      "left_elbow": {
+        "chain_median": -1.413,
+        "saved_median": -1.414,
+        "chain_spread_p5_p95": [
+          -1.435,
+          -1.387
+        ],
+        "saved_spread_p5_p95": [
+          -1.438,
+          -1.386
+        ],
+        "chain_abs_velocity_median_rad_s": 0.0003
+      },
+      "right_shoulder_pitch": {
+        "chain_median": 0.12,
+        "saved_median": 0.13,
+        "chain_spread_p5_p95": [
+          -0.012,
+          0.237
+        ],
+        "saved_spread_p5_p95": [
+          -0.002,
+          0.245
+        ],
+        "chain_abs_velocity_median_rad_s": 0.0003
+      },
+      "right_shoulder_roll": {
+        "chain_median": -0.718,
+        "saved_median": -0.714,
+        "chain_spread_p5_p95": [
+          -0.857,
+          -0.653
+        ],
+        "saved_spread_p5_p95": [
+          -0.89,
+          -0.636
+        ],
+        "chain_abs_velocity_median_rad_s": 0.0003
+      },
+      "right_shoulder_yaw": {
+        "chain_median": -0.957,
+        "saved_median": -0.961,
+        "chain_spread_p5_p95": [
+          -1.001,
+          -0.838
+        ],
+        "saved_spread_p5_p95": [
+          -1.006,
+          -0.81
+        ],
+        "chain_abs_velocity_median_rad_s": 0.0003
+      },
+      "right_elbow": {
+        "chain_median": -1.329,
+        "saved_median": -1.334,
+        "chain_spread_p5_p95": [
+          -1.427,
+          -1.172
+        ],
+        "saved_spread_p5_p95": [
+          -1.437,
+          -1.138
+        ],
+        "chain_abs_velocity_median_rad_s": 0.0003
+      },
+      "neck_yaw": {
+        "chain_median": -0.342,
+        "saved_median": -0.325,
+        "chain_spread_p5_p95": [
+          -0.545,
+          -0.017
+        ],
+        "saved_spread_p5_p95": [
+          -0.548,
+          -0.021
+        ],
+        "chain_abs_velocity_median_rad_s": 0.0005
+      },
+      "neck_pitch": {
+        "chain_median": 0.145,
+        "saved_median": 0.144,
+        "chain_spread_p5_p95": [
+          0.083,
+          0.19
+        ],
+        "saved_spread_p5_p95": [
+          0.074,
+          0.188
+        ],
+        "chain_abs_velocity_median_rad_s": 0.0004
+      }
+    },
+    "largest_joint_median_gap_rad": [
+      [
+        "neck_yaw",
+        0.017
+      ],
+      [
+        "left_shoulder_roll",
+        0.012
+      ],
+      [
+        "right_shoulder_pitch",
+        0.01
+      ],
+      [
+        "right_elbow",
+        0.005
+      ],
+      [
+        "right_shoulder_roll",
+        0.004
+      ]
+    ]
+  },
+  "env_config_differences_sit_vs_lie": {
+    "events.reset_base.func": {
+      "sentarse": "<function reset_root_state_uniform at 0x0000022226190680>",
+      "tumbarse": null
+    },
+    "events.reset_base.interval_range_s": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "events.reset_base.is_global_time": {
+      "sentarse": "False",
+      "tumbarse": null
+    },
+    "events.reset_base.min_step_count_between_reset": {
+      "sentarse": "0",
+      "tumbarse": null
+    },
+    "events.reset_base.mode": {
+      "sentarse": "'reset'",
+      "tumbarse": null
+    },
+    "events.reset_base.params.pose_range.x": {
+      "sentarse": "(-0.5, 0.5)",
+      "tumbarse": null
+    },
+    "events.reset_base.params.pose_range.y": {
+      "sentarse": "(-0.5, 0.5)",
+      "tumbarse": null
+    },
+    "events.reset_base.params.pose_range.yaw": {
+      "sentarse": "(-3.14, 3.14)",
+      "tumbarse": null
+    },
+    "events.reset_base.params.pose_range.z": {
+      "sentarse": "(0.01, 0.05)",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.func": {
+      "sentarse": "<function reset_joints_by_offset at 0x00000222261907C0>",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.interval_range_s": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.is_global_time": {
+      "sentarse": "False",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.min_step_count_between_reset": {
+      "sentarse": "0",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.mode": {
+      "sentarse": "'reset'",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.params.asset_cfg.actuator_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.params.asset_cfg.actuator_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.params.asset_cfg.body_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.params.asset_cfg.body_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.params.asset_cfg.camera_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.params.asset_cfg.camera_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.params.asset_cfg.geom_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.params.asset_cfg.geom_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.params.asset_cfg.joint_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.params.asset_cfg.joint_names": {
+      "sentarse": "('.*',)",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.params.asset_cfg.light_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.params.asset_cfg.light_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.params.asset_cfg.material_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.params.asset_cfg.material_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.params.asset_cfg.name": {
+      "sentarse": "'robot'",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.params.asset_cfg.pair_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.params.asset_cfg.pair_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.params.asset_cfg.preserve_order": {
+      "sentarse": "False",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.params.asset_cfg.site_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.params.asset_cfg.site_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.params.asset_cfg.tendon_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.params.asset_cfg.tendon_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.params.position_range": {
+      "sentarse": "(0.0, 0.0)",
+      "tumbarse": null
+    },
+    "events.reset_robot_joints.params.velocity_range": {
+      "sentarse": "(0.0, 0.0)",
+      "tumbarse": null
+    },
+    "events.reset_seated.func": {
+      "sentarse": null,
+      "tumbarse": "<function reset_from_sit_end at 0x000002222D642660>"
+    },
+    "events.reset_seated.interval_range_s": {
+      "sentarse": null,
+      "tumbarse": "None"
+    },
+    "events.reset_seated.is_global_time": {
+      "sentarse": null,
+      "tumbarse": "False"
+    },
+    "events.reset_seated.min_step_count_between_reset": {
+      "sentarse": null,
+      "tumbarse": "0"
+    },
+    "events.reset_seated.mode": {
+      "sentarse": null,
+      "tumbarse": "'reset'"
+    },
+    "events.reset_seated.params.joint_noise_rad": {
+      "sentarse": null,
+      "tumbarse": "0.02"
+    },
+    "rewards.descent_speed_excess.func": {
+      "sentarse": "<function descent_speed_excess at 0x000002222D641F80>",
+      "tumbarse": null
+    },
+    "rewards.descent_speed_excess.weight": {
+      "sentarse": "-200.0",
+      "tumbarse": null
+    },
+    "rewards.forbidden_floor_contacts.func": {
+      "sentarse": "<function forbidden_floor_contacts at 0x000002222D642160>",
+      "tumbarse": null
+    },
+    "rewards.forbidden_floor_contacts.weight": {
+      "sentarse": "-1.0",
+      "tumbarse": null
+    },
+    "rewards.hands_on_floor_when_low.func": {
+      "sentarse": "<function hands_on_floor_when_low at 0x000002222D642200>",
+      "tumbarse": null
+    },
+    "rewards.hands_on_floor_when_low.params.asset_cfg.actuator_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.hands_on_floor_when_low.params.asset_cfg.actuator_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.hands_on_floor_when_low.params.asset_cfg.body_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.hands_on_floor_when_low.params.asset_cfg.body_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.hands_on_floor_when_low.params.asset_cfg.camera_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.hands_on_floor_when_low.params.asset_cfg.camera_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.hands_on_floor_when_low.params.asset_cfg.geom_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.hands_on_floor_when_low.params.asset_cfg.geom_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.hands_on_floor_when_low.params.asset_cfg.joint_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.hands_on_floor_when_low.params.asset_cfg.joint_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.hands_on_floor_when_low.params.asset_cfg.light_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.hands_on_floor_when_low.params.asset_cfg.light_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.hands_on_floor_when_low.params.asset_cfg.material_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.hands_on_floor_when_low.params.asset_cfg.material_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.hands_on_floor_when_low.params.asset_cfg.name": {
+      "sentarse": "'robot'",
+      "tumbarse": null
+    },
+    "rewards.hands_on_floor_when_low.params.asset_cfg.pair_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.hands_on_floor_when_low.params.asset_cfg.pair_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.hands_on_floor_when_low.params.asset_cfg.preserve_order": {
+      "sentarse": "False",
+      "tumbarse": null
+    },
+    "rewards.hands_on_floor_when_low.params.asset_cfg.site_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.hands_on_floor_when_low.params.asset_cfg.site_names": {
+      "sentarse": "('pelvis_bottom',)",
+      "tumbarse": null
+    },
+    "rewards.hands_on_floor_when_low.params.asset_cfg.tendon_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.hands_on_floor_when_low.params.asset_cfg.tendon_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.hands_on_floor_when_low.weight": {
+      "sentarse": "1.0",
+      "tumbarse": null
+    },
+    "rewards.head_floor_contacts.func": {
+      "sentarse": null,
+      "tumbarse": "<function head_floor_contacts at 0x000002222D642980>"
+    },
+    "rewards.head_floor_contacts.weight": {
+      "sentarse": null,
+      "tumbarse": "-2.0"
+    },
+    "rewards.lie_metrics.func": {
+      "sentarse": null,
+      "tumbarse": "<class 'danny_training.lie.lie_metrics'>"
+    },
+    "rewards.lie_metrics.params.asset_cfg.actuator_ids": {
+      "sentarse": null,
+      "tumbarse": "slice(None, None, None)"
+    },
+    "rewards.lie_metrics.params.asset_cfg.actuator_names": {
+      "sentarse": null,
+      "tumbarse": "None"
+    },
+    "rewards.lie_metrics.params.asset_cfg.body_ids": {
+      "sentarse": null,
+      "tumbarse": "slice(None, None, None)"
+    },
+    "rewards.lie_metrics.params.asset_cfg.body_names": {
+      "sentarse": null,
+      "tumbarse": "None"
+    },
+    "rewards.lie_metrics.params.asset_cfg.camera_ids": {
+      "sentarse": null,
+      "tumbarse": "slice(None, None, None)"
+    },
+    "rewards.lie_metrics.params.asset_cfg.camera_names": {
+      "sentarse": null,
+      "tumbarse": "None"
+    },
+    "rewards.lie_metrics.params.asset_cfg.geom_ids": {
+      "sentarse": null,
+      "tumbarse": "slice(None, None, None)"
+    },
+    "rewards.lie_metrics.params.asset_cfg.geom_names": {
+      "sentarse": null,
+      "tumbarse": "None"
+    },
+    "rewards.lie_metrics.params.asset_cfg.joint_ids": {
+      "sentarse": null,
+      "tumbarse": "slice(None, None, None)"
+    },
+    "rewards.lie_metrics.params.asset_cfg.joint_names": {
+      "sentarse": null,
+      "tumbarse": "None"
+    },
+    "rewards.lie_metrics.params.asset_cfg.light_ids": {
+      "sentarse": null,
+      "tumbarse": "slice(None, None, None)"
+    },
+    "rewards.lie_metrics.params.asset_cfg.light_names": {
+      "sentarse": null,
+      "tumbarse": "None"
+    },
+    "rewards.lie_metrics.params.asset_cfg.material_ids": {
+      "sentarse": null,
+      "tumbarse": "slice(None, None, None)"
+    },
+    "rewards.lie_metrics.params.asset_cfg.material_names": {
+      "sentarse": null,
+      "tumbarse": "None"
+    },
+    "rewards.lie_metrics.params.asset_cfg.name": {
+      "sentarse": null,
+      "tumbarse": "'robot'"
+    },
+    "rewards.lie_metrics.params.asset_cfg.pair_ids": {
+      "sentarse": null,
+      "tumbarse": "slice(None, None, None)"
+    },
+    "rewards.lie_metrics.params.asset_cfg.pair_names": {
+      "sentarse": null,
+      "tumbarse": "None"
+    },
+    "rewards.lie_metrics.params.asset_cfg.preserve_order": {
+      "sentarse": null,
+      "tumbarse": "False"
+    },
+    "rewards.lie_metrics.params.asset_cfg.site_ids": {
+      "sentarse": null,
+      "tumbarse": "slice(None, None, None)"
+    },
+    "rewards.lie_metrics.params.asset_cfg.site_names": {
+      "sentarse": null,
+      "tumbarse": "('pelvis_bottom',)"
+    },
+    "rewards.lie_metrics.params.asset_cfg.tendon_ids": {
+      "sentarse": null,
+      "tumbarse": "slice(None, None, None)"
+    },
+    "rewards.lie_metrics.params.asset_cfg.tendon_names": {
+      "sentarse": null,
+      "tumbarse": "None"
+    },
+    "rewards.lie_metrics.weight": {
+      "sentarse": null,
+      "tumbarse": "1e-09"
+    },
+    "rewards.lie_progress.func": {
+      "sentarse": null,
+      "tumbarse": "<function lie_progress at 0x000002222D642700>"
+    },
+    "rewards.lie_progress.weight": {
+      "sentarse": null,
+      "tumbarse": "4.0"
+    },
+    "rewards.lying_still.func": {
+      "sentarse": null,
+      "tumbarse": "<function lying_still at 0x000002222D6427A0>"
+    },
+    "rewards.lying_still.params.std": {
+      "sentarse": null,
+      "tumbarse": "0.3"
+    },
+    "rewards.lying_still.weight": {
+      "sentarse": null,
+      "tumbarse": "2.0"
+    },
+    "rewards.pelvis_rate_excess.func": {
+      "sentarse": null,
+      "tumbarse": "<function pelvis_rate_excess at 0x000002222D642840>"
+    },
+    "rewards.pelvis_rate_excess.weight": {
+      "sentarse": null,
+      "tumbarse": "-2.0"
+    },
+    "rewards.seated_still.func": {
+      "sentarse": "<function seated_still at 0x000002222D641C60>",
+      "tumbarse": null
+    },
+    "rewards.seated_still.params.asset_cfg.actuator_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.seated_still.params.asset_cfg.actuator_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.seated_still.params.asset_cfg.body_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.seated_still.params.asset_cfg.body_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.seated_still.params.asset_cfg.camera_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.seated_still.params.asset_cfg.camera_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.seated_still.params.asset_cfg.geom_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.seated_still.params.asset_cfg.geom_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.seated_still.params.asset_cfg.joint_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.seated_still.params.asset_cfg.joint_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.seated_still.params.asset_cfg.light_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.seated_still.params.asset_cfg.light_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.seated_still.params.asset_cfg.material_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.seated_still.params.asset_cfg.material_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.seated_still.params.asset_cfg.name": {
+      "sentarse": "'robot'",
+      "tumbarse": null
+    },
+    "rewards.seated_still.params.asset_cfg.pair_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.seated_still.params.asset_cfg.pair_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.seated_still.params.asset_cfg.preserve_order": {
+      "sentarse": "False",
+      "tumbarse": null
+    },
+    "rewards.seated_still.params.asset_cfg.site_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.seated_still.params.asset_cfg.site_names": {
+      "sentarse": "('pelvis_bottom',)",
+      "tumbarse": null
+    },
+    "rewards.seated_still.params.asset_cfg.tendon_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.seated_still.params.asset_cfg.tendon_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.seated_still.params.std": {
+      "sentarse": "0.3",
+      "tumbarse": null
+    },
+    "rewards.seated_still.weight": {
+      "sentarse": "2.0",
+      "tumbarse": null
+    },
+    "rewards.sit_metrics.func": {
+      "sentarse": "<class 'danny_training.sit.sit_metrics'>",
+      "tumbarse": null
+    },
+    "rewards.sit_metrics.params.asset_cfg.actuator_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.sit_metrics.params.asset_cfg.actuator_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.sit_metrics.params.asset_cfg.body_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.sit_metrics.params.asset_cfg.body_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.sit_metrics.params.asset_cfg.camera_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.sit_metrics.params.asset_cfg.camera_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.sit_metrics.params.asset_cfg.geom_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.sit_metrics.params.asset_cfg.geom_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.sit_metrics.params.asset_cfg.joint_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.sit_metrics.params.asset_cfg.joint_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.sit_metrics.params.asset_cfg.light_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.sit_metrics.params.asset_cfg.light_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.sit_metrics.params.asset_cfg.material_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.sit_metrics.params.asset_cfg.material_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.sit_metrics.params.asset_cfg.name": {
+      "sentarse": "'robot'",
+      "tumbarse": null
+    },
+    "rewards.sit_metrics.params.asset_cfg.pair_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.sit_metrics.params.asset_cfg.pair_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.sit_metrics.params.asset_cfg.preserve_order": {
+      "sentarse": "False",
+      "tumbarse": null
+    },
+    "rewards.sit_metrics.params.asset_cfg.site_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.sit_metrics.params.asset_cfg.site_names": {
+      "sentarse": "('pelvis_bottom',)",
+      "tumbarse": null
+    },
+    "rewards.sit_metrics.params.asset_cfg.tendon_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.sit_metrics.params.asset_cfg.tendon_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.sit_metrics.weight": {
+      "sentarse": "1e-09",
+      "tumbarse": null
+    },
+    "rewards.sit_progress.func": {
+      "sentarse": "<function sit_progress at 0x000002222D641E40>",
+      "tumbarse": null
+    },
+    "rewards.sit_progress.params.asset_cfg.actuator_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.sit_progress.params.asset_cfg.actuator_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.sit_progress.params.asset_cfg.body_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.sit_progress.params.asset_cfg.body_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.sit_progress.params.asset_cfg.camera_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.sit_progress.params.asset_cfg.camera_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.sit_progress.params.asset_cfg.geom_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.sit_progress.params.asset_cfg.geom_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.sit_progress.params.asset_cfg.joint_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.sit_progress.params.asset_cfg.joint_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.sit_progress.params.asset_cfg.light_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.sit_progress.params.asset_cfg.light_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.sit_progress.params.asset_cfg.material_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.sit_progress.params.asset_cfg.material_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.sit_progress.params.asset_cfg.name": {
+      "sentarse": "'robot'",
+      "tumbarse": null
+    },
+    "rewards.sit_progress.params.asset_cfg.pair_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.sit_progress.params.asset_cfg.pair_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.sit_progress.params.asset_cfg.preserve_order": {
+      "sentarse": "False",
+      "tumbarse": null
+    },
+    "rewards.sit_progress.params.asset_cfg.site_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.sit_progress.params.asset_cfg.site_names": {
+      "sentarse": "('pelvis_bottom',)",
+      "tumbarse": null
+    },
+    "rewards.sit_progress.params.asset_cfg.tendon_ids": {
+      "sentarse": "slice(None, None, None)",
+      "tumbarse": null
+    },
+    "rewards.sit_progress.params.asset_cfg.tendon_names": {
+      "sentarse": "None",
+      "tumbarse": null
+    },
+    "rewards.sit_progress.weight": {
+      "sentarse": "4.0",
+      "tumbarse": null
+    },
+    "rewards.trunk_rate_excess.func": {
+      "sentarse": "<function trunk_rate_excess at 0x000002222D642020>",
+      "tumbarse": null
+    },
+    "rewards.trunk_rate_excess.weight": {
+      "sentarse": "-1.0",
+      "tumbarse": null
+    },
+    "rewards.trunk_speed_excess.func": {
+      "sentarse": null,
+      "tumbarse": "<function trunk_speed_excess at 0x000002222D6428E0>"
+    },
+    "rewards.trunk_speed_excess.weight": {
+      "sentarse": null,
+      "tumbarse": "-20.0"
+    },
+    "scene.terrain.spec_fn": {
+      "sentarse": "<function EntityCfg.<lambda>.<locals>.<lambda> at 0x000002222D643560>",
+      "tumbarse": "<function EntityCfg.<lambda>.<locals>.<lambda> at 0x000002222D643BA0>"
+    },
+    "terminations.fell_over.func": {
+      "sentarse": "<function bad_orientation at 0x00000222261922A0>",
+      "tumbarse": null
+    },
+    "terminations.fell_over.params.limit_angle": {
+      "sentarse": "1.3962634015954636",
+      "tumbarse": null
+    },
+    "terminations.fell_over.time_out": {
+      "sentarse": "False",
+      "tumbarse": null
+    }
+  }
+}
