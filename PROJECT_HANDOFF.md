@@ -181,6 +181,53 @@ pelvis que despegaba los pies, y la pelvis congelada al sacarla del cálculo por
 - 143_34 y 20_01 cumplen los nueve puntos medibles; vídeos en `results/videos/gesture_cmu_143_34_hasta5.4_piernas_lento1.4.mp4` y
   `gesture_cmu_20_01_piernas.mp4`. **Aprobados por el dueño el 11 de noviembre.**
 
+**Andar: criterio aprobado por el dueño el 11 de noviembre, antes de programar.** Datos: CMU, sujeto 07 (07_01 y 07_02), la persona más
+simétrica medida, andando en línea recta. Se descarta 100STYLE por su pierna derecha. **Método:** el de los bailes con piernas, con pasos: el
+pie se suelta, avanza y se vuelve a apoyar en su nuevo sitio, y Danny avanza lo que la persona a su escala (unos 0,3 m/s). **Pasa si cumple:**
+(1) vídeo junto a la persona, aprobado por el dueño; (2-5) los de los gestos para los brazos; (7) el pie apoyado no resbala más de 5 mm;
+(8) el pie no atraviesa el suelo y ninguna otra pieza de la pierna lo toca; (9) **el ZMP** (punto de momento cero, con la aceleración del
+centro de masas) cae dentro de la huella de los pies apoyados el 95 % del tiempo o más. Al andar no se exige el centro de masas sobre los pies,
+porque una persona va cayendo hacia el paso siguiente. (10) Las dos rodillas se mueven igual: 5° o menos de diferencia en su mediana y en su
+percentil 95, por la queja del dueño en el primer intento. (11) Danny avanza entre el 80 % y el 120 % de la velocidad de la persona a escala.
+
+**Andar: primer resultado (11 de noviembre), NO CUMPLE.** `--walk` en `retarget_gesture.py`, con CMU 07_01 y 07_02. Corregido por el camino:
+- La postura de pie de la persona se tomaba de sus primeros 0,3 s, pero el clip empieza a mitad de paso. Las rodillas de Danny salían 26°
+  distintas, que era la queja del dueño en el primer intento. Ahora el cabeceo de cadera y la rodilla se miden desde el reposo de CMU, y el
+  giro y balanceo de cadera y tobillo, desde la mediana con ese pie apoyado.
+- El suelo de la captura está inclinado, unos 2,7 cm por metro, y por altura solo salía apoyado el 20-31 % del tiempo. Ahora el apoyo al
+  andar se decide por la velocidad del talón o de los dedos (`walking_foot_contacts`), y sale el 46-60 %.
+
+Con eso, **cumplen** las rodillas simétricas (punto 10) y casi todos los puntos de los brazos. **No cumplen** los pies ni el equilibrio, y en
+la versión que queda (`results/gesture_cmu_07_0{1,2}_piernas.json`, con `base_xy_weight` 0) tampoco la holgura del brazo:
+- 07_01: el pie se arrastra 8,5 cm y se hunde 2,5 cm; el ZMP está en la huella el 23 % del tiempo; avanza el 66 % de lo debido; el brazo entra
+  7 mm en el cuerpo; rodillas a 4,7° y 0,2° de diferencia.
+- 07_02: el pie se arrastra 7,3 cm y se hunde 1,6 cm; ZMP el 23 %; avanza el 57 %; el brazo entra 11 mm; error del brazo de 20,1 mm (p95).
+- No mejora al ralentizar (×1,5 y ×2) ni al dejar de tirar de la pelvis hacia la persona a escala. **Diagnóstico:** el método por fotograma no basta para los pasos. El pie se ancla donde esté al apoyarse, sin decidir antes dónde
+debe pisar, y el cuerpo y las piernas se pelean. **Siguiente paso propuesto, sin empezar:** planificar las pisadas antes (dónde apoya cada
+pie, a partir de las pisadas de la persona a escala) y llevar el pie en el aire de una pisada a la siguiente con una trayectoria suave. Es el
+método habitual para adaptar el andar a otro cuerpo.
+
+**Andar, segundo intento con pisadas planificadas y control predictivo del ZMP (11 de noviembre), NO CUMPLE.** Lo que se añadió a
+`LegRetarget` en modo andar:
+- Pisadas planificadas (`plan_footsteps`): cada apoyo de la persona da una pisada a escala (0,225), con el pie en el aire en una trayectoria
+  suave a 1,5 cm de altura. El clip empieza a mitad de paso, así que el pie empieza ya en su primera pisada y el primer fotograma no tiene
+  tope de velocidad.
+- No se copia el giro de la pelvis ni el de la cadera, y los pies apuntan hacia delante. Al copiarlos, el giro de cadera de Danny (-15° a
+  30°) llegaba a su tope y era lo que más fallaba.
+- Centro de masas del control predictivo del ZMP (`preview_com`, Kajita 2003), sobre las pisadas, con peso 1 frente a 10 del pie apoyado.
+
+Resultado, de `results/gesture_cmu_07_0{1,2}_piernas*.json`: cumplen 6-7 de 12 puntos. Cumplen las rodillas simétricas, salvo 6,5° en un caso
+ralentizado, y el avance (81-84 %). **No cumplen** los pies, el equilibrio ni la holgura del brazo:
+- 07_01: el pie se arrastra 2,9 cm y se hunde 1,0 cm; ZMP dentro el 44 %; el brazo entra 5,6 mm. Ralentizado × 1,5: 1,3 cm, 3,6 mm y 55 %.
+- 07_02: 5,3 cm, 1,5 cm y 34 %.
+
+**Diagnóstico:** con este método de pesos, el pie fijo, el centro de masas sobre el pie apoyado y la postura humana no caben a la vez en el
+cuerpo de Danny. Cada ajuste mejora uno y empeora otro: con el centro de masas al peso del pie, ZMP del 64-74 % pero el pie resbala 6-10 cm;
+con peso 1, el pie mejora y el ZMP baja al 34-55 %. Es lo mismo que pasó en el primer intento de andar. **Propuesta:** no seguir afinando la
+referencia cinemática del andar. Danny ya anda con física (fase 2), y la naturalidad del andar se puede pedir al entrenar, con estas
+pisadas o la simetría de rodillas como recompensa. **Decisión del dueño (11 de noviembre): se deja el andar para el entrenamiento con
+física.** El código de andar (`--walk`) y sus informes quedan como referencia del intento.
+
 **Antes del margen, no cumplían,** con `--speed-cap` y margen de 5 mm. Por topes del brazo, que el ritmo no arregla, porque la persona lleva el brazo más atrás o
 más arriba de lo que permite el hombro de Danny: encoger los hombros 141_21 (5,3 % en `right_shoulder_pitch` a +45°), chocar los cinco
 141_22 (6,0 %), Peek a Boo 141_18 y 143_33 (49 % y 25 %), Macarena 143_35 (18 %: codo a -130° y hombro a +45°, con las manos detrás de la

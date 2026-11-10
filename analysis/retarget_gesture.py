@@ -31,6 +31,8 @@ import danny_sim
 ELBOW_HAND_MEDIAN_M = 0.01
 ELBOW_HAND_P95_M = 0.02
 AT_LIMIT_FRACTION = 0.05
+KNEE_DIFFERENCE_DEG = 5.0  # punto 10 de andar
+SPEED_RATIO = (0.8, 1.2)  # punto 11 de andar
 
 
 def quantiles(values):
@@ -61,9 +63,11 @@ def main():
     parser.add_argument("--speed-cap", action="store_true", help="ninguna articulación del brazo va más deprisa que el 80 %% del servo")
     parser.add_argument("--limit-margin", type=float, default=0.0, help="grados que el brazo se queda de sus topes (0, puede llegar)")
     parser.add_argument("--end", type=float, default=None, help="corta el clip de la persona en ese segundo")
+    parser.add_argument("--walk", action="store_true", help="andar: implica --legs; equilibrio por ZMP, rodillas simétricas y avance")
     parser.add_argument("--legs", action="store_true", help="mueve piernas y pelvis (criterio de piernas); si no, quedan de pie")
     parser.add_argument("--smooth", type=float, default=0.0, help="sigma en s del suavizado final de brazos, cintura y cuello (0, sin suavizar)")
     args = parser.parse_args()
+    args.legs = args.legs or args.walk
     name = danny_gestures.clip_name(args.amc, args.slowdown, args.both_hands, args.amplitude, args.legs, args.end)
 
     model = danny_gestures.gesture_model()
@@ -73,7 +77,8 @@ def main():
                                               np.radians(args.limit_margin))
     retarget.frame_dt = motion.frame_time * args.slowdown
     if args.legs:
-        retarget.legs = danny_gestures.LegRetarget(model, motion)
+        retarget.legs = danny_gestures.LegRetarget(model, motion, rest_reference=args.walk)
+        retarget.legs.com_task = not args.walk
     raw, targets = retarget.run(motion)
     if args.amplitude != 1.0:
         # Los objetivos de codo y mano se recalculan con el brazo reducido: el punto 2 mide la distancia a ese brazo reducido.
@@ -114,7 +119,15 @@ def main():
     # Punto 6: piernas y pelvis en la pose de pie (sin --legs). Con --legs, puntos 7 a 9.
     legs = slice(0, joints.index("waist_yaw") + 7)
     legs_offset = float(np.abs(qpos[:, legs] - retarget.stand[legs]).max())
-    leg_points = danny_gestures.leg_criteria(model, qpos, 1.0 / danny_gestures.RATE_HZ) if args.legs else None
+    leg_points = danny_gestures.leg_criteria(model, qpos, 1.0 / danny_gestures.RATE_HZ, args.walk) if args.legs else None
+    if args.walk:
+        # Punto 10: rodillas simétricas. Punto 11: avance frente al de la persona a escala (y al ritmo de --slowdown).
+        knees = {side: np.degrees(qpos[:, 7 + joints.index(f"{side}_knee")]) for side in ("left", "right")}
+        knee_median = abs(float(np.median(knees["left"]) - np.median(knees["right"])))
+        knee_p95 = abs(float(np.percentile(knees["left"], 95) - np.percentile(knees["right"], 95)))
+        human_speed = np.linalg.norm(motion.end["root"][-1][:2] - motion.end["root"][0][:2]) / (motion.count * motion.frame_time)
+        danny_speed = np.linalg.norm(qpos[-1, :2] - qpos[0, :2]) / (len(qpos) / danny_gestures.RATE_HZ)
+        speed_ratio = danny_speed / (retarget.legs.scale * human_speed / args.slowdown)
 
     all_errors = np.concatenate([np.array(e) for e in errors.values()])
     criteria = {
@@ -129,7 +142,13 @@ def main():
             "max_planted_foot_slide_m": {"value": leg_points["slide"], "limit": danny_gestures.FOOT_SLIDE_M},
             "min_foot_height_m": {"value": leg_points["foot_low"], "limit": -danny_gestures.FLOOR_TOLERANCE_M},
             "min_other_leg_part_height_m": {"value": leg_points["leg_low"], "limit": 0.0},
-            "fraction_com_over_support": {"value": leg_points["balanced"], "limit": danny_gestures.BALANCED_FRACTION},
+            ("fraction_zmp_over_support" if args.walk else "fraction_com_over_support"): {"value": leg_points["balanced"], "limit": danny_gestures.BALANCED_FRACTION},
+        })
+    if args.walk:
+        criteria.update({
+            "knee_median_difference_deg": {"value": round(knee_median, 1), "limit": KNEE_DIFFERENCE_DEG},
+            "knee_p95_difference_deg": {"value": round(knee_p95, 1), "limit": KNEE_DIFFERENCE_DEG},
+            "forward_speed_ratio": {"value": round(float(speed_ratio), 3), "limit": list(SPEED_RATIO)},
         })
     else:
         criteria["legs_and_pelvis_max_offset_from_stand"] = {"value": round(legs_offset, 6), "limit": 0.0}
@@ -145,12 +164,18 @@ def main():
             "max_planted_foot_slide_m": leg_points["slide"] <= danny_gestures.FOOT_SLIDE_M,
             "min_foot_height_m": leg_points["foot_low"] >= -danny_gestures.FLOOR_TOLERANCE_M,
             "min_other_leg_part_height_m": leg_points["leg_low"] > 0.0,
-            "fraction_com_over_support": leg_points["balanced"] >= danny_gestures.BALANCED_FRACTION,
+            ("fraction_zmp_over_support" if args.walk else "fraction_com_over_support"): leg_points["balanced"] >= danny_gestures.BALANCED_FRACTION,
+        })
+    if args.walk:
+        passes.update({
+            "knee_median_difference_deg": knee_median <= KNEE_DIFFERENCE_DEG,
+            "knee_p95_difference_deg": knee_p95 <= KNEE_DIFFERENCE_DEG,
+            "forward_speed_ratio": SPEED_RATIO[0] <= speed_ratio <= SPEED_RATIO[1],
         })
     else:
         passes["legs_and_pelvis_max_offset_from_stand"] = legs_offset <= 1e-9
     for key in criteria:
-        criteria[key]["passes"] = passes[key]
+        criteria[key]["passes"] = bool(passes[key])
 
     out_dir = danny_sim.ROOT / "results" / "retargeted"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -171,7 +196,7 @@ def main():
         "joint_order": joints,
         "criteria_measured": criteria,
         "legs": args.legs,
-        "passes_measured": all(passes.values()),
+        "passes_measured": bool(all(passes.values())),
         "criterion_1": "vídeo junto a la persona, aprobado por el dueño (record_gesture_video.py)",
         "errors_m": {k: quantiles(v) for k, v in errors.items()},
         "arm_joints": {joints[j]: {"used_deg": [round(float(np.degrees(angles[:, j].min())), 1), round(float(np.degrees(angles[:, j].max())), 1)],

@@ -40,7 +40,9 @@ def main():
     parser.add_argument("--amplitude", type=float, default=1.0, help="el mismo que en retarget_gesture.py")
     parser.add_argument("--end", type=float, default=None, help="corta el clip de la persona en ese segundo")
     parser.add_argument("--legs", action="store_true", help="el mismo que en retarget_gesture.py")
+    parser.add_argument("--walk", action="store_true", help="el mismo que en retarget_gesture.py")
     args = parser.parse_args()
+    args.legs = args.legs or args.walk
     name = danny_gestures.clip_name(args.amc, args.slowdown, args.both_hands, args.amplitude, args.legs, args.end)
 
     model = danny_gestures.gesture_model()

@@ -413,6 +413,22 @@ def human_foot_contacts(motion):
     return out
 
 
+def walking_foot_contacts(motion):
+    """Pie humano apoyado al andar: el talón (tobillo) o los dedos casi quietos. No se mira la altura.
+
+    En 07_01 el suelo de la captura está inclinado: el pie derecho apoyado está a 1,0 cm de altura a los 0,2 s, a 4,1 cm a 1,2 s y a 6,7 cm a
+    2,2 s (unos 2,7 cm por metro andado), así que con la altura solo salía apoyado el 20-31 % del tiempo. Al andar, el pie solo se para en el
+    suelo (va a menos de 0,1 m/s apoyado y a 1-4 m/s en el aire). Se usa solo al andar, para no cambiar los bailes aprobados."""
+    out = {}
+    for side, p in (("left", "l"), ("right", "r")):
+        still = np.zeros(motion.count, dtype=bool)
+        for point in (motion.end[f"{p}foot"], motion.end[f"{p}tibia"]):
+            still |= np.linalg.norm(np.gradient(point, motion.frame_time, axis=0), axis=1) < WALK_CONTACT_SPEED_M_S
+        out[side] = debounce(still, int(round(MIN_CONTACT_CHANGE_S / motion.frame_time)))
+    return out
+
+
+WALK_CONTACT_SPEED_M_S = 0.4  # estimación
 MIN_CONTACT_CHANGE_S = 0.1  # un apoyo o una levantada más corta es ruido de la captura (en 143_34, el pie derecho «se levantaba» 0,03 s)
 
 
@@ -449,7 +465,10 @@ class LegRetarget:
     """Piernas y pelvis por fotograma: la pose `stand` más el cambio de la persona; la pelvis gira lo que gira la persona, se desplaza a
     escala, sube o baja para que el pie apoyado toque el suelo, y se corre lo justo para que un pie apoyado no resbale."""
 
-    def __init__(self, model, motion):
+    def __init__(self, model, motion, rest_reference=False):
+        """`rest_reference`: la postura de pie de la persona es la de reposo del esqueleto de CMU (piernas rectas, ángulos a cero), no la de
+        sus primeros 0,3 s. Hace falta al andar: el clip empieza a mitad de paso, con una rodilla doblada y la otra recta, y restar esa
+        postura dejaba las rodillas de Danny 26° distintas (07_01)."""
         self.model, self.motion = model, motion
         self.data = mujoco.MjData(model)
         self.stand = model.key_qpos[name_id(model, mujoco.mjtObj.mjOBJ_KEY, "stand")].copy()
@@ -457,7 +476,14 @@ class LegRetarget:
         count = max(1, int(REFERENCE_S / motion.frame_time))
         self.delta = {}
         for side in ("left", "right"):
-            reference = np.median(angles[side][:count], axis=0)
+            if rest_reference:
+                # Cabeceo de cadera y rodilla: el reposo de CMU (piernas rectas). Giro y balanceo de cadera y tobillo: la mediana con ese
+                # pie apoyado, porque en el reposo de CMU el pie no está plano y el tobillo de Danny salía muy inclinado al andar.
+                stance = walking_foot_contacts(motion)[side]
+                reference = np.median(angles[side][stance], axis=0)
+                reference[[LEG_JOINTS.index("hip_pitch"), LEG_JOINTS.index("knee")]] = 0.0
+            else:
+                reference = np.median(angles[side][:count], axis=0)
             self.delta[side] = (angles[side] - reference + np.pi) % (2 * np.pi) - np.pi
         self.root_reference = motion.rotation["root"][:count].mean(axis=0)
         u, _, vt = np.linalg.svd(self.root_reference)
@@ -467,14 +493,100 @@ class LegRetarget:
                      + np.linalg.norm(motion.end["ltibia"][0] - motion.end["lfemur"][0]) + motion.end["ltibia"][0][2]
                      - min(motion.end["lfoot"][:, 2].min(), motion.end["rfoot"][:, 2].min()))
         self.scale = 0.200 / human_leg  # pierna de Danny estirada, cadera a suela (estimación de la etapa de andar)
-        self.contacts = human_foot_contacts(motion)
+        self.contacts = walking_foot_contacts(motion) if rest_reference else human_foot_contacts(motion)
         self.joints = {side: [name_id(model, mujoco.mjtObj.mjOBJ_JOINT, f"{side}_{j}") for j in LEG_JOINTS] for side in ("left", "right")}
         self.qadr = {side: model.jnt_qposadr[self.joints[side]] for side in ("left", "right")}
         self.soles = {side: sole_geom(model, side) for side in ("left", "right")}
         self.anchor = {"left": None, "right": None}
         self.previous = None
+        self.com_task = True  # al andar se quita: el centro de masas no va sobre el pie apoyado (se mide el ZMP)
+        self.plan = self.plan_footsteps() if rest_reference else None
+        self.com_plan = None  # al andar, el centro de masas planificado (`plan_com`), cuando se sepa el ritmo
+        # Peso de la postura humana por articulación (en el orden de LEG_JOINTS, izquierda y derecha). Al andar no se copia el giro de
+        # cadera: oscila a cada paso y en Danny llegaba a su tope (-15°/30°), y los pies van hacia delante (ver `solve`).
+        self.posture_scale = np.tile([0.0 if (rest_reference and j == "hip_yaw") else 1.0 for j in LEG_JOINTS], 2)
+        # Al andar, 0: la pelvis avanza lo que dan los pasos de Danny. Tirar de ella hacia la persona a escala, con los pies apoyados fijos,
+        # estiraba la pierna más de lo que da (en 07_01 el pie se arrastraba hasta 13 cm y se hundía 2,7 cm).
+        self.base_xy_weight = 0.0 if rest_reference else BASE_XY_WEIGHT
         # Tope de velocidad de las piernas, como el de los brazos; `frame_dt` lo pone GestureRetarget con su ritmo.
         self.speed_cap, self.frame_dt = 0.97 * SPEED_LIMIT_RAD_S, CMU_FRAME_TIME
+
+    def plan_footsteps(self):
+        """Pisadas planificadas al andar: dónde apoya cada pie y por dónde va en el aire, por fotograma de la persona.
+
+        Cada apoyo de la persona (`walking_foot_contacts`) da una pisada: la mediana del punto medio entre tobillo y dedos, en la dirección
+        de la marcha, a escala de Danny (pierna de Danny entre muslo y tibia de la persona más 8 cm de tobillo, estimación). La pisada se
+        mide desde el primer apoyo, que se pone donde está el pie de Danny de pie. De lado, la separación de Danny de pie más lo que la
+        persona se aparta de su media, a escala. Entre dos pisadas, el pie va en línea con transición suave y sube SWING_HEIGHT_M en
+        medio, plano. Así el pie no se ancla donde esté al tocar el suelo (primer intento de andar: se arrastraba 7-13 cm)."""
+        motion = self.motion
+        root = motion.end["root"]
+        heading = root[-1, :2] - root[0, :2]
+        forward = heading / np.linalg.norm(heading)
+        lateral = np.array([-forward[1], forward[0]])
+        human_leg = (np.linalg.norm(motion.end["lfemur"][0] - motion.end["lhipjoint"][0])
+                     + np.linalg.norm(motion.end["ltibia"][0] - motion.end["lfemur"][0]) + HUMAN_ANKLE_HEIGHT_M)
+        scale = DANNY_LEG_M / human_leg
+        self.scale = scale
+        data = mujoco.MjData(self.model)
+        data.qpos[:] = self.stand
+        mujoco.mj_kinematics(self.model, data)
+        plan = {}
+        for side, p in (("left", "l"), ("right", "r")):
+            stand = data.site_xpos[name_id(self.model, mujoco.mjtObj.mjOBJ_SITE, f"{side}_sole")].copy()
+            point = (motion.end[f"{p}foot"] + motion.end[f"{p}tibia"])[:, :2] / 2 - root[0, :2]
+            stance = self.contacts[side]
+            segments, i = [], 0
+            while i < len(stance):
+                if stance[i]:
+                    j = i
+                    while j < len(stance) and stance[j]:
+                        j += 1
+                    middle = np.median(point[i:j], axis=0)
+                    segments.append((i, j, middle @ forward, middle @ lateral))
+                    i = j
+                else:
+                    i += 1
+            plan[side] = {"segments": segments, "stand": stand, "mean_y": np.mean([seg[3] for seg in segments]) if segments else 0.0}
+        start_x = min(seg[2] for side in plan for seg in plan[side]["segments"])
+        targets = {}
+        for side in ("left", "right"):
+            info = plan[side]
+            holds = [np.array([info["stand"][0] + scale * (x - start_x), info["stand"][1] + scale * (y - info["mean_y"]), 0.0])
+                     for _, _, x, y in info["segments"]]
+            positions, planted = np.zeros((motion.count, 3)), np.zeros(motion.count, dtype=bool)
+            # Antes del primer apoyo, el pie ya está en su primera pisada: el clip empieza a mitad de paso.
+            previous_end, previous_hold = 0, (holds[0] if holds else np.array([info["stand"][0], info["stand"][1], 0.0]))
+            for (begin, end, _, _), hold in zip(info["segments"], holds):
+                swing = max(begin - previous_end, 1)
+                for f in range(previous_end, begin):
+                    phase = (f - previous_end) / swing
+                    smooth = phase * phase * (3 - 2 * phase)
+                    positions[f] = previous_hold + smooth * (hold - previous_hold)
+                    positions[f, 2] = SWING_HEIGHT_M * np.sin(np.pi * phase)
+                positions[begin:end] = hold
+                planted[begin:end] = True
+                previous_end, previous_hold = end, hold
+            positions[previous_end:] = previous_hold
+            planted[previous_end:] = True
+            targets[side] = (positions, planted)
+        return targets
+
+    def plan_com(self):
+        """Centro de masas al andar: control predictivo del ZMP sobre las pisadas planificadas. La referencia del ZMP es el pie apoyado, o el
+        punto medio con los dos, suavizada ZMP_TRANSITION_S. Sin esto, Danny dejaba el cuerpo entre los dos pies y con un pie apoyado el ZMP
+        caía fuera de la huella (17-35 % dentro en 07_01 y 07_02, igual al ralentizar)."""
+        data = mujoco.MjData(self.model)
+        data.qpos[:] = self.stand
+        mujoco.mj_forward(self.model, data)
+        com_height = data.subtree_com[name_id(self.model, mujoco.mjtObj.mjOBJ_BODY, "base_link")][2]
+        reference = np.zeros((self.motion.count, 2))
+        for f in range(self.motion.count):
+            feet = [self.plan[side][0][f][:2] for side in ("left", "right") if self.plan[side][1][f]]
+            reference[f] = np.mean(feet or [self.plan[side][0][f][:2] for side in ("left", "right")], axis=0)
+        reference = gaussian_smooth(reference, ZMP_TRANSITION_S / self.frame_dt)
+        # El centro de la suela está en el sitio; el ZMP se pide ahí.
+        return preview_com(reference, com_height, self.frame_dt)
 
     def pose(self, frame, qpos):
         """Escribe en qpos la pelvis y las piernas del fotograma; devuelve qué pies de la persona están apoyados.
@@ -488,10 +600,16 @@ class LegRetarget:
             low, high = m.jnt_range[self.joints[side]].T
             posture[self.qadr[side]] = np.clip(self.stand[self.qadr[side]] + self.delta[side][frame], low + LEG_LIMIT_MARGIN_RAD, high - LEG_LIMIT_MARGIN_RAD)
         turn = self.motion.rotation["root"][frame] @ self.root_reference.T
+        if self.plan is not None:
+            # Al andar no se copia el giro de la pelvis (la persona la gira unos grados a cada paso): con los pies fijos, la guiñada de cadera
+            # de Danny (de -15° a 30°) no da para compensarlo y era la articulación que más veces llegaba a su tope en 07_01.
+            yaw = np.arctan2(turn[1, 0], turn[0, 0])
+            turn = Rotation.from_euler("z", -yaw).as_matrix() @ turn
         base = Rotation.from_quat(self.stand[3:7], scalar_first=True).as_matrix()
         posture[3:7] = Rotation.from_matrix(turn @ base).as_quat(scalar_first=True)
         target_xy = self.stand[:2] + self.scale * (self.motion.end["root"][frame][:2] - self.root_start[:2])
-        if self.previous is None:
+        first = self.previous is None
+        if first:
             self.previous = posture.copy()
             self.previous[:3] = self.stand[:3]
         qpos[:] = posture
@@ -501,13 +619,26 @@ class LegRetarget:
         d.qpos[:] = qpos
         mujoco.mj_kinematics(m, d)
         mujoco.mj_comPos(m, d)
-        planted = [side for side in ("left", "right") if self.contacts[side][frame]]
-        for side in ("left", "right"):
-            if side not in planted:
-                self.anchor[side] = None
-            elif self.anchor[side] is None:
-                self.anchor[side] = np.array([*self.site(f"{side}_sole")[:2], 0.0])
-        self.solve(planted, posture, target_xy)
+        swing_targets = {}
+        if self.plan is not None and self.com_plan is None:
+            self.com_plan = self.plan_com()
+        if self.plan is not None:
+            planted = [side for side in ("left", "right") if self.plan[side][1][frame]]
+            for side in ("left", "right"):
+                self.anchor[side] = self.plan[side][0][frame] if side in planted else None
+                if side not in planted:
+                    swing_targets[side] = self.plan[side][0][frame]
+        else:
+            planted = [side for side in ("left", "right") if self.contacts[side][frame]]
+            for side in ("left", "right"):
+                if side not in planted:
+                    self.anchor[side] = None
+                elif self.anchor[side] is None:
+                    self.anchor[side] = np.array([*self.site(f"{side}_sole")[:2], 0.0])
+        # El primer fotograma empieza en la postura de la persona, sin tope de velocidad: un clip de andar empieza a mitad de paso, con un pie
+        # 15 cm por delante del otro a escala, y desde la pose de pie no se puede llegar en un fotograma.
+        self.frame_index = frame
+        self.solve(planted, posture, target_xy, swing_targets, unlimited=first)
         qpos[:] = d.qpos
         self.previous = qpos.copy()
         return planted or ["left", "right"]
@@ -515,7 +646,14 @@ class LegRetarget:
     def site(self, name):
         return self.data.site_xpos[name_id(self.model, mujoco.mjtObj.mjOBJ_SITE, name)].copy()
 
-    def solve(self, planted, posture, target_xy):
+    def foot_forward_rows(self, site, jacr, dofs, rows, errors):
+        """Al andar, el pie apunta hacia delante (eje x del mundo): fila de la guiñada de la suela."""
+        forward = self.data.site_xmat[site].reshape(3, 3)[:, 0]
+        rows.append(FLAT_WEIGHT * jacr[2:3, dofs])
+        errors.append(FLAT_WEIGHT * np.array([-np.arctan2(forward[1], forward[0])]))
+
+    def solve(self, planted, posture, target_xy, swing_targets=None, unlimited=False):
+        swing_targets = swing_targets or {}
         m, d = self.model, self.data
         dofs = np.concatenate([[0, 1, 2]] + [m.jnt_dofadr[self.joints[side]] for side in ("left", "right")])
         qaddr = np.concatenate([[0, 1, 2]] + [self.qadr[side] for side in ("left", "right")])
@@ -524,17 +662,29 @@ class LegRetarget:
         high = np.concatenate([[np.inf] * 3] + [m.jnt_range[self.joints[side], 1] - LEG_LIMIT_MARGIN_RAD for side in ("left", "right")])
         start = d.qpos[qaddr].copy()
         cap = np.concatenate([[BASE_SPEED_M_S] * 3, [self.speed_cap] * (len(dofs) - 3)]) * self.frame_dt
-        for _ in range(LEG_IK_ITERATIONS):
+        if unlimited:
+            cap = np.full(len(dofs), np.inf)
+        for _ in range(LEG_IK_ITERATIONS * (5 if unlimited else 1)):
             rows, errors = [], []
             for side in ("left", "right"):
                 site = name_id(m, mujoco.mjtObj.mjOBJ_SITE, f"{side}_sole")
                 mujoco.mj_jacSite(m, d, jacp, jacr, site)
-                if side in planted:
+                if side in swing_targets:
+                    # Pie en el aire planificado: posición y plano.
+                    rows.append(FOOT_WEIGHT * jacp[:, dofs])
+                    errors.append(FOOT_WEIGHT * (swing_targets[side] - d.site_xpos[site]))
+                    up = d.site_xmat[site].reshape(3, 3)[:, 2]
+                    rows.append(FLAT_WEIGHT * jacr[:2, dofs])
+                    errors.append(FLAT_WEIGHT * np.cross(up, [0.0, 0.0, 1.0])[:2])
+                    self.foot_forward_rows(site, jacr, dofs, rows, errors)
+                elif side in planted:
                     rows.append(FOOT_WEIGHT * jacp[:, dofs])
                     errors.append(FOOT_WEIGHT * (self.anchor[side] - d.site_xpos[site]))
                     up = d.site_xmat[site].reshape(3, 3)[:, 2]
                     rows.append(FLAT_WEIGHT * jacr[:2, dofs])
                     errors.append(FLAT_WEIGHT * np.cross(up, [0.0, 0.0, 1.0])[:2])
+                    if self.plan is not None:
+                        self.foot_forward_rows(site, jacr, dofs, rows, errors)
                 else:
                     # Cada esquina de la suela del pie en el aire que baje de SWING_CLEARANCE_M se empuja hacia arriba: con el pie
                     # inclinado, la punta o el talón rozaban aunque el centro estuviera alto.
@@ -548,16 +698,20 @@ class LegRetarget:
             # peso al pie apoyado sin pensarlo; Danny copiaba la postura sin hacerlo (93 % en 143_34, el criterio pide 95 %).
             support = np.vstack([sole_corners(m, d, self.soles[side])[:, :2] for side in (planted or ("left", "right"))])
             com = d.subtree_com[name_id(m, mujoco.mjtObj.mjOBJ_BODY, "base_link")][:2]
-            goal = inside_support(support, com, COM_MARGIN_M)
+            goal = inside_support(support, com, COM_MARGIN_M) if self.com_task else None
+            if self.com_plan is not None:
+                goal = self.com_plan[self.frame_index]
             if goal is not None:
                 jac_com = np.zeros((3, m.nv))
                 mujoco.mj_jacSubtreeCom(m, d, jac_com, name_id(m, mujoco.mjtObj.mjOBJ_BODY, "base_link"))
-                rows.append(COM_WEIGHT * jac_com[:2, dofs])
-                errors.append(COM_WEIGHT * (goal - com))
-            rows.append(BASE_XY_WEIGHT * np.eye(len(dofs))[:2])
-            errors.append(BASE_XY_WEIGHT * (target_xy - d.qpos[:2]))
-            rows.append(LEG_POSTURE_WEIGHT * np.eye(len(dofs))[3:])
-            errors.append(LEG_POSTURE_WEIGHT * (posture[qaddr[3:]] - d.qpos[qaddr[3:]]))
+                weight = COM_WALK_WEIGHT if self.com_plan is not None else COM_WEIGHT
+                rows.append(weight * jac_com[:2, dofs])
+                errors.append(weight * (goal - com))
+            rows.append(self.base_xy_weight * np.eye(len(dofs))[:2])
+            errors.append(self.base_xy_weight * (target_xy - d.qpos[:2]))
+            weights = LEG_POSTURE_WEIGHT * self.posture_scale
+            rows.append(weights[:, None] * np.eye(len(dofs))[3:])
+            errors.append(weights * (posture[qaddr[3:]] - d.qpos[qaddr[3:]]))
             J, e = np.vstack(rows), np.concatenate(errors)
             # Las articulaciones en su tope que el paso empujaría más allá se quitan y se vuelve a resolver: si no, el cálculo les seguía
             # pidiendo más y la pelvis no subía, y en el fondo de la sentadilla de 143_34 el pie apoyado se hundía (rodilla a 127° y tobillo
@@ -600,8 +754,49 @@ def inside_support(corners, point, margin):
     return best
 
 
+def preview_com(zmp_reference, com_height, dt, preview_s=1.6, zmp_weight=1.0, jerk_weight=1e-6):
+    """Centro de masas en el plano que lleva el ZMP del modelo de carro y mesa a `zmp_reference` (Kajita y otros, 2003: control
+    predictivo con un estado posición-velocidad-aceleración y el tirón como entrada). Devuelve el centro de masas por fotograma."""
+    from scipy.linalg import solve_discrete_are
+
+    a = np.array([[1.0, dt, dt * dt / 2], [0.0, 1.0, dt], [0.0, 0.0, 1.0]])
+    b = np.array([[dt ** 3 / 6], [dt * dt / 2], [dt]])
+    c = np.array([[1.0, 0.0, -com_height / GRAVITY]])
+    # Sistema aumentado con el error de ZMP integrado (la forma estándar del control predictivo).
+    aa = np.block([[np.eye(1), c @ a], [np.zeros((3, 1)), a]])
+    bb = np.vstack([c @ b, b])
+    q = np.diag([zmp_weight, 0.0, 0.0, 0.0])
+    r = np.array([[jerk_weight]])
+    p = solve_discrete_are(aa, bb, q, r)
+    k = np.linalg.solve(r + bb.T @ p @ bb, bb.T @ p @ aa)
+    closed = aa - bb @ k
+    steps = int(preview_s / dt)
+    ki, kx = k[0, 0], k[0, 1:]
+    # Ganancias de la referencia futura: Gd(1) = -Gi, Gd(j) = (R + B'PB)^-1 B' X(j-1), con X(1) = -Ac' P I y X(j) = Ac' X(j-1).
+    gains, x = [-ki], -closed.T @ p @ np.vstack([np.eye(1), np.zeros((3, 1))])
+    for _ in range(steps - 1):
+        gains.append(np.linalg.solve(r + bb.T @ p @ bb, bb.T @ x).item())
+        x = closed.T @ x
+    count = len(zmp_reference)
+    padded = np.vstack([zmp_reference, np.repeat(zmp_reference[-1:], steps, axis=0)])
+    out = np.zeros((count, 2))
+    for axis in range(2):
+        state, error = np.array([zmp_reference[0, axis], 0.0, 0.0]), 0.0
+        for i in range(count):
+            out[i, axis] = state[0]
+            error += (c @ state).item() - zmp_reference[i, axis]
+            u = -ki * error - kx @ state - sum(g * padded[i + 1 + j, axis] for j, g in enumerate(gains))
+            state = a @ state + b[:, 0] * u
+    return out
+
+
+HUMAN_ANKLE_HEIGHT_M = 0.08  # estimación
+DANNY_LEG_M = 0.200  # cadera a suela con la pierna estirada (estimación de la etapa de andar)
+ZMP_TRANSITION_S = 0.08  # suavizado de la referencia del ZMP al pasar de un pie a otro (estimación)
+SWING_HEIGHT_M = 0.015  # altura del pie en el aire al andar (estimación; la marcha de la fase 2 sube 2 cm)
 COM_MARGIN_M = 0.008  # el centro de masas, a 8 mm del borde de la huella (estimación)
 COM_WEIGHT = 10.0
+COM_WALK_WEIGHT = 1.0  # al andar, el pie apoyado manda: con 10, como el pie, el pie cedía y resbalaba 6-10 cm (07_01 y 07_02)
 LEG_IK_ITERATIONS = 40
 LEG_IK_DAMPING = 0.01
 FOOT_WEIGHT = 10.0  # pie apoyado fijo donde se apoyó
@@ -618,8 +813,15 @@ FLOOR_TOLERANCE_M = 0.0005  # punto 8: el pie puede quedar como mucho medio mil�
 BALANCED_FRACTION = 0.95  # punto 9
 
 
-def leg_criteria(model, qpos, frame_dt):
-    """Puntos 7 a 9 sobre la trayectoria entregada. Un pie de Danny está apoyado si una esquina de su suela queda a menos de FOOT_CONTACT_M."""
+ZMP_SMOOTHING_S = 0.03  # suavizado del centro de masas antes de derivar dos veces (la derivada a 50 Hz amplifica el ruido)
+GRAVITY = 9.81
+
+
+def leg_criteria(model, qpos, frame_dt, walk=False):
+    """Puntos 7 a 9 sobre la trayectoria entregada. Un pie de Danny está apoyado si una esquina de su suela queda a menos de FOOT_CONTACT_M.
+
+    Con `walk`, el punto 9 usa el ZMP del modelo de carro y mesa, x_zmp = x_cdm - z_cdm / g · a_cdm, en lugar del centro de masas: al andar,
+    una persona va cayendo hacia el paso siguiente."""
     from scipy.spatial import Delaunay
 
     data = mujoco.MjData(model)
@@ -628,7 +830,7 @@ def leg_criteria(model, qpos, frame_dt):
               and any((mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, model.geom_bodyid[g]) or "").endswith(p)
                       for p in ("shin_1", "ankle_link_1", "foot_1", "thigh_1"))]
     start = {"left": None, "right": None}
-    slide, foot_low, leg_low, balanced = 0.0, np.inf, np.inf, []
+    slide, foot_low, leg_low, balanced, coms, supports = 0.0, np.inf, np.inf, [], [], []
     for q in qpos:
         data.qpos[:] = q
         mujoco.mj_forward(model, data)
@@ -646,7 +848,14 @@ def leg_criteria(model, qpos, frame_dt):
         for g in others:
             size, rot, pos = model.geom_size[g], data.geom_xmat[g].reshape(3, 3), data.geom_xpos[g]
             leg_low = min(leg_low, min((pos + rot @ (np.array([sx, sy, sz]) * size))[2] for sx in (-1, 1) for sy in (-1, 1) for sz in (-1, 1)))
-        com = data.subtree_com[name_id(model, mujoco.mjtObj.mjOBJ_BODY, "base_link")][:2]
-        balanced.append(len(support) >= 3 and Delaunay(np.array(support)).find_simplex(com) >= 0)
+        com = data.subtree_com[name_id(model, mujoco.mjtObj.mjOBJ_BODY, "base_link")].copy()
+        coms.append(com)
+        supports.append(np.array(support))
+        balanced.append(len(support) >= 3 and Delaunay(np.array(support)).find_simplex(com[:2]) >= 0)
+    if walk:
+        coms = gaussian_smooth(np.array(coms), ZMP_SMOOTHING_S / frame_dt)
+        acceleration = np.gradient(np.gradient(coms, frame_dt, axis=0), frame_dt, axis=0)
+        zmp = coms[:, :2] - coms[:, 2:3] / GRAVITY * acceleration[:, :2]
+        balanced = [len(s) >= 3 and Delaunay(s).find_simplex(z) >= 0 for s, z in zip(supports, zmp)]
     return {"slide": round(slide, 4), "foot_low": round(float(foot_low), 4), "leg_low": round(float(leg_low), 4),
             "balanced": round(float(np.mean(balanced)), 4)}
