@@ -1,0 +1,285 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_walk\\2026-11-10_09-55-27_fase5_sentarse_manos_afinado\\model_12198.pt",
+  "vin_v": 6.6,
+  "num_envs": 4096,
+  "seconds": 10.0,
+  "seated_pelvis_threshold_m": 0.07,
+  "definition": "pelvis <= umbral, tronco <= 35 grados, ni tronco, cuello ni cabeza en el suelo, velocidad media <= 0,05 m/s, 3 s seguidos",
+  "new_criterion_2026_11_09_manos": {
+    "passes_all": true,
+    "criteria": {
+      "seated": {
+        "value": 1.0,
+        "required": 0.95,
+        "passes": true
+      },
+      "full_descent_0.218_to_0.07_m_lasts_at_least_0.6_s": {
+        "value": 1.0,
+        "required": 0.95,
+        "passes": true
+      },
+      "pelvis_descent_speed_to_0.16_m_at_most_0.3_m_s": {
+        "value": 0.9998,
+        "required": 0.95,
+        "passes": true
+      },
+      "hands_touch_floor_before_pelvis": {
+        "value": 1.0,
+        "required": 0.95,
+        "passes": true
+      },
+      "pelvis_thighs_or_shins_touch_floor_and_pelvis_crosses_0.07_m_at_most_0.4_m_s": {
+        "value": 1.0,
+        "required": 0.95,
+        "passes": true
+      },
+      "trunk_rate_at_most_3_rad_s_every_axis": {
+        "value": 0.9983,
+        "required": 0.99,
+        "passes": true
+      },
+      "never_tilted_over_80deg": {
+        "value": 1.0,
+        "required": 0.98,
+        "passes": true
+      },
+      "saturation_moving_run_at_most_0.5s": {
+        "value": 1.0,
+        "required": 0.99,
+        "passes": true
+      },
+      "saturation_seated_at_most_5pct": {
+        "value": 1.0,
+        "required": 0.99,
+        "passes": true
+      },
+      "saturation_no_robot_over_2s": {
+        "value": 1.0,
+        "required": 1.0,
+        "passes": true
+      }
+    }
+  },
+  "descent_duration_s": {
+    "median": 0.82,
+    "p5": 0.78,
+    "p95": 0.86
+  },
+  "trunk_rate_peak_rad_s_by_axis_after_descent_start": {
+    "balanceo": {
+      "median": 2.214,
+      "p95": 2.606,
+      "max": 3.087
+    },
+    "cabeceo": {
+      "median": 2.064,
+      "p95": 2.425,
+      "max": 3.122
+    },
+    "guinada": {
+      "median": 1.801,
+      "p95": 2.139,
+      "max": 3.254
+    }
+  },
+  "descent_to_0.16_m_duration_s": {
+    "median": 0.28,
+    "p5": 0.26,
+    "p95": 0.3
+  },
+  "descent_speed_to_0.16_m_max_m_s": {
+    "median": 0.227,
+    "p95": 0.248
+  },
+  "hands_first_touch_fraction_of_robots": 1.0,
+  "pelvis_z_at_first_hand_contact_m": {
+    "median": 0.13,
+    "max": 0.136
+  },
+  "pelvis_touch_speed_m_s": null,
+  "pelvis_thigh_or_shin_first_floor_contact_speed_m_s": {
+    "median": 0.12,
+    "p95": 0.136,
+    "max": 0.219
+  },
+  "pelvis_thigh_or_shin_touched_floor_fraction_of_robots": 1.0,
+  "pelvis_speed_when_crossing_0.07_m_m_s": {
+    "median": 0.128,
+    "p95": 0.151,
+    "max": 0.213
+  },
+  "pelvis_crossed_0.07_m_fraction_of_robots": 1.0,
+  "pelvis_touched_floor_fraction_of_robots": 0.0,
+  "max_trunk_tilt_deg": {
+    "median": 36.0,
+    "p95": 37.3,
+    "max": 39.0
+  },
+  "arms_max_deviation_from_rest_deg_at_end": {
+    "median": 69.1,
+    "p95": 70.4,
+    "max": 72.6
+  },
+  "fraction_seated": 1.0,
+  "fraction_never_tilted_over_fall_threshold": 1.0,
+  "fraction_descent_speed_below_0.6_m_s": 1.0,
+  "descent_speed_max_m_s": {
+    "median": 0.255,
+    "p95": 0.316
+  },
+  "time_to_seated_s": {
+    "median": 3.98
+  },
+  "final_pelvis_z_m": {
+    "median": 0.0565,
+    "p10": 0.0565,
+    "p90": 0.0569
+  },
+  "final_tilt_deg": {
+    "median": 0.8,
+    "p90": 1.4
+  },
+  "final_bodies_touching_floor_fraction_of_robots": {
+    "robot/left_thigh_1": 0.64,
+    "robot/left_shin_1": 1.0,
+    "robot/right_thigh_1": 0.75,
+    "robot/right_shin_1": 1.0,
+    "robot/left_forearm_1": 1.0
+  },
+  "saturation": {
+    "fraction_of_robots_moving_run_at_most_0.5s": 1.0,
+    "fraction_of_robots_moving_run_at_most_2s": 1.0,
+    "fraction_of_seated_robots_saturated_at_most_5pct": 1.0,
+    "by_joint": {
+      "left_hip_yaw": {
+        "moving_longest_saturated_run_s_max": 0.0,
+        "moving_longest_saturated_run_s_p99": 0.0,
+        "seated_saturated_fraction_max": 0.0
+      },
+      "left_hip_roll": {
+        "moving_longest_saturated_run_s_max": 0.0,
+        "moving_longest_saturated_run_s_p99": 0.0,
+        "seated_saturated_fraction_max": 0.0
+      },
+      "left_hip_pitch": {
+        "moving_longest_saturated_run_s_max": 0.02,
+        "moving_longest_saturated_run_s_p99": 0.0,
+        "seated_saturated_fraction_max": 0.0
+      },
+      "left_knee": {
+        "moving_longest_saturated_run_s_max": 0.02,
+        "moving_longest_saturated_run_s_p99": 0.02,
+        "seated_saturated_fraction_max": 0.0
+      },
+      "left_ankle_pitch": {
+        "moving_longest_saturated_run_s_max": 0.0,
+        "moving_longest_saturated_run_s_p99": 0.0,
+        "seated_saturated_fraction_max": 0.0
+      },
+      "left_ankle_roll": {
+        "moving_longest_saturated_run_s_max": 0.0,
+        "moving_longest_saturated_run_s_p99": 0.0,
+        "seated_saturated_fraction_max": 0.0
+      },
+      "right_hip_yaw": {
+        "moving_longest_saturated_run_s_max": 0.0,
+        "moving_longest_saturated_run_s_p99": 0.0,
+        "seated_saturated_fraction_max": 0.0
+      },
+      "right_hip_roll": {
+        "moving_longest_saturated_run_s_max": 0.02,
+        "moving_longest_saturated_run_s_p99": 0.0,
+        "seated_saturated_fraction_max": 0.0
+      },
+      "right_hip_pitch": {
+        "moving_longest_saturated_run_s_max": 0.0,
+        "moving_longest_saturated_run_s_p99": 0.0,
+        "seated_saturated_fraction_max": 0.0
+      },
+      "right_knee": {
+        "moving_longest_saturated_run_s_max": 0.04,
+        "moving_longest_saturated_run_s_p99": 0.02,
+        "seated_saturated_fraction_max": 0.0
+      },
+      "right_ankle_pitch": {
+        "moving_longest_saturated_run_s_max": 0.02,
+        "moving_longest_saturated_run_s_p99": 0.02,
+        "seated_saturated_fraction_max": 0.0
+      },
+      "right_ankle_roll": {
+        "moving_longest_saturated_run_s_max": 0.0,
+        "moving_longest_saturated_run_s_p99": 0.0,
+        "seated_saturated_fraction_max": 0.0
+      },
+      "waist_yaw": {
+        "moving_longest_saturated_run_s_max": 0.0,
+        "moving_longest_saturated_run_s_p99": 0.0,
+        "seated_saturated_fraction_max": 0.0
+      },
+      "left_shoulder_pitch": {
+        "moving_longest_saturated_run_s_max": 0.0,
+        "moving_longest_saturated_run_s_p99": 0.0,
+        "seated_saturated_fraction_max": 0.0
+      },
+      "left_shoulder_roll": {
+        "moving_longest_saturated_run_s_max": 0.02,
+        "moving_longest_saturated_run_s_p99": 0.0,
+        "seated_saturated_fraction_max": 0.0
+      },
+      "left_shoulder_yaw": {
+        "moving_longest_saturated_run_s_max": 0.0,
+        "moving_longest_saturated_run_s_p99": 0.0,
+        "seated_saturated_fraction_max": 0.0
+      },
+      "left_elbow": {
+        "moving_longest_saturated_run_s_max": 0.02,
+        "moving_longest_saturated_run_s_p99": 0.0,
+        "seated_saturated_fraction_max": 0.0
+      },
+      "right_shoulder_pitch": {
+        "moving_longest_saturated_run_s_max": 0.0,
+        "moving_longest_saturated_run_s_p99": 0.0,
+        "seated_saturated_fraction_max": 0.0
+      },
+      "right_shoulder_roll": {
+        "moving_longest_saturated_run_s_max": 0.02,
+        "moving_longest_saturated_run_s_p99": 0.0,
+        "seated_saturated_fraction_max": 0.0
+      },
+      "right_shoulder_yaw": {
+        "moving_longest_saturated_run_s_max": 0.0,
+        "moving_longest_saturated_run_s_p99": 0.0,
+        "seated_saturated_fraction_max": 0.0
+      },
+      "right_elbow": {
+        "moving_longest_saturated_run_s_max": 0.0,
+        "moving_longest_saturated_run_s_p99": 0.0,
+        "seated_saturated_fraction_max": 0.0
+      },
+      "neck_yaw": {
+        "moving_longest_saturated_run_s_max": 0.0,
+        "moving_longest_saturated_run_s_p99": 0.0,
+        "seated_saturated_fraction_max": 0.0
+      },
+      "neck_pitch": {
+        "moving_longest_saturated_run_s_max": 0.0,
+        "moving_longest_saturated_run_s_p99": 0.0,
+        "seated_saturated_fraction_max": 0.0
+      }
+    }
+  },
+  "videos": [
+    {
+      "robot": 1904,
+      "kind": "tipico",
+      "max_descent_speed_m_s": 0.255,
+      "file": "sentarse_manos_afinado_model_12198_6.6V_tipico_robot1904_bajada0.26ms.mp4"
+    },
+    {
+      "robot": 3982,
+      "kind": "bajada_mas_rapida",
+      "max_descent_speed_m_s": 0.385,
+      "file": "sentarse_manos_afinado_model_12198_6.6V_bajada_mas_rapida_robot3982_bajada0.38ms.mp4"
+    }
+  ]
+}

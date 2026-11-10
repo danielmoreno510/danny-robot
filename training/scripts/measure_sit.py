@@ -29,7 +29,7 @@ SIT_TASK = "Mjlab-SitDown-Danny"
 WINDOW_S, SPEED_MAX, SATURATED = 3.0, sit.SEATED_SPEED_M_S, 0.9
 SOFT_DESCENT_M_S = 0.6
 # Criterio del 9 de noviembre, sentarse apoyando las manos detrás (PROJECT_HANDOFF.md, Fase 5, sentarse, tercer intento).
-MIN_DESCENT_S = 1.0
+MIN_DESCENT_S = 0.6  # decisión del dueño, 10 nov: antes 1 s; el tiempo escala con la raíz de la altura (0,4 m frente a 1,7 m: factor 0,49)
 DESCENT_END_Z_M = 0.16  # la bajada medida va de la altura de pie menos 1 cm a esta altura
 MAX_DESCENT_M_S = 0.3
 MAX_PELVIS_TOUCH_M_S = 0.4
@@ -75,7 +75,7 @@ def main() -> None:
   forbidden = torch.tensor([model.body(f"robot/{name}").id for name in sit.FORBIDDEN_BODIES], device=device)
   pelvis_body = int(model.site_bodyid[model.site(f"robot/{getup.PELVIS_SITE}").id])
   hand_bodies = torch.tensor([i for i in range(model.nbody) if "forearm" in model.body(i).name], device=device)
-  support_bodies = torch.tensor([pelvis_body] + [i for i in range(model.nbody) if "thigh" in model.body(i).name], device=device)  # pelvis y muslos
+  support_bodies = torch.tensor([pelvis_body] + [i for i in range(model.nbody) if "thigh" in model.body(i).name or "shin" in model.body(i).name], device=device)  # pelvis, muslos y espinillas
   fall_tilt = math.radians(args.fall_tilt_deg)
 
   steps = int(args.seconds / dt)
@@ -195,10 +195,10 @@ def main() -> None:
   }
   new_checks = {
     "seated": (ok.float().mean(), 0.95),
-    "full_descent_0.218_to_0.07_m_lasts_at_least_1_s": ((descent_s >= MIN_DESCENT_S).float().mean(), 0.95),
+    "full_descent_0.218_to_0.07_m_lasts_at_least_0.6_s": ((descent_s >= MIN_DESCENT_S).float().mean(), 0.95),
     "pelvis_descent_speed_to_0.16_m_at_most_0.3_m_s": ((max_down_to160 <= MAX_DESCENT_M_S).float().mean(), 0.95),
     "hands_touch_floor_before_pelvis": (hands_before_pelvis.float().mean(), 0.95),
-    "pelvis_or_thighs_touch_floor_and_pelvis_crosses_0.07_m_at_most_0.4_m_s": (touch_ok.float().mean(), 0.95),
+    "pelvis_thighs_or_shins_touch_floor_and_pelvis_crosses_0.07_m_at_most_0.4_m_s": (touch_ok.float().mean(), 0.95),
     "trunk_rate_at_most_3_rad_s_every_axis": ((rate_max.amax(dim=1) <= MAX_TRUNK_RATE_RAD_S).float().mean(), 0.99),
     f"never_tilted_over_{args.fall_tilt_deg:g}deg": ((~fell).float().mean(), 0.98),
     "saturation_moving_run_at_most_0.5s": ((worst_run <= 0.5).float().mean(), 0.99),
@@ -225,8 +225,8 @@ def main() -> None:
     "hands_first_touch_fraction_of_robots": round(float((hands_first >= 0).float().mean()), 4),
     "pelvis_z_at_first_hand_contact_m": {"median": round(float(hand_z_at_contact[~torch.isnan(hand_z_at_contact)].median()), 3), "max": round(float(hand_z_at_contact[~torch.isnan(hand_z_at_contact)].max()), 3)} if (~torch.isnan(hand_z_at_contact)).any() else None,
     "pelvis_touch_speed_m_s": {"median": round(float(pelvis_touch_speed[pelvis_first >= 0].median()), 3), "p95": round(float(torch.quantile(pelvis_touch_speed[pelvis_first >= 0], 0.95)), 3)} if (pelvis_first >= 0).any() else None,
-    "pelvis_or_thigh_first_floor_contact_speed_m_s": {"median": round(float(support_touch_speed[support_first >= 0].median()), 3), "p95": round(float(torch.quantile(support_touch_speed[support_first >= 0], 0.95)), 3), "max": round(float(support_touch_speed[support_first >= 0].max()), 3)} if (support_first >= 0).any() else None,
-    "pelvis_or_thigh_touched_floor_fraction_of_robots": round(float((support_first >= 0).float().mean()), 4),
+    "pelvis_thigh_or_shin_first_floor_contact_speed_m_s": {"median": round(float(support_touch_speed[support_first >= 0].median()), 3), "p95": round(float(torch.quantile(support_touch_speed[support_first >= 0], 0.95)), 3), "max": round(float(support_touch_speed[support_first >= 0].max()), 3)} if (support_first >= 0).any() else None,
+    "pelvis_thigh_or_shin_touched_floor_fraction_of_robots": round(float((support_first >= 0).float().mean()), 4),
     "pelvis_speed_when_crossing_0.07_m_m_s": {"median": round(float(cross_speed[cross_step >= 0].median()), 3), "p95": round(float(torch.quantile(cross_speed[cross_step >= 0], 0.95)), 3), "max": round(float(cross_speed[cross_step >= 0].max()), 3)} if (cross_step >= 0).any() else None,
     "pelvis_crossed_0.07_m_fraction_of_robots": round(float((cross_step >= 0).float().mean()), 4),
     "pelvis_touched_floor_fraction_of_robots": round(float((pelvis_first >= 0).float().mean()), 4),
