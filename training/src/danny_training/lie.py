@@ -35,6 +35,7 @@ START_CLEARANCE_M = 0.001  # separación entre el punto más bajo y el suelo al 
 SETTLE_STEPS = 10  # pasos quietos (articulaciones sujetas en su pose) antes de contar, solo en las medidas del inicio `clean`.
 START_JOINT_NOISE_RAD = 0.05
 SIT_END_JOINT_NOISE_RAD = 0.02
+SIT_END_EXACT_FRACTION = 0.5  # fracción de los reinicios `sit_end` sin ruido ni margen: el estado exacto con que acaba sentarse, que es el que ve la cadena
 SIT_END_STATES = Path(__file__).resolve().parents[2] / "data" / "sit_end_states.pt"
 LIE_START = os.environ.get("DANNY_LIE_START", "sit_end")
 assert LIE_START in ("sit_end", "clean"), f"DANNY_LIE_START debe ser sit_end o clean, no {LIE_START}"
@@ -105,7 +106,11 @@ def reset_seated(env: ManagerBasedRlEnv, env_ids: torch.Tensor | None, joint_noi
 
 
 def reset_from_sit_end(env: ManagerBasedRlEnv, env_ids: torch.Tensor | None, joint_noise_rad: float) -> None:
-  """Inicio `sit_end`: uno de los estados reales con que termina la política de sentarse (articulaciones y orientación sin guiñada), guiñada aleatoria."""
+  """Inicio `sit_end`: uno de los estados reales con que termina la política de sentarse (articulaciones y orientación sin guiñada), guiñada aleatoria.
+
+  Una fracción `SIT_END_EXACT_FRACTION` de los reinicios usa el estado exacto, sin ruido en las articulaciones y sin el margen de caída de 1 cm (en la cadena el robot
+  llega ya quieto y asentado); el resto lleva `joint_noise_rad` y el margen, como en la corrida 3.
+  """
   if env_ids is None:
     env_ids = torch.arange(env.num_envs, device=env.device, dtype=torch.int)
   cache = env.extras.setdefault("_sit_end_states", {})
@@ -121,9 +126,11 @@ def reset_from_sit_end(env: ManagerBasedRlEnv, env_ids: torch.Tensor | None, joi
   yaw_q = quat_from_euler_xyz(torch.zeros_like(yaw), torch.zeros_like(yaw), yaw)
   quat = quat_mul(yaw_q, cache["tilt_quat_wxyz"][pick])
   pos = asset.data.default_root_state[env_ids][:, :3].clone()
-  pos[:, 2] = cache["root_z"][pick] + START_DROP_MARGIN_M
+  exact = torch.rand(n, device=env.device) < SIT_END_EXACT_FRACTION
+  pos[:, 2] = cache["root_z"][pick] + START_DROP_MARGIN_M * (~exact).float()
   pos[:, :2] += env.scene.env_origins[env_ids][:, :2]
-  joint_pos = cache["joint_pos"][pick] + sample_uniform(-joint_noise_rad, joint_noise_rad, (n, cache["joint_pos"].shape[1]), env.device)
+  noise = sample_uniform(-joint_noise_rad, joint_noise_rad, (n, cache["joint_pos"].shape[1]), env.device) * (~exact).float()[:, None]
+  joint_pos = cache["joint_pos"][pick] + noise
   _ground_and_write(env, env_ids, pos, quat, joint_pos)
 
 
@@ -211,7 +218,7 @@ def danny_lie_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   cfg.rewards = {
     "lie_progress": RewardTermCfg(func=lie_progress, weight=4.0),
     "lying_still": RewardTermCfg(func=lying_still, weight=2.0, params={"std": 0.3}),
-    "pelvis_rate_excess": RewardTermCfg(func=pelvis_rate_excess, weight=-2.0),
+    "pelvis_rate_excess": RewardTermCfg(func=pelvis_rate_excess, weight=-8.0),
     "trunk_speed_excess": RewardTermCfg(func=trunk_speed_excess, weight=-20.0),
     "head_floor_contacts": RewardTermCfg(func=head_floor_contacts, weight=-2.0),
     "action_out_of_range": RewardTermCfg(func=getup.action_out_of_range_l1, weight=-0.035),
