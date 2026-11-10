@@ -29,10 +29,216 @@ código 1 porque, sin política, las tareas fallan con ganancia 5.
 **Segunda auditoría:** al final de [design-audit.md](documentation/design-audit.md) están los fallos, la tornillería, las medidas C1 a C10 y la primera tanda en PLA.
 Corregido lo que no depende del servo. Lo primero con los servos es medir C1 a C5, antes de meter ningún tornillo.
 
-**Comprado, sin recibir:** 3 servos HD-1910, FE-URT-2, fuente de alimentación, calibrador digital, báscula de cocina,
-impresora 3D y filamentos. Al llegar: medir conectores, muesca y rosca del servo, comprobar encaje y pesar piezas (2.2 y
+**Recibido el 10 de noviembre:** 3 servos HD-1910, la placa FE-URT-2, impresora 3D con filamento, calibrador digital y
+báscula de cocina. **Falta por llegar:** la fuente de 3-12 V y 5 A (ArmDojo), necesaria para mover los servos. Ahora toca: medir conectores, muesca y rosca del servo, comprobar encaje y pesar piezas (2.2 y
 2.3), y empezar el banco (5.1). Falta el brazo de carga, que se imprime, y los programas de medida. No se compra el resto
-hasta pasar 5.1 y 5.2. Claude modela en Fusion por scripts, con `DannyBridge`.
+hasta pasar 5.1 y 5.2. Claude modela en Fusion por scripts, con `DannyBridge`. **Primeras medidas del servo (10 de noviembre):**
+caja de 33,9 × 19,9 × 22,8 mm, dentro de la holgura del CAD; cada bocina sobresale unos 3,4 mm (el CAD supone 3,0); pesa 23 g (el CAD supone 21).
+Faltan C2, C5, C6, C8 y C9, y saber dónde se tomaron seis cotas de las fotos ([design-audit.md](documentation/design-audit.md)).
+
+**Fase 6, gestos de pie: criterio aprobado por el dueño el 10 de noviembre, antes de programar.** Un primer intento de adaptar el andar
+de 100STYLE y CMU se deshizo a petición del dueño: las rodillas se veían antinaturales por las proporciones de Danny (pie largo, pierna
+corta) y por una pierna rara en la grabación de 100STYLE. Se empieza por **gestos de pie**, con un clip: CMU **141_16 "Wave Hello"**, y
+después 143_25, 141_21 y 143_35. **Método:** piernas y pelvis fijas en la pose `stand` de la fase 2; de la persona se copian brazos,
+cintura y cuello, con cada tramo del brazo de Danny en la dirección del humano y con su propia longitud. **Pasa si cumple todo:**
+(1) vídeo de la persona junto a Danny, aprobado por el dueño; (2) mano y codo a 1 cm o menos de su objetivo de mediana, y a 2 cm o menos
+en el 95 % del tiempo (estimación, con un brazo de unos 17 cm); (3) ninguna articulación del brazo más del 5 % del tiempo en su tope;
+(4) ninguna articulación por encima del 80 % de la velocidad del servo en vacío (8,2 rad/s a 6,6 V); (5) el brazo no atraviesa tronco,
+cabeza ni piernas en ningún fotograma; (6) piernas y pelvis exactamente en la pose de pie. Es solo la referencia: seguirla con física
+se entrena después, con su propio criterio.
+
+**Primer clip, 141_16 "Wave Hello" (10 de noviembre).** `analysis/retarget_gesture.py` adapta y mide (`results/gesture_cmu_141_16*.json`),
+y `analysis/record_gesture_video.py` graba la persona junto a Danny (`results/videos/gesture_cmu_141_16*.mp4`). Datos de CMU en
+`external/cmu/` (fuera de git): "The data used in this project was obtained from mocap.cs.cmu.edu. The database was created with funding
+from NSF EIA-0196217." Al ritmo de la persona (2,5 s) pasan los puntos 2, 3, 5 y 6 (codo y mano a 1,1 mm de mediana y 2,0 mm de p95; ningún
+tope; 1,7 mm de holgura mínima entre brazo y cuerpo; piernas fijas), pero **no el 4**: `right_shoulder_yaw` llega a 14,1 rad/s. **No es
+un fallo de la adaptación:** el antebrazo de la persona gira hasta 17,5 rad/s (13,5 de p95), más que el servo en vacío (10,3). Debió
+calcularse antes de fijar el criterio. Con `--slowdown 1.8` (4,5 s) pasan los cinco puntos medibles (8,11 rad/s como máximo). **El punto 5
+se mide con las mallas del CAD:** las cajas de colisión simplificadas del entrenamiento se tocan 2,6 mm en el hombro derecho aunque las
+piezas no, así que al entrenar habrá contacto entre brazo y tronco si se activa el choque entre piezas.
+
+**Decisión del dueño (10 de noviembre): aprobados dos gestos de 141_16.**
+- **"Saludar":** `cmu_141_16_lento1.8`, con una mano y 1,8 veces más lento que la persona. Cumple los seis puntos.
+- **"Pedir ayuda" o "nervioso":** con las dos manos y al ritmo de la persona, que al dueño también le gustó. Al ritmo humano y con toda su
+  amplitud no cumple el punto 4 (14,1 rad/s) y el servo real no llegaría, así que se hizo `cmu_141_16_dos_manos_amplitud0.5`: los dos brazos
+  copian el derecho de la persona, en espejo (`--both-hands`), y la agitación rápida se reduce a la mitad sin cambiar cuánto suben las
+  manos (`--amplitude 0.5`). Esto último lo hace `shrink_arms`, que suaviza con una gaussiana de 0,1 s. Cumple los puntos 3 a 6 (7,94 rad/s,
+  3,2 mm de holgura). El punto 2 vale 0 por construcción, porque mide contra el brazo ya reducido; antes de reducir, el error era el del saludo
+  (1-2 mm). **Aprobado por el dueño el 10 de noviembre**, tras ver el vídeo (`results/videos/gesture_cmu_141_16_dos_manos_amplitud0.5.mp4`).
+- La versión al ritmo humano con una mano (`cmu_141_16`) queda solo como referencia: no cumple el punto 4.
+
+**Más gestos (10 de noviembre, trabajando solo mientras el dueño estaba fuera; vídeos pendientes de su aprobación).** Se probaron 13 clips
+más de CMU: 143_25, 141_21, 143_35, 141_18, 141_20, 141_22, 141_23, 141_24, 141_27, 143_33, 13_26, 18_08 y 19_08. Al principio todos fallaban
+la velocidad, y en los tranquilos el robot iba de 3 a 5 veces más rápido que la persona. Ejemplos: conversación 18_08, 18,5 rad/s frente a
+6,8; dirigir el tráfico 13_26, 50,5 frente a 10,8. El motivo es que el giro del hombro de Danny va a lo largo del brazo, y con el brazo casi
+recto el cálculo lo hacía girar sin mover la mano. Tres cambios en `danny_gestures.py`, todos opcionales, para que los gestos aprobados de
+141_16 se reproduzcan igual (comprobado: 0,000° de diferencia):
+- `--speed-cap`: ninguna articulación del brazo cambia más deprisa que el 97 % del límite del criterio. Si la persona va más rápido, Danny se
+  queda atrás, y el punto 2 lo mide.
+- `--body-margin`: el brazo se aparta del cuerpo cuando una pieza queda a menos de ese margen. Si al terminar las 30 iteraciones sigue
+  tocando, se hacen hasta 90 más (en 18_08 hacían falta unas 40).
+- `--continuity`, hacia la postura anterior: no quedó en ningún gesto final.
+
+Casi todos los roces eran del antebrazo contra el muslo o la cadera, con el brazo colgando: el brazo de Danny es largo en proporción.
+
+**Vibración (vista por el dueño el 10 de noviembre).** El dueño vio el brazo derecho vibrar al principio de 143_25 y en 141_27. Medida como
+la segunda diferencia de cada articulación del brazo, era de hasta 7-8° en los cinco gestos nuevos. La causa: el tope de velocidad hace que
+el giro del hombro choque con él en un sentido y en el otro en fotogramas seguidos, en posturas en las que ese giro apenas mueve la mano.
+La continuidad (1e-2) la bajaba solo a 3-4°, y empeoraba 143_25. **Arreglo: `--smooth 0.05`**, un suavizado gaussiano de 0,05 s de brazos,
+cintura y cuello al final. Deja la vibración en 0,7-1,4°. Desde entonces, el punto 2 se mide sobre la trayectoria que se entrega (50 Hz, tras
+remuestrear y suavizar), frente al objetivo del fotograma de CMU más cercano. Antes se medía en los fotogramas del cálculo. Por eso cambian
+las cifras de los gestos aprobados de 141_16, aunque su trayectoria es la misma (0,000°): el saludo lento da 1,1 / 2,8 mm, y el de las dos
+manos 0,3 / 1,7 mm, que antes daba 0 por construcción. Los dos aprobados no tienen suavizado y vibran 2,4° y 3,3°. **Las piernas no se mueven
+en ningún gesto, por el criterio:** el dueño lo notó en 141_23 y 141_27, donde la persona da un paso o se inclina.
+
+**Cumplen los puntos 2 a 6** (`results/gesture_<nombre>.json`, vídeos en `results/videos/gesture_<nombre>.mp4`). Todos con `--speed-cap` y
+`--smooth 0.05`. **Los cinco, aprobados por el dueño el 10 de noviembre**: 18_08 y 19_08 al verlos, y 141_27, 141_23 y 143_25 tras corregir la vibración.
+
+| Gesto | Nombre | Ajustes | Duración | Codo y mano, mediana / p95 | Tope | Velocidad máx. | Holgura mín. | Vibración máx. |
+|---|---|---|---|---|---|---|---|---|
+| Conversación, explicar con las manos | `cmu_18_08` | margen 3 mm | 17,4 s | 1,9 / 6,7 mm | 0 % | 5,78 rad/s | 1,4 mm | 0,74° |
+| "Mope" (abatido) | `cmu_141_27` | margen 5 mm | 4,6 s | 2,8 / 12,2 mm | 0 % | 3,41 | 3,2 mm | 0,76° |
+| Dar la mano | `cmu_141_23` | margen 5 mm | 2,1 s | 4,2 / 15,3 mm | 0 % | 6,33 | 3,2 mm | 0,76° |
+| Conversación, la otra persona | `cmu_19_08_lento1.3` | margen 3 mm, × 1,3 más lento | 22,6 s | 2,8 / 15,1 mm | 0,2 % | 7,94 | 0,5 mm | 1,36° |
+| Saludar con el brazo alto | `cmu_143_25_lento1.8` | margen 5 mm, × 1,8 más lento | 9,9 s | 3,3 / 16,9 mm | 3,5 % | 7,80 | 3,2 mm | 1,40° |
+
+**Gestos que se quedaron cerca, con margen a los topes (10 de noviembre).** Hay una opción nueva, `--limit-margin 3`: el brazo se queda a
+3° de cada tope, para no apoyar el servo en el tope mecánico, que es lo que busca el punto 3. **Con este margen, el punto 3 sale 0 % por
+construcción** (cuenta como tope a menos de 2°), así que la prueba que decide es el punto 2: si la persona pide más brazo del que Danny puede
+dar, el error sube. Probado con `--speed-cap --body-margin 0.005 --smooth 0.05 --limit-margin 3`:
+
+| Gesto | Nombre | Codo y mano, mediana / p95 | Velocidad máx. | Holgura mín. | Vibración máx. | Resultado |
+|---|---|---|---|---|---|---|
+| Encoger los hombros | `cmu_141_21` | 2,7 / 12,6 mm | 5,40 rad/s | 2,9 mm | 0,89° | Cumple; aprobado por el dueño |
+| Chocar los cinco | `cmu_141_22` | 5,6 / 18,2 mm | 7,35 | 3,2 mm | 1,00° | Cumple por poco; aprobado por el dueño |
+| Peek A Boo | `cmu_143_33` | 5,4 / 16,2 mm | 7,82 | 2,5 mm | 0,94° | Cumple; aprobado por el dueño |
+| Peek a Boo | `cmu_141_18` | 4,1 / 22,8 mm | | | | No: error |
+| Macarena | `cmu_143_35` | 5,8 / 29,8 mm | | | | No: error |
+| Dirigir el tráfico | `cmu_13_26` | 4,1 / 33,1 mm | | | | No: error |
+| Around the world | `cmu_141_24` | 6,1 / 39,7 mm | | | | No: error |
+| Esperar | `cmu_141_20` | 6,1 / 36,6 mm | | | | No: error |
+
+En los que fallan, Danny se queda a varios centímetros de la postura de la persona: el hombro no le da, y el gesto sería otro. Sus informes
+(`results/gesture_cmu_<clip>.json`) quedan con estos ajustes.
+
+**Bailes de pie (10 de noviembre).** Se usan los mismos ajustes que con el margen (`--speed-cap --body-margin 0.005 --smooth 0.05
+--limit-margin 3`). Las piernas siguen fijas: de los bailes solo se copian brazos, cintura y cuello. Cumplen los puntos 2 a 6, y **el
+dueño los aprobó el 10 de noviembre**. Hizo notar que en ninguno se mueven los pies: es lo siguiente, los movimientos con piernas.
+
+| Baile | Nombre | Duración | Codo y mano, mediana / p95 | Velocidad máx. (rad/s) | Holgura mín. | Vibración máx. |
+|---|---|---|---|---|---|---|
+| Chicken Dance | `cmu_143_34` | 6,5 s | 6,4 / 18,6 mm | 7,57 | 2,6 mm | 0,92° |
+| Chicken Dance, pareja A | `cmu_18_15` | 12,8 s | 5,0 / 15,5 mm | 7,34 | 2,2 mm | 1,17° |
+| Chicken Dance, pareja A, otra toma | `cmu_20_01` | 10,7 s | 5,7 / 16,8 mm | 7,07 | 2,7 mm | 1,32° |
+| Chicken Dance, pareja B, otra toma | `cmu_21_01` | 10,7 s | 7,0 / 19,6 mm | 7,23 | 3,2 mm | 1,31° |
+| Brazos en alto y giro del tronco | `cmu_05_12` | 11,3 s | 2,3 / 13,0 mm | 7,92 | 2,2 mm | 1,26° |
+
+**No cumplen:**
+- La pareja B de 18_15 (19_15): p95 de 23,5 mm, y de 22,6 mm aun yendo 1,3 veces más lento.
+- Brazos en alto con arabesque (49_09): el codo derecho se queda a unos 3,6 cm de su sitio todo el rato, porque el hombro no da para
+  tanto.
+- Twist (141_12) y pirueta (05_02): los mueven la cadera y el giro del cuerpo, y Danny tiene la pelvis fija (p95 de 62 y 56 mm).
+
+Se corrigió `resample`: con clips como 20_01 y 21_01, el último instante se pasaba del final por redondeo y daba error. No cambia los clips
+anteriores, en los que nunca se pasaba.
+
+**Movimientos con piernas: criterio aprobado por el dueño el 10 de noviembre, antes de programar.** **Método:** se parte de la pose `stand`
+de Danny, con las rodillas dobladas 47°, y a cada articulación de la pierna se le suma lo que la persona cambia respecto a su propia postura de
+pie. Se copia el cambio, no la postura: el primer intento de andar copió la forma de la pierna humana, casi recta, y las rodillas se veían mal.
+El cuerpo sube o baja para que el pie apoyado toque el suelo. Se empieza **sin desplazarse**: los cuatro Chicken Dance con sus flexiones de
+rodilla y pasar el peso de un pie a otro; andar queda para el final. **Pasa si cumple:** los puntos 1 a 5 de los gestos (el 6 ya no aplica,
+porque las piernas se mueven), y además (7) el pie apoyado no resbala más de 5 mm mientras está en el suelo (estimación); (8) el pie no
+atraviesa el suelo y ninguna otra pieza de la pierna lo toca; (9) el centro de masas cae dentro de la huella de los pies apoyados el 95 % del
+tiempo o más.
+
+**Movimientos con piernas: resultado (10-11 de noviembre).** `--legs` en `retarget_gesture.py` usa `LegRetarget` (`danny_gestures.py`).
+Copiar solo el cambio de ángulos no bastaba en 143_34: al agacharse, los pies se separaban 2,5 cm y se inclinaban, porque Danny tiene otras
+longitudes. Así quedó el método:
+- La postura sale del cambio de la persona.
+- Una cinemática inversa de piernas y altura de pelvis mantiene cada pie apoyado fijo y plano donde se apoyó.
+- Lleva el centro de masas dentro de la huella, a 8 mm del borde.
+- Levanta el pie en el aire a 5 mm o más por cada esquina de la suela.
+- Respeta el tope de velocidad del servo.
+- Las articulaciones que llegan a su rango dejan de contar, para que la pelvis suba en vez de hundirse los pies.
+- Los apoyos y levantadas de menos de 0,1 s se tratan como ruido de la captura.
+
+Fallos encontrados y corregidos por el camino: medir el resbale con el mismo umbral que la altura del pie en el aire, un tope de 0,3 m/s en la
+pelvis que despegaba los pies, y la pelvis congelada al sacarla del cálculo por el tope de velocidad. Ajustes: `--speed-cap --body-margin 0.005
+--smooth 0.05 --limit-margin 3 --legs`.
+
+| Baile | Nombre | Ajustes | Codo y mano p95 | Resbale máx. | Pie más bajo | Otra pieza más baja | Equilibrio | Puntos |
+|---|---|---|---|---|---|---|---|---|
+| Chicken Dance (sin los pasos finales) | `cmu_143_34_hasta5.4_piernas_lento1.4` | hasta 5,4 s, × 1,4 más lento | 17,5 mm | 0,3 mm | -0,2 mm | 1,8 mm | 98,4 % | 9/9 |
+| Chicken Dance, pareja A, otra toma | `cmu_20_01_piernas` | ritmo de la persona | 16,8 mm | 0,3 mm | -0,2 mm | 1,8 mm | 100,0 % | 9/9 |
+| Chicken Dance, pareja A | `cmu_18_15_piernas` | ritmo de la persona | 15,4 mm | 0,9 mm | -0,8 mm | 1,2 mm | 100,0 % | 8/9 |
+| Chicken Dance, pareja B, otra toma | `cmu_21_01_piernas` | ritmo de la persona | 19,7 mm | 5,3 mm | -7,8 mm | -5,9 mm | 99,8 % | 6/9 |
+
+- **143_34:** al ritmo de la persona no cumple, porque la rodilla va al tope de velocidad al levantarse de la sentadilla, el pie se inclina
+  2-3° y entra 1,2 mm. Además, desde los 5,5 s la persona deja de bailar y da pasos girando, y eso se queda para cuando toque andar, así que el
+  clip se corta en 5,4 s (`--end`).
+- **18_15:** falla por un fotograma suelto en el que el pie entra 0,8 mm.
+- **21_01:** el pie ya está desplazado 5,3 mm desde el primer fotograma, y la cadera derecha llega a su tope de giro.
+- 143_34 y 20_01 cumplen los nueve puntos medibles; vídeos en `results/videos/gesture_cmu_143_34_hasta5.4_piernas_lento1.4.mp4` y
+  `gesture_cmu_20_01_piernas.mp4`. **Aprobados por el dueño el 11 de noviembre.**
+
+**Andar: criterio aprobado por el dueño el 11 de noviembre, antes de programar.** Datos: CMU, sujeto 07 (07_01 y 07_02), la persona más
+simétrica medida, andando en línea recta. Se descarta 100STYLE por su pierna derecha. **Método:** el de los bailes con piernas, con pasos: el
+pie se suelta, avanza y se vuelve a apoyar en su nuevo sitio, y Danny avanza lo que la persona a su escala (unos 0,3 m/s). **Pasa si cumple:**
+(1) vídeo junto a la persona, aprobado por el dueño; (2-5) los de los gestos para los brazos; (7) el pie apoyado no resbala más de 5 mm;
+(8) el pie no atraviesa el suelo y ninguna otra pieza de la pierna lo toca; (9) **el ZMP** (punto de momento cero, con la aceleración del
+centro de masas) cae dentro de la huella de los pies apoyados el 95 % del tiempo o más. Al andar no se exige el centro de masas sobre los pies,
+porque una persona va cayendo hacia el paso siguiente. (10) Las dos rodillas se mueven igual: 5° o menos de diferencia en su mediana y en su
+percentil 95, por la queja del dueño en el primer intento. (11) Danny avanza entre el 80 % y el 120 % de la velocidad de la persona a escala.
+
+**Andar: primer resultado (11 de noviembre), NO CUMPLE.** `--walk` en `retarget_gesture.py`, con CMU 07_01 y 07_02. Corregido por el camino:
+- La postura de pie de la persona se tomaba de sus primeros 0,3 s, pero el clip empieza a mitad de paso. Las rodillas de Danny salían 26°
+  distintas, que era la queja del dueño en el primer intento. Ahora el cabeceo de cadera y la rodilla se miden desde el reposo de CMU, y el
+  giro y balanceo de cadera y tobillo, desde la mediana con ese pie apoyado.
+- El suelo de la captura está inclinado, unos 2,7 cm por metro, y por altura solo salía apoyado el 20-31 % del tiempo. Ahora el apoyo al
+  andar se decide por la velocidad del talón o de los dedos (`walking_foot_contacts`), y sale el 46-60 %.
+
+Con eso, **cumplen** las rodillas simétricas (punto 10) y casi todos los puntos de los brazos. **No cumplen** los pies ni el equilibrio, y en
+la versión que queda (`results/gesture_cmu_07_0{1,2}_piernas.json`, con `base_xy_weight` 0) tampoco la holgura del brazo:
+- 07_01: el pie se arrastra 8,5 cm y se hunde 2,5 cm; el ZMP está en la huella el 23 % del tiempo; avanza el 66 % de lo debido; el brazo entra
+  7 mm en el cuerpo; rodillas a 4,7° y 0,2° de diferencia.
+- 07_02: el pie se arrastra 7,3 cm y se hunde 1,6 cm; ZMP el 23 %; avanza el 57 %; el brazo entra 11 mm; error del brazo de 20,1 mm (p95).
+- No mejora al ralentizar (×1,5 y ×2) ni al dejar de tirar de la pelvis hacia la persona a escala. **Diagnóstico:** el método por fotograma no basta para los pasos. El pie se ancla donde esté al apoyarse, sin decidir antes dónde
+debe pisar, y el cuerpo y las piernas se pelean. **Siguiente paso propuesto, sin empezar:** planificar las pisadas antes (dónde apoya cada
+pie, a partir de las pisadas de la persona a escala) y llevar el pie en el aire de una pisada a la siguiente con una trayectoria suave. Es el
+método habitual para adaptar el andar a otro cuerpo.
+
+**Andar, segundo intento con pisadas planificadas y control predictivo del ZMP (11 de noviembre), NO CUMPLE.** Lo que se añadió a
+`LegRetarget` en modo andar:
+- Pisadas planificadas (`plan_footsteps`): cada apoyo de la persona da una pisada a escala (0,225), con el pie en el aire en una trayectoria
+  suave a 1,5 cm de altura. El clip empieza a mitad de paso, así que el pie empieza ya en su primera pisada y el primer fotograma no tiene
+  tope de velocidad.
+- No se copia el giro de la pelvis ni el de la cadera, y los pies apuntan hacia delante. Al copiarlos, el giro de cadera de Danny (-15° a
+  30°) llegaba a su tope y era lo que más fallaba.
+- Centro de masas del control predictivo del ZMP (`preview_com`, Kajita 2003), sobre las pisadas, con peso 1 frente a 10 del pie apoyado.
+
+Resultado, de `results/gesture_cmu_07_0{1,2}_piernas*.json`: cumplen 6-7 de 12 puntos. Cumplen las rodillas simétricas, salvo 6,5° en un caso
+ralentizado, y el avance (81-84 %). **No cumplen** los pies, el equilibrio ni la holgura del brazo:
+- 07_01: el pie se arrastra 2,9 cm y se hunde 1,0 cm; ZMP dentro el 44 %; el brazo entra 5,6 mm. Ralentizado × 1,5: 1,3 cm, 3,6 mm y 55 %.
+- 07_02: 5,3 cm, 1,5 cm y 34 %.
+
+**Diagnóstico:** con este método de pesos, el pie fijo, el centro de masas sobre el pie apoyado y la postura humana no caben a la vez en el
+cuerpo de Danny. Cada ajuste mejora uno y empeora otro: con el centro de masas al peso del pie, ZMP del 64-74 % pero el pie resbala 6-10 cm;
+con peso 1, el pie mejora y el ZMP baja al 34-55 %. Es lo mismo que pasó en el primer intento de andar. **Propuesta:** no seguir afinando la
+referencia cinemática del andar. Danny ya anda con física (fase 2), y la naturalidad del andar se puede pedir al entrenar, con estas
+pisadas o la simetría de rodillas como recompensa. **Decisión del dueño (11 de noviembre): se deja el andar para el entrenamiento con
+física.** El código de andar (`--walk`) y sus informes quedan como referencia del intento.
+
+**Entrenamiento con física de los 17 movimientos: criterio aprobado por el dueño el 11 de noviembre.** Está, con la lista de archivos, en la
+sección 4.4 de [training-guide.md](documentation/training-guide.md): una política por movimiento con la tarea de seguimiento de mjlab,
+empezando por saludar como prueba; pasa si no cae el 95 %, manos, codos y pies a 2 cm de mediana y 4 cm de p95 de la referencia, saturación
+como en las fases 4 y 5, sin pasos en los movimientos de pie (95 %) o pie apoyado sin resbalar más de 1 cm en los de piernas, vídeo aprobado
+por el dueño y ONNX verificado. Lo hace el amigo del dueño en su GPU; la rama `fase6-gestos` tiene que llegarle (por `main` o directamente).
+
+**Antes del margen, no cumplían,** con `--speed-cap` y margen de 5 mm. Por topes del brazo, que el ritmo no arregla, porque la persona lleva el brazo más atrás o
+más arriba de lo que permite el hombro de Danny: encoger los hombros 141_21 (5,3 % en `right_shoulder_pitch` a +45°), chocar los cinco
+141_22 (6,0 %), Peek a Boo 141_18 y 143_33 (49 % y 25 %), Macarena 143_35 (18 %: codo a -130° y hombro a +45°, con las manos detrás de la
+cabeza) y dirigir el tráfico 13_26. Por quedarse atrás: esperar 141_20 y 141_24, que además roza o toca topes. **La holgura de 0,5 mm de 19_08
+es justa:** pasa el criterio, pero en el robot real deja poco margen.
 
 ## Cómo empezar
 
