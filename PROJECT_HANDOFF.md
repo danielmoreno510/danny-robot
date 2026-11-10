@@ -1203,3 +1203,19 @@ Entrenamiento terminado (14497 a 17497, `fase5_tumbarse_cadena_exacta/model_1749
 **Lo que NO esperaba:** la comprobación de las 1 500 iteraciones (`model_16050`, 1 024 robots, 6,6 V) dio 68,9 % (mediana 2,83 rad/s); el modelo final empeora a 21,4 %. Es decir, la mejora no se mantuvo al seguir entrenando: sin más medidas intermedias no sé si el pico oscila entre puntos de control. **No comprobado:** si otro punto de control intermedio (p. ej. `model_16050`) pasa mejor a 4 096 robots; si el castigo de −8 o el arranque exacto causó la mejora; si 100 % es alcanzable. Las diferencias entre 1 024 y 4 096 robots también pueden pesar.
 
 **Decisión pendiente del dueño** (el criterio no se cambia sin él): medir a 4 096 robots los puntos de control intermedios de la corrida 5 y quedarse con el mejor; seguir entrenando con otro castigo; o revisar el límite de 3 rad/s del cabeceo. La fase 6 no empieza hasta que lo confirme.
+
+**Puntos de control intermedios de la corrida 5, cadena a 4 096 robots y 6,6 V** (`results/training_cadena_sentarse_tumbarse_exacta_model_<N>_6.6.json`; sentarse y el resto de tumbarse pasan en todos):
+
+| Iteración | Giro de pelvis a 3 rad/s o menos (exige 100 %) | Cabeceo, pico mediana (rad/s) |
+|---|---|---|
+| 14500 | 60,0 % | 2,85 |
+| 14750 | 62,6 % | 2,88 |
+| **15000** | **73,7 %** | 2,79 |
+| 15250 | 62,6 % | 2,90 |
+| 15500 | 69,6 % | 2,84 |
+| 16050 | 71,0 % | 2,83 |
+| 16500 | 52,2 % | 2,98 |
+| 17000 | 28,1 % | 3,20 |
+| 17495 | 21,4 % | 3,31 |
+
+**Lectura:** la mejor es `model_15000` con 73,7 %; el resto de 14500 a 16050 está entre 60 % y 71 %, y desde 16500 el cabeceo empeora (más entrenamiento lo estropea). Ninguna llega al 100 %: el techo de este enfoque ronda el 70 %. El 68,9 % de las 1 500 iteraciones (1 024 robots) era coherente con esto, no un error. `model_15000` no está copiado a `puntos_de_control` (no aprobado). **No comprobado:** con tensión aleatoria en los intermedios; si otro castigo o más robots de arranque exacto cambia el techo.
