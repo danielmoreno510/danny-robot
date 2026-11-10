@@ -3,7 +3,7 @@
 Un solo entorno de sentarse (empieza de pie, aleatorización completa de la etapa 3, sin empujones): `--sit-seconds` s con la política de sentarse y luego
 `--lie-seconds` s con la de tumbarse, que usa la misma observación (78) y las mismas acciones. No hay reinicio entre las dos: tumbarse empieza en el
 estado real en que deja el robot sentarse (con brazos, cintura y cuello donde los deja esa política, no la pose limpia con la que se entrenó tumbarse).
-Se aplican los dos criterios escritos: el de sentarse (`measure_sit.py`) sobre la primera parte y el de tumbarse (`danny_training/lie_measure.py`)
+Se aplican los dos criterios escritos: el de sentarse (`measure_sit.py`, criterio del 9-10 de noviembre con las manos detrás, tronco a 80°) sobre la primera parte y el de tumbarse (`danny_training/lie_measure.py`)
 sobre la segunda. La cadena pasa si cumple los dos.
 
 Uso (desde training/):
@@ -27,8 +27,13 @@ from danny_training.actuator import FrictionDRBamActuator, stall_torque_nm
 
 SIT_TASK, LIE_TASK = "Mjlab-SitDown-Danny", "Mjlab-LieDown-Danny"
 WINDOW_S, SATURATED = 3.0, 0.9
-FALL_TILT_RAD = math.radians(70.0)
-SOFT_DESCENT_M_S = 0.6
+FALL_TILT_RAD = math.radians(80.0)
+# Criterio de sentarse del 9-10 de noviembre (mismos valores que measure_sit.py; un script no importa de otro).
+MIN_DESCENT_S = 0.6
+DESCENT_END_Z_M = 0.16
+MAX_DESCENT_M_S = 0.3
+MAX_TOUCH_M_S = 0.4
+MAX_TRUNK_RATE_RAD_S = 3.0
 
 
 def switch_analysis(sit_rate: torch.Tensor, lie_rate: torch.Tensor, dt: float) -> dict:
@@ -76,16 +81,24 @@ def main() -> None:
   body_of_geom = torch.as_tensor(model.geom_bodyid, device=device)
   forbidden = torch.tensor([model.body(f"robot/{name}").id for name in sit.FORBIDDEN_BODIES], device=device)
 
-  # Primera parte: sentarse (mismas definiciones que measure_sit.py).
+  # Primera parte: sentarse, con el criterio del 9-10 de noviembre (mismas definiciones que measure_sit.py, new_criterion_2026_11_09_manos).
+  pelvis_body = int(model.site_bodyid[model.site(f"robot/{getup.PELVIS_SITE}").id])
+  hand_bodies = torch.tensor([i for i in range(model.nbody) if "forearm" in model.body(i).name], device=device)
+  support_bodies = torch.tensor([pelvis_body] + [i for i in range(model.nbody) if "thigh" in model.body(i).name or "shin" in model.body(i).name], device=device)
+  neg1 = lambda: torch.full((n,), -1, dtype=torch.int32, device=device)
   sit_steps, window = int(args.sit_seconds / dt), int(WINDOW_S / dt)
   sat = torch.zeros(n, sit_steps, len(joint_names), dtype=torch.bool, device=device)
-  max_down = torch.zeros(n, device=device)
   fell = torch.zeros(n, dtype=torch.bool, device=device)
   run = torch.zeros(n, dtype=torch.int32, device=device)
   speed_ring = torch.zeros(n, window, device=device)
-  success_step = torch.full((n,), -1, dtype=torch.int32, device=device)
+  success_step = neg1()
   max_dq_sit = torch.zeros(n, len(joint_names), device=device)
   sit_pelvis_rate = torch.zeros(n, sit_steps, 3, device=device)
+  descent_start, reach_step, reach160_step = neg1(), neg1(), neg1()
+  max_down_to160 = torch.zeros(n, device=device)
+  hands_first, pelvis_first, support_first, cross_step = neg1(), neg1(), neg1(), neg1()
+  support_touch_speed, cross_speed, prev_down = (torch.zeros(n, device=device) for _ in range(3))
+  rate_max = torch.zeros(n, 3, device=device)
   obs = env.get_observations()
   with torch.inference_mode():
     for step in range(sit_steps):
@@ -97,7 +110,14 @@ def main() -> None:
       tilt = torch.acos((-data.projected_gravity_b[:, 2]).clamp(-1.0, 1.0))
       speed = data.root_com_lin_vel_b.norm(dim=1)
       descending = z < crouch.STAND_PELVIS_Z_M - 0.01
-      max_down = torch.maximum(max_down, (-data.root_com_lin_vel_w[:, 2]).clamp(min=0.0) * descending)
+      down = (-data.root_com_lin_vel_w[:, 2]).clamp(min=0.0)
+      above160 = z >= DESCENT_END_Z_M
+      max_down_to160 = torch.maximum(max_down_to160, down * descending * above160)
+      reach160_step = torch.where((reach160_step < 0) & (descent_start >= 0) & ~above160, torch.full_like(reach160_step, step), reach160_step)
+      descent_start = torch.where((descent_start < 0) & descending, torch.full_like(descent_start, step), descent_start)
+      began = descent_start >= 0
+      reach_step = torch.where(began & (reach_step < 0) & (z <= sit.SEATED_PELVIS_M), torch.full_like(reach_step, step), reach_step)
+      rate_max = torch.maximum(rate_max, data.root_link_ang_vel_b.abs() * began[:, None])
       fell |= tilt > FALL_TILT_RAD
       sat[:, step] = (data.actuator_force.abs() / stall) > SATURATED
       sim = u.sim.data
@@ -110,6 +130,17 @@ def main() -> None:
       per_body = torch.zeros(n, model.nbody, device=device)
       per_body[world[hit], body_of_geom[other[hit]]] += 1.0
       bad = per_body[:, forbidden].sum(dim=1) > 0
+      hands_now = per_body[:, hand_bodies].sum(dim=1) > 0
+      pelvis_now = per_body[:, pelvis_body] > 0
+      hands_first = torch.where((hands_first < 0) & hands_now, torch.full_like(hands_first, step), hands_first)
+      pelvis_first = torch.where((pelvis_first < 0) & pelvis_now, torch.full_like(pelvis_first, step), pelvis_first)
+      new_support = (support_first < 0) & (per_body[:, support_bodies].sum(dim=1) > 0)
+      support_touch_speed = torch.where(new_support, prev_down, support_touch_speed)
+      support_first = torch.where(new_support, torch.full_like(support_first, step), support_first)
+      new_cross = (cross_step < 0) & (z <= sit.SEATED_PELVIS_M) & began
+      cross_speed = torch.where(new_cross, prev_down, cross_speed)
+      cross_step = torch.where(new_cross, torch.full_like(cross_step, step), cross_step)
+      prev_down = down
       ok_now = (z <= sit.SEATED_PELVIS_M) & (tilt <= sit.SEATED_TILT_RAD) & ~bad
       run = (run + 1) * ok_now.to(torch.int32)
       speed_ring[:, step % window] = speed
@@ -124,11 +155,18 @@ def main() -> None:
   moving_run = lie_measure.longest_run(sat & moving_mask).float() * dt
   seated_frac = (sat & seated_mask).sum(dim=1) / window
   worst_run, worst_seated = moving_run.max(dim=1).values, seated_frac.max(dim=1).values
+  descent_s = torch.where((descent_start >= 0) & (reach_step >= 0), (reach_step - descent_start).float() * dt, torch.zeros(n, device=device))
+  hands_before_pelvis = (hands_first >= 0) & ((pelvis_first < 0) | (hands_first < pelvis_first))
+  touch_ok = (support_first >= 0) & (support_touch_speed <= MAX_TOUCH_M_S) & (cross_step >= 0) & (cross_speed <= MAX_TOUCH_M_S)
   f = lambda x: round(float(x), 4)
   sit_criteria = {
     "seated": {"value": f(ok.float().mean()), "required": 0.95},
-    "descent_at_most_0.6_m_s": {"value": f((max_down <= SOFT_DESCENT_M_S).float().mean()), "required": 0.95},
-    "never_tilted_over_70deg": {"value": f((~fell).float().mean()), "required": 0.98},
+    "full_descent_0.218_to_0.07_m_lasts_at_least_0.6_s": {"value": f((descent_s >= MIN_DESCENT_S).float().mean()), "required": 0.95},
+    "pelvis_descent_speed_to_0.16_m_at_most_0.3_m_s": {"value": f((max_down_to160 <= MAX_DESCENT_M_S).float().mean()), "required": 0.95},
+    "hands_touch_floor_before_pelvis": {"value": f(hands_before_pelvis.float().mean()), "required": 0.95},
+    "pelvis_thighs_or_shins_touch_floor_and_pelvis_crosses_0.07_m_at_most_0.4_m_s": {"value": f(touch_ok.float().mean()), "required": 0.95},
+    "trunk_rate_at_most_3_rad_s_every_axis": {"value": f((rate_max.amax(dim=1) <= MAX_TRUNK_RATE_RAD_S).float().mean()), "required": 0.99},
+    "never_tilted_over_80deg": {"value": f((~fell).float().mean()), "required": 0.98},
     "saturation_moving_run_at_most_0.5s": {"value": f((worst_run <= 0.5).float().mean()), "required": 0.99},
     "saturation_seated_at_most_5pct": {"value": f((worst_seated[ok] <= 0.05).float().mean()) if ok.any() else None, "required": 0.99},
     "saturation_no_robot_over_2s": {"value": f((worst_run <= 2.0).float().mean()), "required": 1.0},
