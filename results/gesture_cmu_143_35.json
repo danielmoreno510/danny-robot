@@ -1,0 +1,205 @@
+{
+  "source": "CMU 143_35 (mocap.cs.cmu.edu; creada con fondos de NSF EIA-0196217)",
+  "slowdown": 1.0,
+  "both_hands": false,
+  "amplitude": 1.0,
+  "continuity": 0.0,
+  "body_margin_m": 0.005,
+  "speed_cap": true,
+  "seconds": 10.66,
+  "rate_hz": 50.0,
+  "joint_order": [
+    "left_hip_yaw",
+    "left_hip_roll",
+    "left_hip_pitch",
+    "left_knee",
+    "left_ankle_pitch",
+    "left_ankle_roll",
+    "right_hip_yaw",
+    "right_hip_roll",
+    "right_hip_pitch",
+    "right_knee",
+    "right_ankle_pitch",
+    "right_ankle_roll",
+    "waist_yaw",
+    "left_shoulder_pitch",
+    "left_shoulder_roll",
+    "left_shoulder_yaw",
+    "left_elbow",
+    "right_shoulder_pitch",
+    "right_shoulder_roll",
+    "right_shoulder_yaw",
+    "right_elbow",
+    "neck_yaw",
+    "neck_pitch"
+  ],
+  "criteria_2_to_6": {
+    "elbow_hand_error_median_m": {
+      "value": 0.0045,
+      "limit": 0.01,
+      "passes": true
+    },
+    "elbow_hand_error_p95_m": {
+      "value": 0.0275,
+      "limit": 0.02,
+      "passes": false
+    },
+    "worst_arm_joint_fraction_at_limit": {
+      "value": 0.1839,
+      "limit": 0.05,
+      "passes": false
+    },
+    "max_joint_speed_rad_s": {
+      "value": 7.96,
+      "limit": 8.21,
+      "passes": true
+    },
+    "min_arm_body_clearance_m": {
+      "value": 0.0008,
+      "limit": 0.0,
+      "passes": true
+    },
+    "legs_and_pelvis_max_offset_from_stand": {
+      "value": 0.0,
+      "limit": 0.0,
+      "passes": true
+    }
+  },
+  "passes_2_to_6": false,
+  "criterion_1": "vídeo junto a la persona, aprobado por el dueño (record_gesture_video.py)",
+  "errors_m": {
+    "left_elbow": {
+      "median": 0.0042,
+      "p95": 0.025,
+      "max": 0.0849
+    },
+    "left_hand": {
+      "median": 0.0114,
+      "p95": 0.0313,
+      "max": 0.1008
+    },
+    "right_elbow": {
+      "median": 0.0039,
+      "p95": 0.0147,
+      "max": 0.0329
+    },
+    "right_hand": {
+      "median": 0.0048,
+      "p95": 0.0295,
+      "max": 0.0475
+    }
+  },
+  "arm_joints": {
+    "left_shoulder_pitch": {
+      "used_deg": [
+        -111.5,
+        45.0
+      ],
+      "range_deg": [
+        -170.0,
+        45.0
+      ],
+      "fraction_at_limit": 0.1651,
+      "max_speed_rad_s": 7.96
+    },
+    "left_shoulder_roll": {
+      "used_deg": [
+        1.0,
+        74.7
+      ],
+      "range_deg": [
+        -10.0,
+        120.0
+      ],
+      "fraction_at_limit": 0.0,
+      "max_speed_rad_s": 7.96
+    },
+    "left_shoulder_yaw": {
+      "used_deg": [
+        -80.0,
+        51.6
+      ],
+      "range_deg": [
+        -80.0,
+        80.0
+      ],
+      "fraction_at_limit": 0.1069,
+      "max_speed_rad_s": 7.96
+    },
+    "left_elbow": {
+      "used_deg": [
+        -130.0,
+        -16.3
+      ],
+      "range_deg": [
+        -130.0,
+        0.0
+      ],
+      "fraction_at_limit": 0.1839,
+      "max_speed_rad_s": 7.96
+    },
+    "right_shoulder_pitch": {
+      "used_deg": [
+        -94.6,
+        45.0
+      ],
+      "range_deg": [
+        -170.0,
+        45.0
+      ],
+      "fraction_at_limit": 0.1257,
+      "max_speed_rad_s": 7.96
+    },
+    "right_shoulder_roll": {
+      "used_deg": [
+        -57.6,
+        1.0
+      ],
+      "range_deg": [
+        -120.0,
+        10.0
+      ],
+      "fraction_at_limit": 0.0,
+      "max_speed_rad_s": 6.68
+    },
+    "right_shoulder_yaw": {
+      "used_deg": [
+        -40.3,
+        70.8
+      ],
+      "range_deg": [
+        -80.0,
+        80.0
+      ],
+      "fraction_at_limit": 0.0,
+      "max_speed_rad_s": 7.96
+    },
+    "right_elbow": {
+      "used_deg": [
+        -130.0,
+        -10.5
+      ],
+      "range_deg": [
+        -130.0,
+        0.0
+      ],
+      "fraction_at_limit": 0.1182,
+      "max_speed_rad_s": 7.96
+    }
+  },
+  "waist_and_neck_deg": {
+    "waist_yaw": [
+      -10.5,
+      11.6
+    ],
+    "neck_yaw": [
+      -33.8,
+      41.0
+    ],
+    "neck_pitch": [
+      -24.8,
+      8.7
+    ]
+  },
+  "not_checked": "equilibrio y par; las colisiones se miden con la envolvente convexa de las mallas del CAD, y las cajas de colisión del entrenamiento pueden tocarse aunque las piezas no"
+}
