@@ -6,6 +6,8 @@
   "continuity": 0.0,
   "body_margin_m": 0.005,
   "speed_cap": true,
+  "smooth_s": 0.05,
+  "limit_margin_deg": 3.0,
   "seconds": 3.24,
   "rate_hz": 50.0,
   "joint_order": [
@@ -35,22 +37,22 @@
   ],
   "criteria_2_to_6": {
     "elbow_hand_error_median_m": {
-      "value": 0.0033,
+      "value": 0.0041,
       "limit": 0.01,
       "passes": true
     },
     "elbow_hand_error_p95_m": {
-      "value": 0.0173,
+      "value": 0.0228,
       "limit": 0.02,
-      "passes": true
-    },
-    "worst_arm_joint_fraction_at_limit": {
-      "value": 0.4877,
-      "limit": 0.05,
       "passes": false
     },
+    "worst_arm_joint_fraction_at_limit": {
+      "value": 0.0,
+      "limit": 0.05,
+      "passes": true
+    },
     "max_joint_speed_rad_s": {
-      "value": 7.96,
+      "value": 7.91,
       "limit": 8.21,
       "passes": true
     },
@@ -69,135 +71,136 @@
   "criterion_1": "vídeo junto a la persona, aprobado por el dueño (record_gesture_video.py)",
   "errors_m": {
     "left_elbow": {
-      "median": 0.0027,
-      "p95": 0.0068,
-      "max": 0.0127
+      "median": 0.0017,
+      "p95": 0.0079,
+      "max": 0.0098
     },
     "left_hand": {
-      "median": 0.0086,
-      "p95": 0.0302,
-      "max": 0.0449
+      "median": 0.0132,
+      "p95": 0.0304,
+      "max": 0.0432
     },
     "right_elbow": {
-      "median": 0.0029,
-      "p95": 0.0052,
-      "max": 0.0241
+      "median": 0.0028,
+      "p95": 0.01,
+      "max": 0.0149
     },
     "right_hand": {
-      "median": 0.0032,
-      "p95": 0.0253,
-      "max": 0.0537
+      "median": 0.0047,
+      "p95": 0.0283,
+      "max": 0.0602
     }
   },
   "arm_joints": {
     "left_shoulder_pitch": {
       "used_deg": [
-        -52.7,
-        22.6
+        -48.2,
+        19.5
       ],
       "range_deg": [
         -170.0,
         45.0
       ],
       "fraction_at_limit": 0.0,
-      "max_speed_rad_s": 7.96
+      "max_speed_rad_s": 5.05
     },
     "left_shoulder_roll": {
       "used_deg": [
-        3.3,
-        62.4
+        3.8,
+        59.8
       ],
       "range_deg": [
         -10.0,
         120.0
       ],
       "fraction_at_limit": 0.0,
-      "max_speed_rad_s": 6.8
+      "max_speed_rad_s": 4.66
     },
     "left_shoulder_yaw": {
       "used_deg": [
-        -46.5,
-        50.3
+        -42.3,
+        48.6
       ],
       "range_deg": [
         -80.0,
         80.0
       ],
       "fraction_at_limit": 0.0,
-      "max_speed_rad_s": 7.96
+      "max_speed_rad_s": 7.28
     },
     "left_elbow": {
       "used_deg": [
-        -130.0,
-        -18.1
+        -127.0,
+        -19.8
       ],
       "range_deg": [
         -130.0,
         0.0
       ],
-      "fraction_at_limit": 0.4877,
-      "max_speed_rad_s": 7.96
+      "fraction_at_limit": 0.0,
+      "max_speed_rad_s": 7.62
     },
     "right_shoulder_pitch": {
       "used_deg": [
-        -57.3,
-        26.9
+        -55.2,
+        26.0
       ],
       "range_deg": [
         -170.0,
         45.0
       ],
       "fraction_at_limit": 0.0,
-      "max_speed_rad_s": 7.96
+      "max_speed_rad_s": 6.93
     },
     "right_shoulder_roll": {
       "used_deg": [
-        -64.7,
-        -11.8
+        -63.6,
+        -15.1
       ],
       "range_deg": [
         -120.0,
         10.0
       ],
       "fraction_at_limit": 0.0,
-      "max_speed_rad_s": 6.62
+      "max_speed_rad_s": 2.92
     },
     "right_shoulder_yaw": {
       "used_deg": [
-        -78.7,
-        60.8
+        -77.0,
+        57.3
       ],
       "range_deg": [
         -80.0,
         80.0
       ],
-      "fraction_at_limit": 0.0123,
-      "max_speed_rad_s": 7.96
+      "fraction_at_limit": 0.0,
+      "max_speed_rad_s": 7.91
     },
     "right_elbow": {
       "used_deg": [
-        -130.0,
-        -21.0
+        -127.0,
+        -27.3
       ],
       "range_deg": [
         -130.0,
         0.0
       ],
-      "fraction_at_limit": 0.2654,
-      "max_speed_rad_s": 7.96
+      "fraction_at_limit": 0.0,
+      "max_speed_rad_s": 7.53
     }
   },
+  "max_arm_jitter_deg": 1.04,
   "waist_and_neck_deg": {
     "waist_yaw": [
-      -8.4,
-      12.2
+      -6.8,
+      10.5
     ],
     "neck_yaw": [
-      -18.6,
-      21.7
+      -17.8,
+      18.7
     ],
     "neck_pitch": [
-      18.6,
+      19.2,
       40.0
     ]
   },

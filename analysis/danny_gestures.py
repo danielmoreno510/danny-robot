@@ -60,7 +60,8 @@ class CmuMotion:
     ASF; M, los grados del AMC, en ejes fijos x, y, z), y su final está en su inicio más esa orientación por dirección por largo.
     Guarda, en REP-103 y metros, la posición del final de cada hueso y la orientación global de cada uno."""
 
-    def __init__(self, amc_path):
+    def __init__(self, amc_path, end_s=None):
+        """`end_s`: corta el clip en ese segundo (por ejemplo, para quitar los pasos con que termina un baile)."""
         amc_path = pathlib.Path(amc_path)
         asf = (amc_path.parent / (amc_path.stem.split("_")[0] + ".asf")).read_text().split("\n")
         bones, children, scale, section, current = {}, {}, 1.0, None, None
@@ -99,6 +100,8 @@ class CmuMotion:
                 frames.append({})
             else:
                 frames[-1][words[0]] = np.array([float(v) for v in words[1:]])
+        if end_s is not None:
+            frames = frames[:int(round(end_s / CMU_FRAME_TIME)) + 1]
         count = len(frames)
         root = np.array([f["root"] for f in frames])
         rotation = {"root": Rotation.from_euler("xyz", root[:, 3:6], degrees=True).as_matrix()}
@@ -152,12 +155,15 @@ class GestureRetarget:
     Con `both_hands`, los dos brazos de Danny copian el brazo derecho de la persona, el izquierdo en espejo: así un gesto de una mano
     se hace con las dos."""
 
-    def __init__(self, model, both_hands=False, continuity=CONTINUITY_WEIGHT, body_margin=BODY_MARGIN_M, speed_cap=None):
+    def __init__(self, model, both_hands=False, continuity=CONTINUITY_WEIGHT, body_margin=BODY_MARGIN_M, speed_cap=None, limit_margin=0.0):
         """`speed_cap` (rad/s): si se da, ninguna articulación del brazo cambia más deprisa que eso entre fotogramas; donde la persona va
-        más rápido, Danny se queda atrás y el error de codo y mano lo muestra. Necesita `frame_dt`, el tiempo entre fotogramas de salida."""
+        más rápido, Danny se queda atrás y el error de codo y mano lo muestra. Necesita `frame_dt`, el tiempo entre fotogramas de salida.
+        `limit_margin` (rad): el brazo se queda a esa distancia de sus topes, para no apoyar el servo en el tope mecánico; si la persona pide
+        más, el error de codo y mano lo muestra."""
         self.model = model
         self.both_hands = both_hands
         self.continuity, self.body_margin, self.speed_cap = continuity, body_margin, speed_cap
+        self.legs = None  # LegRetarget: si se da, mueve piernas y pelvis; si no, quedan en la pose `stand`
         self.frame_dt = CMU_FRAME_TIME
         self.data = mujoco.MjData(model)
         key = name_id(model, mujoco.mjtObj.mjOBJ_KEY, "stand")
@@ -170,7 +176,7 @@ class GestureRetarget:
             ids = [name_id(model, mujoco.mjtObj.mjOBJ_JOINT, f"{side}_{j}") for j in ARM_JOINTS]
             self.qadr[side] = np.array([model.jnt_qposadr[j] for j in ids])
             self.dofadr[side] = np.array([model.jnt_dofadr[j] for j in ids])
-            self.limits[side] = model.jnt_range[ids].copy()
+            self.limits[side] = model.jnt_range[ids].copy() + np.array([limit_margin, -limit_margin])
             shoulder, elbow, hand = (self.site(f"{side}_{n}") for n in ("shoulder_site", "elbow_site", "hand"))
             self.length[side] = (np.linalg.norm(elbow - shoulder), np.linalg.norm(hand - elbow))
         self.arm_geoms = {side: [g for g in part_geoms(model, ARM_PARTS) if mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, model.geom_bodyid[g]).startswith(side)]
@@ -193,6 +199,11 @@ class GestureRetarget:
         d.qpos[:7] = self.stand[:7]
         leg_and_base = slice(7, m.jnt_qposadr[self.waist])
         d.qpos[leg_and_base] = self.stand[leg_and_base]
+        if self.legs is not None:
+            self.legs.frame_dt = self.frame_dt
+            pose = d.qpos.copy()
+            self.legs.pose(frame, pose)
+            d.qpos[:] = pose
 
         chest = motion.rotation["thorax"][frame]
         waist = yaw_of(chest) - pelvis_yaw(motion)[frame]
@@ -287,10 +298,10 @@ class GestureRetarget:
         return np.array(qpos), targets
 
 
-def clip_name(amc_path, slowdown=1.0, both_hands=False, amplitude=1.0):
-    """Nombre de los archivos de un clip: cmu_<clip>, con _dos_manos, _amplitud<factor> y _lento<factor> si aplican."""
-    return (f"cmu_{pathlib.Path(amc_path).stem}" + ("_dos_manos" if both_hands else "") + ("" if amplitude == 1.0 else f"_amplitud{amplitude:g}")
-            + ("" if slowdown == 1.0 else f"_lento{slowdown:g}"))
+def clip_name(amc_path, slowdown=1.0, both_hands=False, amplitude=1.0, legs=False, end_s=None):
+    """Nombre de los archivos de un clip: cmu_<clip>, con _hasta<s>, _piernas, _dos_manos, _amplitud<factor> y _lento<factor> si aplican."""
+    return (f"cmu_{pathlib.Path(amc_path).stem}" + ("" if end_s is None else f"_hasta{end_s:g}") + ("_piernas" if legs else "") + ("_dos_manos" if both_hands else "")
+            + ("" if amplitude == 1.0 else f"_amplitud{amplitude:g}") + ("" if slowdown == 1.0 else f"_lento{slowdown:g}"))
 
 
 SHAKE_SMOOTHING_S = 0.1  # sigma del suavizado que separa la agitación rápida del movimiento lento (subir y bajar las manos)
@@ -336,7 +347,7 @@ def shrink_arms(qpos, model, amplitude, frame_time):
 def resample(qpos, source_dt, target_dt):
     """Remuestrea qpos (base libre más articulaciones): lineal en posiciones, esférica en la orientación de la base."""
     times = np.arange(len(qpos)) * source_dt
-    new_times = np.arange(0.0, times[-1] + 1e-9, target_dt)
+    new_times = np.minimum(np.arange(0.0, times[-1] + 1e-9, target_dt), times[-1])  # el redondeo no puede pasarse del final
     out = np.empty((len(new_times), qpos.shape[1]))
     for column in list(range(3)) + list(range(7, qpos.shape[1])):
         out[:, column] = np.interp(new_times, times, qpos[:, column])
@@ -359,3 +370,283 @@ def arm_clearance(model, data):
     arms, bodies = part_geoms(model, ARM_PARTS), part_geoms(model, BODY_PARTS)
     fromto = np.zeros(6)
     return min(mujoco.mj_geomDistance(model, data, a, b, 0.05, fromto) for a in arms for b in bodies)
+
+
+# --- Piernas (criterio del 10 de noviembre): se copia lo que la persona cambia respecto a su postura de pie, desde la pose `stand`. ---
+
+LEG_JOINTS = ("hip_yaw", "hip_roll", "hip_pitch", "knee", "ankle_pitch", "ankle_roll")
+REFERENCE_S = 0.3  # la postura de pie de la persona: la mediana de sus primeros 0,3 s
+LEG_LIMIT_MARGIN_RAD = np.radians(3.0)
+# Pie humano apoyado: dedos y tobillo cerca del suelo y casi quietos (estimación).
+CONTACT_TOE_HEIGHT_M = 0.05
+CONTACT_ANKLE_HEIGHT_M = 0.13
+CONTACT_SPEED_M_S = 0.35
+FOOT_CONTACT_M = 0.001  # en Danny, un pie toca el suelo si su suela queda a menos de esto
+
+
+def human_leg_angles(motion):
+    """Ángulos de la pierna humana en el orden de las articulaciones de Danny: guiñada, balanceo y cabeceo de cadera (fémur respecto a la
+    pelvis, ejes z, x, y como la cadena de Danny), rodilla (tibia respecto al fémur, eje y) y cabeceo y balanceo del tobillo (pie respecto
+    a la tibia, ejes y, x). Las orientaciones de CMU son la identidad de pie con las piernas rectas, así que los ángulos son de ese reposo."""
+    def relative(parent, child):
+        return np.swapaxes(motion.rotation[parent], 1, 2) @ motion.rotation[child]
+
+    out = {}
+    for side, p in (("left", "l"), ("right", "r")):
+        hip = Rotation.from_matrix(relative("root", f"{p}femur")).as_euler("ZXY")
+        knee = Rotation.from_matrix(relative(f"{p}femur", f"{p}tibia")).as_euler("YXZ")[:, 0]
+        ankle = Rotation.from_matrix(relative(f"{p}tibia", f"{p}foot")).as_euler("YXZ")[:, :2]
+        out[side] = np.column_stack([hip[:, 0], hip[:, 1], hip[:, 2], knee, ankle[:, 0], ankle[:, 1]])
+    return out
+
+
+def human_foot_contacts(motion):
+    """Pie humano apoyado en cada fotograma, por lado."""
+    floor = min(np.percentile(motion.end[f"{p}foot"][:, 2], 1) for p in "lr")
+    out = {}
+    for side, p in (("left", "l"), ("right", "r")):
+        toe, ankle = motion.end[f"{p}foot"], motion.end[f"{p}tibia"]
+        speed = np.linalg.norm(np.gradient(toe, motion.frame_time, axis=0), axis=1)
+        ankle_floor = np.percentile(ankle[:, 2], 1)
+        raw = (toe[:, 2] - floor < CONTACT_TOE_HEIGHT_M) & (ankle[:, 2] - ankle_floor < CONTACT_ANKLE_HEIGHT_M - 0.08) & (speed < CONTACT_SPEED_M_S)
+        out[side] = debounce(raw, int(round(MIN_CONTACT_CHANGE_S / motion.frame_time)))
+    return out
+
+
+MIN_CONTACT_CHANGE_S = 0.1  # un apoyo o una levantada más corta es ruido de la captura (en 143_34, el pie derecho «se levantaba» 0,03 s)
+
+
+def debounce(flags, frames):
+    """Quita los tramos más cortos que `frames`, primero los de en el aire y luego los de apoyo."""
+    out = flags.copy()
+    for value in (False, True):
+        start = None
+        for i in range(len(out) + 1):
+            inside = i < len(out) and out[i] == value
+            if inside and start is None:
+                start = i
+            elif not inside and start is not None:
+                if i - start < frames and start > 0 and i < len(out):
+                    out[start:i] = not value
+                start = None
+    return out
+
+
+def sole_geom(model, side):
+    """La caja más fina del pie: la suela de 85 × 48 mm."""
+    body = name_id(model, mujoco.mjtObj.mjOBJ_BODY, f"{side}_foot_1")
+    boxes = [g for g in range(model.ngeom) if model.geom_bodyid[g] == body and model.geom_contype[g]]
+    return min(boxes, key=lambda g: model.geom_size[g][2])
+
+
+def sole_corners(model, data, geom):
+    """Las cuatro esquinas inferiores de la suela, en el mundo."""
+    size, rot, pos = model.geom_size[geom], data.geom_xmat[geom].reshape(3, 3), data.geom_xpos[geom]
+    return np.array([pos + rot @ np.array([sx * size[0], sy * size[1], -size[2]]) for sx in (-1, 1) for sy in (-1, 1)])
+
+
+class LegRetarget:
+    """Piernas y pelvis por fotograma: la pose `stand` más el cambio de la persona; la pelvis gira lo que gira la persona, se desplaza a
+    escala, sube o baja para que el pie apoyado toque el suelo, y se corre lo justo para que un pie apoyado no resbale."""
+
+    def __init__(self, model, motion):
+        self.model, self.motion = model, motion
+        self.data = mujoco.MjData(model)
+        self.stand = model.key_qpos[name_id(model, mujoco.mjtObj.mjOBJ_KEY, "stand")].copy()
+        angles = human_leg_angles(motion)
+        count = max(1, int(REFERENCE_S / motion.frame_time))
+        self.delta = {}
+        for side in ("left", "right"):
+            reference = np.median(angles[side][:count], axis=0)
+            self.delta[side] = (angles[side] - reference + np.pi) % (2 * np.pi) - np.pi
+        self.root_reference = motion.rotation["root"][:count].mean(axis=0)
+        u, _, vt = np.linalg.svd(self.root_reference)
+        self.root_reference = u @ vt
+        self.root_start = np.median(motion.end["root"][:count], axis=0)
+        human_leg = (np.linalg.norm(motion.end["lfemur"][0] - motion.end["lhipjoint"][0])
+                     + np.linalg.norm(motion.end["ltibia"][0] - motion.end["lfemur"][0]) + motion.end["ltibia"][0][2]
+                     - min(motion.end["lfoot"][:, 2].min(), motion.end["rfoot"][:, 2].min()))
+        self.scale = 0.200 / human_leg  # pierna de Danny estirada, cadera a suela (estimación de la etapa de andar)
+        self.contacts = human_foot_contacts(motion)
+        self.joints = {side: [name_id(model, mujoco.mjtObj.mjOBJ_JOINT, f"{side}_{j}") for j in LEG_JOINTS] for side in ("left", "right")}
+        self.qadr = {side: model.jnt_qposadr[self.joints[side]] for side in ("left", "right")}
+        self.soles = {side: sole_geom(model, side) for side in ("left", "right")}
+        self.anchor = {"left": None, "right": None}
+        self.previous = None
+        # Tope de velocidad de las piernas, como el de los brazos; `frame_dt` lo pone GestureRetarget con su ritmo.
+        self.speed_cap, self.frame_dt = 0.97 * SPEED_LIMIT_RAD_S, CMU_FRAME_TIME
+
+    def pose(self, frame, qpos):
+        """Escribe en qpos la pelvis y las piernas del fotograma; devuelve qué pies de la persona están apoyados.
+
+        Postura: la pose `stand` más el cambio de la persona, y la pelvis girada lo que gira la persona. Con otras longitudes que las
+        humanas, los mismos ángulos moverían los pies (en 143_34 se separaban 2,5 cm al agacharse y se inclinaban); por eso una cinemática
+        inversa de piernas y altura de pelvis deja cada pie apoyado fijo y plano donde se apoyó, y se aparta de la postura lo justo."""
+        m, d = self.model, self.data
+        posture = qpos.copy()
+        for side in ("left", "right"):
+            low, high = m.jnt_range[self.joints[side]].T
+            posture[self.qadr[side]] = np.clip(self.stand[self.qadr[side]] + self.delta[side][frame], low + LEG_LIMIT_MARGIN_RAD, high - LEG_LIMIT_MARGIN_RAD)
+        turn = self.motion.rotation["root"][frame] @ self.root_reference.T
+        base = Rotation.from_quat(self.stand[3:7], scalar_first=True).as_matrix()
+        posture[3:7] = Rotation.from_matrix(turn @ base).as_quat(scalar_first=True)
+        target_xy = self.stand[:2] + self.scale * (self.motion.end["root"][frame][:2] - self.root_start[:2])
+        if self.previous is None:
+            self.previous = posture.copy()
+            self.previous[:3] = self.stand[:3]
+        qpos[:] = posture
+        qpos[:3] = self.previous[:3]
+        for side in ("left", "right"):
+            qpos[self.qadr[side]] = self.previous[self.qadr[side]]
+        d.qpos[:] = qpos
+        mujoco.mj_kinematics(m, d)
+        mujoco.mj_comPos(m, d)
+        planted = [side for side in ("left", "right") if self.contacts[side][frame]]
+        for side in ("left", "right"):
+            if side not in planted:
+                self.anchor[side] = None
+            elif self.anchor[side] is None:
+                self.anchor[side] = np.array([*self.site(f"{side}_sole")[:2], 0.0])
+        self.solve(planted, posture, target_xy)
+        qpos[:] = d.qpos
+        self.previous = qpos.copy()
+        return planted or ["left", "right"]
+
+    def site(self, name):
+        return self.data.site_xpos[name_id(self.model, mujoco.mjtObj.mjOBJ_SITE, name)].copy()
+
+    def solve(self, planted, posture, target_xy):
+        m, d = self.model, self.data
+        dofs = np.concatenate([[0, 1, 2]] + [m.jnt_dofadr[self.joints[side]] for side in ("left", "right")])
+        qaddr = np.concatenate([[0, 1, 2]] + [self.qadr[side] for side in ("left", "right")])
+        jacp, jacr = np.zeros((3, m.nv)), np.zeros((3, m.nv))
+        low = np.concatenate([[-np.inf] * 3] + [m.jnt_range[self.joints[side], 0] + LEG_LIMIT_MARGIN_RAD for side in ("left", "right")])
+        high = np.concatenate([[np.inf] * 3] + [m.jnt_range[self.joints[side], 1] - LEG_LIMIT_MARGIN_RAD for side in ("left", "right")])
+        start = d.qpos[qaddr].copy()
+        cap = np.concatenate([[BASE_SPEED_M_S] * 3, [self.speed_cap] * (len(dofs) - 3)]) * self.frame_dt
+        for _ in range(LEG_IK_ITERATIONS):
+            rows, errors = [], []
+            for side in ("left", "right"):
+                site = name_id(m, mujoco.mjtObj.mjOBJ_SITE, f"{side}_sole")
+                mujoco.mj_jacSite(m, d, jacp, jacr, site)
+                if side in planted:
+                    rows.append(FOOT_WEIGHT * jacp[:, dofs])
+                    errors.append(FOOT_WEIGHT * (self.anchor[side] - d.site_xpos[site]))
+                    up = d.site_xmat[site].reshape(3, 3)[:, 2]
+                    rows.append(FLAT_WEIGHT * jacr[:2, dofs])
+                    errors.append(FLAT_WEIGHT * np.cross(up, [0.0, 0.0, 1.0])[:2])
+                else:
+                    # Cada esquina de la suela del pie en el aire que baje de SWING_CLEARANCE_M se empuja hacia arriba: con el pie
+                    # inclinado, la punta o el talón rozaban aunque el centro estuviera alto.
+                    body = m.geom_bodyid[self.soles[side]]
+                    for corner in sole_corners(m, d, self.soles[side]):
+                        if corner[2] < SWING_CLEARANCE_M:
+                            mujoco.mj_jac(m, d, jacp, None, corner, body)
+                            rows.append(SWING_WEIGHT * jacp[2:3, dofs])
+                            errors.append(SWING_WEIGHT * np.array([SWING_CLEARANCE_M - corner[2]]))
+            # Equilibrio: el centro de masas dentro de la huella de los pies apoyados, con COM_MARGIN_M hacia dentro. Una persona pasa el
+            # peso al pie apoyado sin pensarlo; Danny copiaba la postura sin hacerlo (93 % en 143_34, el criterio pide 95 %).
+            support = np.vstack([sole_corners(m, d, self.soles[side])[:, :2] for side in (planted or ("left", "right"))])
+            com = d.subtree_com[name_id(m, mujoco.mjtObj.mjOBJ_BODY, "base_link")][:2]
+            goal = inside_support(support, com, COM_MARGIN_M)
+            if goal is not None:
+                jac_com = np.zeros((3, m.nv))
+                mujoco.mj_jacSubtreeCom(m, d, jac_com, name_id(m, mujoco.mjtObj.mjOBJ_BODY, "base_link"))
+                rows.append(COM_WEIGHT * jac_com[:2, dofs])
+                errors.append(COM_WEIGHT * (goal - com))
+            rows.append(BASE_XY_WEIGHT * np.eye(len(dofs))[:2])
+            errors.append(BASE_XY_WEIGHT * (target_xy - d.qpos[:2]))
+            rows.append(LEG_POSTURE_WEIGHT * np.eye(len(dofs))[3:])
+            errors.append(LEG_POSTURE_WEIGHT * (posture[qaddr[3:]] - d.qpos[qaddr[3:]]))
+            J, e = np.vstack(rows), np.concatenate(errors)
+            # Las articulaciones en su tope que el paso empujaría más allá se quitan y se vuelve a resolver: si no, el cálculo les seguía
+            # pidiendo más y la pelvis no subía, y en el fondo de la sentadilla de 143_34 el pie apoyado se hundía (rodilla a 127° y tobillo
+            # a -42°, el rango de Danny menos el margen).
+            # Solo sale la que pasa su rango: la que llega al tope de velocidad se mueve lo máximo permitido (si también saliera, la pelvis,
+            # que lo pasaba en la primera iteración, se quedaba congelada).
+            free = np.ones(len(dofs), dtype=bool)
+            for _ in range(3):
+                Jf = J * free
+                step = np.linalg.solve(Jf.T @ Jf + LEG_IK_DAMPING ** 2 * np.eye(len(dofs)), Jf.T @ e) * free
+                stuck = free & (((d.qpos[qaddr] + step) < low) | ((d.qpos[qaddr] + step) > high))
+                if not stuck.any():
+                    break
+                free &= ~stuck
+            d.qpos[qaddr] = np.clip(np.clip(d.qpos[qaddr] + step, low, high), start - cap, start + cap)
+            mujoco.mj_kinematics(m, d)
+            mujoco.mj_comPos(m, d)
+
+
+def inside_support(corners, point, margin):
+    """Si `point` queda fuera de la huella (envolvente convexa de `corners`) encogida `margin`, el punto más cercano dentro; si no, None."""
+    from scipy.spatial import ConvexHull
+
+    hull = ConvexHull(corners)
+    centre = corners[hull.vertices].mean(axis=0)
+    polygon = centre + (corners[hull.vertices] - centre) * np.clip(1 - margin / np.maximum(np.linalg.norm(corners[hull.vertices] - centre, axis=1), 1e-9), 0, 1)[:, None]
+    def turn(a, b):  # componente z del producto vectorial en el plano (NumPy 2 no lo admite con vectores de 2)
+        return a[0] * b[1] - a[1] * b[0]
+
+    inside = all(turn(polygon[(i + 1) % len(polygon)] - polygon[i], point - polygon[i]) >= 0 for i in range(len(polygon)))
+    if inside:
+        return None
+    best, best_distance = None, np.inf
+    for i in range(len(polygon)):
+        a, b = polygon[i], polygon[(i + 1) % len(polygon)]
+        t = np.clip(np.dot(point - a, b - a) / max(np.dot(b - a, b - a), 1e-12), 0, 1)
+        candidate = a + t * (b - a)
+        if np.linalg.norm(candidate - point) < best_distance:
+            best, best_distance = candidate, np.linalg.norm(candidate - point)
+    return best
+
+
+COM_MARGIN_M = 0.008  # el centro de masas, a 8 mm del borde de la huella (estimación)
+COM_WEIGHT = 10.0
+LEG_IK_ITERATIONS = 40
+LEG_IK_DAMPING = 0.01
+FOOT_WEIGHT = 10.0  # pie apoyado fijo donde se apoyó
+FLAT_WEIGHT = 0.5  # y plano
+SWING_WEIGHT = 30.0  # el pie en el aire no roza el suelo
+SWING_CLEARANCE_M = 0.005  # el pie en el aire no baja de aquí (por encima de FOOT_CONTACT_M, para no contarlo como apoyado)
+BASE_SPEED_M_S = 1.0  # solo evita saltos de la pelvis; la frenan las piernas, que tienen el tope del servo (con 0,3 m/s los pies se despegaban al levantarse en 143_34)
+BASE_XY_WEIGHT = 0.3  # la pelvis sigue suave el desplazamiento de la persona, a escala
+LEG_POSTURE_WEIGHT = 0.05  # la postura de la persona pesa 5 cm por radián frente a los pies
+
+
+FOOT_SLIDE_M = 0.005  # punto 7 (estimación aprobada por el dueño)
+FLOOR_TOLERANCE_M = 0.0005  # punto 8: el pie puede quedar como mucho medio milímetro bajo el suelo, por redondeo
+BALANCED_FRACTION = 0.95  # punto 9
+
+
+def leg_criteria(model, qpos, frame_dt):
+    """Puntos 7 a 9 sobre la trayectoria entregada. Un pie de Danny está apoyado si una esquina de su suela queda a menos de FOOT_CONTACT_M."""
+    from scipy.spatial import Delaunay
+
+    data = mujoco.MjData(model)
+    soles = {side: sole_geom(model, side) for side in ("left", "right")}
+    others = [g for g in range(model.ngeom) if model.geom_contype[g] and g not in soles.values()
+              and any((mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, model.geom_bodyid[g]) or "").endswith(p)
+                      for p in ("shin_1", "ankle_link_1", "foot_1", "thigh_1"))]
+    start = {"left": None, "right": None}
+    slide, foot_low, leg_low, balanced = 0.0, np.inf, np.inf, []
+    for q in qpos:
+        data.qpos[:] = q
+        mujoco.mj_forward(model, data)
+        support = []
+        for side in ("left", "right"):
+            corners = sole_corners(model, data, soles[side])
+            foot_low = min(foot_low, corners[:, 2].min())
+            if corners[:, 2].min() < FOOT_CONTACT_M:
+                centre = corners[:, :2].mean(axis=0)
+                start[side] = centre if start[side] is None else start[side]
+                slide = max(slide, float(np.linalg.norm(centre - start[side])))
+                support.extend(corners[:, :2])
+            else:
+                start[side] = None
+        for g in others:
+            size, rot, pos = model.geom_size[g], data.geom_xmat[g].reshape(3, 3), data.geom_xpos[g]
+            leg_low = min(leg_low, min((pos + rot @ (np.array([sx, sy, sz]) * size))[2] for sx in (-1, 1) for sy in (-1, 1) for sz in (-1, 1)))
+        com = data.subtree_com[name_id(model, mujoco.mjtObj.mjOBJ_BODY, "base_link")][:2]
+        balanced.append(len(support) >= 3 and Delaunay(np.array(support)).find_simplex(com) >= 0)
+    return {"slide": round(slide, 4), "foot_low": round(float(foot_low), 4), "leg_low": round(float(leg_low), 4),
+            "balanced": round(float(np.mean(balanced)), 4)}

@@ -59,15 +59,21 @@ def main():
     parser.add_argument("--continuity", type=float, default=danny_gestures.CONTINUITY_WEIGHT, help="peso hacia la postura anterior (ver danny_gestures)")
     parser.add_argument("--body-margin", type=float, default=danny_gestures.BODY_MARGIN_M, help="margen en m entre brazo y cuerpo")
     parser.add_argument("--speed-cap", action="store_true", help="ninguna articulación del brazo va más deprisa que el 80 %% del servo")
+    parser.add_argument("--limit-margin", type=float, default=0.0, help="grados que el brazo se queda de sus topes (0, puede llegar)")
+    parser.add_argument("--end", type=float, default=None, help="corta el clip de la persona en ese segundo")
+    parser.add_argument("--legs", action="store_true", help="mueve piernas y pelvis (criterio de piernas); si no, quedan de pie")
     parser.add_argument("--smooth", type=float, default=0.0, help="sigma en s del suavizado final de brazos, cintura y cuello (0, sin suavizar)")
     args = parser.parse_args()
-    name = danny_gestures.clip_name(args.amc, args.slowdown, args.both_hands, args.amplitude)
+    name = danny_gestures.clip_name(args.amc, args.slowdown, args.both_hands, args.amplitude, args.legs, args.end)
 
     model = danny_gestures.gesture_model()
-    motion = danny_gestures.CmuMotion(args.amc)
+    motion = danny_gestures.CmuMotion(args.amc, args.end)
     retarget = danny_gestures.GestureRetarget(model, args.both_hands, args.continuity, args.body_margin,
-                                              danny_gestures.SPEED_LIMIT_RAD_S * 0.97 if args.speed_cap else None)
+                                              danny_gestures.SPEED_LIMIT_RAD_S * 0.97 if args.speed_cap else None,
+                                              np.radians(args.limit_margin))
     retarget.frame_dt = motion.frame_time * args.slowdown
+    if args.legs:
+        retarget.legs = danny_gestures.LegRetarget(model, motion)
     raw, targets = retarget.run(motion)
     if args.amplitude != 1.0:
         # Los objetivos de codo y mano se recalculan con el brazo reducido: el punto 2 mide la distancia a ese brazo reducido.
@@ -105,9 +111,10 @@ def main():
         mujoco.mj_forward(model, data)
         clearance.append(danny_gestures.arm_clearance(model, data))
     clearance = np.array(clearance)
-    # Punto 6: piernas y pelvis en la pose de pie.
+    # Punto 6: piernas y pelvis en la pose de pie (sin --legs). Con --legs, puntos 7 a 9.
     legs = slice(0, joints.index("waist_yaw") + 7)
     legs_offset = float(np.abs(qpos[:, legs] - retarget.stand[legs]).max())
+    leg_points = danny_gestures.leg_criteria(model, qpos, 1.0 / danny_gestures.RATE_HZ) if args.legs else None
 
     all_errors = np.concatenate([np.array(e) for e in errors.values()])
     criteria = {
@@ -116,16 +123,32 @@ def main():
         "worst_arm_joint_fraction_at_limit": {"value": round(float(at_limit[:, arm].mean(axis=0).max()), 4), "limit": AT_LIMIT_FRACTION},
         "max_joint_speed_rad_s": {"value": round(float(speeds.max()), 2), "limit": round(danny_gestures.SPEED_LIMIT_RAD_S, 2)},
         "min_arm_body_clearance_m": {"value": round(float(clearance.min()), 4), "limit": 0.0},
-        "legs_and_pelvis_max_offset_from_stand": {"value": round(legs_offset, 6), "limit": 0.0},
     }
+    if args.legs:
+        criteria.update({
+            "max_planted_foot_slide_m": {"value": leg_points["slide"], "limit": danny_gestures.FOOT_SLIDE_M},
+            "min_foot_height_m": {"value": leg_points["foot_low"], "limit": -danny_gestures.FLOOR_TOLERANCE_M},
+            "min_other_leg_part_height_m": {"value": leg_points["leg_low"], "limit": 0.0},
+            "fraction_com_over_support": {"value": leg_points["balanced"], "limit": danny_gestures.BALANCED_FRACTION},
+        })
+    else:
+        criteria["legs_and_pelvis_max_offset_from_stand"] = {"value": round(legs_offset, 6), "limit": 0.0}
     passes = {
         "elbow_hand_error_median_m": criteria["elbow_hand_error_median_m"]["value"] <= ELBOW_HAND_MEDIAN_M,
         "elbow_hand_error_p95_m": criteria["elbow_hand_error_p95_m"]["value"] <= ELBOW_HAND_P95_M,
         "worst_arm_joint_fraction_at_limit": criteria["worst_arm_joint_fraction_at_limit"]["value"] <= AT_LIMIT_FRACTION,
         "max_joint_speed_rad_s": criteria["max_joint_speed_rad_s"]["value"] <= danny_gestures.SPEED_LIMIT_RAD_S,
         "min_arm_body_clearance_m": criteria["min_arm_body_clearance_m"]["value"] >= 0.0,
-        "legs_and_pelvis_max_offset_from_stand": legs_offset <= 1e-9,
     }
+    if args.legs:
+        passes.update({
+            "max_planted_foot_slide_m": leg_points["slide"] <= danny_gestures.FOOT_SLIDE_M,
+            "min_foot_height_m": leg_points["foot_low"] >= -danny_gestures.FLOOR_TOLERANCE_M,
+            "min_other_leg_part_height_m": leg_points["leg_low"] > 0.0,
+            "fraction_com_over_support": leg_points["balanced"] >= danny_gestures.BALANCED_FRACTION,
+        })
+    else:
+        passes["legs_and_pelvis_max_offset_from_stand"] = legs_offset <= 1e-9
     for key in criteria:
         criteria[key]["passes"] = passes[key]
 
@@ -142,11 +165,13 @@ def main():
         "body_margin_m": args.body_margin,
         "speed_cap": args.speed_cap,
         "smooth_s": args.smooth,
+        "limit_margin_deg": args.limit_margin,
         "seconds": round(len(qpos) / danny_gestures.RATE_HZ, 2),
         "rate_hz": danny_gestures.RATE_HZ,
         "joint_order": joints,
-        "criteria_2_to_6": criteria,
-        "passes_2_to_6": all(passes.values()),
+        "criteria_measured": criteria,
+        "legs": args.legs,
+        "passes_measured": all(passes.values()),
         "criterion_1": "vídeo junto a la persona, aprobado por el dueño (record_gesture_video.py)",
         "errors_m": {k: quantiles(v) for k, v in errors.items()},
         "arm_joints": {joints[j]: {"used_deg": [round(float(np.degrees(angles[:, j].min())), 1), round(float(np.degrees(angles[:, j].max())), 1)],

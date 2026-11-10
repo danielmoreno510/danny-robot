@@ -7,6 +7,7 @@
   "body_margin_m": 0.0005,
   "speed_cap": false,
   "smooth_s": 0.0,
+  "limit_margin_deg": 0.0,
   "seconds": 4.48,
   "rate_hz": 50.0,
   "joint_order": [
@@ -34,7 +35,7 @@
     "neck_yaw",
     "neck_pitch"
   ],
-  "criteria_2_to_6": {
+  "criteria_measured": {
     "elbow_hand_error_median_m": {
       "value": 0.0011,
       "limit": 0.01,
@@ -66,7 +67,8 @@
       "passes": true
     }
   },
-  "passes_2_to_6": true,
+  "legs": false,
+  "passes_measured": true,
   "criterion_1": "vídeo junto a la persona, aprobado por el dueño (record_gesture_video.py)",
   "errors_m": {
     "left_elbow": {

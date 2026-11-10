@@ -102,7 +102,86 @@ en ningún gesto, por el criterio:** el dueño lo notó en 141_23 y 141_27, dond
 | Conversación, la otra persona | `cmu_19_08_lento1.3` | margen 3 mm, × 1,3 más lento | 22,6 s | 2,8 / 15,1 mm | 0,2 % | 7,94 | 0,5 mm | 1,36° |
 | Saludar con el brazo alto | `cmu_143_25_lento1.8` | margen 5 mm, × 1,8 más lento | 9,9 s | 3,3 / 16,9 mm | 3,5 % | 7,80 | 3,2 mm | 1,40° |
 
-**No cumplen,** con `--speed-cap` y margen de 5 mm. Por topes del brazo, que el ritmo no arregla, porque la persona lleva el brazo más atrás o
+**Gestos que se quedaron cerca, con margen a los topes (10 de noviembre).** Hay una opción nueva, `--limit-margin 3`: el brazo se queda a
+3° de cada tope, para no apoyar el servo en el tope mecánico, que es lo que busca el punto 3. **Con este margen, el punto 3 sale 0 % por
+construcción** (cuenta como tope a menos de 2°), así que la prueba que decide es el punto 2: si la persona pide más brazo del que Danny puede
+dar, el error sube. Probado con `--speed-cap --body-margin 0.005 --smooth 0.05 --limit-margin 3`:
+
+| Gesto | Nombre | Codo y mano, mediana / p95 | Velocidad máx. | Holgura mín. | Vibración máx. | Resultado |
+|---|---|---|---|---|---|---|
+| Encoger los hombros | `cmu_141_21` | 2,7 / 12,6 mm | 5,40 rad/s | 2,9 mm | 0,89° | Cumple; aprobado por el dueño |
+| Chocar los cinco | `cmu_141_22` | 5,6 / 18,2 mm | 7,35 | 3,2 mm | 1,00° | Cumple por poco; aprobado por el dueño |
+| Peek A Boo | `cmu_143_33` | 5,4 / 16,2 mm | 7,82 | 2,5 mm | 0,94° | Cumple; aprobado por el dueño |
+| Peek a Boo | `cmu_141_18` | 4,1 / 22,8 mm | | | | No: error |
+| Macarena | `cmu_143_35` | 5,8 / 29,8 mm | | | | No: error |
+| Dirigir el tráfico | `cmu_13_26` | 4,1 / 33,1 mm | | | | No: error |
+| Around the world | `cmu_141_24` | 6,1 / 39,7 mm | | | | No: error |
+| Esperar | `cmu_141_20` | 6,1 / 36,6 mm | | | | No: error |
+
+En los que fallan, Danny se queda a varios centímetros de la postura de la persona: el hombro no le da, y el gesto sería otro. Sus informes
+(`results/gesture_cmu_<clip>.json`) quedan con estos ajustes.
+
+**Bailes de pie (10 de noviembre).** Se usan los mismos ajustes que con el margen (`--speed-cap --body-margin 0.005 --smooth 0.05
+--limit-margin 3`). Las piernas siguen fijas: de los bailes solo se copian brazos, cintura y cuello. Cumplen los puntos 2 a 6, y **el
+dueño los aprobó el 10 de noviembre**. Hizo notar que en ninguno se mueven los pies: es lo siguiente, los movimientos con piernas.
+
+| Baile | Nombre | Duración | Codo y mano, mediana / p95 | Velocidad máx. (rad/s) | Holgura mín. | Vibración máx. |
+|---|---|---|---|---|---|---|
+| Chicken Dance | `cmu_143_34` | 6,5 s | 6,4 / 18,6 mm | 7,57 | 2,6 mm | 0,92° |
+| Chicken Dance, pareja A | `cmu_18_15` | 12,8 s | 5,0 / 15,5 mm | 7,34 | 2,2 mm | 1,17° |
+| Chicken Dance, pareja A, otra toma | `cmu_20_01` | 10,7 s | 5,7 / 16,8 mm | 7,07 | 2,7 mm | 1,32° |
+| Chicken Dance, pareja B, otra toma | `cmu_21_01` | 10,7 s | 7,0 / 19,6 mm | 7,23 | 3,2 mm | 1,31° |
+| Brazos en alto y giro del tronco | `cmu_05_12` | 11,3 s | 2,3 / 13,0 mm | 7,92 | 2,2 mm | 1,26° |
+
+**No cumplen:**
+- La pareja B de 18_15 (19_15): p95 de 23,5 mm, y de 22,6 mm aun yendo 1,3 veces más lento.
+- Brazos en alto con arabesque (49_09): el codo derecho se queda a unos 3,6 cm de su sitio todo el rato, porque el hombro no da para
+  tanto.
+- Twist (141_12) y pirueta (05_02): los mueven la cadera y el giro del cuerpo, y Danny tiene la pelvis fija (p95 de 62 y 56 mm).
+
+Se corrigió `resample`: con clips como 20_01 y 21_01, el último instante se pasaba del final por redondeo y daba error. No cambia los clips
+anteriores, en los que nunca se pasaba.
+
+**Movimientos con piernas: criterio aprobado por el dueño el 10 de noviembre, antes de programar.** **Método:** se parte de la pose `stand`
+de Danny, con las rodillas dobladas 47°, y a cada articulación de la pierna se le suma lo que la persona cambia respecto a su propia postura de
+pie. Se copia el cambio, no la postura: el primer intento de andar copió la forma de la pierna humana, casi recta, y las rodillas se veían mal.
+El cuerpo sube o baja para que el pie apoyado toque el suelo. Se empieza **sin desplazarse**: los cuatro Chicken Dance con sus flexiones de
+rodilla y pasar el peso de un pie a otro; andar queda para el final. **Pasa si cumple:** los puntos 1 a 5 de los gestos (el 6 ya no aplica,
+porque las piernas se mueven), y además (7) el pie apoyado no resbala más de 5 mm mientras está en el suelo (estimación); (8) el pie no
+atraviesa el suelo y ninguna otra pieza de la pierna lo toca; (9) el centro de masas cae dentro de la huella de los pies apoyados el 95 % del
+tiempo o más.
+
+**Movimientos con piernas: resultado (10-11 de noviembre).** `--legs` en `retarget_gesture.py` usa `LegRetarget` (`danny_gestures.py`).
+Copiar solo el cambio de ángulos no bastaba en 143_34: al agacharse, los pies se separaban 2,5 cm y se inclinaban, porque Danny tiene otras
+longitudes. Así quedó el método:
+- La postura sale del cambio de la persona.
+- Una cinemática inversa de piernas y altura de pelvis mantiene cada pie apoyado fijo y plano donde se apoyó.
+- Lleva el centro de masas dentro de la huella, a 8 mm del borde.
+- Levanta el pie en el aire a 5 mm o más por cada esquina de la suela.
+- Respeta el tope de velocidad del servo.
+- Las articulaciones que llegan a su rango dejan de contar, para que la pelvis suba en vez de hundirse los pies.
+- Los apoyos y levantadas de menos de 0,1 s se tratan como ruido de la captura.
+
+Fallos encontrados y corregidos por el camino: medir el resbale con el mismo umbral que la altura del pie en el aire, un tope de 0,3 m/s en la
+pelvis que despegaba los pies, y la pelvis congelada al sacarla del cálculo por el tope de velocidad. Ajustes: `--speed-cap --body-margin 0.005
+--smooth 0.05 --limit-margin 3 --legs`.
+
+| Baile | Nombre | Ajustes | Codo y mano p95 | Resbale máx. | Pie más bajo | Otra pieza más baja | Equilibrio | Puntos |
+|---|---|---|---|---|---|---|---|---|
+| Chicken Dance (sin los pasos finales) | `cmu_143_34_hasta5.4_piernas_lento1.4` | hasta 5,4 s, × 1,4 más lento | 17,5 mm | 0,3 mm | -0,2 mm | 1,8 mm | 98,4 % | 9/9 |
+| Chicken Dance, pareja A, otra toma | `cmu_20_01_piernas` | ritmo de la persona | 16,8 mm | 0,3 mm | -0,2 mm | 1,8 mm | 100,0 % | 9/9 |
+| Chicken Dance, pareja A | `cmu_18_15_piernas` | ritmo de la persona | 15,4 mm | 0,9 mm | -0,8 mm | 1,2 mm | 100,0 % | 8/9 |
+| Chicken Dance, pareja B, otra toma | `cmu_21_01_piernas` | ritmo de la persona | 19,7 mm | 5,3 mm | -7,8 mm | -5,9 mm | 99,8 % | 6/9 |
+
+- **143_34:** al ritmo de la persona no cumple, porque la rodilla va al tope de velocidad al levantarse de la sentadilla, el pie se inclina
+  2-3° y entra 1,2 mm. Además, desde los 5,5 s la persona deja de bailar y da pasos girando, y eso se queda para cuando toque andar, así que el
+  clip se corta en 5,4 s (`--end`).
+- **18_15:** falla por un fotograma suelto en el que el pie entra 0,8 mm.
+- **21_01:** el pie ya está desplazado 5,3 mm desde el primer fotograma, y la cadera derecha llega a su tope de giro.
+- 143_34 y 20_01 cumplen los nueve puntos medibles; vídeos en `results/videos/gesture_cmu_143_34_hasta5.4_piernas_lento1.4.mp4` y
+  `gesture_cmu_20_01_piernas.mp4`. **Aprobados por el dueño el 11 de noviembre.**
+
+**Antes del margen, no cumplían,** con `--speed-cap` y margen de 5 mm. Por topes del brazo, que el ritmo no arregla, porque la persona lleva el brazo más atrás o
 más arriba de lo que permite el hombro de Danny: encoger los hombros 141_21 (5,3 % en `right_shoulder_pitch` a +45°), chocar los cinco
 141_22 (6,0 %), Peek a Boo 141_18 y 143_33 (49 % y 25 %), Macarena 143_35 (18 %: codo a -130° y hombro a +45°, con las manos detrás de la
 cabeza) y dirigir el tráfico 13_26. Por quedarse atrás: esperar 141_20 y 141_24, que además roza o toca topes. **La holgura de 0,5 mm de 19_08

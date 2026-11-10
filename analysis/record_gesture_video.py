@@ -38,12 +38,14 @@ def main():
     parser.add_argument("--slowdown", type=float, default=1.0, help="el mismo que en retarget_gesture.py")
     parser.add_argument("--both-hands", action="store_true", help="el mismo que en retarget_gesture.py")
     parser.add_argument("--amplitude", type=float, default=1.0, help="el mismo que en retarget_gesture.py")
+    parser.add_argument("--end", type=float, default=None, help="corta el clip de la persona en ese segundo")
+    parser.add_argument("--legs", action="store_true", help="el mismo que en retarget_gesture.py")
     args = parser.parse_args()
-    name = danny_gestures.clip_name(args.amc, args.slowdown, args.both_hands, args.amplitude)
+    name = danny_gestures.clip_name(args.amc, args.slowdown, args.both_hands, args.amplitude, args.legs, args.end)
 
     model = danny_gestures.gesture_model()
     data = mujoco.MjData(model)
-    motion = danny_gestures.CmuMotion(args.amc)
+    motion = danny_gestures.CmuMotion(args.amc, args.end)
     rows = np.loadtxt(danny_sim.ROOT / "results" / "retargeted" / f"{name}.csv", delimiter=",")
     qpos = np.column_stack([rows[:, :3], rows[:, 6:7], rows[:, 3:6], rows[:, 7:]])
 
