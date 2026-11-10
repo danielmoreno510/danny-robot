@@ -65,6 +65,7 @@ def main() -> None:
   parser.add_argument("--num-envs", type=int, default=1024)
   parser.add_argument("--sit-seconds", type=float, default=10.0)
   parser.add_argument("--lie-seconds", type=float, default=10.0)
+  parser.add_argument("--zero-last-action", action="store_true", help="Al cambiar de política, pone a cero las últimas acciones que ve la observación (diagnóstico, 10 nov)")
   args = parser.parse_args()
 
   cfg = eval_env_cfg(args.num_envs, args.sit_seconds + args.lie_seconds + 2.0, args.vin, task=SIT_TASK)
@@ -181,6 +182,9 @@ def main() -> None:
   rec = lie_measure.LieRecorder(env, lie_steps, stall)
   start_pelvis_z = robot.data.site_pos_w[:, pelvis_id, 2].clone()
   max_dq_lie = torch.zeros(n, len(joint_names), device=device)
+  if args.zero_last_action:
+    am = u.action_manager
+    am._action.zero_(); am._prev_action.zero_(); am._prev_prev_action.zero_()
   obs = env.get_observations()
   with torch.inference_mode():
     for step in range(lie_steps):
