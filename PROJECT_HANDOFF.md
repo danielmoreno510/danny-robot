@@ -1257,3 +1257,20 @@ Entrenamiento terminado (15250 a 16750, `fase5_tumbarse_castigo_100/model_16749.
 | 16749 (final) | 94,8 % | 2,32 | 3,72 |
 
 **Lectura:** −100 sube el resultado de 87,4 % (corrida 6) a 98,4 %, y el modelo final queda en 94,8 %. Sigue oscilando entre puntos de control (86-98 %) y queda una cola pequeña con picos de 3,6 a 4,0 rad/s. Ninguno llega al 100 %. Ningún punto está copiado a `puntos_de_control` (no aprobado). **No comprobado:** tensión aleatoria; si un castigo mayor o más puntos de control (entre 15250 y 15750, donde están los mejores) llegan al 100 %; si el 100 % de 4 096 robots es alcanzable con ruido.
+
+**Corrida 7, más puntos y tensión aleatoria (11 de noviembre)** (4 096 robots; `results/training_cadena_sentarse_tumbarse_castigo_100_model_<N>_{6.6,aleatoria}.json`). En todos, sentarse y el resto de tumbarse pasan; solo falla el giro de la pelvis (exige 100 %):
+
+| Iteración | 6,6 V | Tensión aleatoria (6-8,4 V) | Pico máx. 6,6 V (rad/s) |
+|---|---|---|---|
+| 15300 | 99,3 % | 96,4 % | 3,26 |
+| **15350** | **99,5 %** | **97,2 %** | 3,28 |
+| 15400 | 98,5 % | | 3,57 |
+| 15450 | 98,4 % | | 3,58 |
+| 15500 | 98,4 % | 94,6 % | 3,72 |
+| 15550 | 97,6 % | | 3,36 |
+| 15600 | 92,4 % | | 3,58 |
+| 15650 | 96,6 % | | 3,68 |
+| 15700 | 95,3 % | | 3,81 |
+| 16250 | 97,4 % | 93,3 % | 3,68 |
+
+**Lectura:** el mejor punto es `model_15350` (99,5 % a 6,6 V, 97,2 % con tensión aleatoria; solo cabeceo falla, balanceo 100 % y guiñada 99,98 %). Con tensión aleatoria todos pierden 2-5 puntos. El 100 % no se alcanza en ningún punto ni tensión; el pico máximo queda en 3,3 a 3,6 rad/s en los mejores, por encima de 3. Nada copiado a `puntos_de_control` (no aprobado). **No comprobado:** si más castigo o más iteraciones llegan al 100 % con tensión aleatoria; pushes; levantarse tras tumbarse; robot real. **Decisión pendiente del dueño:** otra corrida con castigo mayor, o revisar el criterio (el dato ahora es 99,5 % / 97,2 % frente al 100 % escrito).
