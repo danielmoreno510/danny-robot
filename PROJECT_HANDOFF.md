@@ -1238,3 +1238,7 @@ Entrenamiento terminado (15000 a 16500, `fase5_tumbarse_castigo_fuerte/model_164
 | 16499 | 78,3 % | 2,72 | 3,91 |
 
 **Lectura:** el castigo −30 sube el techo de ~74 % a ~87 % (mejor `model_15250`) sin romper nada más, y ya no se degrada con las iteraciones (final 78 %). Pero sigue sin llegar al 100 % y oscila entre puntos de control (60-87 %). `model_15250` de la corrida 6 no está copiado a `puntos_de_control` (no aprobado). **No comprobado:** tensión aleatoria; si un castigo aún mayor o más iteraciones llegan al 100 %; si la cola (máx. 3,6-4,2 rad/s) es alcanzable bajo 3.
+
+### Fase 5, tumbarse, corrida 7: lanzada (11 de noviembre) — castigo del giro de la pelvis −100
+
+El dueño aprobó seguir por la misma vía. Cambio único: `pelvis_rate_excess` de −30 a **−100** (`lie.py`). Sale de `fase5_tumbarse_castigo_fuerte/model_15250.pt` (87,4 %), 1 500 iteraciones (15250 a 16750), 4 096 robots, run `fase5_tumbarse_castigo_100`, script `D:\Claudease5_tumbarse_castigo_100.sh`, log `D:\Claudease5_tumbarse_castigo_100.log`. Al acabar (~70 min): medir la cadena (4 096 robots, 6,6 V) en varios puntos y revisar que tumbado, impacto, cabeza y saturación sigan pasando. **Riesgo:** un castigo mayor puede frenar la política; −100 es una apuesta, sin valores intermedios probados. Si no llega al 100 %, el criterio es decisión del dueño.

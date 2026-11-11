@@ -218,7 +218,7 @@ def danny_lie_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   cfg.rewards = {
     "lie_progress": RewardTermCfg(func=lie_progress, weight=4.0),
     "lying_still": RewardTermCfg(func=lying_still, weight=2.0, params={"std": 0.3}),
-    "pelvis_rate_excess": RewardTermCfg(func=pelvis_rate_excess, weight=-30.0),
+    "pelvis_rate_excess": RewardTermCfg(func=pelvis_rate_excess, weight=-100.0),
     "trunk_speed_excess": RewardTermCfg(func=trunk_speed_excess, weight=-20.0),
     "head_floor_contacts": RewardTermCfg(func=head_floor_contacts, weight=-2.0),
     "action_out_of_range": RewardTermCfg(func=getup.action_out_of_range_l1, weight=-0.035),
