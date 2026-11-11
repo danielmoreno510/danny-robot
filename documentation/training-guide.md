@@ -153,7 +153,7 @@ el dueño del proyecto.
 **Fuentes elegidas en la etapa 1.2: CMU y 100STYLE** (sección 6 de `research-and-requirements.md`), retargeteadas con GMR. LAFAN1 y
 AMASS no se publican. Aquí es donde deja de moverse raro.
 
-**Fase 6: entrenar con física los 17 movimientos aprobados (criterio aprobado por el dueño el 11 de noviembre).** Las referencias ya
+**Fase 6: entrenar con física los 19 movimientos aprobados (criterio aprobado por el dueño el 11 de noviembre; andar, 18 y 19, añadido ese día).** Las referencias ya
 están hechas, adaptadas a Danny y aprobadas por el dueño en vídeo: no se tocan. Cada una es un CSV a 50 Hz con la convención de mjlab
 para imitar movimiento: por fila, posición de la base (x, y, z en m), orientación (qx, qy, qz, qw) y las 23 articulaciones en el orden
 del modelo (el del handbook; `joint_order` del informe `results/gesture_<nombre>.json`). Los vídeos de referencia están en
@@ -179,11 +179,14 @@ project was obtained from mocap.cs.cmu.edu. The database was created with fundin
 | 15 | Brazos en alto y giro del tronco | `cmu_05_12.csv` | 11,3 s |
 | 16 | Chicken Dance con piernas | `cmu_143_34_hasta5.4_piernas_lento1.4.csv` | 7,6 s |
 | 17 | Chicken Dance con piernas, otra toma | `cmu_20_01_piernas.csv` | 10,7 s |
+| 18 | Andar, pasos de 0,10 m | `cmu_07_01_piernas.csv` | 2,6 s |
+| 19 | Andar, otra toma | `cmu_07_02_piernas.csv` | 2,7 s |
 
 **Cómo:** con la tarea de seguimiento de movimiento de mjlab (la de BeyondMimic), adaptada a Danny, y su script para pasar CSV a su
 formato de movimiento. Comprueba el nombre exacto de la tarea y del script en tu versión de mjlab. Una política por movimiento, empezando
 por **saludar**; si saludar no cumple, se para y se avisa antes de seguir. Después, los gestos (2 a 10), los bailes con piernas fijas (11
-a 15) y al final los dos con piernas (16 y 17). Los movimientos de 1 a 15 tienen las piernas y la pelvis quietas en la pose `stand`: Danny
+a 15), los dos con piernas (16 y 17) y al final andar (18 y 19). Andar empieza y acaba de pie, con los pies en sus pisadas; dura menos
+de 3 s: da el estilo de los pasos, no un andar continuo, que sigue siendo la política de la fase 2. Los movimientos de 1 a 15 tienen las piernas y la pelvis quietas en la pose `stand`: Danny
 no debe dar pasos.
 
 **Pasa si cumple todo**, medido con 4 096 robots, a 6,6 V y con tensión aleatoria, con la aleatorización y los empujones de la fase 2:
@@ -192,12 +195,11 @@ no debe dar pasos.
    percentil 95 (estimación: la referencia ya tenía 1-2 cm de error frente a la persona).
 3. **Saturación,** como en las fases 4 y 5: el 99 % de los robots o más sin ninguna articulación por encima del 90 % del bloqueo más de
    0,5 s seguidos, y ninguno más de 2 s.
-4. **Pies:** en los movimientos 1 a 15, el 95 % de los robots o más no da ningún paso; en el 16 y el 17, el pie apoyado no resbala más
+4. **Pies:** en los movimientos 1 a 15, el 95 % de los robots o más no da ningún paso; de 16 a 19, el pie apoyado no resbala más
    de 1 cm.
 5. **Vídeo de Danny con física junto a la referencia, aprobado por el dueño.**
 6. **ONNX verificado,** como en las demás fases.
 
-El andar natural no tiene referencia: dos intentos no cumplieron (Fase 6 en `PROJECT_HANDOFF.md`) y el dueño decidió pedirlo al entrenar.
 
 ## Reglas
 

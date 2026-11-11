@@ -189,6 +189,8 @@ pie se suelta, avanza y se vuelve a apoyar en su nuevo sitio, y Danny avanza lo 
 centro de masas) cae dentro de la huella de los pies apoyados el 95 % del tiempo o más. Al andar no se exige el centro de masas sobre los pies,
 porque una persona va cayendo hacia el paso siguiente. (10) Las dos rodillas se mueven igual: 5° o menos de diferencia en su mediana y en su
 percentil 95, por la queja del dueño en el primer intento. (11) Danny avanza entre el 80 % y el 120 % de la velocidad de la persona a escala.
+**Cambios aprobados por el dueño el 11 de noviembre (tercer intento):** el punto 2 admite 25 mm de p95 al andar (hombro abierto 10° como
+mínimo); el punto 11 se mide entre el primer y el último aterrizaje, y la escala es la de las pisadas, acortadas a 0,65 de la cadera.
 
 **Andar: primer resultado (11 de noviembre), NO CUMPLE.** `--walk` en `retarget_gesture.py`, con CMU 07_01 y 07_02. Corregido por el camino:
 - La postura de pie de la persona se tomaba de sus primeros 0,3 s, pero el clip empieza a mitad de paso. Las rodillas de Danny salían 26°
@@ -198,7 +200,7 @@ percentil 95, por la queja del dueño en el primer intento. (11) Danny avanza en
   andar se decide por la velocidad del talón o de los dedos (`walking_foot_contacts`), y sale el 46-60 %.
 
 Con eso, **cumplen** las rodillas simétricas (punto 10) y casi todos los puntos de los brazos. **No cumplen** los pies ni el equilibrio, y en
-la versión que queda (`results/gesture_cmu_07_0{1,2}_piernas.json`, con `base_xy_weight` 0) tampoco la holgura del brazo:
+la versión de entonces (`results/gesture_cmu_07_0{1,2}_piernas.json` con `base_xy_weight` 0, en el historial de git) tampoco la holgura del brazo:
 - 07_01: el pie se arrastra 8,5 cm y se hunde 2,5 cm; el ZMP está en la huella el 23 % del tiempo; avanza el 66 % de lo debido; el brazo entra
   7 mm en el cuerpo; rodillas a 4,7° y 0,2° de diferencia.
 - 07_02: el pie se arrastra 7,3 cm y se hunde 1,6 cm; ZMP el 23 %; avanza el 57 %; el brazo entra 11 mm; error del brazo de 20,1 mm (p95).
@@ -216,7 +218,7 @@ método habitual para adaptar el andar a otro cuerpo.
   30°) llegaba a su tope y era lo que más fallaba.
 - Centro de masas del control predictivo del ZMP (`preview_com`, Kajita 2003), sobre las pisadas, con peso 1 frente a 10 del pie apoyado.
 
-Resultado, de `results/gesture_cmu_07_0{1,2}_piernas*.json`: cumplen 6-7 de 12 puntos. Cumplen las rodillas simétricas, salvo 6,5° en un caso
+Resultado, de `results/gesture_cmu_07_0{1,2}_piernas*.json` en el commit `fb3d73f` (el tercer intento los sustituye): cumplen 6-7 de 12 puntos. Cumplen las rodillas simétricas, salvo 6,5° en un caso
 ralentizado, y el avance (81-84 %). **No cumplen** los pies, el equilibrio ni la holgura del brazo:
 - 07_01: el pie se arrastra 2,9 cm y se hunde 1,0 cm; ZMP dentro el 44 %; el brazo entra 5,6 mm. Ralentizado × 1,5: 1,3 cm, 3,6 mm y 55 %.
 - 07_02: 5,3 cm, 1,5 cm y 34 %.
@@ -228,11 +230,64 @@ referencia cinemática del andar. Danny ya anda con física (fase 2), y la natur
 pisadas o la simetría de rodillas como recompensa. **Decisión del dueño (11 de noviembre): se deja el andar para el entrenamiento con
 física.** El código de andar (`--walk`) y sus informes quedan como referencia del intento.
 
-**Entrenamiento con física de los 17 movimientos: criterio aprobado por el dueño el 11 de noviembre.** Está, con la lista de archivos, en la
+**Andar, tercer intento (11 de noviembre, rama `fase6-andar`): 07_01 y 07_02 APROBADOS por el dueño (vídeo, punto 1) y cumplen los puntos 2 a 11.** El dueño pidió
+intentarlo aquí ("si no, es que algo nos quedó mal"). Lo que estaba mal y se corrigió, cada cosa medida antes:
+- **El cálculo con pesos.** `solve_walk` usa mink (QP con daqp): el pie apoyado es una restricción estricta, los rangos y la velocidad del
+  servo son límites del problema, y el pie en el aire, el centro de masas y la postura son objetivos. Con esto el pie no resbala (0,5 mm).
+- **El control predictivo arrancaba en reposo** y el clip empieza andando: ahora se estima la velocidad inicial (`START_VELOCITY_S`).
+  La referencia del ZMP se suaviza `ZMP_TRANSITION_S` = 0,04 s (probados 0,06-0,08 s y adelantarla 0,03 s: peor).
+- **La altura de la pelvis estaba libre** (sin coste): la rodilla de apoyo bajaba distinto en cada pierna (53,6° frente a 47,3° en 07_02).
+  Ahora el centro de masas tiene objetivo de altura, la de pie, con peso `WALK_COM_HEIGHT_COST` = 1 (con 10, peor). Rodillas a 0,6° y 1,3°.
+- **Saltito al empezar:** el pie que la persona lleva en el aire en el fotograma 0 se levantaba para caer en el mismo sitio, y el ZMP salía
+  hasta 66 mm del apoyo. Ahora sigue apoyado hasta su primer paso.
+- **El avance (punto 11) se medía con el clip entero,** pero la persona ya anda en el fotograma 0 y sigue tras su último paso, y Danny
+  empieza y acaba con los pies quietos: salía 0,79. Se mide entre el primer y el último aterrizaje, donde pies y pelvis siguen a la persona
+  (los pies, a 1 cm de la persona a escala). **Cambio en cómo se mide el punto 11, no en su límite.**
+- **Probado y quitado: el brazo oscilaba** entre dos posturas que tocaban el cuerpo (-2,4 y -12,7 mm): en las iteraciones extra, un paso que hunde más el brazo
+  se deshace y se reduce a la mitad. **Se quitó:** no cambiaba el resultado de andar y sí 6 de los 17 aprobados (los dos bailes con piernas dejaban de cumplir).
+
+- **Pasos más cortos (pedido del dueño: "da zancadas muy grandes").** La escala de las pisadas salía de una pierna de Danny estirada de
+  0,200 m (estimación): pasos de 0,165 m, 0,89 veces la altura de su cadera de pie (0,186 m, medida en el modelo); la persona da 0,81. Ahora
+  la escala es la altura de cadera medida entre la pierna estirada de la persona, por `STEP_FACTOR` = 0,65: pasos de unos 0,10 m, al mismo
+  ritmo (109 pasos por minuto; unos 0,18 m/s). Con 0,85 (0,13 m) el dueño aún los veía largos. **Cambio de criterio aprobado por el dueño:** el punto 11 compara con la persona a esa escala acortada.
+- **La pelvis iba inclinada a un lado:** su orientación se copiaba respecto a los primeros 0,3 s, a mitad de paso, y de media quedaba 1,9°
+  inclinada (07_02); una rodilla iba 5,4° más doblada que la otra. Al andar, la referencia es la media del clip (inclinación media 0,0°).
+- **El brazo rozaba el muslo** al andar: el muslo sube y se abre (cadera hasta 17° hacia fuera al balancearse sobre el otro pie) más deprisa
+  de lo que el tope de velocidad deja apartarse al brazo, que de pie cuelga a 3,2 mm del cuerpo. Sin tope, el brazo se apartaba a tiempo.
+  Probado sin éxito: margen del brazo de 6 a 9 mm (inestable: pasaba con 8 mm y no con 7,5 ni 8,5), anticiparse al cuerpo de los 0,05 s
+  siguientes (peor), quitar el tope (9,1-9,8 rad/s y seguía rozando) y deshacer los pasos que hunden el brazo (cambiaba 6 de los 17 aprobados;
+  quitado). **Lo que queda:** al andar, el hombro no se cierra hacia el cuerpo más de 10° (`WALK_SHOULDER_ROLL_MIN_DEG`,
+  `GestureRetarget.keep_shoulders_open`; de pie lleva 8°). Con 8°, 07_02 seguía rozando 4,8 mm. El brazo ya no sigue a la persona cuando
+  ella lo cierra más, y el error p95 de codo y mano sube a 22-25 mm. **Cambio de criterio aprobado por el dueño:** al andar, el punto 2
+  admite 25 mm de p95 (`WALK_ELBOW_HAND_P95_M`); la mediana sigue en 10 mm.
+
+Resultado, con `--speed-cap --body-margin 0.005 --smooth 0.05 --limit-margin 3 --walk` (`results/gesture_cmu_07_0{1,2}_piernas.json`):
+
+| | 07_01 | 07_02 | Límite |
+|---|---|---|---|
+| Error de codo y mano, mediana / p95 | 6,9 / 24,6 mm | 5,9 / 21,7 mm | 10 / 25 mm |
+| Velocidad máxima | 6,51 rad/s | 6,40 rad/s | 8,2 |
+| Holgura brazo-cuerpo | 3,2 mm | 1,9 mm | ≥ 0 |
+| Resbalón del pie apoyado | 0,3 mm | 0,3 mm | 5 mm |
+| Pie más bajo / otra pieza de la pierna | 0,0 / 2,0 mm | 0,0 / 2,0 mm | ≥ -0,5 / > 0 mm |
+| ZMP dentro de la huella | 100 % | 100 % | ≥ 95 % |
+| Rodillas, diferencia de mediana / p95 | 4,4° / 0,6° | 3,8° / 0,6° | 5° |
+| Avance frente a la persona a escala | 0,990 | 0,965 | 0,8-1,2 |
+
+Con los pasos largos, el ZMP cumplía por poco (95,5 %); con los cortos, de sobra. La diferencia de rodillas (4,4° y 3,8°) es parecida a la
+de la persona (3,1° y 4,1°), pero queda cerca del límite. **Lo que no se ha comprobado:** la física (par, caídas), que
+se verá al entrenar. **Riesgos:** Danny anda agachado (rodilla de apoyo cerca de 47°, la de su pose de pie) y la rodilla del pie en el aire se
+dobla menos que en una persona; el pie va plano en el aire, a 1,5 cm. Lo robusto para el brazo sería resolverlo como las piernas (mink, con
+el roce con el cuerpo de los fotogramas siguientes como restricción), sin el mínimo de hombro.
+
+Vídeos: `.venv/bin/python analysis/record_gesture_video.py external/cmu/07_01.amc --walk` (y `07_02.amc`) escribe
+`results/videos/gesture_cmu_07_0{1,2}_piernas.mp4`; al andar, la cámara sigue a Danny y mira de tres cuartos.
+
+**Entrenamiento con física de los 19 movimientos (andar, 18 y 19, añadido el mismo día): criterio aprobado por el dueño el 11 de noviembre.** Está, con la lista de archivos, en la
 sección 4.4 de [training-guide.md](documentation/training-guide.md): una política por movimiento con la tarea de seguimiento de mjlab,
 empezando por saludar como prueba; pasa si no cae el 95 %, manos, codos y pies a 2 cm de mediana y 4 cm de p95 de la referencia, saturación
 como en las fases 4 y 5, sin pasos en los movimientos de pie (95 %) o pie apoyado sin resbalar más de 1 cm en los de piernas, vídeo aprobado
-por el dueño y ONNX verificado. Lo hace el amigo del dueño en su GPU; la rama `fase6-gestos` tiene que llegarle (por `main` o directamente).
+por el dueño y ONNX verificado. Lo hace el amigo del dueño en su GPU; los 17 primeros ya están en `main`, y andar (18 y 19) está en la rama `fase6-andar`, que tiene que llegarle (por `main` o directamente).
 
 **Antes del margen, no cumplían,** con `--speed-cap` y margen de 5 mm. Por topes del brazo, que el ritmo no arregla, porque la persona lleva el brazo más atrás o
 más arriba de lo que permite el hombro de Danny: encoger los hombros 141_21 (5,3 % en `right_shoulder_pitch` a +45°), chocar los cinco
@@ -402,7 +457,7 @@ parámetros son de otro robot: lo aprendido no se instala directo en el robot f�
 | 3 | Agacharse: orden de altura del cuerpo, hasta 3 000 iteraciones | **Aprobada (agacharse quieto)** el 5 de noviembre con `fase3_agacharse/model_11994.pt`, usado solo parado; caminar agachado, descartado por ahora (ver más abajo) |
 | 4 | Levantarse (4.3): política propia, 10 000 iteraciones; primero boca abajo, luego boca arriba | Criterio escrito el 5 de noviembre (abajo); tarea sin implementar, sin entrenar |
 | 5 | Sentarse y tumbarse: política propia, hasta 5 000 iteraciones por acción; solo si la fase 4 aprueba | Pendiente |
-| 6 | Movimiento natural (4.4): imitar CMU y 100STYLE, retargeteadas con GMR | Pendiente: fuentes elegidas el 4 de noviembre |
+| 6 | Movimiento natural (4.4): imitar CMU con referencias propias (`danny_gestures.py`) | 19 referencias aprobadas el 10-11 de noviembre (17 en `main`, andar en `fase6-andar`); falta entrenarlas con física (guía, 4.4) |
 
 Fuera del plan, salvo que el usuario lo pida: correr, saltar y tomar objetos.
 

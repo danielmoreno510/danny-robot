@@ -37,13 +37,13 @@
   ],
   "criteria_measured": {
     "elbow_hand_error_median_m": {
-      "value": 0.0039,
+      "value": 0.0059,
       "limit": 0.01,
       "passes": true
     },
     "elbow_hand_error_p95_m": {
-      "value": 0.0147,
-      "limit": 0.02,
+      "value": 0.0217,
+      "limit": 0.025,
       "passes": true
     },
     "worst_arm_joint_fraction_at_limit": {
@@ -52,47 +52,47 @@
       "passes": true
     },
     "max_joint_speed_rad_s": {
-      "value": 7.96,
+      "value": 6.4,
       "limit": 8.21,
       "passes": true
     },
     "min_arm_body_clearance_m": {
-      "value": -0.0048,
+      "value": 0.0019,
       "limit": 0.0,
-      "passes": false
+      "passes": true
     },
     "max_planted_foot_slide_m": {
-      "value": 0.0527,
+      "value": 0.0003,
       "limit": 0.005,
-      "passes": false
+      "passes": true
     },
     "min_foot_height_m": {
-      "value": -0.0154,
+      "value": -0.0,
       "limit": -0.0005,
-      "passes": false
+      "passes": true
     },
     "min_other_leg_part_height_m": {
-      "value": -0.0134,
+      "value": 0.002,
       "limit": 0.0,
-      "passes": false
+      "passes": true
     },
     "fraction_zmp_over_support": {
-      "value": 0.3431,
+      "value": 1.0,
       "limit": 0.95,
-      "passes": false
+      "passes": true
     },
     "knee_median_difference_deg": {
-      "value": 3.1,
+      "value": 3.8,
       "limit": 5.0,
       "passes": true
     },
     "knee_p95_difference_deg": {
-      "value": 1.2,
+      "value": 0.6,
       "limit": 5.0,
       "passes": true
     },
     "forward_speed_ratio": {
-      "value": 0.813,
+      "value": 0.965,
       "limit": [
         0.8,
         1.2
@@ -101,78 +101,78 @@
     }
   },
   "legs": true,
-  "passes_measured": false,
+  "passes_measured": true,
   "criterion_1": "vídeo junto a la persona, aprobado por el dueño (record_gesture_video.py)",
   "errors_m": {
     "left_elbow": {
-      "median": 0.0046,
-      "p95": 0.0129,
-      "max": 0.0253
+      "median": 0.0084,
+      "p95": 0.0128,
+      "max": 0.0181
     },
     "left_hand": {
-      "median": 0.0066,
-      "p95": 0.0206,
-      "max": 0.0405
+      "median": 0.0191,
+      "p95": 0.0235,
+      "max": 0.0463
     },
     "right_elbow": {
       "median": 0.0023,
-      "p95": 0.0051,
+      "p95": 0.0052,
       "max": 0.0138
     },
     "right_hand": {
-      "median": 0.0029,
-      "p95": 0.0076,
-      "max": 0.0168
+      "median": 0.0042,
+      "p95": 0.0083,
+      "max": 0.017
     }
   },
   "arm_joints": {
     "left_shoulder_pitch": {
       "used_deg": [
-        -22.2,
-        20.3
+        -22.1,
+        20.0
       ],
       "range_deg": [
         -170.0,
         45.0
       ],
       "fraction_at_limit": 0.0,
-      "max_speed_rad_s": 3.0
+      "max_speed_rad_s": 2.54
     },
     "left_shoulder_roll": {
       "used_deg": [
-        3.5,
-        10.4
+        10.0,
+        10.0
       ],
       "range_deg": [
         -10.0,
         120.0
       ],
       "fraction_at_limit": 0.0,
-      "max_speed_rad_s": 0.67
+      "max_speed_rad_s": 0.0
     },
     "left_shoulder_yaw": {
       "used_deg": [
-        -31.9,
-        4.6
+        -23.2,
+        5.7
       ],
       "range_deg": [
         -80.0,
         80.0
       ],
       "fraction_at_limit": 0.0,
-      "max_speed_rad_s": 3.47
+      "max_speed_rad_s": 2.46
     },
     "left_elbow": {
       "used_deg": [
-        -42.8,
-        -6.3
+        -43.6,
+        -5.9
       ],
       "range_deg": [
         -130.0,
         0.0
       ],
       "fraction_at_limit": 0.0,
-      "max_speed_rad_s": 3.12
+      "max_speed_rad_s": 2.71
     },
     "right_shoulder_pitch": {
       "used_deg": [
@@ -188,42 +188,42 @@
     },
     "right_shoulder_roll": {
       "used_deg": [
-        -18.4,
-        -8.5
+        -18.5,
+        -10.0
       ],
       "range_deg": [
         -120.0,
         10.0
       ],
       "fraction_at_limit": 0.0,
-      "max_speed_rad_s": 0.84
+      "max_speed_rad_s": 0.8
     },
     "right_shoulder_yaw": {
       "used_deg": [
-        -11.8,
-        23.5
+        -10.6,
+        21.2
       ],
       "range_deg": [
         -80.0,
         80.0
       ],
       "fraction_at_limit": 0.0,
-      "max_speed_rad_s": 2.86
+      "max_speed_rad_s": 2.94
     },
     "right_elbow": {
       "used_deg": [
-        -45.3,
-        -11.4
+        -45.2,
+        -11.1
       ],
       "range_deg": [
         -130.0,
         0.0
       ],
       "fraction_at_limit": 0.0,
-      "max_speed_rad_s": 2.38
+      "max_speed_rad_s": 2.36
     }
   },
-  "max_arm_jitter_deg": 0.54,
+  "max_arm_jitter_deg": 0.5,
   "waist_and_neck_deg": {
     "waist_yaw": [
       -12.3,

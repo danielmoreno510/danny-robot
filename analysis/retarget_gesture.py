@@ -30,6 +30,7 @@ import danny_sim
 
 ELBOW_HAND_MEDIAN_M = 0.01
 ELBOW_HAND_P95_M = 0.02
+WALK_ELBOW_HAND_P95_M = 0.025  # al andar, con el hombro abierto 10° como mínimo (aprobado por el dueño el 11 de noviembre)
 AT_LIMIT_FRACTION = 0.05
 KNEE_DIFFERENCE_DEG = 5.0  # punto 10 de andar
 SPEED_RATIO = (0.8, 1.2)  # punto 11 de andar
@@ -79,6 +80,9 @@ def main():
     if args.legs:
         retarget.legs = danny_gestures.LegRetarget(model, motion, rest_reference=args.walk)
         retarget.legs.com_task = not args.walk
+    if args.walk:
+        retarget.keep_shoulders_open(np.radians(danny_gestures.WALK_SHOULDER_ROLL_MIN_DEG))
+    p95_limit = WALK_ELBOW_HAND_P95_M if args.walk else ELBOW_HAND_P95_M
     raw, targets = retarget.run(motion)
     if args.amplitude != 1.0:
         # Los objetivos de codo y mano se recalculan con el brazo reducido: el punto 2 mide la distancia a ese brazo reducido.
@@ -121,18 +125,26 @@ def main():
     legs_offset = float(np.abs(qpos[:, legs] - retarget.stand[legs]).max())
     leg_points = danny_gestures.leg_criteria(model, qpos, 1.0 / danny_gestures.RATE_HZ, args.walk) if args.legs else None
     if args.walk:
-        # Punto 10: rodillas simétricas. Punto 11: avance frente al de la persona a escala (y al ritmo de --slowdown).
+        # Punto 10: rodillas simétricas. Punto 11: avance frente al de la persona a la escala de las pisadas, con STEP_FACTOR (y al ritmo de --slowdown).
         knees = {side: np.degrees(qpos[:, 7 + joints.index(f"{side}_knee")]) for side in ("left", "right")}
         knee_median = abs(float(np.median(knees["left"]) - np.median(knees["right"])))
         knee_p95 = abs(float(np.percentile(knees["left"], 95) - np.percentile(knees["right"], 95)))
-        human_speed = np.linalg.norm(motion.end["root"][-1][:2] - motion.end["root"][0][:2]) / (motion.count * motion.frame_time)
-        danny_speed = np.linalg.norm(qpos[-1, :2] - qpos[0, :2]) / (len(qpos) / danny_gestures.RATE_HZ)
+        # Entre el primer y el último aterrizaje planificado: la persona ya anda en el fotograma 0 y sigue tras su último paso, y Danny
+        # empieza y acaba con los pies en sus pisadas. Con el clip entero salía 0,79 aunque pies y pelvis siguen a la persona en esa ventana.
+        plan = retarget.legs.plan
+        lands = sorted(f for side in plan for f in range(1, motion.count) if plan[side][1][f] and not plan[side][1][f - 1])
+        first, last = lands[0], lands[-1]
+        human_speed = np.linalg.norm(motion.end["root"][last][:2] - motion.end["root"][first][:2]) / ((last - first) * motion.frame_time)
+        danny_times = np.arange(len(qpos)) / danny_gestures.RATE_HZ
+        at = np.array([first, last]) * motion.frame_time * args.slowdown
+        pelvis = np.column_stack([np.interp(at, danny_times, qpos[:, k]) for k in (0, 1)])
+        danny_speed = np.linalg.norm(pelvis[1] - pelvis[0]) / (at[1] - at[0])
         speed_ratio = danny_speed / (retarget.legs.scale * human_speed / args.slowdown)
 
     all_errors = np.concatenate([np.array(e) for e in errors.values()])
     criteria = {
         "elbow_hand_error_median_m": {"value": round(float(np.median(all_errors)), 4), "limit": ELBOW_HAND_MEDIAN_M},
-        "elbow_hand_error_p95_m": {"value": round(float(np.percentile(all_errors, 95)), 4), "limit": ELBOW_HAND_P95_M},
+        "elbow_hand_error_p95_m": {"value": round(float(np.percentile(all_errors, 95)), 4), "limit": p95_limit},
         "worst_arm_joint_fraction_at_limit": {"value": round(float(at_limit[:, arm].mean(axis=0).max()), 4), "limit": AT_LIMIT_FRACTION},
         "max_joint_speed_rad_s": {"value": round(float(speeds.max()), 2), "limit": round(danny_gestures.SPEED_LIMIT_RAD_S, 2)},
         "min_arm_body_clearance_m": {"value": round(float(clearance.min()), 4), "limit": 0.0},
@@ -154,7 +166,7 @@ def main():
         criteria["legs_and_pelvis_max_offset_from_stand"] = {"value": round(legs_offset, 6), "limit": 0.0}
     passes = {
         "elbow_hand_error_median_m": criteria["elbow_hand_error_median_m"]["value"] <= ELBOW_HAND_MEDIAN_M,
-        "elbow_hand_error_p95_m": criteria["elbow_hand_error_p95_m"]["value"] <= ELBOW_HAND_P95_M,
+        "elbow_hand_error_p95_m": criteria["elbow_hand_error_p95_m"]["value"] <= p95_limit,
         "worst_arm_joint_fraction_at_limit": criteria["worst_arm_joint_fraction_at_limit"]["value"] <= AT_LIMIT_FRACTION,
         "max_joint_speed_rad_s": criteria["max_joint_speed_rad_s"]["value"] <= danny_gestures.SPEED_LIMIT_RAD_S,
         "min_arm_body_clearance_m": criteria["min_arm_body_clearance_m"]["value"] >= 0.0,
