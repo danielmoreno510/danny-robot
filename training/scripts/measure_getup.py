@@ -50,12 +50,17 @@ def main() -> None:
   parser.add_argument("--name", required=True, help="Nombre del resultado en results/")
   parser.add_argument("--vin", type=float, default=None, help="Tensión fija de los servos en V; sin ella, la sorteada del entrenamiento (6 a 8,4)")
   parser.add_argument("--prone-fraction", type=float, default=1.0, help="Fracción de robots que empiezan boca abajo; el resto, boca arriba")
+  parser.add_argument("--lie-end-states", type=Path, default=None, help="Estados con que acaba tumbarse (export_lie_end_states.py): los robots empiezan de ahí en vez de la pose de levantarse")
   parser.add_argument("--num-envs", type=int, default=256)
   parser.add_argument("--seconds", type=float, default=20.0)
   args = parser.parse_args()
 
   cfg = eval_env_cfg(args.num_envs, args.seconds + AFTER_S + 1.0, args.vin, task=GETUP_TASK)
-  cfg.events["reset_lying"].params["prone_fraction"] = args.prone_fraction
+  if args.lie_end_states is not None:
+    cfg.events["reset_lying"].func = getup.reset_from_lie_end
+    cfg.events["reset_lying"].params = {"states_path": str(args.lie_end_states)}
+  else:
+    cfg.events["reset_lying"].params["prone_fraction"] = args.prone_fraction
   env, policy = load_policy(cfg, args.checkpoint, task=GETUP_TASK)
   # La política de la fase 2 se carga sobre un entorno de marcha de un solo robot, que da la forma de sus observaciones (81).
   walk_env, walk_policy = load_policy(eval_env_cfg(1, 1.0, args.vin), args.walk_checkpoint)
@@ -161,6 +166,7 @@ def main() -> None:
     "walk_checkpoint": str(args.walk_checkpoint),
     "vin_v": args.vin if args.vin is not None else "aleatoria 6 a 8,4",
     "prone_fraction": args.prone_fraction,
+    "start": f"estados con que acaba tumbarse: {args.lie_end_states}" if args.lie_end_states is not None else "pose de levantarse (reset_lying)",
     "num_envs": n,
     "seconds_to_get_up": args.seconds,
     "definition": "pelvis >= 0,20 m, tronco <= 15 grados, dos pies apoyados, ningun eslabon (salvo pies) en el suelo, velocidad media <= 0,05 m/s, 3 s seguidos",

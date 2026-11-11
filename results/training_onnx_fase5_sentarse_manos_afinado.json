@@ -1,0 +1,11 @@
+{
+  "checkpoint": "D:\\Claude\\puntos_de_control\\fase5_sentarse_manos_afinado_model_12198.pt",
+  "onnx": "danny_fase5_sentarse_2026-11-10.onnx",
+  "observation_size": 78,
+  "action_size": 23,
+  "steps": 500,
+  "num_envs": 16,
+  "max_abs_action_difference": 1.0728836059570312e-06,
+  "max_allowed": 0.0001,
+  "passes": true
+}

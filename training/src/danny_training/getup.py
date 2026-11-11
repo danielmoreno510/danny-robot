@@ -18,7 +18,7 @@ from mjlab.managers.event_manager import EventTermCfg
 from mjlab.managers.reward_manager import RewardTermCfg
 from mjlab.managers.scene_entity_config import SceneEntityCfg
 from mjlab.tasks.velocity import mdp as velocity_mdp
-from mjlab.utils.lab_api.math import quat_from_euler_xyz, sample_uniform
+from mjlab.utils.lab_api.math import quat_from_euler_xyz, quat_mul, sample_uniform
 
 from danny_training import crouch, env_cfgs, mdp as danny_mdp
 from danny_training.robot import DANNY_XML
@@ -66,6 +66,32 @@ def reset_lying(env: ManagerBasedRlEnv, env_ids: torch.Tensor | None, prone_frac
   limits = asset.data.soft_joint_pos_limits[env_ids]
   joint_pos = sample_uniform(-joint_noise_rad, joint_noise_rad, (n, limits.shape[1]), env.device)
   joint_pos = joint_pos.clamp(limits[..., 0], limits[..., 1])
+  asset.write_joint_state_to_sim(joint_pos, torch.zeros_like(joint_pos), env_ids=env_ids)
+
+
+def reset_from_lie_end(env: ManagerBasedRlEnv, env_ids: torch.Tensor | None, states_path: str) -> None:
+  """Coloca el robot en uno de los estados reales con que acaba la política de tumbarse (`scripts/export_lie_end_states.py`): articulaciones, altura de la raíz y orientación sin guiñada; guiñada aleatoria.
+
+  Solo para medir levantarse tras tumbarse (la política de levantarse se entrena con `reset_lying`).
+  """
+  if env_ids is None:
+    env_ids = torch.arange(env.num_envs, device=env.device, dtype=torch.int)
+  cache = env.extras.setdefault("_lie_end_states", {})
+  if "joint_pos" not in cache:
+    saved = torch.load(states_path)
+    assert saved["joint_names"] == list(env.scene["robot"].joint_names), "el orden de articulaciones de los estados guardados no coincide con el robot"
+    cache.update({k: saved[k].to(env.device) for k in ("joint_pos", "root_z", "tilt_quat_wxyz")})
+  asset: Entity = env.scene["robot"]
+  n = len(env_ids)
+  pick = torch.randint(0, cache["joint_pos"].shape[0], (n,), device=env.device)
+  yaw = sample_uniform(-math.pi, math.pi, (n,), env.device)
+  quat = quat_mul(quat_from_euler_xyz(torch.zeros_like(yaw), torch.zeros_like(yaw), yaw), cache["tilt_quat_wxyz"][pick])
+  pos = torch.zeros(n, 3, device=env.device)
+  pos[:, 2] = cache["root_z"][pick] + 0.002
+  pos += env.scene.env_origins[env_ids]
+  asset.write_root_link_pose_to_sim(torch.cat([pos, quat], dim=-1), env_ids=env_ids)
+  asset.write_root_link_velocity_to_sim(torch.zeros(n, 6, device=env.device), env_ids=env_ids)
+  joint_pos = cache["joint_pos"][pick]
   asset.write_joint_state_to_sim(joint_pos, torch.zeros_like(joint_pos), env_ids=env_ids)
 
 

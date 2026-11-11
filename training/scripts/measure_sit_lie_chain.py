@@ -13,6 +13,7 @@ Uso (desde training/):
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import math
 from pathlib import Path
@@ -20,11 +21,14 @@ from pathlib import Path
 import mujoco
 import torch
 
+from mjlab.tasks.registry import load_env_cfg
+
 from danny_training.evaluation import RESULTS, eval_env_cfg, load_policy, load_policy_on
 from danny_training import crouch, getup, lie_measure, sit
 from danny_training.servo_speed import joint_speed_report
 from danny_training.actuator import FrictionDRBamActuator, stall_torque_nm
 
+WALK_TASK = "Mjlab-Velocity-Flat-Danny"
 SIT_TASK, LIE_TASK = "Mjlab-SitDown-Danny", "Mjlab-LieDown-Danny"
 WINDOW_S, SATURATED = 3.0, 0.9
 FALL_TILT_RAD = math.radians(80.0)
@@ -65,10 +69,16 @@ def main() -> None:
   parser.add_argument("--num-envs", type=int, default=1024)
   parser.add_argument("--sit-seconds", type=float, default=10.0)
   parser.add_argument("--lie-seconds", type=float, default=10.0)
+  parser.add_argument("--push-speed", type=float, default=None, help="Empujones en XY de ±esta velocidad (m/s) cada 3 a 6 s durante toda la cadena (la guía usa 0,12; el entrenamiento, 0,20)")
   parser.add_argument("--zero-last-action", action="store_true", help="Al cambiar de política, pone a cero las últimas acciones que ve la observación (diagnóstico, 10 nov)")
   args = parser.parse_args()
 
   cfg = eval_env_cfg(args.num_envs, args.sit_seconds + args.lie_seconds + 2.0, args.vin, task=SIT_TASK)
+  if args.push_speed is not None:
+    # Sentarse y tumbarse se entrenan sin empujones (sit.py quita el evento); se toma el de la marcha para medir la cadena con ellos.
+    push = copy.deepcopy(load_env_cfg(WALK_TASK).events["push_robot"])
+    push.params["velocity_range"] = {"x": (-args.push_speed, args.push_speed), "y": (-args.push_speed, args.push_speed)}
+    cfg.events["push_robot"] = push
   cfg.terminations = {}
   env, sit_policy = load_policy(cfg, args.sit_checkpoint, task=SIT_TASK)
   u = env.unwrapped
@@ -196,6 +206,7 @@ def main() -> None:
     "sit_checkpoint": str(args.sit_checkpoint),
     "lie_checkpoint": str(args.lie_checkpoint),
     "vin_v": args.vin if args.vin is not None else "aleatoria 6 a 8,4",
+    "push_speed_m_s": args.push_speed,
     "num_envs": n,
     "sit_seconds": args.sit_seconds,
     "lie_seconds": args.lie_seconds,
