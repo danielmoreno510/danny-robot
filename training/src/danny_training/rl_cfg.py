@@ -42,3 +42,12 @@ def danny_flat_ppo_runner_cfg() -> RslRlOnPolicyRunnerCfg:
     num_steps_per_env=24,
     max_iterations=30_000,
   )
+
+
+def danny_tracking_ppo_runner_cfg() -> RslRlOnPolicyRunnerCfg:
+  """PPO del seguimiento de movimiento (fase 6): el de la marcha, con otro nombre de experimento y menos puntos de control."""
+  cfg = danny_flat_ppo_runner_cfg()
+  cfg.experiment_name = "danny_tracking"
+  cfg.save_interval = 250
+  cfg.max_iterations = 6_000
+  return cfg

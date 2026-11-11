@@ -28,11 +28,15 @@ def main() -> None:
   parser.add_argument("--checkpoint", required=True, type=Path)
   parser.add_argument("--task", required=True, help="Tarea del punto de control (por ejemplo Mjlab-LieDown-Danny)")
   parser.add_argument("--output", required=True, type=Path, help="Fichero .onnx de salida")
+  parser.add_argument("--motion", type=Path, default=None, help="Referencia .npz, solo para las políticas de seguimiento (fase 6)")
   args = parser.parse_args()
 
   device = "cuda:0"
   agent_cfg = load_rl_cfg(args.task)
-  env = RslRlVecEnvWrapper(ManagerBasedRlEnv(cfg=eval_env_cfg(1, 5.0, task=args.task), device=device), clip_actions=agent_cfg.clip_actions)
+  cfg = eval_env_cfg(1, 5.0, task=args.task)
+  if args.motion is not None:
+    cfg.commands["motion"].motion_file = str(args.motion)
+  env = RslRlVecEnvWrapper(ManagerBasedRlEnv(cfg=cfg, device=device), clip_actions=agent_cfg.clip_actions)
   runner = (load_runner_cls(args.task) or MjlabOnPolicyRunner)(env, asdict(agent_cfg), device=device)
   runner.load(str(args.checkpoint), load_cfg={"actor": True}, strict=True, map_location=device)
   with tempfile.TemporaryDirectory() as tmp:

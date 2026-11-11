@@ -1549,3 +1549,28 @@ El dueño aprobó `fase5_tumbarse_castigo_100/model_15350.pt` (copia en `puntos_
 **Levantarse tras tumbarse (hecho):** `scripts/export_lie_end_states.py` guarda los estados con que acaba la cadena (4 096 de 4 096 robots tumbados y quietos) y `scripts/measure_getup.py --lie-end-states` los usa como inicio con la política de levantarse aprobada (`fase4_rodillas/model_11497.pt`), 2 048 robots, 20 s, y el cambio a la marcha, sin ayuda ni empujones (`results/training_getup_fase5_levantarse_tras_tumbarse_{6.6V,aleatoria}.json`): **se levanta el 100 % / 100 %** (mediana 5,24 / 5,18 s, p90 5,7 / 5,6 s); no cae tras el cambio a la marcha 99,95 % / 100 %. Saturación: la rodilla derecha tiene un robot con una racha seguida de 1,42 s / 2,02 s mientras se levanta (p95 de la racha 0,06 / 0,04 s); es la cola de rodilla ya aceptada por el dueño en la fase 4, no medí aquí su fracción exacta. Boca arriba era el único caso de tumbarse (la cadena acaba con el tronco hacia arriba).
 
 **Sigue sin comprobar:** el robot real y el servo real; ONNX en la Radxa; empujones con tensión aleatoria; la fracción exacta de la cola de rodilla al levantarse desde aquí.
+
+### Fase 6, entrenamiento con física de los 19 movimientos (11 de noviembre)
+
+**Hecho.** Tarea `Mjlab-Tracking-Danny` (`training/src/danny_training/tracking.py`): la de seguimiento de mjlab (BeyondMimic), adaptada a Danny. Robot, aleatorización
+(suelo, masa, centro de masas, servo, holgura, empujones de ±0,20 m/s en XY cada 3 a 6 s) y tensión de 6 a 8,4 V, los de la marcha. **El actor no ve la posición ni la velocidad lineal de
+la base** (el robot real no las mide); sí ve la orientación del torso, la velocidad angular, las articulaciones y la referencia del instante. Recompensas y terminaciones a la escala de Danny
+(0,4 m frente al G1 de 1,3 m; **primer intento, sin ajustar**): caída si el ancla o un extremo se desvía 8 cm en altura (G1: 25 cm), desviación de las recompensas de posición 0,10 m (G1: 0,3 m)
+y de velocidad lineal 0,5 m/s (G1: 1,0). Choques entre piezas castigados como en la marcha. PPO como la marcha, 4 096 robots, 24 pasos, 2 500 iteraciones (~1 h 53 min en la RTX 3080 Ti).
+Sin castigo de par de servo (se midió la saturación antes de añadirlo).
+
+**Scripts nuevos** (desde `training/`): `scripts/convert_motion_csv.py` (CSV de `results/retargeted/` a `data/motions/<nombre>.npz` con el modelo de Danny; sube la base 1,3 mm para que las suelas toquen el suelo, porque el CSV
+trae la altura de la clave `stand` del MJCF), `scripts/measure_tracking.py` (criterios 1 a 4), `scripts/record_tracking_video.py` (criterio 5: persona | Danny de la referencia | Danny con física). `export_policy_onnx.py` y `verify_policy_onnx.py` aceptan `--motion`;
+el ONNX del seguimiento tiene entradas `obs` y `time_step` y lleva la referencia empaquetada. Los 19 `.npz` están en `training/data/motions/`.
+
+**Cómo se mide** (`measure_tracking.py`, 4 096 robots, aleatorización completa y empujones de 0,20 m/s): *no cae* = ninguna terminación del entrenamiento durante todo el movimiento (más estricto que caerse); *error* = distancia de mano (sitio `*_hand`), codo (cuerpo `*_elbow_link_1`)
+y pie (`*_foot_1`) a la referencia, **en el marco de la pelvis** (posición XY y guiñada alineadas, para que el desplazamiento de la base por un empujón no cuente), mediana y p95 de todos los robots y fotogramas; *saturación* = par sobre el 90 % del bloqueo de la tensión del robot;
+*sin pasos* (movimientos 1 a 15) = ninguna suela sube más de 1 cm ni se desplaza más de 3 cm (**definición mía** del criterio); en los de piernas, deslizamiento de la suela acumulado por apoyo (límite 1 cm).
+
+**Resultado de saludar, 1 de 19** (`fase6_saludar/model_2499.pt`, copiado a `puntos_de_control/fase6_saludar/`; `results/training_tracking_fase6_saludar_{6.6,ale}.json`), a 6,6 V / tensión aleatoria: no cae 100 % / 100 %;
+mano 8,0 / 7,8 mm de mediana y 16,5 / 16,1 mm de p95; codo 13,5 / 13,3 mm y 34,1 / 32,8 mm; pie 8,6 / 8,2 mm y 13,5 / 13,2 mm (límites 20 y 40 mm); saturación: ninguna racha de más de 0,5 s en ningún robot; sin pasos 100 % / 100 %.
+ONNX verificado: `policies/danny_fase6_saludar_2026-11-11.onnx`, diferencia máxima 7,2e-7 (`results/training_onnx_fase6_saludar.json`). Vídeo: `results/videos/fase6_saludar_fisica.mp4`.
+**Pasan los criterios 1 a 4 y 6; falta el 5, el visto bueno del dueño al vídeo.**
+
+**Lote de los 18 restantes:** `D:\Claudease6_lote.sh` (fuera del repo) entrena cada uno (2 500 iteraciones los de menos de 5 s, 3 500 los de 5 a 13 s, 5 000 los de más), mide, y si pasa exporta y verifica el ONNX, graba el vídeo y copia el punto de control; el resumen queda en `D:\Claudease6_lote.log`.
+**No comprobado:** robot real; ONNX en la Radxa; el vídeo de saludar no está aprobado.

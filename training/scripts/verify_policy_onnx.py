@@ -31,11 +31,17 @@ def main() -> None:
   parser.add_argument("--num-envs", type=int, default=16)
   parser.add_argument("--seconds", type=float, default=10.0)
   parser.add_argument("--task", default=TASK, help="Tarea del punto de control (por ejemplo Mjlab-GetUp-Danny)")
+  parser.add_argument("--motion", type=Path, default=None, help="Referencia .npz, solo para las políticas de seguimiento (fase 6)")
   args = parser.parse_args()
 
-  env, policy = load_policy(eval_env_cfg(args.num_envs, args.seconds, task=args.task), args.checkpoint, task=args.task)
+  cfg = eval_env_cfg(args.num_envs, args.seconds, task=args.task)
+  if args.motion is not None:
+    cfg.commands["motion"].motion_file = str(args.motion)
+  env, policy = load_policy(cfg, args.checkpoint, task=args.task)
   session = ort.InferenceSession(str(args.onnx), providers=["CPUExecutionProvider"])
   input_name = session.get_inputs()[0].name
+  tracking = len(session.get_inputs()) == 2  # entradas (obs, time_step) y salidas con la referencia empaquetada (fase 6)
+  command = env.unwrapped.command_manager.get_term("motion") if tracking else None
   obs = env.get_observations()
   worst = 0.0
   steps = int(args.seconds / env.unwrapped.step_dt)
@@ -44,8 +50,16 @@ def main() -> None:
       action = policy(obs)
       x = obs["actor"] if hasattr(obs, "keys") else obs
       x = x.detach().cpu().numpy().astype(np.float32)
-      onnx_action = np.concatenate([session.run(None, {input_name: x[i : i + 1]})[0] for i in range(x.shape[0])])
+      feeds = [{input_name: x[i : i + 1]} for i in range(x.shape[0])]
+      if tracking:
+        steps_now = command.time_steps.cpu().numpy().astype(np.float32)
+        feeds = [{**f, "time_step": steps_now[i : i + 1].reshape(1, 1)} for i, f in enumerate(feeds)]
+      outs = [session.run(None, f) for f in feeds]
+      onnx_action = np.concatenate([o[0] for o in outs])
       worst = max(worst, float(np.abs(onnx_action - action.detach().cpu().numpy()).max()))
+      if tracking:  # la referencia empaquetada debe ser la que lee la tarea
+        onnx_ref = np.concatenate([o[1] for o in outs])
+        worst = max(worst, float(np.abs(onnx_ref - command.joint_pos.cpu().numpy()).max()))
       obs, _, _, _ = env.step(action)
 
   result = {
