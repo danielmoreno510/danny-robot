@@ -44,6 +44,10 @@ def run_script(app, name):
 class RunHandler(adsk.core.CustomEventHandler):
     def notify(self, args):
         app = adsk.core.Application.get()
+        # Un aviso que llega cuando la petición ya se atendió (o se retiró) no responde: antes escribía un error encima de la respuesta
+        # buena, y el agente no la veía nunca (11 de noviembre).
+        if not os.path.exists(REQUEST):
+            return
         answer = {}
         try:
             with open(REQUEST, encoding="utf-8") as file:
@@ -64,10 +68,17 @@ class RunHandler(adsk.core.CustomEventHandler):
 
 
 def watch(app):
+    """Avisa al hilo principal una vez por petición nueva (por su fecha de modificación), no cada segundo mientras exista."""
+    notified = None
     while not stop_flag.wait(POLL_SECONDS):
-        if os.path.exists(REQUEST):
+        try:
+            stamp = os.stat(REQUEST).st_mtime_ns
+        except FileNotFoundError:
+            notified = None
+            continue
+        if stamp != notified:
+            notified = stamp
             app.fireCustomEvent(EVENT_ID)
-            stop_flag.wait(POLL_SECONDS)
 
 
 def run(context):

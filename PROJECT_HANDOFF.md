@@ -30,7 +30,42 @@ código 1 porque, sin política, las tareas fallan con ganancia 5.
 Corregido lo que no depende del servo. Lo primero con los servos es medir C1 a C5, antes de meter ningún tornillo.
 
 **Recibido el 10 de noviembre:** 3 servos HD-1910, la placa FE-URT-2, impresora 3D con filamento, calibrador digital y
-báscula de cocina. **Falta por llegar:** la fuente de 3-12 V y 5 A (ArmDojo), necesaria para mover los servos. Ahora toca: medir conectores, muesca y rosca del servo, comprobar encaje y pesar piezas (2.2 y
+báscula de cocina. **La fuente** de 3-12 V y 5 A (ArmDojo), necesaria para mover los servos, llegó el 11 de noviembre. La FE-URT-2 recibe la alimentación de los servos TTL por el borne de tornillo G/V1 (+ a V1) y no tiene entrada de jack. Por USB también alimenta el bus, pero a 4,4 V (medido): basta para leer, no para mover ni para el banco, que se mide a 7,4 y 6,6 V. **Falta un adaptador de jack DC hembra a bornes de tornillo** (comprobar la medida de la clavija de la fuente, normalmente 5,5 × 2,1 mm). La lectura del servo, sin escribir nada: `analysis/read_servo.py`. El cable del servo encaja en el conector TTL de 3 pines (G, V1, S) de la placa (comprobado en fotos el 11 de noviembre). Los tres servos vienen con ID 1: se conectan **de uno en uno** hasta cambiarles el ID (2 y 3); encadenados con el mismo ID, sus respuestas chocan.
+
+**CAD con las medidas del servo y piezas del banco (11 de noviembre, rama `cad-medidas-servo`).**
+- **Fallo 2:** cajera de Ø7 × 1 mm en el centro de cada cara atornillada a una bocina, para la cabeza del tornillo central
+  (`Servo.horn_bolts` en `BuildRobot`).
+- **Fallo 4:** ventana del conector de h = 3 a 13 mm, hacia la cara de la bocina libre, donde está la muesca del cable (lo dijo el dueño
+  con el servo en la mano: solo una bocina es motriz). Cada servo se monta con la muesca frente a su ventana; girado 180° sobre su eje
+  largo, la muesca pasa al otro lado ancho y a la otra cara.
+- **Panel de tibia:** su lengüeta quedaba suelta (un trozo de 0,087 cm³ en `left/right_shin_panel.stl`, ya en el commit anterior); ahora
+  llega a la pared del panel. No se veía porque `ExportPrintParts` esperaba 62 piezas y hay 63 desde el 2 de noviembre.
+- Resultado: `BuildRobot` sin solapes de ajuste, masa 1,2000 kg (antes 1,2006, `results/robot_cad.json`), 63 piezas de un trozo
+  exportadas a `cad/print/`, y `check_assembly.py` sin fallos (`results/assembly_check.json`). **El modelo de simulación no se ha
+  regenerado:** los cambios quitan o mueven décimas de cm³ por pieza.
+- **Banco 5.1:** `cad/fusion/BuildServoBench` hace el soporte del servo (eje horizontal, para el borde de la mesa con un sargento o
+  tornillos, y con el servo volado fuera de la mesa) y el brazo de carga (Ø16 sobre la bocina motriz con 4 M1,6 × 4, agujero de Ø4 a
+  100 mm del eje). STL en `cad/print/bench/`. Comprobado con mallas y las medidas del servo: entra desde arriba sin tocar y el brazo
+  gira de -90° a 90° sin rozar.
+- **Puente de Fusion:** DannyBridge estaba dos veces en «Scripts y complementos», y las dos copias atendían cada petición: una respondía
+  y la otra escribía un error encima. Se dejó una sola, y el puente ya no responde si la petición no existe ni avisa más de una vez
+  por petición. Si deja de responder, mira esa lista.
+
+**Primera tanda en PLA (para imprimir):** `left_hip_roll_link_structure`, `_cover` y `_plate`; `left_shoulder_link_structure`;
+`left_upper_arm_plate`, `_structure` y `_cover`; `torso_tray_plate` (todas en `cad/print/`), y las dos del banco en `cad/print/bench/`.
+Los STL salen en la orientación del robot: se giran en el laminador. Para el brazo de carga, la barra apoyada en la cama.
+
+**Primera lectura del servo A (11 de noviembre, por USB a 4,4 V, `results/bench_servo_A_read.json`): cumple los 5 puntos** (responde
+al ping, protocolo identificado, tensión, temperatura de 25 °C y la posición cambia al girar la bocina motriz a mano). Lo leído:
+- Protocolo **STS** (little-endian), ID 1, 1 Mbit/s, modelo 7946, firmware 3.46, ángulos 0-4095 (una vuelta en 4096 pasos).
+- Registros con signo en un bit (signo y magnitud): la posición leída 42549 era -9781, unas 2,4 vueltas. La posición cuenta más de
+  una vuelta.
+- **Modo 4**, que no existe en la serie STS (0 a 3): es propio del HD-1910 y no se sabe qué hace. Se averigua antes de activar el par.
+- **El objetivo de posición guardado es 0 y el servo estaba en 518:** antes de activar el par hay que copiar la posición actual al
+  objetivo, o saltaría.
+- Protecciones: corriente 500, par de protección 200, tiempo 50, temperatura máxima 80 °C, tensión de 4,0 a 10,0 V (unidades
+  de la serie STS, sin confirmar en el HD-1910). Condición de descarga 4 y alarma de LED 4.
+- Las direcciones son las de la serie STS/SMS; no hay tabla publicada del HD-1910. Ahora toca: medir conectores, muesca y rosca del servo, comprobar encaje y pesar piezas (2.2 y
 2.3), y empezar el banco (5.1). Falta el brazo de carga, que se imprime, y los programas de medida. No se compra el resto
 hasta pasar 5.1 y 5.2. Claude modela en Fusion por scripts, con `DannyBridge`. **Primeras medidas del servo (10 de noviembre):**
 caja de 33,9 × 19,9 × 22,8 mm, dentro de la holgura del CAD; cada bocina sobresale unos 3,4 mm (el CAD supone 3,0); pesa 23 g (el CAD supone 21).

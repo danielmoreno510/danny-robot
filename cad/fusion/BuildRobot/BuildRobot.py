@@ -30,6 +30,11 @@ SERVO_THICKNESS = 23.0
 HORN_RADIUS = 8.0
 HORN_LENGTH = 3.0
 HORN_BOLT_RADIUS = 6.0
+# Alivio para la cabeza del tornillo central de la bocina (fallo 2 de la segunda auditoría): con las bocinas medidas (28,5 mm sobre sus
+# caras y 29,6 sobre las cabezas, 10 de noviembre) la cabeza sale 0,55 mm de la cara, y la del M2,5 × 6 de la ficha mide unos Ø5.
+CENTER_RELIEF_RADIUS = 3.5
+CENTER_RELIEF_DEPTH = 1.0
+CONNECTOR_H = (3.0, 13.0)  # ventana del conector a lo largo del eje, desde el plano medio del servo (fallo 4); la muesca va de 3,8 a 11,5
 MOUNT_SPACING = (30.0, 16.0)
 SERVO_MASS_G = 21.0
 
@@ -265,12 +270,14 @@ class Servo:
         return cuts
 
     def connector_slots(self, sides=(-1, 1), depth=3.5):
-        """Ventana hacia los conectores: van en una muesca de cada cara ancha, y la clavija entra paralela al eje."""
+        """Ventana hacia el conector, en el lado ancho `sign` y hacia la cara de bocina del mismo signo: la muesca del cable está en un
+        lado ancho, de h = 3,8 a 11,5 mm del plano medio, junto a la bocina libre (medido el 10 y el 11 de noviembre). El servo se monta
+        con la muesca frente a la ventana: girado 180° sobre su eje largo, la muesca pasa al otro lado y a la otra cara."""
         cuts = []
         for sign in sides:
             corners = (
-                self.at(4, sign * (SERVO_WIDTH / 2), -6),
-                self.at(17, sign * (SERVO_WIDTH / 2 + depth), 6),
+                self.at(4, sign * (SERVO_WIDTH / 2), sign * CONNECTOR_H[0]),
+                self.at(17, sign * (SERVO_WIDTH / 2 + depth), sign * CONNECTOR_H[1]),
             )
             cuts.append(box(corners[0][0], corners[1][0], corners[0][1], corners[1][1], corners[0][2], corners[1][2]))
         return cuts
@@ -292,9 +299,15 @@ class Servo:
         ]
 
     def horn_bolts(self, half=SERVO_THICKNESS / 2 + 9):
-        """Tornillos de las bocinas, en diagonal, a través de las placas de la horquilla."""
+        """Tornillos de las bocinas, en diagonal, a través de las placas de la horquilla, y en el centro de cada cara de bocina una cajera
+        de Ø7 × 1 mm para la cabeza del tornillo central."""
         diagonal = HORN_BOLT_RADIUS / math.sqrt(2)
-        return [
+        face = SERVO_THICKNESS / 2 + HORN_LENGTH
+        reliefs = [
+            cylinder(self.at(0, 0, sign * (face - 0.5)), self.at(0, 0, sign * (face + FORK_GAP + CENTER_RELIEF_DEPTH)), CENTER_RELIEF_RADIUS)
+            for sign in (-1, 1)
+        ]
+        return reliefs + [
             cylinder(self.at(along, across, -half), self.at(along, across, half), SCREW_RADIUS)
             for along in (-diagonal, diagonal) for across in (-diagonal, diagonal)
         ]
@@ -518,8 +531,9 @@ def shin_bodies(side):
         ((17.0, hip - 10, 0), (14.5, hip - 14.4, 0), 2, (40.0, hip - 30, 0)),
     ]
     panel, pilots = panel_shell(bounds, facets, [(hip - 9, 80.5), (hip + 9, 80.5)])
-    # Lengüeta dentro de la ventana: sitúa el borde inferior, que no lleva tornillos
-    panel = merged([panel, box(11.0, 13.1, hip - 8, hip + 8, 62.4, 65.0)])
+    # Lengüeta dentro de la ventana: sitúa el borde inferior, que no lleva tornillos. Llega hasta la pared delantera del panel: hasta
+    # x = 13,1 quedaba suelta dentro de la concha, en un trozo aparte de 0,087 cm³ (visto al exportar el 11 de noviembre).
+    panel = merged([panel, box(11.0, bounds[0][1] - PANEL_WALL + 0.1, hip - 8, hip + 8, 62.4, 65.0)])
     knee_pad = box(17.0, 17.0 + PAD_THICKNESS, hip - 8, hip + 8, 64, 78)
     return {
         "structure": [carved(body, servos["knee"].horn_bolts() + [window] + pilots)],

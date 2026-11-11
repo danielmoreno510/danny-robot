@@ -91,15 +91,15 @@ con su simulación, y en el código que ninguna cara de bocina tiene alivio cent
 | # | Fallo | Medida | Arreglo |
 |---|---|---|---|
 | 1 | En una caída hacia atrás, el cráneo golpea primero | 1,24 J y 423 N, unos 14 N·m sobre `neck_yaw` (E), con un bloqueo de 0,9 N·m | Hecho: joroba de TPU hasta x = -29, de unos 6 g (E). Sin volver a simular la caída |
-| 2 | Las 38 caras de bocina atornilladas no tienen alivio para el tornillo central | Sólido a 14,5-14,7 mm del eje, y la cabeza llegaría a unos 15,2 mm según el plano | Cajera de ⌀7 × 1 mm, tras medir C1 y C2 |
+| 2 | Las 38 caras de bocina atornilladas no tienen alivio para el tornillo central | Sólido a 14,5-14,7 mm del eje, y la cabeza llegaría a unos 15,2 mm según el plano | Hecho el 11 de noviembre: cajera de ⌀7 × 1 mm en el centro de cada cara de bocina (`Servo.horn_bolts`) |
 | 3 | Longitud de tornillos | 28 tornillos de bocina necesitan M2 × 4: uno más largo toca la caja | Tabla de totales, abajo |
-| 4 | Ventanas de conector | La muesca va solo en una cara, de h = 3,8 a 11,5, y la ventana de -6 a +6 | Ventana de h = 3 a 13, tras medir C7 y C8 |
+| 4 | Ventanas de conector | La muesca va solo en una cara, de h = 3,8 a 11,5, y la ventana de -6 a +6 | Hecho el 11 de noviembre: ventana de h = 3 a 13 hacia la cara de la bocina libre, donde está la muesca (dicho por el dueño). El servo se monta con la muesca frente a la ventana. C8 (clavija) sigue sin medir |
 | 5 | La simulación y el entrenamiento no ven ciertos choques | `roll_over` mete `hip_roll_link` 13,6 mm en el suelo. Sin caja: `hip_yaw`, `hip_roll`, tobillo, hombro y cuello | Hecho: todas las piezas con colisión y 13 pares entre eslabones. Hay que reentrenar |
 | 6 | Pared de 0,30 mm en la chapa de `hip_roll`, y de 0,45 mm en la cintura | Agujeros y asiento demasiado justos | Hecho, y con reborde de 0,4 mm bajo el rodamiento |
 | 7 | Cables | Cintura y hombro apenas tienen margen, y `hip_pitch` 0,7 mm | Chaflán hecho, y ranuras del suelo reducidas. El bucle de 40 mm queda para el montaje |
 
-También hechos: masa del modelo a 1,30 kg, nervio del talón, panel de tibia, cajeras delanteras de `hip_roll` y agujeros de orejas. Siguen abiertos los puntos 2 y 4, que
-dependen del servo real, además de rejillas traseras, BMS y `arm_yaw` con rodamiento.
+También hechos: masa del modelo a 1,30 kg, nervio del talón, panel de tibia, cajeras delanteras de `hip_roll` y agujeros de orejas. Los puntos 2 y 4 se cerraron el 11 de noviembre;
+siguen abiertos rejillas traseras, BMS y `arm_yaw` con rodamiento.
 
 ### Límites por acción
 
@@ -113,7 +113,8 @@ dependen del servo real, además de rejillas traseras, BMS y `arm_yaw` con rodam
 
 ### Tornillería prevista
 
-Sale de medir agarre y rosca en cada unión, y se revisará tras C1 a C5: 327 M2 (64 × 4, 205 × 5, 28 × 6, 12 × 8, 18 × 10) y 31 M1,6 (2 × 3, 4 × 4, 4 × 5, 9 × 6, 8 × 8, 2 × 16, 2 × 18).
+Sale de medir agarre y rosca en cada unión: 299 M2 (36 × 4, 205 × 5, 28 × 6, 12 × 8, 18 × 10) y 59 M1,6 (2 × 3, 32 × 4, 4 × 5, 9 × 6, 8 × 8, 2 × 16, 2 × 18).
+Los 28 de bocina pasaron de M2 × 4 a M1,6 × 4 al medir los tornillos de la bolsa del servo (10 de noviembre).
 Unos 70 g (E). No hay ningún inserto ni M2 × 12. Un autorroscante de cabeza alomada, de 1,4-1,6 mm (E), no entraría en cajeras de 1,2 mm.
 
 ### Medidas con el servo real

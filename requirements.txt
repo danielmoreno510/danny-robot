@@ -5,6 +5,7 @@ mujoco==3.17.0
 numpy==2.5.4
 pyflakes==4.1.0
 pytest==9.2.0
+pyserial==3.5
 qpsolvers==4.13.0
 scipy==1.18.1
 trimesh==5.2.0

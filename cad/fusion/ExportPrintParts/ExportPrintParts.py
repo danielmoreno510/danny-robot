@@ -12,7 +12,7 @@ import adsk.fusion
 
 PRINT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "print")
 PRINTED = ("_structure", "_cover", "_plate", "_sole", "_panel", "_pad")
-EXPECTED_PARTS = 62
+EXPECTED_PARTS = 63  # 62 hasta el panel de tibia del 2 de noviembre
 
 
 def build(app):

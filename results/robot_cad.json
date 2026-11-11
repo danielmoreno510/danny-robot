@@ -1,32 +1,32 @@
 {
- "source_hash": "a6f5157030666224bd4320ccf013b975a4ee8c848e2eab53f5f31eaebf4de71c",
+ "source_hash": "fa0504b189f1768c338d5ac4e3d7a281a8bf29038f2b4007d2e15af4e15b2c37",
  "masses_kg": {
   "base_link": 0.12376822426056484,
-  "left_hip_yaw_link": 0.010607281709020606,
-  "left_hip_roll_link": 0.05438786502650094,
-  "left_thigh": 0.05235435921258089,
-  "left_shin": 0.046787111053579654,
-  "left_ankle_link": 0.007639546536559855,
+  "left_hip_yaw_link": 0.010395616903984998,
+  "left_hip_roll_link": 0.05444214002650094,
+  "left_thigh": 0.0523796979375647,
+  "left_shin": 0.04694244977856347,
+  "left_ankle_link": 0.007447123986527478,
   "left_foot": 0.05205674473822536,
-  "right_hip_yaw_link": 0.010607281709020632,
-  "right_hip_roll_link": 0.054387865026501184,
-  "right_thigh": 0.05235435921258087,
-  "right_shin": 0.04678711105357965,
-  "right_ankle_link": 0.0076395465365598535,
+  "right_hip_yaw_link": 0.010395616903985024,
+  "right_hip_roll_link": 0.05444214002650118,
+  "right_thigh": 0.05237969793756468,
+  "right_shin": 0.04694244977856346,
+  "right_ankle_link": 0.007447123986527481,
   "right_foot": 0.05205674473822536,
-  "torso": 0.31721595228367544,
-  "neck_link": 0.0046506667516912036,
-  "head": 0.060628579088162445,
-  "left_shoulder_link": 0.00462436542458027,
-  "left_upper_arm": 0.06554626894079349,
-  "left_elbow_link": 0.008356710471892395,
-  "left_forearm": 0.04480024634551362,
-  "right_shoulder_link": 0.00462436542458027,
-  "right_upper_arm": 0.06554626894079346,
-  "right_elbow_link": 0.008356710471892393,
-  "right_forearm": 0.04480024634551361
+  "torso": 0.31715822551866574,
+  "neck_link": 0.0044967287116652955,
+  "head": 0.06068839197541228,
+  "left_shoulder_link": 0.004470427384554369,
+  "left_upper_arm": 0.06578790058021224,
+  "left_elbow_link": 0.008241256941872967,
+  "left_forearm": 0.04493479634551361,
+  "right_shoulder_link": 0.004470427384554368,
+  "right_upper_arm": 0.06578790058021221,
+  "right_elbow_link": 0.008241256941872966,
+  "right_forearm": 0.04493479634551362
  },
- "total_mass_kg": 1.2005844213025882,
+ "total_mass_kg": 1.2003078797133486,
  "axes": {
   "left_hip_yaw": [
    0.0,
@@ -144,6 +144,6 @@
    0.0
   ]
  },
- "panel_mass_kg": 0.028571813676741466,
+ "panel_mass_kg": 0.02883181367674147,
  "fit_overlaps_mm3": {}
 }
