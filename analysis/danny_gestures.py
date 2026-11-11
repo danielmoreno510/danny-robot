@@ -259,6 +259,13 @@ class GestureRetarget:
             mujoco.mj_kinematics(m, d)
             mujoco.mj_comPos(m, d)  # mj_jacSite necesita los ejes de cada grado de libertad al día
 
+    def keep_shoulders_open(self, minimum):
+        """El balanceo del hombro no se cierra hacia el cuerpo más allá de `minimum` (rad; de pie, 8°). Para andar: el muslo sube y se abre
+        más deprisa de lo que el tope de velocidad deja apartarse al brazo, y el antebrazo lo tocaba (hasta 4,6 mm con pasos de 0,13 m)."""
+        k = ARM_JOINTS.index("shoulder_roll")
+        self.limits["left"][k, 0] = max(self.limits["left"][k, 0], minimum)
+        self.limits["right"][k, 1] = min(self.limits["right"][k, 1], -minimum)
+
     def arm_clear(self, side):
         """El brazo de ese lado no toca el cuerpo (distancia de 0 o más con las mallas)."""
         m, d = self.model, self.data
@@ -485,7 +492,9 @@ class LegRetarget:
             else:
                 reference = np.median(angles[side][:count], axis=0)
             self.delta[side] = (angles[side] - reference + np.pi) % (2 * np.pi) - np.pi
-        self.root_reference = motion.rotation["root"][:count].mean(axis=0)
+        # Al andar, la orientación de referencia de la pelvis es la media del clip: el clip empieza a mitad de paso, y con sus primeros 0,3 s
+        # la pelvis de Danny iba de media 1,9° inclinada a un lado (07_02) y una rodilla 5° más doblada que la otra.
+        self.root_reference = motion.rotation["root"][slice(None) if rest_reference else slice(count)].mean(axis=0)
         u, _, vt = np.linalg.svd(self.root_reference)
         self.root_reference = u @ vt
         self.root_start = np.median(motion.end["root"][:count], axis=0)
@@ -502,6 +511,7 @@ class LegRetarget:
         self.com_task = True  # al andar se quita: el centro de masas no va sobre el pie apoyado (se mide el ZMP)
         self.plan = self.plan_footsteps() if rest_reference else None
         self.com_plan = None  # al andar, el centro de masas planificado (`plan_com`), cuando se sepa el ritmo
+        self.walk_solver, self.walk_relaxed = None, 0
         # Peso de la postura humana por articulación (en el orden de LEG_JOINTS, izquierda y derecha). Al andar no se copia el giro de
         # cadera: oscila a cada paso y en Danny llegaba a su tope (-15°/30°), y los pies van hacia delante (ver `solve`).
         self.posture_scale = np.tile([0.0 if (rest_reference and j == "hip_yaw") else 1.0 for j in LEG_JOINTS], 2)
@@ -515,7 +525,8 @@ class LegRetarget:
         """Pisadas planificadas al andar: dónde apoya cada pie y por dónde va en el aire, por fotograma de la persona.
 
         Cada apoyo de la persona (`walking_foot_contacts`) da una pisada: la mediana del punto medio entre tobillo y dedos, en la dirección
-        de la marcha, a escala de Danny (pierna de Danny entre muslo y tibia de la persona más 8 cm de tobillo, estimación). La pisada se
+        de la marcha, a escala de Danny por STEP_FACTOR: altura de su cadera de pie (medida en el modelo) entre la pierna estirada de la
+        persona (muslo y tibia más 8 cm de tobillo, estimación), y acortada STEP_FACTOR (el dueño veía las zancadas grandes). La pisada se
         mide desde el primer apoyo, que se pone donde está el pie de Danny de pie. De lado, la separación de Danny de pie más lo que la
         persona se aparta de su media, a escala. Entre dos pisadas, el pie va en línea con transición suave y sube SWING_HEIGHT_M en
         medio, plano. Así el pie no se ancla donde esté al tocar el suelo (primer intento de andar: se arrastraba 7-13 cm)."""
@@ -526,11 +537,13 @@ class LegRetarget:
         lateral = np.array([-forward[1], forward[0]])
         human_leg = (np.linalg.norm(motion.end["lfemur"][0] - motion.end["lhipjoint"][0])
                      + np.linalg.norm(motion.end["ltibia"][0] - motion.end["lfemur"][0]) + HUMAN_ANKLE_HEIGHT_M)
-        scale = DANNY_LEG_M / human_leg
-        self.scale = scale
         data = mujoco.MjData(self.model)
         data.qpos[:] = self.stand
         mujoco.mj_kinematics(self.model, data)
+        hip = data.xanchor[name_id(self.model, mujoco.mjtObj.mjOBJ_JOINT, "left_hip_pitch")][2]
+        danny_hip = hip - data.site_xpos[name_id(self.model, mujoco.mjtObj.mjOBJ_SITE, "left_sole")][2]
+        scale = STEP_FACTOR * danny_hip / human_leg
+        self.scale = scale
         plan = {}
         for side, p in (("left", "l"), ("right", "r")):
             stand = data.site_xpos[name_id(self.model, mujoco.mjtObj.mjOBJ_SITE, f"{side}_sole")].copy()
@@ -555,9 +568,13 @@ class LegRetarget:
             holds = [np.array([info["stand"][0] + scale * (x - start_x), info["stand"][1] + scale * (y - info["mean_y"]), 0.0])
                      for _, _, x, y in info["segments"]]
             positions, planted = np.zeros((motion.count, 3)), np.zeros(motion.count, dtype=bool)
-            # Antes del primer apoyo, el pie ya está en su primera pisada: el clip empieza a mitad de paso.
+            # Antes del primer apoyo, el pie ya está apoyado en su primera pisada: el clip empieza a mitad de paso y Danny, de pie. Si se
+            # levantaba para volver a caer en el mismo sitio, el ZMP salía hasta 66 mm del apoyo en los primeros 0,2 s (07_02).
+            segments = list(info["segments"])
+            if segments:
+                segments[0] = (0, *segments[0][1:])
             previous_end, previous_hold = 0, (holds[0] if holds else np.array([info["stand"][0], info["stand"][1], 0.0]))
-            for (begin, end, _, _), hold in zip(info["segments"], holds):
+            for (begin, end, _, _), hold in zip(segments, holds):
                 swing = max(begin - previous_end, 1)
                 for f in range(previous_end, begin):
                     phase = (f - previous_end) / swing
@@ -574,16 +591,18 @@ class LegRetarget:
 
     def plan_com(self):
         """Centro de masas al andar: control predictivo del ZMP sobre las pisadas planificadas. La referencia del ZMP es el pie apoyado, o el
-        punto medio con los dos, suavizada ZMP_TRANSITION_S. Sin esto, Danny dejaba el cuerpo entre los dos pies y con un pie apoyado el ZMP
+        punto medio con los dos, suavizada ZMP_TRANSITION_S (adelantarla 0,03 s fue peor). Sin esto, Danny dejaba el cuerpo entre los dos pies y con un pie apoyado el ZMP
         caía fuera de la huella (17-35 % dentro en 07_01 y 07_02, igual al ralentizar)."""
         data = mujoco.MjData(self.model)
         data.qpos[:] = self.stand
         mujoco.mj_forward(self.model, data)
-        com_height = data.subtree_com[name_id(self.model, mujoco.mjtObj.mjOBJ_BODY, "base_link")][2]
+        com_height = self.com_height = data.subtree_com[name_id(self.model, mujoco.mjtObj.mjOBJ_BODY, "base_link")][2]
         reference = np.zeros((self.motion.count, 2))
         for f in range(self.motion.count):
             feet = [self.plan[side][0][f][:2] for side in ("left", "right") if self.plan[side][1][f]]
             reference[f] = np.mean(feet or [self.plan[side][0][f][:2] for side in ("left", "right")], axis=0)
+        # Suavizada ZMP_TRANSITION_S: en escalón, el cambio de pie exigía más balanceo del que dan las caderas de Danny; con 0,06-0,08 s, la
+        # referencia iba a medio camino entre los pies al levantar uno y el ZMP salía de la huella justo ahí.
         reference = gaussian_smooth(reference, ZMP_TRANSITION_S / self.frame_dt)
         # El centro de la suela está en el sitio; el ZMP se pide ahí.
         return preview_com(reference, com_height, self.frame_dt)
@@ -652,8 +671,79 @@ class LegRetarget:
         rows.append(FLAT_WEIGHT * jacr[2:3, dofs])
         errors.append(FLAT_WEIGHT * np.array([-np.arctan2(forward[1], forward[0])]))
 
+    def solve_walk(self, planted, posture, swing_targets, unlimited):
+        """Al andar, cinemática inversa con mink: el pie apoyado es una restricción estricta (posición, plano y hacia delante), el pie en el
+        aire sigue su trayectoria con peso alto, el centro de masas va a su plan con peso medio y la postura humana con peso bajo; los rangos
+        (menos el margen) y la velocidad del servo son límites del problema, no un recorte posterior.
+
+        El cálculo con pesos y recorte del primer y segundo intento no podía con el andar: subir un peso mejoraba una cosa y empeoraba otra,
+        y unas prioridades estrictas con recorte posterior lo empeoraban (el pie resbalaba 25-30 cm), porque el recorte deshace el reparto."""
+        import mink
+
+        m, d = self.model, self.data
+        if self.walk_solver is None:
+            self.walk_solver = self.build_walk_solver()
+        solver = self.walk_solver
+        configuration = solver["configuration"]
+        configuration.update(d.qpos.copy())
+        flat = mink.SO3.identity()
+        constraints, tasks = [], []
+        for side in ("left", "right"):
+            target = self.anchor[side] if side in planted else swing_targets.get(side)
+            if target is None:
+                continue
+            task = solver["feet"][side][0 if side in planted else 1]
+            task.set_target(mink.SE3.from_rotation_and_translation(flat, np.asarray(target, dtype=float)))
+            (constraints if side in planted else tasks).append(task)
+        com_target = np.array([*self.com_plan[self.frame_index], self.com_height])
+        solver["com"].set_target(com_target)
+        solver["posture"].set_target(posture)
+        solver["base"].set_target(mink.SE3.from_rotation_and_translation(mink.SO3(posture[3:7]), np.zeros(3)))
+        tasks += [solver["com"], solver["posture"], solver["base"]]
+        steps = WALK_IK_STEPS * (5 if unlimited else 1)
+        dt = (1.0 if unlimited else self.frame_dt) / steps
+        limits = solver["limits"][:1] if unlimited else solver["limits"]
+        for _ in range(steps):
+            try:
+                velocity = mink.solve_ik(configuration, tasks, dt, "daqp", 1e-3, limits=limits, constraints=constraints + [solver["frozen"]])
+            except mink.NoSolutionFound:
+                # Sin solución con el pie como restricción (rango o velocidad no dan): el pie pasa a objetivo de peso alto este paso.
+                velocity = mink.solve_ik(configuration, tasks + constraints, dt, "daqp", 1e-3, limits=limits, constraints=[solver["frozen"]])
+                self.walk_relaxed += 1
+            configuration.integrate_inplace(velocity, dt)
+        d.qpos[:] = configuration.q
+        mujoco.mj_kinematics(m, d)
+        mujoco.mj_comPos(m, d)
+
+    def build_walk_solver(self):
+        import mink
+
+        m = self.model
+        legs = [mujoco.mj_id2name(m, mujoco.mjtObj.mjOBJ_JOINT, j) for side in ("left", "right") for j in self.joints[side]]
+        others = [j for j in range(1, m.njnt) if mujoco.mj_id2name(m, mujoco.mjtObj.mjOBJ_JOINT, j) not in legs]
+        posture_cost = np.zeros(m.nv)
+        for side in ("left", "right"):
+            for k, j in enumerate(self.joints[side]):
+                posture_cost[m.jnt_dofadr[j]] = WALK_POSTURE_COST * self.posture_scale[k]
+        feet = {side: (mink.FrameTask(f"{side}_sole", "site", position_cost=1.0, orientation_cost=1.0),
+                       mink.FrameTask(f"{side}_sole", "site", position_cost=WALK_SWING_COST, orientation_cost=WALK_SWING_COST))
+                for side in ("left", "right")}
+        return {
+            "configuration": mink.Configuration(m),
+            "feet": feet,
+            "com": mink.ComTask(cost=[WALK_COM_COST, WALK_COM_COST, WALK_COM_HEIGHT_COST]),
+            "posture": mink.PostureTask(m, cost=posture_cost),
+            "base": mink.FrameTask("base_link", "body", position_cost=0.0, orientation_cost=WALK_BASE_COST),
+            "frozen": mink.DofFreezingTask(m, dof_indices=[int(m.jnt_dofadr[j]) for j in others]),
+            "limits": [mink.ConfigurationLimit(m, min_distance_from_limits=LEG_LIMIT_MARGIN_RAD),
+                       mink.VelocityLimit(m, {name: self.speed_cap for name in legs})],
+        }
+
     def solve(self, planted, posture, target_xy, swing_targets=None, unlimited=False):
         swing_targets = swing_targets or {}
+        if self.plan is not None:
+            self.solve_walk(planted, posture, swing_targets, unlimited)
+            return
         m, d = self.model, self.data
         dofs = np.concatenate([[0, 1, 2]] + [m.jnt_dofadr[self.joints[side]] for side in ("left", "right")])
         qaddr = np.concatenate([[0, 1, 2]] + [self.qadr[side] for side in ("left", "right")])
@@ -754,6 +844,9 @@ def inside_support(corners, point, margin):
     return best
 
 
+START_VELOCITY_S = 0.3
+
+
 def preview_com(zmp_reference, com_height, dt, preview_s=1.6, zmp_weight=1.0, jerk_weight=1e-6):
     """Centro de masas en el plano que lleva el ZMP del modelo de carro y mesa a `zmp_reference` (Kajita y otros, 2003: control
     predictivo con un estado posición-velocidad-aceleración y el tirón como entrada). Devuelve el centro de masas por fotograma."""
@@ -780,8 +873,12 @@ def preview_com(zmp_reference, com_height, dt, preview_s=1.6, zmp_weight=1.0, je
     count = len(zmp_reference)
     padded = np.vstack([zmp_reference, np.repeat(zmp_reference[-1:], steps, axis=0)])
     out = np.zeros((count, 2))
+    # El clip de andar empieza con la persona ya en marcha: el centro de masas arranca con la velocidad media de la referencia en sus
+    # primeros START_VELOCITY_S. Arrancando parado, los primeros 0,4 s eran un tirón con el ZMP hasta 13 cm fuera (07_01).
+    window = max(1, min(count - 1, int(START_VELOCITY_S / dt)))
+    start_velocity = (zmp_reference[window] - zmp_reference[0]) / (window * dt)
     for axis in range(2):
-        state, error = np.array([zmp_reference[0, axis], 0.0, 0.0]), 0.0
+        state, error = np.array([zmp_reference[0, axis], start_velocity[axis], 0.0]), 0.0
         for i in range(count):
             out[i, axis] = state[0]
             error += (c @ state).item() - zmp_reference[i, axis]
@@ -791,8 +888,18 @@ def preview_com(zmp_reference, com_height, dt, preview_s=1.6, zmp_weight=1.0, je
 
 
 HUMAN_ANKLE_HEIGHT_M = 0.08  # estimación
-DANNY_LEG_M = 0.200  # cadera a suela con la pierna estirada (estimación de la etapa de andar)
-ZMP_TRANSITION_S = 0.08  # suavizado de la referencia del ZMP al pasar de un pie a otro (estimación)
+# Pasos de Danny más cortos que la persona a escala de cadera: con esa escala (0,209), paso de 0,153 m; con 0,65, unos 0,10 m. Pedido por el
+# dueño el 11 de noviembre: con la pierna estirada estimada (0,200 m, escala 0,225) los pasos eran de 0,165 m, y con 0,85 (0,13 m) aún los
+# veía largos.
+STEP_FACTOR = 0.65
+WALK_SHOULDER_ROLL_MIN_DEG = 10.0  # al andar, ver GestureRetarget.keep_shoulders_open; con 8°, 07_02 seguía rozando 4,8 mm
+ZMP_TRANSITION_S = 0.04  # suavizado de la referencia del ZMP al pasar de un pie a otro (estimación)
+WALK_IK_STEPS = 8  # pasos de mink por fotograma al andar
+WALK_SWING_COST = 50.0  # pie en el aire, frente a 10 del centro de masas en su plan
+WALK_COM_COST = 10.0
+WALK_COM_HEIGHT_COST = 1.0
+WALK_POSTURE_COST = 0.02  # postura humana de las piernas
+WALK_BASE_COST = 0.1  # inclinación de la pelvis de la persona
 SWING_HEIGHT_M = 0.015  # altura del pie en el aire al andar (estimación; la marcha de la fase 2 sube 2 cm)
 COM_MARGIN_M = 0.008  # el centro de masas, a 8 mm del borde de la huella (estimación)
 COM_WEIGHT = 10.0

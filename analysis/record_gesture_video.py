@@ -6,7 +6,8 @@ va a la derecha, a la izquierda de Danny, como un esqueleto de varillas (azul su
 y girada hacia la cámara como Danny, y con el mismo ritmo que la trayectoria. El vídeo se escribe en results/videos/ con el mismo nombre,
 con encode_video.swift (AVFoundation de macOS).
 
-La persona se dibuja tal como se grabó, aunque Danny use las dos manos o un gesto más pequeño.
+La persona se dibuja tal como se grabó, aunque Danny use las dos manos o un gesto más pequeño. Con --walk, la cámara sigue a Danny hacia
+delante y mira de tres cuartos, y la persona avanza a su par.
 
 Uso: .venv/bin/python analysis/record_gesture_video.py external/cmu/141_16.amc [--slowdown 1.8] [--both-hands] [--amplitude 0.5]
 """
@@ -30,6 +31,7 @@ for _p in ("l", "r"):
 LEFT_COLOR = np.array([0.2, 0.55, 1.0, 1.0], dtype=np.float32)
 RIGHT_COLOR = np.array([1.0, 0.3, 0.2, 1.0], dtype=np.float32)
 SIDE_GAP_M = 0.32  # separación entre la persona y Danny
+WALK_AZIMUTH_DEG = 150.0  # al andar, vista de tres cuartos
 
 
 def main():
@@ -71,6 +73,10 @@ def main():
         for t, q in zip(times, qpos):
             data.qpos[:] = q
             mujoco.mj_forward(model, data)
+            if args.walk:
+                # Al andar, la cámara sigue a la pelvis hacia delante (Danny avanza unos 0,7 m) y mira de tres cuartos, para ver las rodillas.
+                camera.lookat[0] = q[0]
+                camera.azimuth = WALK_AZIMUTH_DEG
             renderer.update_scene(data, camera)
             scene = renderer.scene
             frame = min(int(round(t / (motion.frame_time * args.slowdown))), motion.count - 1)
@@ -80,7 +86,7 @@ def main():
 
             def place(point):
                 local = turn @ (point - hips) * scale
-                return local + np.array([0.0, SIDE_GAP_M, (hips[2] - floor) * scale])
+                return local + np.array([q[0] if args.walk else 0.0, SIDE_GAP_M, (hips[2] - floor) * scale])  # al andar, a la par de Danny
 
             for a, b in BONES:
                 if scene.ngeom >= scene.maxgeom:
