@@ -1242,3 +1242,18 @@ Entrenamiento terminado (15000 a 16500, `fase5_tumbarse_castigo_fuerte/model_164
 ### Fase 5, tumbarse, corrida 7: lanzada (11 de noviembre) — castigo del giro de la pelvis −100
 
 El dueño aprobó seguir por la misma vía. Cambio único: `pelvis_rate_excess` de −30 a **−100** (`lie.py`). Sale de `fase5_tumbarse_castigo_fuerte/model_15250.pt` (87,4 %), 1 500 iteraciones (15250 a 16750), 4 096 robots, run `fase5_tumbarse_castigo_100`, script `D:\Claudease5_tumbarse_castigo_100.sh`, log `D:\Claudease5_tumbarse_castigo_100.log`. Al acabar (~70 min): medir la cadena (4 096 robots, 6,6 V) en varios puntos y revisar que tumbado, impacto, cabeza y saturación sigan pasando. **Riesgo:** un castigo mayor puede frenar la política; −100 es una apuesta, sin valores intermedios probados. Si no llega al 100 %, el criterio es decisión del dueño.
+
+### Fase 5, tumbarse, corrida 7: resultado (11 de noviembre) — 98,4 % en el mejor punto, aún no llega al 100 %
+
+Entrenamiento terminado (15250 a 16750, `fase5_tumbarse_castigo_100/model_16749.pt`, castigo −100). Cadena con `model_12198`, 4 096 robots, 6,6 V (`results/training_cadena_sentarse_tumbarse_castigo_100_model_<N>_6.6.json`). Sentarse, tumbado, impacto, cabeza y saturación pasan en los seis puntos (100 %).
+
+| Iteración | Giro de pelvis a 3 rad/s o menos (exige 100 %) | Cabeceo, pico mediana | Pico máx. cualquier eje |
+|---|---|---|---|
+| **15500** | **98,4 %** | 2,34 | 3,72 |
+| 15750 | 94,4 % | 2,44 | 3,56 |
+| 16000 | 86,0 % | 2,57 | 4,03 |
+| **16250** | **97,4 %** | 2,28 | 3,68 |
+| 16500 | 91,5 % | 2,38 | 3,74 |
+| 16749 (final) | 94,8 % | 2,32 | 3,72 |
+
+**Lectura:** −100 sube el resultado de 87,4 % (corrida 6) a 98,4 %, y el modelo final queda en 94,8 %. Sigue oscilando entre puntos de control (86-98 %) y queda una cola pequeña con picos de 3,6 a 4,0 rad/s. Ninguno llega al 100 %. Ningún punto está copiado a `puntos_de_control` (no aprobado). **No comprobado:** tensión aleatoria; si un castigo mayor o más puntos de control (entre 15250 y 15750, donde están los mejores) llegan al 100 %; si el 100 % de 4 096 robots es alcanzable con ruido.
