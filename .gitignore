@@ -21,3 +21,6 @@ training/.venv/
 
 # Caché de pytest
 .pytest_cache/
+
+# Código y datos de terceros (GMR, 100STYLE, CMU): se descargan, no van al repositorio
+external/

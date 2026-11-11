@@ -1,0 +1,231 @@
+"""
+Danny - Adapta un gesto de pie de CMU (AMC con su ASF en la misma carpeta) y mide el criterio de la fase 6.
+
+Criterio aprobado por el dueño el 10 de noviembre (PROJECT_HANDOFF.md). El script mide los puntos 2 a 6; el 1, el vídeo junto a la
+persona, lo aprueba el dueño con record_gesture_video.py.
+
+Escribe la trayectoria a 50 Hz en results/retargeted/cmu_<clip>.csv, con la convención de mjlab para imitar movimiento: por fila,
+posición de la base (x, y, z), orientación (qx, qy, qz, qw) y las 23 articulaciones en el orden del modelo. El informe va a
+results/gesture_cmu_<clip>.json.
+
+Es solo cinemática: no comprueba equilibrio ni par.
+
+Con --slowdown el gesto va más lento que el de la persona (1,75 = 1,75 veces más largo), para no pasar de la velocidad del servo.
+
+Con --both-hands los dos brazos copian el derecho de la persona, en espejo, y con --amplitude se reduce la agitación rápida de los brazos (0,5 = la
+mitad), igual de rápida, sin cambiar cuánto suben las manos: agitarse menos necesita menos velocidad del servo.
+
+Uso: .venv/bin/python analysis/retarget_gesture.py external/cmu/141_16.amc [--slowdown 1.8] [--both-hands] [--amplitude 0.5]
+"""
+
+import argparse
+import json
+import pathlib
+
+import mujoco
+import numpy as np
+
+import danny_gestures
+import danny_sim
+
+ELBOW_HAND_MEDIAN_M = 0.01
+ELBOW_HAND_P95_M = 0.02
+WALK_ELBOW_HAND_P95_M = 0.025  # al andar, con el hombro abierto 10° como mínimo (aprobado por el dueño el 11 de noviembre)
+AT_LIMIT_FRACTION = 0.05
+KNEE_DIFFERENCE_DEG = 5.0  # punto 10 de andar
+SPEED_RATIO = (0.8, 1.2)  # punto 11 de andar
+
+
+def quantiles(values):
+    return {"median": round(float(np.median(values)), 4), "p95": round(float(np.percentile(values, 95)), 4),
+            "max": round(float(np.max(values)), 4)}
+
+
+def reduced_targets(model, raw):
+    """Objetivos de codo y mano iguales a la posición del brazo reducido (el error del punto 2 es entonces cero por construcción)."""
+    data = mujoco.MjData(model)
+    out = []
+    for q in raw:
+        data.qpos[:] = q
+        mujoco.mj_kinematics(model, data)
+        site = lambda n: data.site_xpos[mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SITE, n)].copy()
+        out.append({side: (site(f"{side}_elbow_site"), site(f"{side}_hand")) for side in ("left", "right")})
+    return out
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("amc", type=pathlib.Path)
+    parser.add_argument("--slowdown", type=float, default=1.0, help="cuántas veces más lento que la persona")
+    parser.add_argument("--both-hands", action="store_true", help="los dos brazos copian el derecho de la persona, en espejo")
+    parser.add_argument("--amplitude", type=float, default=1.0, help="fracción de la agitación rápida de los brazos (1, entera)")
+    parser.add_argument("--continuity", type=float, default=danny_gestures.CONTINUITY_WEIGHT, help="peso hacia la postura anterior (ver danny_gestures)")
+    parser.add_argument("--body-margin", type=float, default=danny_gestures.BODY_MARGIN_M, help="margen en m entre brazo y cuerpo")
+    parser.add_argument("--speed-cap", action="store_true", help="ninguna articulación del brazo va más deprisa que el 80 %% del servo")
+    parser.add_argument("--limit-margin", type=float, default=0.0, help="grados que el brazo se queda de sus topes (0, puede llegar)")
+    parser.add_argument("--end", type=float, default=None, help="corta el clip de la persona en ese segundo")
+    parser.add_argument("--walk", action="store_true", help="andar: implica --legs; equilibrio por ZMP, rodillas simétricas y avance")
+    parser.add_argument("--legs", action="store_true", help="mueve piernas y pelvis (criterio de piernas); si no, quedan de pie")
+    parser.add_argument("--smooth", type=float, default=0.0, help="sigma en s del suavizado final de brazos, cintura y cuello (0, sin suavizar)")
+    args = parser.parse_args()
+    args.legs = args.legs or args.walk
+    name = danny_gestures.clip_name(args.amc, args.slowdown, args.both_hands, args.amplitude, args.legs, args.end)
+
+    model = danny_gestures.gesture_model()
+    motion = danny_gestures.CmuMotion(args.amc, args.end)
+    retarget = danny_gestures.GestureRetarget(model, args.both_hands, args.continuity, args.body_margin,
+                                              danny_gestures.SPEED_LIMIT_RAD_S * 0.97 if args.speed_cap else None,
+                                              np.radians(args.limit_margin))
+    retarget.frame_dt = motion.frame_time * args.slowdown
+    if args.legs:
+        retarget.legs = danny_gestures.LegRetarget(model, motion, rest_reference=args.walk)
+        retarget.legs.com_task = not args.walk
+    if args.walk:
+        retarget.keep_shoulders_open(np.radians(danny_gestures.WALK_SHOULDER_ROLL_MIN_DEG))
+    p95_limit = WALK_ELBOW_HAND_P95_M if args.walk else ELBOW_HAND_P95_M
+    raw, targets = retarget.run(motion)
+    if args.amplitude != 1.0:
+        # Los objetivos de codo y mano se recalculan con el brazo reducido: el punto 2 mide la distancia a ese brazo reducido.
+        raw = danny_gestures.shrink_arms(raw, model, args.amplitude, motion.frame_time)
+        targets = reduced_targets(model, raw)
+
+    qpos = danny_gestures.resample(raw, motion.frame_time * args.slowdown, 1.0 / danny_gestures.RATE_HZ)
+    if args.smooth > 0:
+        qpos = danny_gestures.smooth_arms(qpos, model, args.smooth, 1.0 / danny_gestures.RATE_HZ)
+
+    # Punto 2: error de codo y mano de la trayectoria que se entrega (50 Hz, tras remuestrear y suavizar), frente al objetivo del
+    # fotograma de CMU más cercano en el tiempo.
+    data = mujoco.MjData(model)
+    errors = {f"{side}_{part}": [] for side in ("left", "right") for part in ("elbow", "hand")}
+    for i, q in enumerate(qpos):
+        frame = min(int(round(i / danny_gestures.RATE_HZ / (motion.frame_time * args.slowdown))), len(targets) - 1)
+        data.qpos[:] = q
+        mujoco.mj_kinematics(model, data)
+        for side in ("left", "right"):
+            for part, site, target in (("elbow", f"{side}_elbow_site", targets[frame][side][0]), ("hand", f"{side}_hand", targets[frame][side][1])):
+                position = data.site_xpos[mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SITE, site)]
+                errors[f"{side}_{part}"].append(np.linalg.norm(position - target))
+
+    joints = [mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_JOINT, j) for j in range(1, model.njnt)]
+    angles = qpos[:, 7:]
+    ranges = model.jnt_range[1:]
+    speeds = np.abs(np.gradient(angles, 1.0 / danny_gestures.RATE_HZ, axis=0))
+    at_limit = (angles <= ranges[:, 0] + danny_gestures.AT_LIMIT_RAD) | (angles >= ranges[:, 1] - danny_gestures.AT_LIMIT_RAD)
+    arm = [j for j, n in enumerate(joints) if any(n.endswith(a) for a in danny_gestures.ARM_JOINTS)]
+
+    # Punto 5: holgura entre brazo y cuerpo en cada fotograma de 50 Hz.
+    clearance = []
+    for q in qpos:
+        data.qpos[:] = q
+        mujoco.mj_forward(model, data)
+        clearance.append(danny_gestures.arm_clearance(model, data))
+    clearance = np.array(clearance)
+    # Punto 6: piernas y pelvis en la pose de pie (sin --legs). Con --legs, puntos 7 a 9.
+    legs = slice(0, joints.index("waist_yaw") + 7)
+    legs_offset = float(np.abs(qpos[:, legs] - retarget.stand[legs]).max())
+    leg_points = danny_gestures.leg_criteria(model, qpos, 1.0 / danny_gestures.RATE_HZ, args.walk) if args.legs else None
+    if args.walk:
+        # Punto 10: rodillas simétricas. Punto 11: avance frente al de la persona a la escala de las pisadas, con STEP_FACTOR (y al ritmo de --slowdown).
+        knees = {side: np.degrees(qpos[:, 7 + joints.index(f"{side}_knee")]) for side in ("left", "right")}
+        knee_median = abs(float(np.median(knees["left"]) - np.median(knees["right"])))
+        knee_p95 = abs(float(np.percentile(knees["left"], 95) - np.percentile(knees["right"], 95)))
+        # Entre el primer y el último aterrizaje planificado: la persona ya anda en el fotograma 0 y sigue tras su último paso, y Danny
+        # empieza y acaba con los pies en sus pisadas. Con el clip entero salía 0,79 aunque pies y pelvis siguen a la persona en esa ventana.
+        plan = retarget.legs.plan
+        lands = sorted(f for side in plan for f in range(1, motion.count) if plan[side][1][f] and not plan[side][1][f - 1])
+        first, last = lands[0], lands[-1]
+        human_speed = np.linalg.norm(motion.end["root"][last][:2] - motion.end["root"][first][:2]) / ((last - first) * motion.frame_time)
+        danny_times = np.arange(len(qpos)) / danny_gestures.RATE_HZ
+        at = np.array([first, last]) * motion.frame_time * args.slowdown
+        pelvis = np.column_stack([np.interp(at, danny_times, qpos[:, k]) for k in (0, 1)])
+        danny_speed = np.linalg.norm(pelvis[1] - pelvis[0]) / (at[1] - at[0])
+        speed_ratio = danny_speed / (retarget.legs.scale * human_speed / args.slowdown)
+
+    all_errors = np.concatenate([np.array(e) for e in errors.values()])
+    criteria = {
+        "elbow_hand_error_median_m": {"value": round(float(np.median(all_errors)), 4), "limit": ELBOW_HAND_MEDIAN_M},
+        "elbow_hand_error_p95_m": {"value": round(float(np.percentile(all_errors, 95)), 4), "limit": p95_limit},
+        "worst_arm_joint_fraction_at_limit": {"value": round(float(at_limit[:, arm].mean(axis=0).max()), 4), "limit": AT_LIMIT_FRACTION},
+        "max_joint_speed_rad_s": {"value": round(float(speeds.max()), 2), "limit": round(danny_gestures.SPEED_LIMIT_RAD_S, 2)},
+        "min_arm_body_clearance_m": {"value": round(float(clearance.min()), 4), "limit": 0.0},
+    }
+    if args.legs:
+        criteria.update({
+            "max_planted_foot_slide_m": {"value": leg_points["slide"], "limit": danny_gestures.FOOT_SLIDE_M},
+            "min_foot_height_m": {"value": leg_points["foot_low"], "limit": -danny_gestures.FLOOR_TOLERANCE_M},
+            "min_other_leg_part_height_m": {"value": leg_points["leg_low"], "limit": 0.0},
+            ("fraction_zmp_over_support" if args.walk else "fraction_com_over_support"): {"value": leg_points["balanced"], "limit": danny_gestures.BALANCED_FRACTION},
+        })
+    if args.walk:
+        criteria.update({
+            "knee_median_difference_deg": {"value": round(knee_median, 1), "limit": KNEE_DIFFERENCE_DEG},
+            "knee_p95_difference_deg": {"value": round(knee_p95, 1), "limit": KNEE_DIFFERENCE_DEG},
+            "forward_speed_ratio": {"value": round(float(speed_ratio), 3), "limit": list(SPEED_RATIO)},
+        })
+    else:
+        criteria["legs_and_pelvis_max_offset_from_stand"] = {"value": round(legs_offset, 6), "limit": 0.0}
+    passes = {
+        "elbow_hand_error_median_m": criteria["elbow_hand_error_median_m"]["value"] <= ELBOW_HAND_MEDIAN_M,
+        "elbow_hand_error_p95_m": criteria["elbow_hand_error_p95_m"]["value"] <= p95_limit,
+        "worst_arm_joint_fraction_at_limit": criteria["worst_arm_joint_fraction_at_limit"]["value"] <= AT_LIMIT_FRACTION,
+        "max_joint_speed_rad_s": criteria["max_joint_speed_rad_s"]["value"] <= danny_gestures.SPEED_LIMIT_RAD_S,
+        "min_arm_body_clearance_m": criteria["min_arm_body_clearance_m"]["value"] >= 0.0,
+    }
+    if args.legs:
+        passes.update({
+            "max_planted_foot_slide_m": leg_points["slide"] <= danny_gestures.FOOT_SLIDE_M,
+            "min_foot_height_m": leg_points["foot_low"] >= -danny_gestures.FLOOR_TOLERANCE_M,
+            "min_other_leg_part_height_m": leg_points["leg_low"] > 0.0,
+            ("fraction_zmp_over_support" if args.walk else "fraction_com_over_support"): leg_points["balanced"] >= danny_gestures.BALANCED_FRACTION,
+        })
+    if args.walk:
+        passes.update({
+            "knee_median_difference_deg": knee_median <= KNEE_DIFFERENCE_DEG,
+            "knee_p95_difference_deg": knee_p95 <= KNEE_DIFFERENCE_DEG,
+            "forward_speed_ratio": SPEED_RATIO[0] <= speed_ratio <= SPEED_RATIO[1],
+        })
+    else:
+        passes["legs_and_pelvis_max_offset_from_stand"] = legs_offset <= 1e-9
+    for key in criteria:
+        criteria[key]["passes"] = bool(passes[key])
+
+    out_dir = danny_sim.ROOT / "results" / "retargeted"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    rows = np.column_stack([qpos[:, :3], qpos[:, 4:7], qpos[:, 3:4], angles])
+    np.savetxt(out_dir / f"{name}.csv", rows, delimiter=",", fmt="%.6f")
+    report = {
+        "source": f"CMU {args.amc.stem} (mocap.cs.cmu.edu; creada con fondos de NSF EIA-0196217)",
+        "slowdown": args.slowdown,
+        "both_hands": args.both_hands,
+        "amplitude": args.amplitude,
+        "continuity": args.continuity,
+        "body_margin_m": args.body_margin,
+        "speed_cap": args.speed_cap,
+        "smooth_s": args.smooth,
+        "limit_margin_deg": args.limit_margin,
+        "seconds": round(len(qpos) / danny_gestures.RATE_HZ, 2),
+        "rate_hz": danny_gestures.RATE_HZ,
+        "joint_order": joints,
+        "criteria_measured": criteria,
+        "legs": args.legs,
+        "passes_measured": bool(all(passes.values())),
+        "criterion_1": "vídeo junto a la persona, aprobado por el dueño (record_gesture_video.py)",
+        "errors_m": {k: quantiles(v) for k, v in errors.items()},
+        "arm_joints": {joints[j]: {"used_deg": [round(float(np.degrees(angles[:, j].min())), 1), round(float(np.degrees(angles[:, j].max())), 1)],
+                                   "range_deg": [round(float(v), 1) for v in np.degrees(ranges[j])],
+                                   "fraction_at_limit": round(float(at_limit[:, j].mean()), 4),
+                                   "max_speed_rad_s": round(float(speeds[:, j].max()), 2)} for j in arm},
+        "max_arm_jitter_deg": round(float(np.degrees(np.abs(angles[2:, arm] - 2 * angles[1:-1, arm] + angles[:-2, arm])).max() / 2), 2),
+        "waist_and_neck_deg": {n: [round(float(np.degrees(angles[:, joints.index(n)].min())), 1), round(float(np.degrees(angles[:, joints.index(n)].max())), 1)]
+                               for n in ("waist_yaw", "neck_yaw", "neck_pitch")},
+        "not_checked": "equilibrio y par; las colisiones se miden con la envolvente convexa de las mallas del CAD, y las cajas de colisión del entrenamiento pueden tocarse aunque las piezas no",
+    }
+    path = danny_sim.ROOT / "results" / f"gesture_{name}.json"
+    path.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")
+    for key, value in criteria.items():
+        print(f"{'pasa' if value['passes'] else 'NO PASA'}  {key}: {value['value']} (límite {value['limit']})")
+    print(f"Escrito {out_dir / (name + '.csv')} y {path}")
+
+
+if __name__ == "__main__":
+    main()

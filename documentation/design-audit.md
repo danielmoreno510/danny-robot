@@ -133,6 +133,36 @@ Unos 70 g (E). No hay ningún inserto ni M2 × 12. Un autorroscante de cabeza al
 
 **Antes de medir C1 a C5, no metas ningún tornillo en bocina ni servo.**
 
+**Primeras medidas, 10 de noviembre de 2026** (un servo, calibrador digital de 0,1 mm y báscula de cocina de 1 g; fotos del usuario). La etiqueta dice HD1910M y la caja HD-1910-C001.
+
+| Cota | Medido | CAD (`BuildRobot.py`) | Lectura |
+|---|---|---|---|
+| Largo de la caja | 33,9 mm | 34,0 (24,5 + 9,5) | Dentro de la holgura de 0,2 |
+| Ancho de la caja | 19,9 mm | 20,0 | Dentro |
+| Grosor de la caja, entre caras de bocina | 22,8 mm | 23,0 | Dentro |
+| Sobre las dos bocinas | 29,6 y 28,5 mm | 29,0 (23 + 2 × 3) | Probablemente 29,6 sobre las cabezas centrales (C1) y 28,5 sobre las caras de bocina: cada bocina sobresale 2,85 mm. Sin confirmar |
+| Masa del servo (C10) | 23 g | 21 g (`SERVO_MASS_G`) | 2 g más por servo, unos 46 g en los 23 |
+| Masa del cable | 1 g | — | — |
+
+**Tornillos de la bolsa del servo:** cabeza de Ø3,1 mm y 1,0 mm de alto, rosca de Ø1,6 mm y 5,0 mm de largo total. Es decir, M1,6 × 4 bajo
+la cabeza, para los agujeros de Ø1,6 de la bocina, que están en un círculo de Ø12 según el plano oficial.
+
+El plano oficial (34 × 20 × 23 mm, 29 sobre las bocinas, bocina de Ø16, fijación de 30 × 16) es el que ya usa el CAD.
+
+**Consecuencia: los tornillos de bocina son M1,6, no M2.** Los agujeros de la bocina miden Ø1,6 según el plano, así que en ellos no entra
+un M2. La tabla de tornillería pide 28 tornillos M2 × 4 de bocina: hay que cambiarlos por M1,6 × 4. En el CAD no cambia la forma: el
+paso de Ø2,2 y la cajera de Ø4 × 1,2 mm admiten el M1,6, con su cabeza de Ø3,1 × 1,0 mm. Con una pared de 2,5 mm, el M1,6 × 4 entra
+unos 2,3 mm en la bocina (el disco mide 2,6 mm según el plano), así que no llega a la caja. Esta cuenta se apoya en el plano, no en C5.
+
+**Tornillo central de la bocina (C2), sacado de internet el 10 de noviembre, sin medir:** M2,5 × 6, según la ficha de ArmDojo y la página de
+montaje de XGO-Duck. Su cabeza sobresale de la bocina unos 0,55 mm si 28,5 mm es la medida sobre las caras de las bocinas y 29,6 mm sobre
+las cabezas, una lectura de las fotos que el usuario no ha confirmado. El plano decía 0,6-0,7 mm. En los dos casos, la cajera propuesta de
+Ø7 × 1 mm (fallo 2) basta, así que se puede aplicar sin esperar más.
+
+Sin identificar todavía (falta saber dónde se midió): 15,3, 11,7, 14,3 y 4,9 mm. El de 15,7 encaja con la bocina de Ø16 (C4).
+Sin medir: **C2**, el tornillo central de la bocina, que no es de la bolsa; **C5**, la profundidad de los agujeros de la bocina y si son
+pasantes, que decide si basta un tornillo de 4 mm; C6 en los 3 servos; C8, la clavija; y C9, qué cara mueve el motor.
+
 ### Primera tanda de prueba en PLA
 
 Sin rodamiento ni electrónica: `left_hip_roll_link_structure`, `cover` y `plate`; `left_shoulder_link_structure`; `left_upper_arm_plate`, `structure` y `cover`; y `torso_tray_plate`.
