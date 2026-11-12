@@ -1,0 +1,78 @@
+{
+  "cad_density_g_cm3": 1.25,
+  "reading_error_g": 0.5,
+  "batches": {
+    "first_pla_batch": {
+      "material": "Elegoo PLA, 0,20 mm, 4 perímetros, 40 % de relleno",
+      "parts": {
+        "left_hip_roll_link_structure": {
+          "measured_g": 8,
+          "volume_cm3": 7.2,
+          "cad_solid_g": 9.0,
+          "ratio": 0.89
+        },
+        "left_hip_roll_link_cover": {
+          "measured_g": 2,
+          "volume_cm3": 1.78,
+          "cad_solid_g": 2.2,
+          "ratio": 0.9
+        },
+        "left_hip_roll_link_plate": {
+          "measured_g": 2,
+          "volume_cm3": 0.99,
+          "cad_solid_g": 1.2,
+          "ratio": 1.62
+        },
+        "left_shoulder_link_structure": {
+          "measured_g": 4,
+          "volume_cm3": 3.58,
+          "cad_solid_g": 4.5,
+          "ratio": 0.89
+        },
+        "left_upper_arm_plate": {
+          "measured_g": 10,
+          "volume_cm3": 9.75,
+          "cad_solid_g": 12.2,
+          "ratio": 0.82
+        },
+        "left_upper_arm_structure": {
+          "measured_g": 8,
+          "volume_cm3": 7.57,
+          "cad_solid_g": 9.5,
+          "ratio": 0.85
+        },
+        "left_upper_arm_cover": {
+          "measured_g": 1,
+          "volume_cm3": 1.7,
+          "cad_solid_g": 2.1,
+          "ratio": 0.47
+        },
+        "torso_tray_plate": {
+          "measured_g": 7,
+          "volume_cm3": 6.14,
+          "cad_solid_g": 7.7,
+          "ratio": 0.91
+        },
+        "bench/bench_servo_holder": {
+          "measured_g": 18,
+          "volume_cm3": 23.29,
+          "cad_solid_g": 29.1,
+          "ratio": 0.62
+        },
+        "bench/bench_load_arm": {
+          "measured_g": 6,
+          "volume_cm3": 7.56,
+          "cad_solid_g": 9.4,
+          "ratio": 0.64
+        }
+      },
+      "robot_parts": {
+        "measured_g": 42.0,
+        "cad_solid_g": 48.4,
+        "ratio": 0.87,
+        "limit_g": 52.4,
+        "passes": true
+      }
+    }
+  }
+}

@@ -51,9 +51,17 @@ báscula de cocina. **La fuente** de 3-12 V y 5 A (ArmDojo), necesaria para move
   y la otra escribía un error encima. Se dejó una sola, y el puente ya no responde si la petición no existe ni avisa más de una vez
   por petición. Si deja de responder, mira esa lista.
 
-**Primera tanda en PLA (para imprimir):** `left_hip_roll_link_structure`, `_cover` y `_plate`; `left_shoulder_link_structure`;
+**Primera tanda en PLA (impresa el 12 de noviembre, 0,20 mm, 4 perímetros, 40 % de relleno):** `left_hip_roll_link_structure`, `_cover` y `_plate`; `left_shoulder_link_structure`;
 `left_upper_arm_plate`, `_structure` y `_cover`; `torso_tray_plate` (todas en `cad/print/`), y las dos del banco en `cad/print/bench/`.
 Los STL salen en la orientación del robot: se giran en el laminador. Para el brazo de carga, la barra apoyada en la cama.
+**Cadera montada el 12 de noviembre** (`left_hip_roll_link` con dos servos, sin tornillos), según el dueño y sus fotos: los dos servos
+entran, tapa y chapa trasera cierran y no vio ningún problema. Uno de los agujeros de bocina se ve holgado: es a propósito (Ø17,2 para
+una bocina de Ø15,7, 0,75 mm por lado) y la bocina no carga en la pared; el servo lo sujetan sus 4 tornillos M2, que faltan. Sin
+medir: rendijas, roce al girar, paso del cable y masa. **El mismo día el dueño probó también brazo, hombro y banco: todo encaja**
+("esta perfecto"). Falta probar con tornillos; la placa del carro del torso (`torso_tray_plate`) no se puede probar sin ordenador,
+placa de energía ni torso. **Pesadas** (báscula de 1 g, `analysis/compare_printed_masses.py`, `results/printed_masses.json`): las 8 piezas
+del robot pesan 42 g en PLA al 40 %, el 87 % de los 48,4 g que da el CAD macizo a 1,25 g/cm³; cumple el criterio (el CAD no se queda
+corto). Las piezas de 1 a 2 g no dicen nada por separado: el error de lectura es de ±0,5 g. Del banco: soporte 18 g y brazo 6 g.
 
 **Primera lectura del servo A (11 de noviembre, por USB a 4,4 V, `results/bench_servo_A_read.json`): cumple los 5 puntos** (responde
 al ping, protocolo identificado, tensión, temperatura de 25 °C y la posición cambia al girar la bocina motriz a mano). Lo leído:

@@ -168,6 +168,9 @@ pasantes, que decide si basta un tornillo de 4 mm; C6 en los 3 servos; C8, la cl
 
 Sin rodamiento ni electrónica: `left_hip_roll_link_structure`, `cover` y `plate`; `left_shoulder_link_structure`; `left_upper_arm_plate`, `structure` y `cover`; y `torso_tray_plate`.
 Prueba la entrada del servo de `hip_roll`, inclinado 7° y sin margen, el asiento en bocina, el acceso de herramienta y las paredes finas.
+Impresa el 12 de noviembre. **Cadera:** los dos servos entran y la tapa y la chapa trasera cierran, sin tornillos (dueño, con fotos); el
+holgado de un agujero de bocina es el paso previsto de 0,75 mm por lado. Brazo, hombro y banco también encajan (dueño, mismo día). Masa: 42 g las 8 piezas del robot, el 87 % del CAD macizo
+(`results/printed_masses.json`). Sin medir: rendijas, roce y cable; sin tornillos.
 
 ### Cifras por corregir en otros documentos
 

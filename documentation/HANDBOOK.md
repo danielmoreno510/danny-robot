@@ -237,7 +237,7 @@ Y arriba el modelo es correcto, pero se ve tumbado. Fíate de `camera_up` en `Re
 | Paso | Qué hacer | Terminado cuando |
 |---|---|---|
 | 2.1 | Hecho. Instalar ACDC4Robot 1.1.1. Modelar dos eslabones y una articulación, exportar a MJCF y abrirlo en MuJoCo | El modelo carga, la masa difiere menos de un 1 % y el eje menos de 1° del CAD |
-| 2.2 | Conseguir el plano del servo (sección 8 de la arquitectura) e imprimir la [maqueta](https://makerworld.com/en/models/3502393-feetech-1910-servo-mock-1-1-dummy) con material de prueba, o usar un servo real. Modelar cadera y pierna por script. La impresora y los servos del usuario vienen en camino | Rangos de la sección 5 sin choques, encaje comprobado con la maqueta y pieza pesada |
+| 2.2 | Conseguir el plano del servo (sección 8 de la arquitectura) e imprimir la [maqueta](https://makerworld.com/en/models/3502393-feetech-1910-servo-mock-1-1-dummy) con material de prueba, o usar un servo real. Modelar cadera y pierna por script. Impresora y servos recibidos; la primera tanda en PLA encaja con los servos reales y se pesa con `analysis/compare_printed_masses.py` | Rangos de la sección 5 sin choques, encaje comprobado con la maqueta y pieza pesada |
 | 2.3 | Torso, brazos, cabeza y cables. Empezar por la electrónica: el torso va sin holgura | Electrónica con IMU, regulador e interruptor, y servos, caben con espacio para manos y voz, y hay salida real para cada conector |
 | 2.4 | Primera iteración hecha: [paneles y protección](panels-and-protection.md). Afinar la forma con el dueño del proyecto | Robot completo sin interferencias, y R4 y R10 cumplidos en CAD |
 

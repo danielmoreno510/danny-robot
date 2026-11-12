@@ -25,7 +25,7 @@ el 4 de noviembre de 2026.
 | Paso | Trabajo | Estado |
 |---|---|---|
 | 2.1 | Probar la exportación Fusion → MJCF con un modelo simple | Hecho: modelo y exportación por scripts |
-| 2.2 | Plano del servo, maqueta impresa, cadera y pierna | En curso: tercera iteración en CAD, decisiones aprobadas. Impresora y servos recibidos el 10 de noviembre; piezas de la primera tanda en PLA regeneradas el 11 de noviembre con las medidas del servo; siguen imprimir, encajar y pesar: [diseño](documentation/lower-body-design.md) |
+| 2.2 | Plano del servo, maqueta impresa, cadera y pierna | En curso: tercera iteración en CAD, decisiones aprobadas. Impresora y servos recibidos el 10 de noviembre; piezas de la primera tanda en PLA regeneradas el 11 de noviembre con las medidas del servo e impresas el 12; cadera, brazo, hombro y banco encajan con los servos (sin tornillos); pesadas: 87 % de la masa del CAD macizo (`results/printed_masses.json`); falta probar con tornillos: [diseño](documentation/lower-body-design.md) |
 | 2.3 | Torso, electrónica, brazos, cabeza y recorrido de cables | En curso: robot completo en CAD; faltan conectores reales y carga radial: [diseño](documentation/upper-body-design.md) |
 | 2.4 | Protección contra caídas y reserva para muñeca, pinza, cámara y voz | En curso: primera iteración de [paneles y protección](documentation/panels-and-protection.md) |
 | 2.5 | Corregir los bloqueos de la [auditoría](documentation/design-audit.md) y añadir comprobaciones de montaje | En curso: 6 bloqueos corregidos; de la segunda auditoría, los fallos que dependían del servo (alivio del tornillo central y ventana del conector) se cerraron el 11 de noviembre con sus medidas; siguen rejillas traseras, BMS y `arm_yaw` con rodamiento |
@@ -63,7 +63,7 @@ Sustituye a Isaac Lab por decisión del usuario.
 
 | Paso | Trabajo | Estado |
 |---|---|---|
-| 5.1 | Banco de pruebas: medir par-velocidad, calor y holgura, e identificar con BAM | Recibidos el 10 de noviembre: 3 servos, FE-URT-2, calibrador y báscula; la fuente, el 11 de noviembre. Falta un adaptador de jack a bornes para alimentar la placa (G/V1); soporte y brazo de carga diseñados (`cad/print/bench/`), por imprimir; faltan los programas de medida; primera lectura del servo A por USB hecha el 11 de noviembre: protocolo STS, cumple (`read_servo.py`) |
+| 5.1 | Banco de pruebas: medir par-velocidad, calor y holgura, e identificar con BAM | Recibidos el 10 de noviembre: 3 servos, FE-URT-2, calibrador y báscula; la fuente, el 11 de noviembre. Falta un adaptador de jack a bornes para alimentar la placa (G/V1); soporte y brazo de carga impresos y probados el 12 de noviembre (`cad/print/bench/`); faltan los programas de medida; primera lectura del servo A por USB hecha el 11 de noviembre: protocolo STS, cumple (`read_servo.py`) |
 | 5.2 | Una pierna real sujeta, comparada con simulación | Pendiente |
 | 5.3 | Programa del robot: bucle de 50 Hz, ONNX, paro de seguridad y batería | Pendiente |
 | 5.4 | Montaje completo y calibración | Pendiente |
