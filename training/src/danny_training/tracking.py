@@ -23,6 +23,7 @@ from danny_training import env_cfgs, mdp as danny_mdp
 from danny_training.robot import DANNY_ROBOT_CFG
 
 ANCHOR_BODY = "torso_1"  # la IMU del robot real va en el torso.
+# Los codos entran porque el criterio de aceptación los mide y sin ellos en la recompensa fallaban (saludar_brazo_alto, encoger_hombros, peek_a_boo).
 # El primero es la raíz (mjlab inicia el robot desde el cuerpo 0 de la lista).
 MOTION_BODIES = (
   "base_link",
@@ -36,8 +37,10 @@ MOTION_BODIES = (
   "right_foot_1",
   "left_upper_arm_1",
   "left_forearm_1",
+  "left_elbow_link_1",
   "right_upper_arm_1",
   "right_forearm_1",
+  "right_elbow_link_1",
 )
 END_BODIES = ("left_foot_1", "right_foot_1", "left_forearm_1", "right_forearm_1")
 # Escala de Danny frente al G1 de mjlab: 0,4 m frente a 1,3 m.
