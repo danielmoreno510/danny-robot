@@ -1573,4 +1573,6 @@ ONNX verificado: `policies/danny_fase6_saludar_2026-11-11.onnx`, diferencia máx
 **Pasan los criterios 1 a 4 y 6; falta el 5, el visto bueno del dueño al vídeo.**
 
 **Lote de los 18 restantes:** `D:\Claudease6_lote.sh` (fuera del repo) entrena cada uno (2 500 iteraciones los de menos de 5 s, 3 500 los de 5 a 13 s, 5 000 los de más), mide, y si pasa exporta y verifica el ONNX, graba el vídeo y copia el punto de control; el resumen queda en `D:\Claudease6_lote.log`.
-**No comprobado:** robot real; ONNX en la Radxa; el vídeo de saludar no está aprobado.
+**No comprobado:** robot real; ONNX en la Radxa; el vídeo de saludar fue aprobado por el dueño el 12 de noviembre (criterio 5 cumplido para saludar); los demás vídeos siguen sin aprobar.
+
+**Avance del lote de fase 6 (12 de noviembre, mediodía; `D:\Claude\fase6_lote.log`):** pasan los criterios medibles pedir_ayuda, mope, dar_la_mano y chocar_cinco (ONNX y vídeo hechos, falta el visto bueno del dueño). Fallan por poco encoger_hombros (codo: p95 4,2 cm a 6,6 V y 4,1 cm aleatoria, límite 4 cm; el resto bien) y peek_a_boo (codo a 6,6 V: mediana 2,01 cm y p95 3,9 cm; con tensión aleatoria pasa). Siempre es el codo, que se mide con el cuerpo `*_elbow_link_1`, fuera de la lista de cuerpos de la recompensa. Plan: al terminar el lote, reentrenar los que fallen con más iteraciones, y si no basta añadir los codos a `MOTION_BODIES` (cambia solo el crítico, no el actor ni el ONNX; no se toca antes para no mezclar puntos de control del lote).

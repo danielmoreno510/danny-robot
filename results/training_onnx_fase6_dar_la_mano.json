@@ -1,0 +1,11 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_tracking\\2026-11-12_00-42-40_fase6_dar_la_mano\\model_2499.pt",
+  "onnx": "danny_fase6_dar_la_mano_2026-11-11.onnx",
+  "observation_size": 124,
+  "action_size": 23,
+  "steps": 200,
+  "num_envs": 16,
+  "max_abs_action_difference": 7.152557373046875e-07,
+  "max_allowed": 0.0001,
+  "passes": true
+}
