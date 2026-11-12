@@ -1,0 +1,11 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_tracking\\2026-11-12_11-08-51_fase6_chicken_dance_143_34\\model_3499.pt",
+  "onnx": "danny_fase6_chicken_dance_143_34_2026-11-11.onnx",
+  "observation_size": 124,
+  "action_size": 23,
+  "steps": 200,
+  "num_envs": 16,
+  "max_abs_action_difference": 1.1920928955078125e-06,
+  "max_allowed": 0.0001,
+  "passes": true
+}
