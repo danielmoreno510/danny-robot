@@ -15,6 +15,7 @@ from mjlab.envs import ManagerBasedRlEnvCfg
 from mjlab.envs.mdp.actions import JointPositionActionCfg
 from mjlab.managers.observation_manager import ObservationGroupCfg
 from mjlab.managers.reward_manager import RewardTermCfg
+from mjlab.managers.scene_entity_config import SceneEntityCfg
 from mjlab.tasks.tracking.mdp import MotionCommandCfg
 from mjlab.tasks.tracking.tracking_env_cfg import make_tracking_env_cfg
 from mjlab.utils.noise import UniformNoiseCfg as Unoise
@@ -92,6 +93,12 @@ def danny_tracking_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   cfg.rewards["motion_body_lin_vel"].params["std"] = LIN_VEL_STD_M_S
   del cfg.rewards["self_collisions"]
   cfg.rewards["link_pair_contacts"] = RewardTermCfg(func=danny_mdp.link_pair_contacts, weight=-1.0)
+  # Deslizamiento de la suela apoyada: peso 0 (apagado); se activa en los movimientos de piernas con `--env.rewards.feet_slip.weight -0.5`.
+  cfg.rewards["feet_slip"] = RewardTermCfg(
+    func=danny_mdp.feet_slip_in_contact,
+    weight=0.0,
+    params={"sensor_name": "feet_ground_contact", "asset_cfg": SceneEntityCfg("robot", site_names=env_cfgs.FOOT_SITES)},
+  )
 
   cfg.terminations["anchor_pos"].params["threshold"] = FALL_Z_M
   cfg.terminations["ee_body_pos"].params["threshold"] = FALL_Z_M

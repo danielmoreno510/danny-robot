@@ -205,3 +205,13 @@ class crouch_posture(variable_posture):
       self.default_joint_pos[:, ids] = crouch.interpolate(drop, values)[:, None]
     kwargs.pop("crouch_command_name")
     return super().__call__(env, **kwargs)
+
+
+def feet_slip_in_contact(env: ManagerBasedRlEnv, sensor_name: str, asset_cfg: SceneEntityCfg) -> torch.Tensor:
+  """Penaliza la velocidad horizontal al cuadrado de cada suela mientras toca el suelo (como `feet_slip` de mjlab, pero siempre activa:
+  el seguimiento de movimiento no tiene orden de velocidad)."""
+  asset: Entity = env.scene[asset_cfg.name]
+  contact_sensor = env.scene[sensor_name]
+  in_contact = (contact_sensor.data.found > 0).float()
+  vel_xy = asset.data.site_lin_vel_w[:, asset_cfg.site_ids, :2]
+  return torch.sum(torch.square(torch.norm(vel_xy, dim=-1)) * in_contact, dim=1)
