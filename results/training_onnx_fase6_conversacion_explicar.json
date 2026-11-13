@@ -1,0 +1,11 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_tracking\\2026-11-13_00-46-07_fase6_conversacion_explicar\\model_4999.pt",
+  "onnx": "danny_fase6_conversacion_explicar_2026-11-11.onnx",
+  "observation_size": 124,
+  "action_size": 23,
+  "steps": 200,
+  "num_envs": 16,
+  "max_abs_action_difference": 8.344650268554688e-07,
+  "max_allowed": 0.0001,
+  "passes": true
+}
