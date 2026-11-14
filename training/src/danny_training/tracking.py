@@ -16,6 +16,7 @@ from mjlab.envs.mdp.actions import JointPositionActionCfg
 from mjlab.managers.observation_manager import ObservationGroupCfg
 from mjlab.managers.reward_manager import RewardTermCfg
 from mjlab.managers.scene_entity_config import SceneEntityCfg
+from mjlab.tasks.tracking import mdp as mdp_tracking
 from mjlab.tasks.tracking.mdp import MotionCommandCfg
 from mjlab.tasks.tracking.tracking_env_cfg import make_tracking_env_cfg
 from mjlab.utils.noise import UniformNoiseCfg as Unoise
@@ -48,6 +49,8 @@ END_BODIES = ("left_foot_1", "right_foot_1", "left_forearm_1", "right_forearm_1"
 FALL_Z_M = 0.08  # el G1 usa 0,25 m: la altura del ancla o de un extremo se desvía más que esto -> caída.
 POS_STD_M = 0.10  # el G1 usa 0,3 m.
 LIN_VEL_STD_M_S = 0.5  # el G1 usa 1,0 m/s.
+ARM_BODIES = ("left_upper_arm_1", "left_forearm_1", "left_elbow_link_1", "right_upper_arm_1", "right_forearm_1", "right_elbow_link_1")
+ARM_FINE_STD_M = 0.03
 
 
 def danny_tracking_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
@@ -98,6 +101,14 @@ def danny_tracking_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     func=danny_mdp.feet_slip_in_contact,
     weight=0.0,
     params={"sensor_name": "feet_ground_contact", "asset_cfg": SceneEntityCfg("robot", site_names=env_cfgs.FOOT_SITES)},
+  )
+
+  # Precisión de los brazos: con std de 10 cm un error de 4 cm apenas se nota en la recompensa y el codo se quedaba en 4 cm de p95 a 6,6 V
+  # (brazos_alto_giro con 5 000 iteraciones: 4,13 cm). Peso 0 (apagada); se activa con `--env.rewards.motion_arm_pos_fine.weight 1.0`.
+  cfg.rewards["motion_arm_pos_fine"] = RewardTermCfg(
+    func=mdp_tracking.motion_relative_body_position_error_exp,
+    weight=0.0,
+    params={"command_name": "motion", "std": ARM_FINE_STD_M, "body_names": ARM_BODIES},
   )
 
   cfg.terminations["anchor_pos"].params["threshold"] = FALL_Z_M
