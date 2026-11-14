@@ -30,7 +30,7 @@ código 1 porque, sin política, las tareas fallan con ganancia 5.
 Corregido lo que no depende del servo. Lo primero con los servos es medir C1 a C5, antes de meter ningún tornillo.
 
 **Recibido el 10 de noviembre:** 3 servos HD-1910, la placa FE-URT-2, impresora 3D con filamento, calibrador digital y
-báscula de cocina. **La fuente** de 3-12 V y 5 A (ArmDojo), necesaria para mover los servos, llegó el 11 de noviembre. La FE-URT-2 recibe la alimentación de los servos TTL por el borne de tornillo G/V1 (+ a V1) y no tiene entrada de jack. Por USB también alimenta el bus, pero a 4,4 V (medido): basta para leer, no para mover ni para el banco, que se mide a 7,4 y 6,6 V. **Falta un adaptador de jack DC hembra a bornes de tornillo** (comprobar la medida de la clavija de la fuente, normalmente 5,5 × 2,1 mm). La lectura del servo, sin escribir nada: `analysis/read_servo.py`. El cable del servo encaja en el conector TTL de 3 pines (G, V1, S) de la placa (comprobado en fotos el 11 de noviembre). Los tres servos vienen con ID 1: se conectan **de uno en uno** hasta cambiarles el ID (2 y 3); encadenados con el mismo ID, sus respuestas chocan.
+báscula de cocina. **La fuente** de 3-12 V y 5 A (ArmDojo), necesaria para mover los servos, llegó el 11 de noviembre. La FE-URT-2 recibe la alimentación de los servos TTL por el borne de tornillo G/V1 (+ a V1) y no tiene entrada de jack. Por USB también alimenta el bus, pero a 4,4 V (medido): basta para leer, no para mover ni para el banco, que se mide a 7,4 y 6,6 V. Se alimenta con un adaptador de jack DC hembra (5,5 × 2,1 mm) a bornes de tornillo, en uso desde el 14 de noviembre. La lectura del servo, sin escribir nada: `analysis/read_servo.py`. El cable del servo encaja en el conector TTL de 3 pines (G, V1, S) de la placa (comprobado en fotos el 11 de noviembre). Los tres servos vienen con ID 1: se conectan **de uno en uno** hasta cambiarles el ID (2 y 3); encadenados con el mismo ID, sus respuestas chocan.
 
 **CAD con las medidas del servo y piezas del banco (11 de noviembre, rama `cad-medidas-servo`).**
 - **Fallo 2:** cajera de Ø7 × 1 mm en el centro de cada cara atornillada a una bocina, para la cabeza del tornillo central
@@ -73,9 +73,106 @@ al ping, protocolo identificado, tensión, temperatura de 25 °C y la posición 
   objetivo, o saltaría.
 - Protecciones: corriente 500, par de protección 200, tiempo 50, temperatura máxima 80 °C, tensión de 4,0 a 10,0 V (unidades
   de la serie STS, sin confirmar en el HD-1910). Condición de descarga 4 y alarma de LED 4.
-- Las direcciones son las de la serie STS/SMS; no hay tabla publicada del HD-1910. Ahora toca: medir conectores, muesca y rosca del servo, comprobar encaje y pesar piezas (2.2 y
-2.3), y empezar el banco (5.1). Falta el brazo de carga, que se imprime, y los programas de medida. No se compra el resto
-hasta pasar 5.1 y 5.2. Claude modela en Fusion por scripts, con `DannyBridge`. **Primeras medidas del servo (10 de noviembre):**
+- Las direcciones son las de la serie STS/SMS; no hay tabla publicada del HD-1910.
+
+**Banco 5.1, preparado para el 13 de noviembre** (el dueño tendrá el sargento impreso, `sargento.3mf` de MakerWorld, y el adaptador
+con el cable). Lo que hace falta, de punta a punta: fuente → clavija 5,5 × 2,1 → adaptador a bornes → cable de 0,75 mm² pelado →
+borne azul G/V1 de la FE-URT-2 (+ a V1, − a G; polaridad comprobada antes de conectar la placa) → cable de 3 pines del servo a G V1 S;
+USB-C de la placa al Mac. Soporte sujeto al borde de la mesa (16 mm) con el sargento; servo con 4 M2 × 5 o una brida; brazo con 4
+M1,6 × 4; botella de 1 L con cuerda como carga (100 ml = 100 g). Destornilladores plano y de estrella pequeños.
+Programas (probados solo contra un servo simulado con la memoria del servo A, no con el real):
+- `analysis/set_servo_id.py --label A --new-id 2`: cambia el ID con **un solo servo** en el bus; no activa el par. Servo A pasado a ID 2 el 14 de noviembre: cumple los 4 puntos (`results/bench_servo_A_id.json`).
+- `analysis/move_servo.py --label A --id 2 --supply-volts 7.4`: primer movimiento sin carga y, la primera vez, sin el brazo naranja.
+  Copia la posición al objetivo, limita par (30 %) y velocidad (26°/s), sujeta 1 s y va a ±5°; apaga el par si se sale de la ventana
+  (paso + 100 cuentas), pasa de 60 °C o la tensión sale de 5,0-8,6 V (era 6,0; bajado el 14 de noviembre por las caídas breves a 5,8 V), y siempre al terminar. No cambia el modo 4: lo observa.
+  **Hecho el 14 de noviembre con el servo A (ID 2), sin brazo:** cumple los 5 puntos (`results/bench_servo_A_move.json`). El modo 4
+  respeta el objetivo y no salta al activar el par; llega a +5° y a la vuelta al inicio en 0,27 s, y a −5° (10° de recorrido) en 0,42 s;
+  el error final es de 1 cuenta. El servo lee 7,1-7,2 V con la fuente a 7,4 V, y el multímetro marca 7,17 V en el borne azul de la placa (14 de noviembre): la lectura del servo es buena y la pantalla de la fuente marca unos 0,2 V de más, porque casi sin corriente no puede ser caída en el cable. Para medir, se ajusta la fuente con el multímetro en el borne.
+  **Lectura del bus, arreglada el 14 de noviembre:** cada lectura tardaba 55 ms porque `Bus.receive` pedía 64 bytes y esperaba al
+  timeout de 50 ms; ahora lee lo que haya y tarda 0,48 ms de mediana (0,61 de máximo, 50 lecturas del estado del servo A real).
+  **Polaridad del borne azul de la FE-URT-2:** de izquierda a derecha, mirando el borne de frente con el conector del servo a la
+  izquierda, es G · V1 · G · V2; el rojo va al segundo tornillo (V1), el negro al primero (G). La primera vez se conectó al revés y se
+  corrigió antes de enchufar.
+**Programas de medida (14 de noviembre), probados solo contra un servo simulado con física de péndulo, no con el real; criterios
+aprobados por el dueño el 14 de noviembre.** Cargas para BAM: unos 100, 200 y 300 g, rígidas y pesadas. Código común en `analysis/servo_bench.py`.
+- **La mesa limita el banco:** el eje queda 14,2 mm sobre el tablero y unos 14 mm por fuera del borde, así que hacia la mesa la barra
+  toca el canto a unos 27° (el CAD solo comprobó ±90° contra el soporte), y en el montaje real la carga tocó algo bajo el tablero a unos
+  7,5°. Los programas usan de 0° (vertical) a 83° hacia fuera de la mesa, con paro a -4° y 89°. El reductor no deja caer el brazo solo:
+  el cero y el sentido se toman colocándolo a mano (`servo_bench.calibrate`) o, con `--direction`, el cero es la posición actual. En el
+  banco del dueño, con el servo A, hacia fuera de la mesa las cuentas bajan: `--direction -1` (visto con `move_servo.py --step 114`).
+  **Primera grabación real (14 de noviembre):** 97 g a 0,120 m (luego medida de nuevo: 0,100 m), P = 32, `up_and_down`: cumple los 6 puntos
+  (`results/bench_servo_A_record_97g.json`); el HD-1910 acepta P y D con la EEPROM bloqueada y los devuelve a 32/40; error de
+  seguimiento de 0,56° de mediana y 2,0° de máximo; 2,26 ms de periodo.
+  **Grabación completa, interrumpida:** con P = 4, en `sin_time_square` el brazo llegó a 9,2 rad/s y **la carga (caja de 97 g atada con
+  un M4 y cinta) se soltó**. Las grabaciones siguientes se hicieron sin carga y se borraron; quedan `97g_kp32_up_and_down` y
+  `97g_kp4_lift_and_drop`. Al cortar el programa desde fuera, el par se quedó activo: se apagó a mano y se devolvieron P/D a 32/40; ahora
+  los programas apagan el par también con SIGTERM y SIGHUP (`servo_bench.stop_on_terminate`; probado en simulación). Hace falta una carga
+  compacta y bien fijada antes de repetir.
+  **Repetida con la carga asegurada (14 de noviembre): cumple los 6 puntos** (`results/bench_servo_A_record_97g.json`, 16 registros en
+  `results/bench_bam/A/raw/`, 7,1 MB). La primera vez, con P = 4, `sin_time_square` hasta 0° se pasó a -4° y saltó el paro; las
+  oscilantes van ahora de 10° a 83°. La carga siguió puesta (corriente arriba de 164-166 en las cuatro ganancias), hasta 8,3 rad/s,
+  29-33 °C. **Hallazgo: la ganancia P no cambia nada en el modo 4.** El servo acepta y relee P = 4, 8, 16 y 32, pero el seguimiento es
+  idéntico (error mediano de 0,51-0,53° en subir y bajar, 2,02-2,04° en sin(t²)). O el modo 4 usa otra ganancia, o el HD-1910 no aplica
+  la del registro 21. Para BAM, los 16 registros equivalen a una sola ganancia, y el modelo no puede usar `kp` como acción de la política
+  hasta saber qué ganancia usa el servo. La longitud de la carga se grabó como 0,120 m y el dueño la midió después en 0,100 m:
+  se corrigió en los 16 registros y en el resumen (la grabación no depende de ella).
+  **Prueba de ganancia y modo (exploración, script en el scratchpad, no en el repositorio):** escalón de 40° a 50° con los 97 g.
+  En modo 4, P = 8 y P = 32 dan lo mismo: 62 ms hasta 49°, 0,43° de error en reposo, pico de corriente de 916-919. En modo 0 (escrito con
+  la EEPROM bloqueada), el servo no se mueve con el par activo (corriente de reposo, 19). Todo se devolvió a modo 4, P = 32, D = 40, y se
+  comprobó. Con 0,43° de error a unos 0,08 N·m, el servo es mucho más rígido de lo que suponía el modelo del STS3215 (con P = 8 habría
+  cedido unos 4°), así que la caída de unos 6° estimada para la prueba de calor seguramente es menor. No se sabe si P y el modo solo se
+  aplican al arrancar desde la EEPROM: comprobarlo exige guardarlos (EEPROM desbloqueada) y apagar y encender el servo.
+  **Tensión:** en la grabación, el servo leyó mínimos de 6,4-7,2 V con la fuente a 7,4 V, y en el escalón de 40° a 60° bajó a 5,8 V y
+  saltó el paro (límite de 6,0 V); BAM recibe `vin` = 7,4 V, constante por registro.
+- `analysis/record_servo_trajectories.py`: las cuatro trayectorias de BAM (Rhoban, Apache 2.0) llevadas a ese rango, con P = 4, 8, 16 y
+  32 y D = 0 (escritas con la EEPROM bloqueada, releídas y devueltas a 32/40 al final), registro cada 2 ms en el formato de BAM en
+  `results/bench_bam/<servo>/raw/`. Al soltar el brazo, si cae más de 5° hacia la mesa se reactiva el par. Unos 7 MB por carga.
+  Carga **rígida** atada con bridas en la punta (decisión del dueño), pesada; una cuerda haría un segundo péndulo.
+  Uso: `.venv/bin/python analysis/record_servo_trajectories.py --label A --id 2 --supply-volts 7.4 --mass 0.097 --length 0.120 --direction -1`
+- `analysis/test_servo_heat.py`: sube el brazo a 80° sin carga, pide colgarla (aquí sí vale la botella con cuerda) y sujeta 5 min el par
+  de apoyo a un pie (0,514 N·m, `results/joint_loads.json`). **Criterio cambiado antes de la primera prueba:** el límite de 5° de caída
+  no era posible, porque con P = 32 el modelo BAM del STS3215 predice unos 6° (estimado); ahora cuenta el par con el ángulo medido y la
+  deriva (≤ 3° entre los primeros y los últimos 10 s). Con unos 560 g. Si para por calor, baja el brazo con el par antes de apagarlo.
+  Uso: `.venv/bin/python analysis/test_servo_heat.py --label A --id 2 --supply-volts 7.4 --mass 0.542 --direction -1 --load-attached`
+  **Resultado del servo A (14 de noviembre): NO cumple** (`results/bench_servo_A_heat.json`). Botella de 542 g colgando libre de un
+  tornillo en el agujero de 100 mm (0,527 N·m a 80°). Desde 37 °C llegó a **70 °C en 122 s** (unos 0,27 °C/s; 45, 54, 62 y 70 °C a los
+  30, 60, 90 y 120 s) y paró; bajó el brazo con el par y lo apagó. El brazo cedió 8° (sostuvo a 72°: 0,509 N·m, un 1 % por debajo del
+  pedido) y no derivó con el tiempo (0,18°). Corriente leída de 800 a 570 (unidad sin confirmar); con esa corriente la tensión en el servo
+  bajó a 6,4-6,6 V con la fuente a 7,4. Antes, en una espera no registrada de unos minutos con la misma carga, pasó de 27 a 50 °C, y
+  enfrió de 50 a 37 °C en 280 s con el brazo colgando. **Pendiente de decisión del dueño:** según el handbook, si 5.1 falla se vuelve a
+  la etapa 2 (reducir masa o reforzar las articulaciones). No se ha comprobado con los servos B y C ni con un ciclo de trabajo de andar
+  (el criterio pide 5 min seguidos).
+  **Estimación térmica (sin comprobar; supone calor proporcional al par al cuadrado, enfriamiento exponencial y 25 °C de ambiente):**
+  el enfriamiento de 50 a 37 °C en 280 s da una constante de unos 380 s; con 0,27 °C/s a 37 °C, sostener 0,51 N·m calentaría unos
+  0,30 °C/s sin pérdidas y no se estabilizaría por debajo de 100 °C. Con el par eficaz de andar de `results/joint_loads.json`
+  (0,265 N·m en cadera roll y rodilla) se estabilizaría hacia 55 °C; con el de estar sobre un pie (0,359 N·m), hacia 80 °C.
+  **Servo B, mismo día y misma carga: NO cumple igual** (`results/bench_servo_B_heat.json`): de 28 a 70 °C en 158 s (36, 46, 55, 62 y
+  69 °C a los 30-150 s), 0,30 °C/s en el primer minuto (el A, 0,29), cedió 7,8° y derivó 0,21°. El resultado no es de un servo suelto.
+  Para probarlo hubo que mover el servo B: venía en la posición 4443, más de una vuelta (en modo 4 cuenta vueltas), y al activar el par
+  fue hacia 4095, el límite del objetivo (saltó 14° y paró la ventana, `results/bench_servo_B_move.json` de ese intento se sobrescribió
+  con el bueno). Se giró sin el brazo hasta 3400 y se volvió a montar vertical; ahora los programas paran antes de activar el par si la
+  posición o el recorrido salen de `min_angle`-`max_angle` (`servo_bench.check_in_range`). Servo B: ID 3
+  (`results/bench_servo_B_id.json`), sentido `--direction -1` como el A, movimiento de ±5° que cumple.
+  **Uso real (dueño, 14 de noviembre):** sobre un pie, como mucho unos 10 s para mostrarlo; el resto, de pie sobre los dos pies o
+  andando. `analysis/estimate_servo_heating.py` ajusta un modelo térmico de primer orden a las pruebas de A y B
+  (`results/servo_heating.json`; estimación, sin comprobar): 1,22 °C/s por (N·m)², error de 0,59 °C; la constante de enfriamiento
+  queda entre 380 s (enfriamiento visto) y 680 s (ajuste). Con el par eficaz de la articulación más cargada de cada tarea de
+  `results/joint_loads.json`: andar (0,265 N·m) se estabilizaría entre 57 y 82 °C (con 680 s llegaría a 70 °C a los 17,6 min sin
+  parar); en cuclillas (0,223 N·m), entre 47 y 65 °C; 10 s sobre un pie suben 3,2 °C. No cuenta con las carcasas del robot.
+  **Criterio de calor cambiado y aprobado por el dueño (14 de noviembre):** basta con que ande **unos 12 min seguidos** y luego se
+  quede de pie haciendo otras cosas (mover las manos, hablar), con 10 s sobre un pie como mucho para mostrarlo; si más adelante hace
+  falta más tiempo sobre una pierna o más estabilidad, se cambiará el diseño del torso hacia abajo. Sustituye a «5 minutos a par de
+  apoyo a un pie». Con la masa estimada de 1,30 kg (`results/robot_check.json`; los pares de `joint_loads.json` son del modelo de
+  1,20 kg, sin 0,10 kg de cables y tornillos, así que se escalan un 8,3 %), andar da 0,287 N·m eficaces: en el peor caso (τc 680 s)
+  llega a 70 °C a los 12,7 min (10,8 min a 66 °C, para dejar los 3,8 °C de 10 s sobre un pie), y en el mejor se estabiliza hacia
+  62 °C. **Cumple al límite y solo por estimación**: una prueba larga en el banco (unos 290 g colgando a 80°, 0,287 N·m, unos 25 min)
+  lo confirmaría. De pie agachado (0,242 N·m) se estabilizaría entre 51 y 72 °C: en el peor caso, de pie mucho rato también se acerca
+  al límite, aunque muy despacio. Sin contar las carcasas del robot.
+  Arreglo del mismo día: un Ctrl-C en la espera apagaba el par a 80° sin bajar el brazo, y la carga lo bajó por su peso; ahora baja el
+  brazo con el par en cualquier salida, y `--load-attached` sube con la carga puesta sin preguntar.
+- **Falta:** el ajuste con BAM (instalarlo desde su repositorio, `bam.process` a 5 ms y `bam.fit` dejando fuera una ganancia para
+  validar) y la holgura, que el modelo BAM no incluye y aún no tiene programa. No se ha comprobado la unidad de `present_speed` (la velocidad se calcula de la posición).
+No se compra el resto hasta pasar 5.1 y 5.2. Claude modela en Fusion por scripts, con `DannyBridge`. **Primeras medidas del servo (10 de noviembre):**
 caja de 33,9 × 19,9 × 22,8 mm, dentro de la holgura del CAD; cada bocina sobresale unos 3,4 mm (el CAD supone 3,0); pesa 23 g (el CAD supone 21).
 Faltan C2, C5, C6, C8 y C9, y saber dónde se tomaron seis cotas de las fotos ([design-audit.md](documentation/design-audit.md)).
 

@@ -1,0 +1,1182 @@
+{
+  "servo": "HD-1910",
+  "label": "A",
+  "id": 2,
+  "date": "2026-11-14 19:38",
+  "settings": {
+    "mass_kg": 0.542,
+    "arm_mass_kg": 0.006,
+    "length_m": 0.1,
+    "angle_deg": 80.0,
+    "supply_v": 7.4,
+    "hold_s": 300
+  },
+  "trace": [
+    {
+      "t": 0.0,
+      "angle_deg": 71.81,
+      "sag_deg": 8.19,
+      "temperature_c": 37,
+      "current": 800,
+      "load": 748,
+      "voltage_v": 6.4
+    },
+    {
+      "t": 1.01,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 37,
+      "current": 763,
+      "load": 724,
+      "voltage_v": 6.4
+    },
+    {
+      "t": 2.01,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 37,
+      "current": 746,
+      "load": 724,
+      "voltage_v": 6.5
+    },
+    {
+      "t": 3.02,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 38,
+      "current": 732,
+      "load": 724,
+      "voltage_v": 6.5
+    },
+    {
+      "t": 4.02,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 38,
+      "current": 719,
+      "load": 724,
+      "voltage_v": 6.5
+    },
+    {
+      "t": 5.03,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 38,
+      "current": 710,
+      "load": 724,
+      "voltage_v": 6.5
+    },
+    {
+      "t": 6.03,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 38,
+      "current": 702,
+      "load": 724,
+      "voltage_v": 6.5
+    },
+    {
+      "t": 7.03,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 38,
+      "current": 694,
+      "load": 724,
+      "voltage_v": 6.5
+    },
+    {
+      "t": 8.04,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 39,
+      "current": 688,
+      "load": 724,
+      "voltage_v": 6.5
+    },
+    {
+      "t": 9.04,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 39,
+      "current": 681,
+      "load": 724,
+      "voltage_v": 6.5
+    },
+    {
+      "t": 10.04,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 39,
+      "current": 678,
+      "load": 724,
+      "voltage_v": 6.5
+    },
+    {
+      "t": 11.04,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 40,
+      "current": 673,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 12.05,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 40,
+      "current": 669,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 13.05,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 40,
+      "current": 665,
+      "load": 724,
+      "voltage_v": 6.5
+    },
+    {
+      "t": 14.05,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 40,
+      "current": 661,
+      "load": 724,
+      "voltage_v": 6.5
+    },
+    {
+      "t": 15.06,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 41,
+      "current": 658,
+      "load": 724,
+      "voltage_v": 6.5
+    },
+    {
+      "t": 16.06,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 41,
+      "current": 656,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 17.07,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 41,
+      "current": 654,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 18.08,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 41,
+      "current": 650,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 19.08,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 42,
+      "current": 648,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 20.08,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 42,
+      "current": 647,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 21.09,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 42,
+      "current": 645,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 22.09,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 43,
+      "current": 643,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 23.09,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 43,
+      "current": 641,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 24.1,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 43,
+      "current": 640,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 25.1,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 43,
+      "current": 638,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 26.11,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 44,
+      "current": 637,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 27.11,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 44,
+      "current": 636,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 28.12,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 44,
+      "current": 633,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 29.12,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 45,
+      "current": 633,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 30.13,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 45,
+      "current": 632,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 31.14,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 45,
+      "current": 630,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 32.15,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 46,
+      "current": 628,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 33.15,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 46,
+      "current": 627,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 34.16,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 46,
+      "current": 626,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 35.17,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 47,
+      "current": 626,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 36.18,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 47,
+      "current": 624,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 37.18,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 47,
+      "current": 622,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 38.19,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 48,
+      "current": 621,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 39.2,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 48,
+      "current": 620,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 40.2,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 48,
+      "current": 620,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 41.21,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 49,
+      "current": 618,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 42.22,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 49,
+      "current": 617,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 43.22,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 49,
+      "current": 616,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 44.23,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 49,
+      "current": 614,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 45.23,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 50,
+      "current": 615,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 46.24,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 50,
+      "current": 613,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 47.25,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 50,
+      "current": 612,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 48.25,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 50,
+      "current": 612,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 49.26,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 51,
+      "current": 610,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 50.27,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 51,
+      "current": 609,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 51.27,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 51,
+      "current": 607,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 52.28,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 52,
+      "current": 607,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 53.28,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 52,
+      "current": 607,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 54.29,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 52,
+      "current": 606,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 55.3,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 53,
+      "current": 605,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 56.31,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 53,
+      "current": 603,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 57.31,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 53,
+      "current": 603,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 58.32,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 54,
+      "current": 601,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 59.33,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 54,
+      "current": 601,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 60.34,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 54,
+      "current": 598,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 61.34,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 55,
+      "current": 600,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 62.35,
+      "angle_deg": 72.07,
+      "sag_deg": 7.93,
+      "temperature_c": 55,
+      "current": 598,
+      "load": 724,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 63.35,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 55,
+      "current": 602,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 64.36,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 55,
+      "current": 602,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 65.37,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 56,
+      "current": 599,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 66.38,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 56,
+      "current": 599,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 67.39,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 56,
+      "current": 598,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 68.4,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 57,
+      "current": 597,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 69.4,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 57,
+      "current": 597,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 70.41,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 57,
+      "current": 596,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 71.42,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 57,
+      "current": 594,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 72.42,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 58,
+      "current": 594,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 73.43,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 58,
+      "current": 594,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 74.44,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 58,
+      "current": 592,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 75.44,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 58,
+      "current": 591,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 76.45,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 59,
+      "current": 591,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 77.46,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 59,
+      "current": 591,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 78.47,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 59,
+      "current": 590,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 79.47,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 60,
+      "current": 589,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 80.48,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 60,
+      "current": 588,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 81.48,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 60,
+      "current": 588,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 82.48,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 60,
+      "current": 587,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 83.49,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 61,
+      "current": 586,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 84.5,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 61,
+      "current": 586,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 85.5,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 61,
+      "current": 585,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 86.51,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 61,
+      "current": 584,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 87.51,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 62,
+      "current": 584,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 88.52,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 62,
+      "current": 583,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 89.53,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 62,
+      "current": 582,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 90.53,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 62,
+      "current": 582,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 91.54,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 63,
+      "current": 580,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 92.54,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 63,
+      "current": 581,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 93.55,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 63,
+      "current": 580,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 94.55,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 64,
+      "current": 579,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 95.56,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 64,
+      "current": 578,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 96.56,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 64,
+      "current": 577,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 97.56,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 64,
+      "current": 577,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 98.57,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 65,
+      "current": 577,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 99.57,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 65,
+      "current": 576,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 100.58,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 65,
+      "current": 576,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 101.59,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 65,
+      "current": 574,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 102.59,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 66,
+      "current": 575,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 103.6,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 66,
+      "current": 573,
+      "load": 732,
+      "voltage_v": 6.7
+    },
+    {
+      "t": 104.61,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 66,
+      "current": 574,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 105.61,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 66,
+      "current": 573,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 106.62,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 67,
+      "current": 571,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 107.62,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 67,
+      "current": 572,
+      "load": 732,
+      "voltage_v": 6.7
+    },
+    {
+      "t": 108.63,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 67,
+      "current": 571,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 109.63,
+      "angle_deg": 71.98,
+      "sag_deg": 8.02,
+      "temperature_c": 68,
+      "current": 571,
+      "load": 732,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 110.64,
+      "angle_deg": 71.89,
+      "sag_deg": 8.11,
+      "temperature_c": 68,
+      "current": 576,
+      "load": 740,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 111.64,
+      "angle_deg": 71.89,
+      "sag_deg": 8.11,
+      "temperature_c": 68,
+      "current": 575,
+      "load": 740,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 112.65,
+      "angle_deg": 71.89,
+      "sag_deg": 8.11,
+      "temperature_c": 68,
+      "current": 574,
+      "load": 740,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 113.66,
+      "angle_deg": 71.89,
+      "sag_deg": 8.11,
+      "temperature_c": 68,
+      "current": 574,
+      "load": 740,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 114.66,
+      "angle_deg": 71.89,
+      "sag_deg": 8.11,
+      "temperature_c": 69,
+      "current": 573,
+      "load": 740,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 115.67,
+      "angle_deg": 71.89,
+      "sag_deg": 8.11,
+      "temperature_c": 69,
+      "current": 572,
+      "load": 740,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 116.68,
+      "angle_deg": 71.89,
+      "sag_deg": 8.11,
+      "temperature_c": 69,
+      "current": 572,
+      "load": 740,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 117.68,
+      "angle_deg": 71.89,
+      "sag_deg": 8.11,
+      "temperature_c": 70,
+      "current": 572,
+      "load": 740,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 118.69,
+      "angle_deg": 71.89,
+      "sag_deg": 8.11,
+      "temperature_c": 70,
+      "current": 571,
+      "load": 740,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 119.69,
+      "angle_deg": 71.89,
+      "sag_deg": 8.11,
+      "temperature_c": 70,
+      "current": 571,
+      "load": 740,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 120.7,
+      "angle_deg": 71.89,
+      "sag_deg": 8.11,
+      "temperature_c": 70,
+      "current": 570,
+      "load": 740,
+      "voltage_v": 6.6
+    },
+    {
+      "t": 121.71,
+      "angle_deg": 71.89,
+      "sag_deg": 8.11,
+      "temperature_c": 70,
+      "current": 569,
+      "load": 740,
+      "voltage_v": 6.7
+    },
+    {
+      "t": 122.71,
+      "angle_deg": 71.89,
+      "sag_deg": 8.11,
+      "temperature_c": 70,
+      "current": 569,
+      "load": 740,
+      "voltage_v": 6.6
+    }
+  ],
+  "criteria": {
+    "ready_and_enough_load": {
+      "value": {
+        "ready": {
+          "voltage_v": {
+            "value": 7.4,
+            "supply_v": 7.4,
+            "passes": true
+          },
+          "temperature_c": {
+            "value": 37,
+            "limit": 40,
+            "passes": true
+          },
+          "torque_off": {
+            "value": 0,
+            "passes": true
+          }
+        },
+        "torque_nm": 0.5265,
+        "target_nm": 0.5141
+      },
+      "passes": true
+    },
+    "holds_without_overheating": {
+      "value": {
+        "held_s": 122.71,
+        "max_temperature_c": 70,
+        "stop": "temperatura 71 °C"
+      },
+      "limit": [
+        300,
+        70
+      ],
+      "passes": false
+    },
+    "held_torque_reaches_target": {
+      "value": {
+        "median_angle_deg": 72.07,
+        "torque_nm": 0.5087
+      },
+      "limit": 0.5141,
+      "passes": false
+    },
+    "does_not_give_way": {
+      "value": {
+        "drift_deg": 0.18,
+        "max_sag_deg": 8.19
+      },
+      "limit": 3.0,
+      "passes": true
+    },
+    "torque_off_at_end": {
+      "value": 0,
+      "passes": true
+    }
+  },
+  "passes": false,
+  "note": "Direcciones de la serie STS. Par de la gravedad calculado con la carga puntual y el brazo como barra uniforme."
+}

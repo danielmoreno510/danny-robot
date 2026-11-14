@@ -1,0 +1,104 @@
+{
+  "model": "dT/dt = k·τ² - (T - T_amb)/τc, ajustado a las pruebas de calor del banco; estimación, sin comprobar con el uso real",
+  "ambient_c": 24.0,
+  "limit_c": 70.0,
+  "k_c_per_s_nm2": 1.2191,
+  "fit_tc_s": 680,
+  "fit_error_c": 0.59,
+  "cooling_tc_s": 380.0,
+  "runs": {
+    "A": {
+      "held_torque_nm": 0.5085,
+      "seconds": 122.71
+    },
+    "B": {
+      "held_torque_nm": 0.5096,
+      "seconds": 157.5
+    }
+  },
+  "tasks": {
+    "squat": {
+      "joint": "right_knee",
+      "rms_torque_nm": 0.223,
+      "heating_c_s": 0.0608,
+      "cooling_tc": {
+        "steady_c": 47.1,
+        "minutes_to_limit": null
+      },
+      "fit_tc": {
+        "steady_c": 65.3,
+        "minutes_to_limit": null
+      }
+    },
+    "single_support": {
+      "joint": "left_hip_roll",
+      "rms_torque_nm": 0.359,
+      "heating_c_s": 0.1575,
+      "cooling_tc": {
+        "steady_c": 83.8,
+        "minutes_to_limit": 9.3
+      },
+      "fit_tc": {
+        "steady_c": 131.0,
+        "minutes_to_limit": 6.4
+      }
+    },
+    "walk": {
+      "joint": "left_hip_roll",
+      "rms_torque_nm": 0.265,
+      "heating_c_s": 0.0858,
+      "cooling_tc": {
+        "steady_c": 56.6,
+        "minutes_to_limit": null
+      },
+      "fit_tc": {
+        "steady_c": 82.3,
+        "minutes_to_limit": 17.6
+      }
+    },
+    "rise_from_crouch": {
+      "joint": "right_knee",
+      "rms_torque_nm": 0.192,
+      "heating_c_s": 0.0449,
+      "cooling_tc": {
+        "steady_c": 41.1,
+        "minutes_to_limit": null
+      },
+      "fit_tc": {
+        "steady_c": 54.5,
+        "minutes_to_limit": null
+      }
+    },
+    "push_up_from_prone": {
+      "joint": "right_elbow",
+      "rms_torque_nm": 0.103,
+      "heating_c_s": 0.0131,
+      "cooling_tc": {
+        "steady_c": 29.0,
+        "minutes_to_limit": null
+      },
+      "fit_tc": {
+        "steady_c": 32.9,
+        "minutes_to_limit": null
+      }
+    },
+    "sit_up_from_back": {
+      "joint": "left_shoulder_pitch",
+      "rms_torque_nm": 0.096,
+      "heating_c_s": 0.0112,
+      "cooling_tc": {
+        "steady_c": 28.3,
+        "minutes_to_limit": null
+      },
+      "fit_tc": {
+        "steady_c": 31.6,
+        "minutes_to_limit": null
+      }
+    }
+  },
+  "single_support_demo": {
+    "seconds": 10.0,
+    "torque_nm": 0.514,
+    "rise_c": 3.2
+  }
+}

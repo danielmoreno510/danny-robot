@@ -6,7 +6,8 @@ longitud, error, datos y suma. Es el mismo en las dos variantes de Feetech: SCS 
 en little-endian. El HD-1910 no tiene tabla de memoria publicada (buscado el 11 de noviembre): las direcciones son las de la serie
 STS/SMS, y la variante se decide por los límites de ángulo leídos (`detect_variant`).
 
-Este módulo solo lee, salvo `write`, que no usa ningún script de lectura.
+Las lecturas no cambian nada. Para escribir, `write_register` codifica el valor con la variante; lo usan solo los programas que
+configuran o mueven el servo.
 """
 
 import glob
@@ -24,7 +25,8 @@ REGISTERS = {
     "max_voltage_dv": (14, 1), "min_voltage_dv": (15, 1), "max_torque": (16, 2), "unloading_condition": (19, 1),
     "led_alarm": (20, 1), "p_gain": (21, 1), "d_gain": (22, 1), "i_gain": (23, 1), "protection_current": (28, 2),
     "position_offset": (31, 2), "mode": (33, 1), "protective_torque": (34, 1), "protection_time": (35, 1), "overload_torque": (36, 1),
-    "torque_enable": (40, 1), "goal_position": (42, 2), "torque_limit": (48, 2), "lock": (55, 1),
+    "torque_enable": (40, 1), "acceleration": (41, 1), "goal_position": (42, 2), "goal_time": (44, 2), "goal_speed": (46, 2),
+    "torque_limit": (48, 2), "lock": (55, 1),
     "present_position": (56, 2), "present_speed": (58, 2), "present_load": (60, 2), "present_voltage_dv": (62, 1),
     "present_temperature_c": (63, 1), "status": (65, 1), "moving": (66, 1), "present_current": (69, 2),
 }
@@ -68,7 +70,9 @@ class Bus:
         deadline = time.monotonic() + 0.1
         buffer = b""
         while time.monotonic() < deadline:
-            buffer += self.serial.read(64)
+            # Lee lo que haya (al menos 1 byte): pedir un tamaño fijo esperaba al timeout en cada respuesta (55 ms por lectura,
+            # medido el 14 de noviembre).
+            buffer += self.serial.read(max(1, self.serial.in_waiting))
             start = buffer.find(b"\xff\xff")
             # La placa puede devolver el eco de lo enviado: vale el primer paquete con este ID y la suma correcta.
             while start >= 0 and len(buffer) >= start + 4:
@@ -120,6 +124,32 @@ def decode(name, raw, little_endian):
     if bit is not None and number & (1 << bit):
         return -(number & ((1 << bit) - 1))
     return number
+
+
+def encode(name, number, little_endian):
+    """Bytes de un registro para escribirlo; los de sentido van en signo y magnitud, como `decode`."""
+    address, size = REGISTERS[name]
+    bit = SIGN_BITS.get(name)
+    if bit is not None:
+        if abs(number) >= 1 << bit:
+            raise ValueError(f"{name} = {number} no cabe en {bit} bits más el signo")
+        raw = abs(number) | ((1 << bit) if number < 0 else 0)
+    else:
+        if not 0 <= number < 1 << (8 * size):
+            raise ValueError(f"{name} = {number} no cabe en {size} bytes sin signo")
+        raw = number
+    return list(raw.to_bytes(size, "little" if little_endian else "big"))
+
+
+def read_register(bus, servo_id, name, little_endian):
+    address, size = REGISTERS[name]
+    _, raw = bus.read(servo_id, address, size)
+    return decode(name, raw, little_endian)
+
+
+def write_register(bus, servo_id, name, number, little_endian):
+    """Escribe un registro y devuelve el byte de error del servo."""
+    return bus.write(servo_id, REGISTERS[name][0], encode(name, number, little_endian))
 
 
 def detect_variant(memory):

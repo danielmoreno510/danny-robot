@@ -354,7 +354,7 @@ aprobación, y **no se compra el robot entero hasta pasar 5.1 y 5.2**.
 
 | Paso | Compra | Qué hacer | Terminado cuando (provisional) |
 |---|---|---|---|
-| 5.1 | Banco, ya comprado: 3 servos, FE-URT-2 y fuente. Falta brazo impreso y pesas caseras | Curva par-velocidad, holgura e identificación BAM con carga conocida | Modelo propio; 5 minutos a par de apoyo a un pie por debajo de 70 °C |
+| 5.1 | Banco, ya comprado: 3 servos, FE-URT-2 y fuente; soporte y brazo impresos (`cad/print/bench/`). Programas: `record_servo_trajectories.py` (BAM) y `test_servo_heat.py`. Grabación BAM con 97 g hecha; calor medido en A y B. Faltan el ajuste BAM y la holgura. La mesa limita el brazo de 0° a 83° hacia fuera | Curva par-velocidad, holgura e identificación BAM con carga conocida | Modelo propio; calor (cambiado por el dueño el 14 de noviembre): andar unos 12 min seguidos y luego quedarse de pie con gestos, con 10 s sobre un pie como mucho, por debajo de 70 °C (`results/servo_heating.json`) |
 | 5.2 | 3 servos más, hasta 6, y piezas de una pierna | Pierna sujeta, comparar con simulación | Respuesta real parecida a la simulada, criterio numérico por fijar antes |
 | 5.3 | Electrónica | Programa: bucle de 50 Hz, ONNX, paro de seguridad, dejar de caminar a 6,6 V y corte a 6,4 V | Bucle estable 10 minutos sin retrasos |
 | 5.4 | Resto | Montaje, IDs y calibración | Todas las articulaciones responden |

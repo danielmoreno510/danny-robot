@@ -1,0 +1,259 @@
+{
+  "servo": "HD-1910",
+  "label": "A",
+  "id": 2,
+  "date": "2026-11-14 18:50",
+  "settings": {
+    "mass_kg": 0.097,
+    "arm_mass_kg": 0.006,
+    "length_m": 0.1,
+    "kp": [
+      4,
+      8,
+      16,
+      32
+    ],
+    "trajectories": [
+      "lift_and_drop",
+      "sin_time_square",
+      "up_and_down",
+      "sin_sin"
+    ],
+    "supply_v": 7.4,
+    "range_deg": [
+      -0.0,
+      83.0
+    ],
+    "gravity_torque_at_max_angle_nm": 0.0974
+  },
+  "criteria": {
+    "ready_before_torque": {
+      "value": {
+        "voltage_v": {
+          "value": 7.4,
+          "supply_v": 7.4,
+          "passes": true
+        },
+        "temperature_c": {
+          "value": 28,
+          "limit": 40,
+          "passes": true
+        },
+        "torque_off": {
+          "value": 0,
+          "passes": true
+        }
+      },
+      "passes": true
+    },
+    "calibrated": {
+      "value": {
+        "zero_counts": 3451,
+        "direction": -1
+      },
+      "passes": true
+    },
+    "gains_accepted_and_restored": {
+      "value": {
+        "each_kp": [
+          {
+            "written": {
+              "p_gain": 4,
+              "d_gain": 0
+            },
+            "read": {
+              "p_gain": 4,
+              "d_gain": 0
+            }
+          },
+          {
+            "written": {
+              "p_gain": 8,
+              "d_gain": 0
+            },
+            "read": {
+              "p_gain": 8,
+              "d_gain": 0
+            }
+          },
+          {
+            "written": {
+              "p_gain": 16,
+              "d_gain": 0
+            },
+            "read": {
+              "p_gain": 16,
+              "d_gain": 0
+            }
+          },
+          {
+            "written": {
+              "p_gain": 32,
+              "d_gain": 0
+            },
+            "read": {
+              "p_gain": 32,
+              "d_gain": 0
+            }
+          }
+        ],
+        "restored": {
+          "p_gain": 32,
+          "d_gain": 40
+        },
+        "factory": {
+          "p_gain": 32,
+          "d_gain": 40
+        }
+      },
+      "passes": true
+    },
+    "no_safety_stop": {
+      "value": null,
+      "passes": true
+    },
+    "sampling_fit_for_bam": {
+      "value": [
+        {
+          "file": "results/bench_bam/A/raw/97g_kp4_lift_and_drop.json",
+          "kp": 4,
+          "trajectory": "lift_and_drop",
+          "samples": 2640,
+          "median_period_s": 0.00228,
+          "max_gap_s": 0.00369
+        },
+        {
+          "file": "results/bench_bam/A/raw/97g_kp4_sin_time_square.json",
+          "kp": 4,
+          "trajectory": "sin_time_square",
+          "samples": 2646,
+          "median_period_s": 0.00227,
+          "max_gap_s": 0.00644
+        },
+        {
+          "file": "results/bench_bam/A/raw/97g_kp4_up_and_down.json",
+          "kp": 4,
+          "trajectory": "up_and_down",
+          "samples": 2648,
+          "median_period_s": 0.00227,
+          "max_gap_s": 0.00399
+        },
+        {
+          "file": "results/bench_bam/A/raw/97g_kp4_sin_sin.json",
+          "kp": 4,
+          "trajectory": "sin_sin",
+          "samples": 2649,
+          "median_period_s": 0.00227,
+          "max_gap_s": 0.00301
+        },
+        {
+          "file": "results/bench_bam/A/raw/97g_kp8_lift_and_drop.json",
+          "kp": 8,
+          "trajectory": "lift_and_drop",
+          "samples": 2653,
+          "median_period_s": 0.00227,
+          "max_gap_s": 0.00375
+        },
+        {
+          "file": "results/bench_bam/A/raw/97g_kp8_sin_time_square.json",
+          "kp": 8,
+          "trajectory": "sin_time_square",
+          "samples": 2645,
+          "median_period_s": 0.00227,
+          "max_gap_s": 0.00391
+        },
+        {
+          "file": "results/bench_bam/A/raw/97g_kp8_up_and_down.json",
+          "kp": 8,
+          "trajectory": "up_and_down",
+          "samples": 2650,
+          "median_period_s": 0.00227,
+          "max_gap_s": 0.0028
+        },
+        {
+          "file": "results/bench_bam/A/raw/97g_kp8_sin_sin.json",
+          "kp": 8,
+          "trajectory": "sin_sin",
+          "samples": 2653,
+          "median_period_s": 0.00227,
+          "max_gap_s": 0.00274
+        },
+        {
+          "file": "results/bench_bam/A/raw/97g_kp16_lift_and_drop.json",
+          "kp": 16,
+          "trajectory": "lift_and_drop",
+          "samples": 2642,
+          "median_period_s": 0.00228,
+          "max_gap_s": 0.00334
+        },
+        {
+          "file": "results/bench_bam/A/raw/97g_kp16_sin_time_square.json",
+          "kp": 16,
+          "trajectory": "sin_time_square",
+          "samples": 2648,
+          "median_period_s": 0.00227,
+          "max_gap_s": 0.00733
+        },
+        {
+          "file": "results/bench_bam/A/raw/97g_kp16_up_and_down.json",
+          "kp": 16,
+          "trajectory": "up_and_down",
+          "samples": 2651,
+          "median_period_s": 0.00227,
+          "max_gap_s": 0.00272
+        },
+        {
+          "file": "results/bench_bam/A/raw/97g_kp16_sin_sin.json",
+          "kp": 16,
+          "trajectory": "sin_sin",
+          "samples": 2654,
+          "median_period_s": 0.00227,
+          "max_gap_s": 0.00325
+        },
+        {
+          "file": "results/bench_bam/A/raw/97g_kp32_lift_and_drop.json",
+          "kp": 32,
+          "trajectory": "lift_and_drop",
+          "samples": 2643,
+          "median_period_s": 0.00228,
+          "max_gap_s": 0.00326
+        },
+        {
+          "file": "results/bench_bam/A/raw/97g_kp32_sin_time_square.json",
+          "kp": 32,
+          "trajectory": "sin_time_square",
+          "samples": 2639,
+          "median_period_s": 0.00227,
+          "max_gap_s": 0.00699
+        },
+        {
+          "file": "results/bench_bam/A/raw/97g_kp32_up_and_down.json",
+          "kp": 32,
+          "trajectory": "up_and_down",
+          "samples": 2661,
+          "median_period_s": 0.00226,
+          "max_gap_s": 0.00515
+        },
+        {
+          "file": "results/bench_bam/A/raw/97g_kp32_sin_sin.json",
+          "kp": 32,
+          "trajectory": "sin_sin",
+          "samples": 2651,
+          "median_period_s": 0.00227,
+          "max_gap_s": 0.00377
+        }
+      ],
+      "limits_s": [
+        0.003,
+        0.02
+      ],
+      "passes": true
+    },
+    "torque_off_at_end": {
+      "value": 0,
+      "passes": true
+    }
+  },
+  "passes": true,
+  "note": "Direcciones de la serie STS. Trayectorias de BAM (Apache 2.0) llevadas al rango del banco, de 0° a 83°; D = 0 al grabar. Longitud corregida a mano de 0,120 a 0,100 m tras la grabación (el dueño midió de nuevo el 14 de noviembre); la grabación no depende de ella."
+}
