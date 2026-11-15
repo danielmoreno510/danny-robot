@@ -1,5 +1,5 @@
 {
-  "checkpoint": "logs\\rsl_rl\\danny_tracking\\2026-11-13_13-59-37_fase6_andar_07_01\\model_2499.pt",
+  "checkpoint": "logs\\rsl_rl\\danny_tracking\\2026-11-15_12-59-46_fase6_andar_07_01_fino\\model_3499.pt",
   "motion": "data\\motions\\andar_07_01.npz",
   "legs": "moving",
   "num_envs": 4096,
@@ -9,51 +9,51 @@
   "tilt_over_60deg_fraction": 0.0,
   "error_by_body_m": {
     "left_hand": {
-      "median": 0.0112,
-      "p95": 0.0219,
-      "max": 0.0389
+      "median": 0.0065,
+      "p95": 0.0143,
+      "max": 0.0331
     },
     "right_hand": {
-      "median": 0.009,
-      "p95": 0.0185,
-      "max": 0.0425
+      "median": 0.0059,
+      "p95": 0.0124,
+      "max": 0.0282
     },
     "left_elbow": {
-      "median": 0.0091,
-      "p95": 0.0196,
-      "max": 0.0369
+      "median": 0.0062,
+      "p95": 0.0146,
+      "max": 0.0262
     },
     "right_elbow": {
-      "median": 0.0145,
-      "p95": 0.0263,
-      "max": 0.0427
+      "median": 0.0071,
+      "p95": 0.0127,
+      "max": 0.0246
     },
     "left_foot": {
-      "median": 0.0118,
-      "p95": 0.0198,
-      "max": 0.0415
+      "median": 0.01,
+      "p95": 0.0177,
+      "max": 0.0395
     },
     "right_foot": {
-      "median": 0.0115,
-      "p95": 0.0195,
-      "max": 0.0414
+      "median": 0.0104,
+      "p95": 0.0193,
+      "max": 0.0395
     }
   },
   "error_by_group_m": {
     "hand": {
-      "median": 0.01,
-      "p95": 0.0207,
-      "max": 0.0425
+      "median": 0.0062,
+      "p95": 0.0133,
+      "max": 0.0331
     },
     "elbow": {
-      "median": 0.0115,
-      "p95": 0.0241,
-      "max": 0.0427
+      "median": 0.0067,
+      "p95": 0.0136,
+      "max": 0.0262
     },
     "foot": {
-      "median": 0.0116,
-      "p95": 0.0197,
-      "max": 0.0415
+      "median": 0.0102,
+      "p95": 0.0186,
+      "max": 0.0395
     }
   },
   "saturated_joints_run_over_0.5s_max_s": {},
@@ -65,18 +65,18 @@
     },
     "hands_elbows_feet_median_m": {
       "value": {
-        "hand": 0.01,
-        "elbow": 0.0115,
-        "foot": 0.0116
+        "hand": 0.0062,
+        "elbow": 0.0067,
+        "foot": 0.0102
       },
       "required_max": 0.02,
       "passes": true
     },
     "hands_elbows_feet_p95_m": {
       "value": {
-        "hand": 0.0207,
-        "elbow": 0.0241,
-        "foot": 0.0197
+        "hand": 0.0133,
+        "elbow": 0.0136,
+        "foot": 0.0186
       },
       "required_max": 0.04,
       "passes": true
@@ -95,9 +95,9 @@
       "value": {
         "definition": "deslizamiento de la suela acumulado en cada apoyo (m)",
         "stance_slide_m": {
-          "median": 0.0113,
-          "p95": 0.0176,
-          "max": 0.0326
+          "median": 0.0101,
+          "p95": 0.0156,
+          "max": 0.0285
         },
         "required_max_m": 0.01
       },
