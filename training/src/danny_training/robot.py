@@ -127,9 +127,10 @@ DANNY_COLLISION = CollisionCfg(
     friction={r"^(left|right)_sole$": (1.0,)},
 )
 
-# Ganancia del firmware del servo. 5 es el valor de xgoduck_rl; sin política, con 5 Danny cae a un pie y con 10 aguanta a 7,4 V
-# (results/standing_check.json). El valor real se mide en el banco (5.1).
-KP_FW = 5.0
+# Ganancia del firmware del servo, medida en el banco (5.1, 15 de noviembre): el HD-1910 en modo 4 usa la de fábrica, 32, y no
+# cambia al escribir otra. Con 32 el modelo BAM reproduce las grabaciones del servo real con 0,22° de error medio; con 5, el valor
+# de xgoduck_rl que se usó hasta las fases 0-6, con 5,7° (results/servo_model_check.json).
+KP_FW = 32.0
 
 # Actuadores HD-1910 con el modelo BAM de xgoduck_rl (sin confirmar en los servos reales).
 # Rangos de la guía de entrenamiento: tensión 6 a 8,4 V, retardo de 10 a 30 ms. Con paso de física

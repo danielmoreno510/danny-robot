@@ -112,8 +112,8 @@ los tobillos casi no cuenta como moverse, y cada balanceo del cuerpo añade un e
 BNO085. Vuelve a generar `training/` con `danny_training.xml` y reinicia: una política anterior no sirve. Con -30°, `stand` quedaba a 0,04° del
 límite blando de -26,5°, así que apoyarse sobre el pie adelantado se penalizaba.
 
-**Antes de cada corrida:** `analysis/check_training_model.py` comprueba el modelo, y `analysis/check_walk_feasibility.py` muestra que con ganancia 5 y la
-física del entrenamiento da pasos alternos con zancada de 98 mm. Si Danny no camina, mira primero el aprendizaje. Mantén `kp_fw` 5.
+**Antes de cada corrida:** `analysis/check_training_model.py` comprueba el modelo, y `analysis/check_walk_feasibility.py` muestra que con la ganancia del servo y la
+física del entrenamiento da pasos alternos con zancada de 98 mm. Si Danny no camina, mira primero el aprendizaje. Usa `kp_fw` 32, la ganancia medida en el banco (15 de noviembre); hasta entonces se entrenó con 5, el valor de xgoduck, y las políticas de las fases 0 a 6 hay que volver a entrenarlas o afinarlas.
 
 **Cajas de colisión:** el modelo trae fricción 0,35, prioridad 1 y 13 contactos entre eslabones. En `DANNY_COLLISION`, usa `condim=3` y `priority=1` también para
 `.*_box_\d+`, o el suelo les pondrá 1,0. Aleatoriza la masa en todos los cuerpos con `shared_random=True`, para que sea ±10 % de verdad.

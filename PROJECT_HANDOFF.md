@@ -4,6 +4,15 @@ Punto de entrada para continuar **Robot Danny** en un chat nuevo o en otra compu
 
 **Fecha:** 4 de noviembre de 2026. **Etapa actual:** 3, MuJoCo, con 2.2, 2.3 y 2.4 abiertas por lo físico. La etapa 1 está
 cerrada.
+**Aviso para el entrenamiento (15 de noviembre): la ganancia del servo pasa de 5 a 32.** En el banco (5.1), el HD-1910 en modo 4
+usa su ganancia de fábrica, 32, y no cambia al escribir otra. Con las 16 grabaciones del servo real, el modelo BAM del
+entrenamiento acierta con kp = 32 (0,22° de error medio) y falla con kp = 5 (5,7°); detalle en `results/servo_model_check.json` de
+la rama `cad-medidas-servo`. Con 5, el servo simulado era unas 6 veces más blando que el real (1,03 frente a 6,6 N·m/rad a 7,4 V);
+con 32 y sin política, Danny ya aguanta las cuclillas y el apoyo a un pie. **Cambiado `KP_FW` a 32 en
+`training/src/danny_training/robot.py`.** Todas las políticas aprobadas (fases 2 a 6) se entrenaron con 5: hay que **afinarlas con
+32** desde su último modelo, o volver a entrenarlas si no se recuperan, y repetir sus medidas, ONNX y vídeos. Es probable que el
+afinado baste, pero no está comprobado. Lo que estés entrenando ahora con 5 tampoco sirve para el robot real.
+
 **Siguiente paso:** seguir el [plan de la etapa 4](#plan-de-la-etapa-4-fases) por fases. Las fases 0 a 2 están aprobadas: la Fase 2,
 movimiento completo, con `fase2_f_rodilla/model_8995.pt`, fusionada en `main` el 4 de noviembre (PR 1), con su ONNX en `policies/` y vídeos en
 `results/videos/`. La fase 3, agacharse quieto, está aprobada con `fase3_agacharse/model_11994.pt`, usado solo parado y con ONNX en `policies/` (ver el plan); caminar agachado queda descartado por ahora. `marcha_reloj_1000` ya caminó hacia delante y giró con el modelo
