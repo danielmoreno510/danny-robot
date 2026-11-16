@@ -1,0 +1,105 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_tracking\\2026-11-16_09-59-09_fase6_saludar_k32\\model_1499.pt",
+  "motion": "data\\motions\\saludar.npz",
+  "legs": "fixed",
+  "num_envs": 4096,
+  "seconds": 4.44,
+  "vin_v": "aleatoria 6 a 8,4",
+  "push_speed_m_s": 0.2,
+  "tilt_over_60deg_fraction": 0.0,
+  "error_by_body_m": {
+    "left_hand": {
+      "median": 0.0045,
+      "p95": 0.011,
+      "max": 0.034
+    },
+    "right_hand": {
+      "median": 0.011,
+      "p95": 0.0179,
+      "max": 0.0342
+    },
+    "left_elbow": {
+      "median": 0.0089,
+      "p95": 0.0187,
+      "max": 0.0681
+    },
+    "right_elbow": {
+      "median": 0.0182,
+      "p95": 0.0369,
+      "max": 0.1152
+    },
+    "left_foot": {
+      "median": 0.0083,
+      "p95": 0.0099,
+      "max": 0.0169
+    },
+    "right_foot": {
+      "median": 0.0082,
+      "p95": 0.0105,
+      "max": 0.0165
+    }
+  },
+  "error_by_group_m": {
+    "hand": {
+      "median": 0.0075,
+      "p95": 0.0163,
+      "max": 0.0342
+    },
+    "elbow": {
+      "median": 0.0125,
+      "p95": 0.0328,
+      "max": 0.1152
+    },
+    "foot": {
+      "median": 0.0083,
+      "p95": 0.0102,
+      "max": 0.0169
+    }
+  },
+  "saturated_joints_run_over_0.5s_max_s": {},
+  "criteria": {
+    "no_fall_fraction": {
+      "value": 1.0,
+      "required": 0.95,
+      "passes": true
+    },
+    "hands_elbows_feet_median_m": {
+      "value": {
+        "hand": 0.0075,
+        "elbow": 0.0125,
+        "foot": 0.0083
+      },
+      "required_max": 0.02,
+      "passes": true
+    },
+    "hands_elbows_feet_p95_m": {
+      "value": {
+        "hand": 0.0163,
+        "elbow": 0.0328,
+        "foot": 0.0102
+      },
+      "required_max": 0.04,
+      "passes": true
+    },
+    "saturation_run_at_most_0.5s": {
+      "value": 1.0,
+      "required": 0.99,
+      "passes": true
+    },
+    "saturation_no_robot_over_2s": {
+      "value": 1.0,
+      "required": 1.0,
+      "passes": true
+    },
+    "feet": {
+      "value": {
+        "definition": "paso = suela a más de 1 cm de altura o a más de 3 cm de su sitio",
+        "fraction_without_step": 1.0,
+        "required": 0.95
+      },
+      "passes": true
+    }
+  },
+  "passes_measurable_criteria": true,
+  "not_checked": "vídeo aprobado por el dueño; ONNX verificado; robot real"
+}
