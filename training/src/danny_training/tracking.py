@@ -9,6 +9,7 @@ La referencia se pasa con `--env.commands.motion.motion-file <npz>` (ver `script
 
 from __future__ import annotations
 
+import os
 from copy import deepcopy
 
 from mjlab.envs import ManagerBasedRlEnvCfg
@@ -44,6 +45,10 @@ MOTION_BODIES = (
   "right_forearm_1",
   "right_elbow_link_1",
 )
+# Los siete primeros movimientos (saludar a conversacion_explicar) se entrenaron sin los codos en la lista (el crítico tiene otro tamaño):
+# para afinarlos con `--agent.resume` hay que lanzar con DANNY_TRACK_SIN_CODOS=1.
+if os.environ.get("DANNY_TRACK_SIN_CODOS") == "1":
+  MOTION_BODIES = tuple(b for b in MOTION_BODIES if "elbow_link" not in b)
 END_BODIES = ("left_foot_1", "right_foot_1", "left_forearm_1", "right_forearm_1")
 # Escala de Danny frente al G1 de mjlab: 0,4 m frente a 1,3 m.
 FALL_Z_M = 0.08  # el G1 usa 0,25 m: la altura del ancla o de un extremo se desvía más que esto -> caída.
@@ -51,6 +56,8 @@ POS_STD_M = 0.10  # el G1 usa 0,3 m.
 LIN_VEL_STD_M_S = 0.5  # el G1 usa 1,0 m/s.
 ARM_BODIES = ("left_upper_arm_1", "left_forearm_1", "left_elbow_link_1", "right_upper_arm_1", "right_forearm_1", "right_elbow_link_1")
 ARM_FINE_STD_M = 0.03
+if os.environ.get("DANNY_TRACK_SIN_CODOS") == "1":
+  ARM_BODIES = tuple(b for b in ARM_BODIES if "elbow_link" not in b)
 
 
 def danny_tracking_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
