@@ -76,7 +76,8 @@ def danny_tracking_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
 
   joint_pos_action = cfg.actions["joint_pos"]
   assert isinstance(joint_pos_action, JointPositionActionCfg)
-  joint_pos_action.scale = env_cfgs.ACTION_SCALE
+  # Con kp=32 el servo simulado es 6 veces más rígido: prueba de escala de acción menor (DANNY_TRACK_ACTION_SCALE), sin cambiar el valor por defecto.
+  joint_pos_action.scale = float(os.environ.get("DANNY_TRACK_ACTION_SCALE", env_cfgs.ACTION_SCALE))
   joint_pos_action.actuator_names = (".*",)
 
   motion = cfg.commands["motion"]
