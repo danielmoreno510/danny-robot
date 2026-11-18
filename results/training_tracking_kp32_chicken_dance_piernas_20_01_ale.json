@@ -1,0 +1,111 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_tracking\\2026-11-18_02-27-58_fase6_chicken_dance_piernas_20_01_k32\\model_3499.pt",
+  "motion": "data\\motions\\chicken_dance_piernas_20_01.npz",
+  "legs": "moving",
+  "num_envs": 4096,
+  "seconds": 10.68,
+  "vin_v": "aleatoria 6 a 8,4",
+  "push_speed_m_s": 0.2,
+  "tilt_over_60deg_fraction": 0.0,
+  "error_by_body_m": {
+    "left_hand": {
+      "median": 0.0144,
+      "p95": 0.0303,
+      "max": 0.0913
+    },
+    "right_hand": {
+      "median": 0.0124,
+      "p95": 0.0319,
+      "max": 0.1101
+    },
+    "left_elbow": {
+      "median": 0.0164,
+      "p95": 0.0413,
+      "max": 0.2091
+    },
+    "right_elbow": {
+      "median": 0.0191,
+      "p95": 0.0607,
+      "max": 0.2128
+    },
+    "left_foot": {
+      "median": 0.0164,
+      "p95": 0.0259,
+      "max": 0.1037
+    },
+    "right_foot": {
+      "median": 0.0166,
+      "p95": 0.0264,
+      "max": 0.0873
+    }
+  },
+  "error_by_group_m": {
+    "hand": {
+      "median": 0.0135,
+      "p95": 0.0311,
+      "max": 0.1101
+    },
+    "elbow": {
+      "median": 0.0175,
+      "p95": 0.0504,
+      "max": 0.2128
+    },
+    "foot": {
+      "median": 0.0165,
+      "p95": 0.0261,
+      "max": 0.1037
+    }
+  },
+  "saturated_joints_run_over_0.5s_max_s": {
+    "right_knee": 0.94
+  },
+  "criteria": {
+    "no_fall_fraction": {
+      "value": 1.0,
+      "required": 0.95,
+      "passes": true
+    },
+    "hands_elbows_feet_median_m": {
+      "value": {
+        "hand": 0.0135,
+        "elbow": 0.0175,
+        "foot": 0.0165
+      },
+      "required_max": 0.02,
+      "passes": true
+    },
+    "hands_elbows_feet_p95_m": {
+      "value": {
+        "hand": 0.0311,
+        "elbow": 0.0504,
+        "foot": 0.0261
+      },
+      "required_max": 0.04,
+      "passes": false
+    },
+    "saturation_run_at_most_0.5s": {
+      "value": 0.9998,
+      "required": 0.99,
+      "passes": true
+    },
+    "saturation_no_robot_over_2s": {
+      "value": 1.0,
+      "required": 1.0,
+      "passes": true
+    },
+    "feet": {
+      "value": {
+        "definition": "deslizamiento de la suela acumulado en cada apoyo (m)",
+        "stance_slide_m": {
+          "median": 0.033,
+          "p95": 0.047,
+          "max": 0.0697
+        },
+        "required_max_m": 0.01
+      },
+      "passes": false
+    }
+  },
+  "passes_measurable_criteria": false,
+  "not_checked": "vídeo aprobado por el dueño; ONNX verificado; robot real"
+}
