@@ -1,5 +1,5 @@
 {
-  "checkpoint": "logs\\rsl_rl\\danny_tracking\\2026-11-16_12-22-51_fase6_pedir_ayuda_k32\\model_1999.pt",
+  "checkpoint": "logs\\rsl_rl\\danny_tracking\\2026-11-18_10-46-05_fase6_pedir_ayuda_k32b\\model_3999.pt",
   "motion": "data\\motions\\pedir_ayuda.npz",
   "legs": "fixed",
   "num_envs": 4096,
@@ -9,51 +9,51 @@
   "tilt_over_60deg_fraction": 0.0,
   "error_by_body_m": {
     "left_hand": {
-      "median": 0.0085,
-      "p95": 0.0178,
-      "max": 0.041
+      "median": 0.0052,
+      "p95": 0.0121,
+      "max": 0.042
     },
     "right_hand": {
-      "median": 0.008,
-      "p95": 0.029,
-      "max": 0.0613
+      "median": 0.0052,
+      "p95": 0.0111,
+      "max": 0.039
     },
     "left_elbow": {
-      "median": 0.0121,
-      "p95": 0.0521,
-      "max": 0.1358
+      "median": 0.01,
+      "p95": 0.0234,
+      "max": 0.1127
     },
     "right_elbow": {
-      "median": 0.0122,
-      "p95": 0.0624,
-      "max": 0.1187
+      "median": 0.0093,
+      "p95": 0.026,
+      "max": 0.1136
     },
     "left_foot": {
-      "median": 0.011,
-      "p95": 0.0154,
-      "max": 0.0298
+      "median": 0.0076,
+      "p95": 0.0094,
+      "max": 0.0185
     },
     "right_foot": {
-      "median": 0.0112,
-      "p95": 0.0167,
-      "max": 0.044
+      "median": 0.008,
+      "p95": 0.0098,
+      "max": 0.0305
     }
   },
   "error_by_group_m": {
     "hand": {
-      "median": 0.0083,
-      "p95": 0.0233,
-      "max": 0.0613
+      "median": 0.0052,
+      "p95": 0.0117,
+      "max": 0.042
     },
     "elbow": {
-      "median": 0.0121,
-      "p95": 0.0607,
-      "max": 0.1358
+      "median": 0.0097,
+      "p95": 0.025,
+      "max": 0.1136
     },
     "foot": {
-      "median": 0.0111,
-      "p95": 0.0158,
-      "max": 0.044
+      "median": 0.0078,
+      "p95": 0.0096,
+      "max": 0.0305
     }
   },
   "saturated_joints_run_over_0.5s_max_s": {},
@@ -65,21 +65,21 @@
     },
     "hands_elbows_feet_median_m": {
       "value": {
-        "hand": 0.0083,
-        "elbow": 0.0121,
-        "foot": 0.0111
+        "hand": 0.0052,
+        "elbow": 0.0097,
+        "foot": 0.0078
       },
       "required_max": 0.02,
       "passes": true
     },
     "hands_elbows_feet_p95_m": {
       "value": {
-        "hand": 0.0233,
-        "elbow": 0.0607,
-        "foot": 0.0158
+        "hand": 0.0117,
+        "elbow": 0.025,
+        "foot": 0.0096
       },
       "required_max": 0.04,
-      "passes": false
+      "passes": true
     },
     "saturation_run_at_most_0.5s": {
       "value": 1.0,
@@ -94,12 +94,12 @@
     "feet": {
       "value": {
         "definition": "paso = suela a más de 1 cm de altura o a más de 3 cm de su sitio",
-        "fraction_without_step": 0.9885,
+        "fraction_without_step": 1.0,
         "required": 0.95
       },
       "passes": true
     }
   },
-  "passes_measurable_criteria": false,
+  "passes_measurable_criteria": true,
   "not_checked": "vídeo aprobado por el dueño; ONNX verificado; robot real"
 }

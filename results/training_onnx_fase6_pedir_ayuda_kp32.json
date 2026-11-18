@@ -1,0 +1,11 @@
+{
+  "checkpoint": "logs\\rsl_rl\\danny_tracking\\2026-11-18_10-46-05_fase6_pedir_ayuda_k32b\\model_3999.pt",
+  "onnx": "danny_fase6_pedir_ayuda_kp32_2026-11-16.onnx",
+  "observation_size": 124,
+  "action_size": 23,
+  "steps": 200,
+  "num_envs": 16,
+  "max_abs_action_difference": 2.86102294921875e-06,
+  "max_allowed": 0.0001,
+  "passes": true
+}
