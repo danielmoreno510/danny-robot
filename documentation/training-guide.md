@@ -196,7 +196,12 @@ no debe dar pasos.
 3. **Saturación,** como en las fases 4 y 5: el 99 % de los robots o más sin ninguna articulación por encima del 90 % del bloqueo más de
    0,5 s seguidos, y ninguno más de 2 s.
 4. **Pies:** en los movimientos 1 a 15, el 95 % de los robots o más no da ningún paso; de 16 a 19, el pie apoyado no resbala más
-   de 1 cm.
+   de 1 cm. **Criterio provisional, decidido por el dueño el 19 de noviembre** (sustituye al «deslizamiento máximo ≤ 1 cm» que usé
+   hasta entonces): en cada apoyo de la referencia, exceso = recorrido horizontal de la suela del robot menos el de la suela de la
+   referencia en ese mismo apoyo; pasa si el 95 % de los robots tienen un exceso de 1 cm o menos en todos sus apoyos. Los apoyos se
+   detectan en la referencia con `training/src/danny_training/reference_contacts.py` (altura, velocidad horizontal y vertical, duración
+   mínima; ver `scripts/show_reference_stances.py`). Se repite con el robot montado y la suela de TPU medida, y el entrenamiento final
+   también.
 5. **Vídeo de Danny con física junto a la referencia, aprobado por el dueño.**
 6. **ONNX verificado,** como en las demás fases.
 

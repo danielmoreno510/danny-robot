@@ -9,55 +9,55 @@
   "tilt_over_60deg_fraction": 0.0,
   "error_by_body_m": {
     "left_hand": {
-      "median": 0.0154,
+      "median": 0.0153,
       "p95": 0.0369,
       "max": 0.0872
     },
     "right_hand": {
       "median": 0.0103,
       "p95": 0.0304,
-      "max": 0.097
+      "max": 0.1052
     },
     "left_elbow": {
-      "median": 0.0135,
+      "median": 0.0134,
       "p95": 0.0398,
-      "max": 0.1021
+      "max": 0.1009
     },
     "right_elbow": {
-      "median": 0.018,
+      "median": 0.0181,
       "p95": 0.0427,
-      "max": 0.1145
+      "max": 0.1094
     },
     "left_foot": {
       "median": 0.0134,
       "p95": 0.0188,
-      "max": 0.0674
+      "max": 0.0661
     },
     "right_foot": {
       "median": 0.0132,
       "p95": 0.0179,
-      "max": 0.071
+      "max": 0.0667
     }
   },
   "error_by_group_m": {
     "hand": {
       "median": 0.0129,
       "p95": 0.0331,
-      "max": 0.097
+      "max": 0.1052
     },
     "elbow": {
       "median": 0.016,
       "p95": 0.0414,
-      "max": 0.1145
+      "max": 0.1094
     },
     "foot": {
       "median": 0.0133,
-      "p95": 0.0183,
-      "max": 0.071
+      "p95": 0.0182,
+      "max": 0.0667
     }
   },
   "saturated_joints_run_over_0.5s_max_s": {
-    "right_knee": 2.72
+    "right_knee": 0.74
   },
   "criteria": {
     "no_fall_fraction": {
@@ -78,30 +78,70 @@
       "value": {
         "hand": 0.0331,
         "elbow": 0.0414,
-        "foot": 0.0183
+        "foot": 0.0182
       },
       "required_max": 0.04,
       "passes": false
     },
     "saturation_run_at_most_0.5s": {
-      "value": 0.9995,
+      "value": 0.9998,
       "required": 0.99,
       "passes": true
     },
     "saturation_no_robot_over_2s": {
-      "value": 0.9998,
+      "value": 1.0,
       "required": 1.0,
-      "passes": false
+      "passes": true
     },
     "feet": {
       "value": {
-        "definition": "deslizamiento de la suela acumulado en cada apoyo (m)",
-        "stance_slide_m": {
-          "median": 0.0426,
-          "p95": 0.0593,
-          "max": 0.0864
+        "definition": "exceso = recorrido horizontal de la suela del robot - el de la referencia en cada apoyo de la referencia; por robot, el peor apoyo",
+        "worst_excess_m": {
+          "median": 0.0487,
+          "p95": 0.0724,
+          "max": 0.327
         },
-        "required_max_m": 0.01
+        "fraction_of_robots_within_limit": 0.0,
+        "required_excess_max_m": 0.01,
+        "required_fraction": 0.95,
+        "stances": [
+          {
+            "side": "left",
+            "steps": [
+              2,
+              532
+            ],
+            "reference_path_m": 0.0024,
+            "robot_path_m": {
+              "median": 0.0446,
+              "p95": 0.0692,
+              "max": 0.3294
+            },
+            "excess_m": {
+              "median": 0.0422,
+              "p95": 0.0668,
+              "max": 0.327
+            }
+          },
+          {
+            "side": "right",
+            "steps": [
+              2,
+              532
+            ],
+            "reference_path_m": 0.0026,
+            "robot_path_m": {
+              "median": 0.0466,
+              "p95": 0.071,
+              "max": 0.2932
+            },
+            "excess_m": {
+              "median": 0.044,
+              "p95": 0.0684,
+              "max": 0.2905
+            }
+          }
+        ]
       },
       "passes": false
     }

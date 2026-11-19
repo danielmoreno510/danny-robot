@@ -11,49 +11,49 @@
     "left_hand": {
       "median": 0.0063,
       "p95": 0.0161,
-      "max": 0.0686
+      "max": 0.0703
     },
     "right_hand": {
       "median": 0.0062,
       "p95": 0.0132,
-      "max": 0.05
+      "max": 0.0532
     },
     "left_elbow": {
       "median": 0.0061,
       "p95": 0.0127,
-      "max": 0.086
+      "max": 0.0877
     },
     "right_elbow": {
-      "median": 0.0068,
-      "p95": 0.0137,
-      "max": 0.0934
+      "median": 0.0067,
+      "p95": 0.0136,
+      "max": 0.1002
     },
     "left_foot": {
-      "median": 0.0095,
-      "p95": 0.0172,
-      "max": 0.042
+      "median": 0.0094,
+      "p95": 0.0171,
+      "max": 0.0404
     },
     "right_foot": {
       "median": 0.0093,
       "p95": 0.016,
-      "max": 0.0295
+      "max": 0.0329
     }
   },
   "error_by_group_m": {
     "hand": {
       "median": 0.0062,
       "p95": 0.0145,
-      "max": 0.0686
+      "max": 0.0703
     },
     "elbow": {
       "median": 0.0064,
       "p95": 0.0132,
-      "max": 0.0934
+      "max": 0.1002
     },
     "foot": {
       "median": 0.0094,
-      "p95": 0.0166,
-      "max": 0.042
+      "p95": 0.0165,
+      "max": 0.0404
     }
   },
   "saturated_joints_run_over_0.5s_max_s": {},
@@ -76,7 +76,7 @@
       "value": {
         "hand": 0.0145,
         "elbow": 0.0132,
-        "foot": 0.0166
+        "foot": 0.0165
       },
       "required_max": 0.04,
       "passes": true
@@ -93,13 +93,125 @@
     },
     "feet": {
       "value": {
-        "definition": "deslizamiento de la suela acumulado en cada apoyo (m)",
-        "stance_slide_m": {
-          "median": 0.0098,
-          "p95": 0.015,
-          "max": 0.025
+        "definition": "exceso = recorrido horizontal de la suela del robot - el de la referencia en cada apoyo de la referencia; por robot, el peor apoyo",
+        "worst_excess_m": {
+          "median": 0.0081,
+          "p95": 0.0142,
+          "max": 0.0329
         },
-        "required_max_m": 0.01
+        "fraction_of_robots_within_limit": 0.7205,
+        "required_excess_max_m": 0.01,
+        "required_fraction": 0.95,
+        "stances": [
+          {
+            "side": "left",
+            "steps": [
+              2,
+              5
+            ],
+            "reference_path_m": 0.0,
+            "robot_path_m": {
+              "median": 0.008,
+              "p95": 0.0142,
+              "max": 0.0329
+            },
+            "excess_m": {
+              "median": 0.008,
+              "p95": 0.0142,
+              "max": 0.0329
+            }
+          },
+          {
+            "side": "left",
+            "steps": [
+              36,
+              60
+            ],
+            "reference_path_m": 0.0,
+            "robot_path_m": {
+              "median": 0.0012,
+              "p95": 0.0018,
+              "max": 0.0048
+            },
+            "excess_m": {
+              "median": 0.0011,
+              "p95": 0.0017,
+              "max": 0.0047
+            }
+          },
+          {
+            "side": "left",
+            "steps": [
+              91,
+              133
+            ],
+            "reference_path_m": 0.0,
+            "robot_path_m": {
+              "median": 0.0018,
+              "p95": 0.0027,
+              "max": 0.0052
+            },
+            "excess_m": {
+              "median": 0.0018,
+              "p95": 0.0027,
+              "max": 0.0051
+            }
+          },
+          {
+            "side": "right",
+            "steps": [
+              2,
+              31
+            ],
+            "reference_path_m": 0.0,
+            "robot_path_m": {
+              "median": 0.0037,
+              "p95": 0.0088,
+              "max": 0.0232
+            },
+            "excess_m": {
+              "median": 0.0036,
+              "p95": 0.0087,
+              "max": 0.0232
+            }
+          },
+          {
+            "side": "right",
+            "steps": [
+              64,
+              86
+            ],
+            "reference_path_m": 0.0,
+            "robot_path_m": {
+              "median": 0.0013,
+              "p95": 0.0022,
+              "max": 0.0064
+            },
+            "excess_m": {
+              "median": 0.0013,
+              "p95": 0.0021,
+              "max": 0.0064
+            }
+          },
+          {
+            "side": "right",
+            "steps": [
+              119,
+              133
+            ],
+            "reference_path_m": 0.0,
+            "robot_path_m": {
+              "median": 0.0006,
+              "p95": 0.0015,
+              "max": 0.0061
+            },
+            "excess_m": {
+              "median": 0.0006,
+              "p95": 0.0015,
+              "max": 0.0061
+            }
+          }
+        ]
       },
       "passes": false
     }

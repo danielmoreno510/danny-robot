@@ -10,8 +10,10 @@ determinista y el ruido de observación del entrenamiento:
      y fotogramas. Mano = sitio `left_hand`/`right_hand`; codo = cuerpo `*_elbow_link_1`; pie = cuerpo `*_foot_1`.
   3. Saturación: par por encima del 90 % del bloqueo de la tensión de cada robot; racha más larga por robot y articulación.
   4. Pies: en los movimientos de pie (`--legs fixed`), fracción de robots sin ningún paso (ninguna suela sube más de 1 cm sobre el suelo ni se
-     desplaza más de 3 cm de su sitio); en los de piernas (`--legs moving`), el deslizamiento máximo de la suela mientras apoya (acumulado por
-     apoyo; limite 1 cm). Definiciones mías, marcadas como interpretación del criterio.
+     desplaza más de 3 cm de su sitio); en los de piernas (`--legs moving`), exceso de deslizamiento (decisión del dueño, 19 nov): en cada
+     apoyo de la referencia (ver `danny_training/reference_contacts.py`), recorrido horizontal de la suela del robot menos el de la suela de la
+     referencia; pasa si el 95 % de los robots tienen un exceso de 1 cm o menos en todos sus apoyos. Provisional: se repite con el robot montado
+     y la suela de TPU medida. Lo demás (paso en los de pie) son definiciones mías, marcadas como interpretación del criterio.
 Con `--vin` fija la tensión (V); sin ella se sortea de 6 a 8,4 V.
 
 Uso (desde training/):
@@ -32,6 +34,7 @@ from mjlab.utils.lab_api.math import quat_apply, quat_apply_inverse, quat_inv, q
 from danny_training.actuator import FrictionDRBamActuator, stall_torque_nm
 from danny_training.evaluation import RESULTS, eval_env_cfg, load_policy
 from danny_training.lie_measure import longest_run
+from danny_training import reference_contacts as rc
 
 TASK = "Mjlab-Tracking-Danny"
 SATURATED = 0.9
@@ -41,7 +44,7 @@ ELBOW_BODIES = {"left": "left_elbow_link_1", "right": "right_elbow_link_1"}
 FOOT_BODIES = {"left": "left_foot_1", "right": "right_foot_1"}
 SOLE_SITES = {"left": "left_sole", "right": "right_sole"}
 TILT_FALL_DEG = 60.0
-STEP_LIFT_M, STEP_SLIDE_M, STANCE_SLIDE_M = 0.01, 0.03, 0.01
+STEP_LIFT_M, STEP_SLIDE_M = 0.01, 0.03
 POS_MEDIAN_M, POS_P95_M = 0.02, 0.04
 
 
@@ -101,10 +104,8 @@ def main() -> None:
   sole_lift = {s: torch.zeros(n, device=device) for s in ("left", "right")}
   sole_move = {s: torch.zeros(n, device=device) for s in ("left", "right")}
   sole_start = {}
-  stance_slide = {s: torch.zeros(n, device=device) for s in ("left", "right")}
-  slide_acc = {s: torch.zeros(n, device=device) for s in ("left", "right")}
+  sole_step = {s: torch.zeros(n, steps, device=device) for s in ("left", "right")}  # recorrido horizontal de la suela en cada paso
   prev_sole = {}
-  contact = u.scene["feet_ground_contact"]
 
   with torch.inference_mode():
     for t in range(steps):
@@ -138,10 +139,7 @@ def main() -> None:
           prev_sole[side] = sole.clone()
         sole_lift[side] = torch.maximum(sole_lift[side], sole[:, 2] - sole_start[side][:, 2])
         sole_move[side] = torch.maximum(sole_move[side], (sole[:, :2] - sole_start[side][:, :2]).norm(dim=-1))
-        on_ground = contact.data.found.reshape(n, -1)[:, 0 if side == "left" else 1] > 0
-        step_xy = (sole[:, :2] - prev_sole[side][:, :2]).norm(dim=-1)
-        slide_acc[side] = torch.where(on_ground, slide_acc[side] + step_xy, torch.zeros_like(step_xy))
-        stance_slide[side] = torch.maximum(stance_slide[side], slide_acc[side])
+        sole_step[side][:, t] = (sole[:, :2] - prev_sole[side][:, :2]).norm(dim=-1)
         prev_sole[side] = sole.clone()
       sat[:, t] = (d.actuator_force.abs() / stall) > SATURATED
       gravity_z = quat_apply_inverse(base_quat, torch.tensor([0.0, 0.0, -1.0], device=device).expand(n, 3))[:, 2]
@@ -166,9 +164,24 @@ def main() -> None:
     feet = {"definition": f"paso = suela a más de {STEP_LIFT_M * 100:.0f} cm de altura o a más de {STEP_SLIDE_M * 100:.0f} cm de su sitio", "fraction_without_step": round(float((~stepped[ok]).float().mean()), 4), "required": 0.95}
     feet_pass = feet["fraction_without_step"] >= 0.95
   else:
-    slide = torch.maximum(stance_slide["left"], stance_slide["right"])
-    feet = {"definition": "deslizamiento de la suela acumulado en cada apoyo (m)", "stance_slide_m": quantiles(slide[ok]), "required_max_m": STANCE_SLIDE_M}
-    feet_pass = float(slide[ok].max()) <= STANCE_SLIDE_M
+    ref_data = np.load(args.motion)
+    fps = float(ref_data["fps"][0])
+    ref_soles = rc.reference_soles(ref_data)
+    excess = torch.full((n,), float("-inf"), device=device)
+    per_stance = []
+    for side in ("left", "right"):
+      for st in rc.stances(ref_soles[side], fps):
+        robot_path = sole_step[side][:, st.start : st.end].sum(dim=1)
+        e = robot_path - st.reference_path_m
+        excess = torch.maximum(excess, e)
+        per_stance.append({"side": side, "steps": [st.start, st.end], "reference_path_m": round(st.reference_path_m, 4), "robot_path_m": quantiles(robot_path[ok]), "excess_m": quantiles(e[ok])})
+    fraction_ok = float((excess[ok] <= rc.EXCESS_MAX_M).float().mean())
+    feet = {
+      "definition": "exceso = recorrido horizontal de la suela del robot - el de la referencia en cada apoyo de la referencia; por robot, el peor apoyo",
+      "worst_excess_m": quantiles(excess[ok]), "fraction_of_robots_within_limit": round(fraction_ok, 4),
+      "required_excess_max_m": rc.EXCESS_MAX_M, "required_fraction": rc.EXCESS_ROBOT_FRACTION, "stances": per_stance,
+    }
+    feet_pass = fraction_ok >= rc.EXCESS_ROBOT_FRACTION
   criteria = {
     "no_fall_fraction": {"value": round(no_fall, 4), "required": 0.95, "passes": no_fall >= 0.95},
     "hands_elbows_feet_median_m": {"value": {g: groups[g]["median"] for g in groups}, "required_max": POS_MEDIAN_M, "passes": all(groups[g]["median"] <= POS_MEDIAN_M for g in groups)},

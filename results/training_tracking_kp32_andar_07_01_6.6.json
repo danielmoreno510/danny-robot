@@ -11,48 +11,48 @@
     "left_hand": {
       "median": 0.0062,
       "p95": 0.0142,
-      "max": 0.0561
+      "max": 0.0549
     },
     "right_hand": {
       "median": 0.0058,
-      "p95": 0.012,
-      "max": 0.044
+      "p95": 0.0121,
+      "max": 0.0443
     },
     "left_elbow": {
-      "median": 0.0055,
+      "median": 0.0056,
       "p95": 0.0129,
-      "max": 0.0727
+      "max": 0.0734
     },
     "right_elbow": {
       "median": 0.0074,
-      "p95": 0.0135,
-      "max": 0.0755
+      "p95": 0.0136,
+      "max": 0.0749
     },
     "left_foot": {
-      "median": 0.0095,
-      "p95": 0.0198,
+      "median": 0.0096,
+      "p95": 0.0199,
       "max": 0.0336
     },
     "right_foot": {
-      "median": 0.01,
+      "median": 0.0101,
       "p95": 0.0168,
-      "max": 0.0324
+      "max": 0.0313
     }
   },
   "error_by_group_m": {
     "hand": {
       "median": 0.006,
-      "p95": 0.0131,
-      "max": 0.0561
+      "p95": 0.0132,
+      "max": 0.0549
     },
     "elbow": {
       "median": 0.0065,
       "p95": 0.0133,
-      "max": 0.0755
+      "max": 0.0749
     },
     "foot": {
       "median": 0.0098,
-      "p95": 0.0184,
+      "p95": 0.0185,
       "max": 0.0336
     }
   },
@@ -74,9 +74,9 @@
     },
     "hands_elbows_feet_p95_m": {
       "value": {
-        "hand": 0.0131,
+        "hand": 0.0132,
         "elbow": 0.0133,
-        "foot": 0.0184
+        "foot": 0.0185
       },
       "required_max": 0.04,
       "passes": true
@@ -93,17 +93,111 @@
     },
     "feet": {
       "value": {
-        "definition": "deslizamiento de la suela acumulado en cada apoyo (m)",
-        "stance_slide_m": {
-          "median": 0.0089,
-          "p95": 0.0136,
-          "max": 0.0192
+        "definition": "exceso = recorrido horizontal de la suela del robot - el de la referencia en cada apoyo de la referencia; por robot, el peor apoyo",
+        "worst_excess_m": {
+          "median": 0.002,
+          "p95": 0.0052,
+          "max": 0.0129
         },
-        "required_max_m": 0.01
+        "fraction_of_robots_within_limit": 0.9973,
+        "required_excess_max_m": 0.01,
+        "required_fraction": 0.95,
+        "stances": [
+          {
+            "side": "left",
+            "steps": [
+              29,
+              53
+            ],
+            "reference_path_m": 0.0,
+            "robot_path_m": {
+              "median": 0.0011,
+              "p95": 0.0017,
+              "max": 0.0036
+            },
+            "excess_m": {
+              "median": 0.0011,
+              "p95": 0.0016,
+              "max": 0.0035
+            }
+          },
+          {
+            "side": "left",
+            "steps": [
+              84,
+              128
+            ],
+            "reference_path_m": 0.0,
+            "robot_path_m": {
+              "median": 0.0016,
+              "p95": 0.0023,
+              "max": 0.0042
+            },
+            "excess_m": {
+              "median": 0.0016,
+              "p95": 0.0023,
+              "max": 0.0042
+            }
+          },
+          {
+            "side": "right",
+            "steps": [
+              2,
+              25
+            ],
+            "reference_path_m": 0.0,
+            "robot_path_m": {
+              "median": 0.0019,
+              "p95": 0.0052,
+              "max": 0.013
+            },
+            "excess_m": {
+              "median": 0.0019,
+              "p95": 0.0052,
+              "max": 0.0129
+            }
+          },
+          {
+            "side": "right",
+            "steps": [
+              57,
+              79
+            ],
+            "reference_path_m": 0.0,
+            "robot_path_m": {
+              "median": 0.0012,
+              "p95": 0.0018,
+              "max": 0.0046
+            },
+            "excess_m": {
+              "median": 0.0012,
+              "p95": 0.0018,
+              "max": 0.0046
+            }
+          },
+          {
+            "side": "right",
+            "steps": [
+              112,
+              128
+            ],
+            "reference_path_m": 0.0,
+            "robot_path_m": {
+              "median": 0.0006,
+              "p95": 0.0011,
+              "max": 0.0027
+            },
+            "excess_m": {
+              "median": 0.0006,
+              "p95": 0.0011,
+              "max": 0.0027
+            }
+          }
+        ]
       },
-      "passes": false
+      "passes": true
     }
   },
-  "passes_measurable_criteria": false,
+  "passes_measurable_criteria": true,
   "not_checked": "vídeo aprobado por el dueño; ONNX verificado; robot real"
 }
